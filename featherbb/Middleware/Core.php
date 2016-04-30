@@ -241,6 +241,9 @@ class Core
         if (!Container::get('cache')->isCached('permissions')) {
             Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
         }
+        if (!Container::get('cache')->isCached('group_preferences')) {
+            Container::get('cache')->store('group_preferences', \FeatherBB\Model\Cache::get_group_preferences());
+        }
 
         // Finalize forum_settings array
         $this->forum_settings = array_merge(Container::get('cache')->retrieve('config'), $this->forum_settings);

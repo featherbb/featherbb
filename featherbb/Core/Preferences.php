@@ -265,23 +265,13 @@ class Preferences
         return array((int) $uid, (int) $gid);
     }
 
-    public function getGroupPreferences($group_id)
+    public function getGroupPreferences($group_id = null, $preference = null)
     {
-        $result = DB::for_table('preferences')
-            ->select_many('preference_name', 'preference_value')
-            ->where_in('preference_name', array('post.min_interval', 'search.min_interval', 'email.min_interval', 'report.min_interval', 'promote.min_posts', 'promote.next_group'))
-            ->where_any_is(array(
-                array('group' => $group_id),
-                array('default' => 1),
-            ))
-            ->order_by_desc('default')
-            ->find_array();
-
-        $group_preferences = array();
-        foreach ($result as $pref) {
-            $group_preferences[$pref['preference_name']] = $pref['preference_value'];
+        $preferences = Container::get('cache')->retrieve('group_preferences');
+        if (empty($preference)) {
+            return (array) $preferences[$group_id];
         }
 
-        return (array) $group_preferences;
+        return $preferences[$group_id][$preference];
     }
 }

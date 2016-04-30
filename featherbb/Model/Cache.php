@@ -85,7 +85,6 @@ class Cache
             ->select('group', 'g_id')
             ->where_any_is(array(
                 ['permission_name' => 'board.read'],
-                ['permission_name' => 'board.*'],
                 ['permission_name' => '*']
             ))
             ->where('allow', 1)
@@ -168,5 +167,30 @@ class Cache
         }
 
         return $result;
+    }
+
+    public static function get_group_preferences()
+    {
+        $groups_preferences = array();
+
+        $groups = DB::for_table('groups')->select('g_id')->find_array();
+
+        foreach ($groups as $group) {
+            $result = DB::for_table('preferences')
+                ->table_alias('p')
+                ->where_any_is(array(
+                    array('p.group' => $group['g_id']),
+                    array('p.default' => 1),
+                ))
+                ->order_by_desc('p.default')
+                ->find_array();
+
+            $groups_preferences[$group['g_id']] = array();
+            foreach ($result as $pref) {
+                $groups_preferences[$group['g_id']][(string) $pref['preference_name']] = $pref['preference_value'];
+            }
+        }
+
+        return (array) $groups_preferences;
     }
 }

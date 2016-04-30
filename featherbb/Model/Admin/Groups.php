@@ -268,6 +268,7 @@ class Groups
         Container::get('perms')->denyGroup($group_id, array_keys($denied_perms));
         // Reload cache
         Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
+        Container::get('cache')->store('group_preferences', \FeatherBB\Model\Cache::get_group_preferences());
 
         // Regenerate the quick jump cache
         Container::get('cache')->store('quickjump', Cache::get_quickjump());
