@@ -129,9 +129,8 @@ if (!empty($queries_info)) { ?>
         </div>
 <?php } ?>
     </footer>
-</body>
 <!-- JS -->
-<script>
+<script type="text/javascript">
     var baseUrl = '<?= Utils::escape(Url::base()); ?>',
         bodyId = 'pun<?= $active_page; ?>',
         phpVars = <?= isset($jsVars) ? json_encode($jsVars) : json_encode(array()); ?>;
@@ -143,10 +142,11 @@ if (!empty($assets['js'])) {
         foreach ($script['params'] as $key => $value) {
             echo $key.'="'.$value.'" ';
         }
-        echo 'src="'.Url::base_static().'/'.$script['file'].'"></script>'."\n";
+        echo 'src="'.Utils::escape(Url::base()).'/'.$script['file'].'"></script>'."\n";
     }
 }
 Container::get('hooks')->fire('view.footer.before.html.tag'); ?>
+</body>
 </html>
 <?php
 Container::get('hooks')->fire('view.footer.end');
