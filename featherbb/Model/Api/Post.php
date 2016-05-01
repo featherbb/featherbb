@@ -12,6 +12,7 @@ namespace FeatherBB\Model\Api;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Interfaces\User;
 
 class Post extends Api
 {
@@ -35,20 +36,20 @@ class Post extends Api
     public function getDeletePermissions($cur_post, $args)
     {
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = ($this->user->g_id == ForumEnv::get('FEATHER_ADMIN') || ($this->user->g_moderator == '1' && array_key_exists($this->user->username, $mods_array))) ? true : false;
+        $is_admmod = (User::isAdmin($this->user) || (User::isAdminMod($this->user) && array_key_exists($this->user->username, $mods_array))) ? true : false;
 
         $is_topic_post = ($args['id'] == $cur_post['first_post_id']) ? true : false;
 
         // Do we have permission to edit this post?
-        if (($this->user->g_delete_posts == '0' ||
-                ($this->user->g_delete_topics == '0' && $is_topic_post) ||
+        if ((!User::can('post.delete', $this->user) ||
+                (!User::can('post.delete', $this->user) && $is_topic_post) ||
                 $cur_post['poster_id'] != $this->user->id ||
                 $cur_post['closed'] == '1') &&
             !$is_admmod) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
-        if ($is_admmod && $this->user->g_id != ForumEnv::get('FEATHER_ADMIN') && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+        if ($is_admmod && !User::isAdmin($this->user) && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
@@ -59,15 +60,14 @@ class Post extends Api
     {
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        
-        $is_admmod = ($this->user->g_id == ForumEnv::get('FEATHER_ADMIN') || ($this->user->g_moderator == '1' && array_key_exists($this->user->username, $mods_array))) ? true : false;
+        $is_admmod = (User::isAdmin($this->user) || (User::isAdminMod($this->user) && array_key_exists($this->user->username, $mods_array))) ? true : false;
 
         // Do we have permission to edit this post?
-        if (($this->user->g_edit_posts == '0' || $cur_post['poster_id'] != $this->user->id || $cur_post['closed'] == '1') && !$is_admmod) {
+        if ((!User::can('post.edit', $this->user) || $cur_post['poster_id'] != $this->user->id || $cur_post['closed'] == '1') && !$is_admmod) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
-        if ($is_admmod && $this->user->g_id != ForumEnv::get('FEATHER_ADMIN') && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+        if ($is_admmod && !User::isAdmin($this->user) && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
