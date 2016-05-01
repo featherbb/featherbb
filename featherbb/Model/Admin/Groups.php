@@ -19,12 +19,12 @@ class Groups
 {
     public function fetch_groups()
     {
-        // $result = DB::for_table('groups')->order_by('g_id')->find_many();
-        $result = DB::for_table('groups')->select_many('g_id', 'g_user_title', 'g_title', 'g_moderator')->order_by('g_id')->find_many();
+        $result = DB::for_table('groups')->order_by('g_id')->find_many();
         Container::get('hooks')->fireDB('model.admin.groups.fetch_groups_query', $result);
         $groups = array();
         foreach ($result as $cur_group) {
             $groups[$cur_group['g_id']] = $cur_group;
+            $groups[$cur_group['g_id']]['is_moderator'] = Container::get('perms')->getGroupPermissions($cur_group['g_id'], 'mod.is_mod');
         }
 
         $groups = Container::get('hooks')->fire('model.admin.groups.fetch_groups', $groups);
@@ -166,7 +166,6 @@ class Groups
         $insert_update_group = array(
             'g_title'               =>  $title,
             'g_user_title'          =>  $user_title,
-            'g_moderator'           =>  $moderator,
         );
         $group_preferences = array(
             'post.min_interval'     => (int) $post_flood,
@@ -177,6 +176,7 @@ class Groups
             'promote.next_group'    => (int) $promote_next_group,
         );
         $group_permissions = array(
+            'mod.is_mod'            => (int) $moderator,
             'mod.edit_users'        => (int) $mod_edit_users,
             'mod.rename_users'      => (int) $mod_rename_users,
             'mod.change_passwords'  => (int) $mod_change_passwords,
@@ -291,7 +291,7 @@ class Groups
         }
 
         // Make sure it's not a moderator group
-        if ($groups[$group_id]['g_moderator'] != 0) {
+        if (Container::get('perms')->getGroupPermissions($group_id, 'mod.is_mod')) {
             throw new Error(__('Bad request'), 404);
         }
 

@@ -36,12 +36,7 @@ class User extends \Statical\BaseProxy
             return Container::get('user');
         } else {
             // Load user from DB based on ID
-            return DB::for_table('users')
-                ->table_alias('u')
-                ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
-                ->where('u.id', $user)
-                ->select_many('u.id', 'u.group_id', 'g.g_moderator')
-                ->find_one();
+            return DB::for_table('users')->select('id', 'group_id')->find_one($user);
         }
     }
 
@@ -87,6 +82,6 @@ class User extends \Statical\BaseProxy
     public static function isAdminMod($id = null)
     {
         $user = self::getBasic($id);
-        return $user->group_id == ForumEnv::get('FEATHER_ADMIN') || $user->g_moderator == '1';
+        return $user->group_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->getGroupPermissions($user->group_id, 'mod.is_mod');
     }
 }

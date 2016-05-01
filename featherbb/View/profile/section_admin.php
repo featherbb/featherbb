@@ -63,7 +63,7 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
                             </div>
 <?php
 
-            if ($user['g_moderator'] == '1' || $user['g_id'] == ForumEnv::get('FEATHER_ADMIN')) {
+            if (Container::get('perms')->getGroupPermissions($user['g_id'], 'mod.is_mod') || $user['g_id'] == ForumEnv::get('FEATHER_ADMIN')) {
                 ?>
                             <div class="inform">
                                 <fieldset>

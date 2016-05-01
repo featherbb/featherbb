@@ -200,7 +200,7 @@ class Permissions
         }
 
         // If group or one of his parents have not the permission, add it
-        if (!array_key_exists($permission, $this->getGroupPermissions($gid))) {
+        if (!$this->getGroupPermissions($gid, $permission)) {
             DB::for_table('permissions')
                 ->create()
                 ->set(array(
@@ -243,7 +243,7 @@ class Permissions
         }
 
         // Check if one of his parents have the permission, and force denied permission if needed
-        if (array_key_exists($permission, $this->getGroupPermissions($gid))) {
+        if ($this->getGroupPermissions($gid, $permission)) {
             DB::for_table('permissions')
                 ->create()
                 ->set(array(
@@ -374,13 +374,15 @@ class Permissions
         return array((int) $uid, (int) $gid);
     }
 
-    public function getGroupPermissions($group_id = 0)
+    public function getGroupPermissions($group_id = null, $perm = null)
     {
+        $group_id = (int) $group_id;
         $permissions = Container::get('cache')->retrieve('permissions');
-        if (isset($permissions[$group_id][0])) {
-            return (array) $permissions[$group_id][0];
+        // Return empty perms array if group id doesn't exist in cache
+        if (!isset($permissions[$group_id]) || !isset($permissions[$group_id][0])) {
+            return array();
         }
-        // Return empty permis array if group id doesn't exist in cache
-        return array();
+        // Return full group permissions or the one we asked for
+        return !empty($perm) ? isset($permissions[$group_id][0][$perm]) : $permissions[$group_id][0];
     }
 }

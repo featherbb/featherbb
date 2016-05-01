@@ -77,7 +77,6 @@ class Install
             `g_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `g_title` varchar(50) NOT NULL DEFAULT '',
             `g_user_title` varchar(50) DEFAULT NULL,
-            `g_moderator` tinyint(1) NOT NULL DEFAULT '0',
             `inherit` text,
             PRIMARY KEY (`g_id`)
         ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;",
@@ -261,25 +260,21 @@ class Install
             'g_id' => 1,
             'g_title' => __('Administrators'),
             'g_user_title' => __('Administrator'),
-            'g_moderator' => 1,
         );
         $groups['Moderators'] = array(
             'g_id' => 2,
             'g_title' => __('Moderators'),
             'g_user_title' => __('Moderator'),
-            'g_moderator' => 1,
         );
         $groups['Guests'] = array(
             'g_id' => 3,
             'g_title' => __('Guests'),
             'g_user_title' => __('Guest'),
-            'g_moderator' => 0,
         );
         $groups['Members'] = array(
             'g_id' => 4,
             'g_title' => __('Members'),
             'g_user_title' => __('Member'),
-            'g_moderator' => 0,
         );
 
         return $groups;

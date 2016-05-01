@@ -61,8 +61,8 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                 <tr>
                                     <th scope="row"> <?php _e('Mod privileges label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="moderator" value="1"<?php if ($group['info']['g_moderator'] == '1') {echo ' checked="checked"';} ?> tabindex="5" />&#160;<strong><?php _e('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="moderator" value="0"<?php if ($group['info']['g_moderator'] == '0') {echo ' checked="checked"';} ?> tabindex="6" />&#160;<strong><?php _e('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="moderator" value="1"<?php if (isset($group['perms']['mod.is_mod'])) {echo ' checked="checked"';} ?> tabindex="5" />&#160;<strong><?php _e('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="moderator" value="0"<?php if (!isset($group['perms']['mod.is_mod'])) {echo ' checked="checked"';} ?> tabindex="6" />&#160;<strong><?php _e('No') ?></strong></label>
                                         <span class="clearb"><?php _e('Mod privileges help') ?></span>
                                     </td>
                                 </tr>
@@ -240,7 +240,7 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                 </tr>
 <?php endif; endif; ?>    </table>
 <?php Container::get('hooks')->fire('view.admin.groups.add_edit_group.form'); ?>
-<?php if ($group['info']['g_moderator'] == '1'): ?>
+<?php if (isset($group['perms']['mod.is_mod'])): ?>
                             <p class="warntext"><?php _e('Moderator info') ?></p>
 <?php endif; ?>
                         </div>

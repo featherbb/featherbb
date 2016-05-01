@@ -78,7 +78,7 @@ class Profile
                                     (!User::isAdmin() &&                           // or we aren't an admin and ...
                                     (!User::can('mod.edit_users') ||                         // mods aren't allowed to edit users
                                     $info['group_id'] == ForumEnv::get('FEATHER_ADMIN') ||                            // or the user is an admin
-                                    $info['is_moderator'])))) {                                      // or the user is another mod
+                                    Container::get('perms')->getGroupPermissions($info['group_id'], 'mod.is_mod'))))) {                                      // or the user is another mod
                                     throw new Error(__('No permission'), 403);
             }
 

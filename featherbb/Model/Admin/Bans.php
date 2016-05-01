@@ -75,8 +75,7 @@ class Bans
                 throw new Error(sprintf(__('User is admin message'), Utils::escape($ban['ban_user'])), 403);
             }
 
-            $is_moderator_group = DB::for_table('groups')->where('g_id', $group_id)
-                                        ->find_one_col('g_moderator');
+            $is_moderator_group = Container::get('perms')->getGroupPermissions($group_id, 'mod.is_mod');
 
             if ($is_moderator_group) {
                 throw new Error(sprintf(__('User is mod message'), Utils::escape($ban['ban_user'])), 403);
@@ -164,8 +163,7 @@ class Bans
                     throw new Error(sprintf(__('User is admin message'), Utils::escape($ban_user)), 403);
                 }
 
-                $is_moderator_group = DB::for_table('groups')->where('g_id', $group_id)
-                                            ->find_one_col('g_moderator');
+                $is_moderator_group = Container::get('perms')->getGroupPermissions($group_id, 'mod.is_mod');
 
                 if ($is_moderator_group) {
                     throw new Error(sprintf(__('User is mod message'), Utils::escape($ban_user)), 403);

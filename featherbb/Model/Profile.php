@@ -355,13 +355,8 @@ class Profile
             Container::get('cache')->store('admin_ids', Cache::get_admin_ids());
         }
 
-        $new_group_mod = DB::for_table('groups')
-            ->where('g_id', $new_group_id);
-        $new_group_mod = Container::get('hooks')->fireDB('model.profile.update_group_membership_new_mod', $new_group_mod);
-        $new_group_mod = $new_group_mod->find_one_col('g_moderator');
-
         // If the user was a moderator or an administrator, we remove him/her from the moderator list in all forums as well
-        if ($new_group_id != ForumEnv::get('FEATHER_ADMIN') && $new_group_mod != '1') {
+        if ($new_group_id != ForumEnv::get('FEATHER_ADMIN') && !Container::get('perms')->getGroupPermissions($new_group_id, 'mod.is_mod')) {
 
             // Loop through all forums
             $result = $this->loop_mod_forums();
@@ -538,12 +533,7 @@ class Profile
 
         if (Input::post('delete_user_comply')) {
             // If the user is a moderator or an administrator, we remove him/her from the moderator list in all forums as well
-            $group_mod = DB::for_table('groups')
-                ->where('g_id', $group_id);
-            $group_mod = Container::get('hooks')->fireDB('model.profile.delete_user_group_mod', $group_mod);
-            $group_mod = $group_mod->find_one_col('g_moderator');
-
-            if ($group_id == ForumEnv::get('FEATHER_ADMIN') || $group_mod == '1') {
+            if ($group_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->getGroupPermissions($group_id, 'mod.is_mod')) {
 
                 // Loop through all forums
                 $result = $this->loop_mod_forums();
@@ -659,7 +649,7 @@ class Profile
     {
         $info = array();
 
-        $info['select'] = array('old_username' => 'u.username', 'group_id' => 'u.group_id', 'is_moderator' => 'g.g_moderator');
+        $info['select'] = array('old_username' => 'u.username', 'group_id' => 'u.group_id');
 
         $info = DB::for_table('users')
             ->table_alias('u')
@@ -950,12 +940,7 @@ class Profile
             $group_id = Container::get('hooks')->fireDB('model.profile.update_profile_group_id', $group_id);
             $group_id = $group_id->find_one_col('group_id');
 
-            $group_mod = DB::for_table('groups')
-                ->where('g_id', $group_id);
-            $group_mod = Container::get('hooks')->fireDB('model.profile.update_profile_group_mod', $group_mod);
-            $group_mod = $group_mod->find_one_col('g_moderator');
-
-            if ($group_id == ForumEnv::get('FEATHER_ADMIN') || $group_mod == '1') {
+            if ($group_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->getGroupPermissions($group_id, 'mod.is_mod')) {
 
                 // Loop through all forums
                 $result = $this->loop_mod_forums();
@@ -998,7 +983,7 @@ class Profile
 
     public function get_user_info($id)
     {
-        $user['select'] = array('u.id', 'u.group_id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
+        $user['select'] = array('u.id', 'u.group_id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title');
 
         $user = DB::for_table('users')
             ->table_alias('u')
