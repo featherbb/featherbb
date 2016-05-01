@@ -973,7 +973,7 @@ class Topic
                 }
             } else {
                 $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.Router::pathFor('report', ['id' => $cur_post['id']]).'">'.__('Report').'</a></span></li>';
-                if (User::isAdmin() || !in_array($cur_post['poster_id'], $admin_ids)) {
+                if (User::isAdmin() || !in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
                     $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.Router::pathFor('deletePost', ['id' => $cur_post['id']]).'">'.__('Delete').'</a></span></li>';
                     $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.Router::pathFor('editPost', ['id' => $cur_post['id']]).'">'.__('Edit').'</a></span></li>';
                 }
