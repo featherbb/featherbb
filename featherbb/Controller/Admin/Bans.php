@@ -22,7 +22,7 @@ class Bans
         translate('admin/bans');
         translate('admin/common');
 
-        if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator != '1' || User::get()->g_mod_ban_users == '0')) {
+        if (!User::can('mod.ban_users')) {
             throw new Error(__('No permission'), '403');
         }
     }

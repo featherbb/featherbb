@@ -36,20 +36,27 @@ class Preferences
                         ->where('preference_name', $pref_name)
                         ->where('user', $uid)
                         ->find_one();
-            if ($result) {
-                DB::for_table('preferences')
-                    ->find_one($result->id())
-                    ->set(['preference_value' => $pref_value])
-                    ->save();
+
+            if (Container::get('forum_settings') && ForumSettings::get($pref_name) == $pref_value) {
+                if ($result) {
+                    $result->delete();
+                }
             } else {
-                DB::for_table('preferences')
-                    ->create()
-                    ->set(array(
-                        'preference_name' => $pref_name,
-                        'preference_value' => $pref_value,
-                        'user' => $uid
-                    ))
-                    ->save();
+                if ($result) {
+                    DB::for_table('preferences')
+                        ->find_one($result->id())
+                        ->set(['preference_value' => $pref_value])
+                        ->save();
+                } else {
+                    DB::for_table('preferences')
+                        ->create()
+                        ->set(array(
+                            'preference_name' => $pref_name,
+                            'preference_value' => $pref_value,
+                            'user' => $uid
+                        ))
+                        ->save();
+                }
             }
             $this->preferences[$gid][$uid][$pref_name] = $pref_value;
         }
@@ -70,20 +77,26 @@ class Preferences
                         ->where('preference_name', (string) $pref_name)
                         ->where('group', $gid)
                         ->find_one();
-            if ($result) {
-                DB::for_table('preferences')
-                    ->find_one($result->id())
-                    ->set(['preference_value' => (string) $pref_value])
-                    ->save();
+            if (Container::get('forum_settings') && ForumSettings::get($pref_name) == $pref_value) {
+                if ($result) {
+                    $result->delete();
+                }
             } else {
-                DB::for_table('preferences')
-                    ->create()
-                    ->set(array(
-                        'preference_name' => (string) $pref_name,
-                        'preference_value' => (string) $pref_value,
-                        'group' => $gid
-                    ))
-                    ->save();
+                if ($result) {
+                    DB::for_table('preferences')
+                        ->find_one($result->id())
+                        ->set(['preference_value' => (string) $pref_value])
+                        ->save();
+                } else {
+                    DB::for_table('preferences')
+                        ->create()
+                        ->set(array(
+                            'preference_name' => (string) $pref_name,
+                            'preference_value' => (string) $pref_value,
+                            'group' => $gid
+                        ))
+                        ->save();
+                }
             }
             unset($this->preferences[$gid]);
         }
@@ -212,7 +225,7 @@ class Preferences
 
     // Utils
 
-    protected function loadPrefs($user = null)
+    public function loadPrefs($user = null)
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
 
@@ -250,5 +263,15 @@ class Preferences
             throw new \ErrorException('Internal error : wrong user object type', 500);
         }
         return array((int) $uid, (int) $gid);
+    }
+
+    public function getGroupPreferences($group_id = null, $preference = null)
+    {
+        $preferences = Container::get('cache')->retrieve('group_preferences');
+        if (empty($preference)) {
+            return (array) $preferences[$group_id];
+        }
+
+        return isset($preferences[$group_id][$preference]) ? $preferences[$group_id][$preference] : null;
     }
 }

@@ -81,7 +81,7 @@ class Search
             }
 
             // Subscribed topics can only be viewed by admins, moderators and the users themselves
-            if ($action == 'show_subscriptions' && !User::get()->is_admmod && $user_id != User::get()->id) {
+            if ($action == 'show_subscriptions' && !User::isAdminMod() && $user_id != User::get()->id) {
                 throw new Error(__('No permission'), 403);
             }
         } elseif ($action == 'show_recent') {
@@ -124,12 +124,12 @@ class Search
             $keyword_results = $author_results = array();
 
             // Search a specific forum?
-            $forum_sql = (!empty($forums) || (empty($forums) && ForumSettings::get('o_search_all_forums') == '0' && !User::get()->is_admmod)) ? ' AND t.forum_id IN ('.implode(',', $forums).')' : '';
+            $forum_sql = (!empty($forums) || (empty($forums) && ForumSettings::get('o_search_all_forums') == '0' && !User::isAdminMod())) ? ' AND t.forum_id IN ('.implode(',', $forums).')' : '';
 
             if (!empty($author) || !empty($keywords)) {
                 // Flood protection
-                if (User::get()->last_search && (time() - User::get()->last_search) < User::get()->g_search_flood && (time() - User::get()->last_search) >= 0) {
-                    throw new Error(sprintf(__('Search flood'), User::get()->g_search_flood, User::get()->g_search_flood - (time() - User::get()->last_search)), 429);
+                if (User::get()->last_search && (time() - User::get()->last_search) < User::getPref('search.min_interval') && (time() - User::get()->last_search) >= 0) {
+                    throw new Error(sprintf(__('Search flood'), User::getPref('search.min_interval'), User::getPref('search.min_interval') - (time() - User::get()->last_search)), 429);
                 }
 
                 if (!User::get()->is_guest) {
@@ -594,7 +594,7 @@ class Search
             }
 
             // Determine the topic or post offset (based on $_GET['p'])
-            $per_page = ($show_as == 'posts') ? User::get()->disp_posts : User::get()->disp_topics;
+            $per_page = ($show_as == 'posts') ? User::getPref('disp.posts') : User::getPref('disp.topics');
             $num_pages = ceil($num_hits / $per_page);
 
             $p = (!Input::query('p') || Input::query('p') <= 1 || Input::query('p') > $num_pages) ? 1 : intval(Input::query('p'));
@@ -727,7 +727,7 @@ class Search
                 $cur_search['message'] = Container::get('parser')->parse_message($cur_search['message'], $cur_search['hide_smilies']);
                 $pposter = Utils::escape($cur_search['pposter']);
 
-                if ($cur_search['poster_id'] > 1 && User::get()->g_view_users == '1') {
+                if ($cur_search['poster_id'] > 1 && User::can('users.view')) {
                     $cur_search['pposter_disp'] = '<strong><a href="'.Router::pathFor('userProfile', ['id' => $cur_search['poster_id']]).'">'.$pposter.'</a></strong>';
                 } else {
                     $cur_search['pposter_disp'] = '<strong>'.$pposter.'</strong>';
@@ -763,7 +763,7 @@ class Search
                 // Insert the status text before the subject
                 $subject = implode(' ', $status_text).' '.$subject;
 
-                $num_pages_topic = ceil(($cur_search['num_replies'] + 1) / User::get()->disp_posts);
+                $num_pages_topic = ceil(($cur_search['num_replies'] + 1) / User::getPref('disp.posts'));
 
                 if ($num_pages_topic > 1) {
                     $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_search['tid'].'/'.$url_topic.'/#').' ]</span>';
@@ -822,7 +822,7 @@ class Search
         $result = $result->find_many();
 
         // We either show a list of forums of which multiple can be selected
-        if (ForumSettings::get('o_search_all_forums') == '1' || User::get()->is_admmod) {
+        if (ForumSettings::get('o_search_all_forums') == '1' || User::isAdminMod()) {
             $output .= "\t\t\t\t\t\t".'<div class="conl multiselect">'.__('Forum search')."\n";
             $output .= "\t\t\t\t\t\t".'<br />'."\n";
             $output .= "\t\t\t\t\t\t".'<div class="checklist">'."\n";

@@ -24,7 +24,7 @@ Container::get('hooks')->fire('view.footer.start');
             <div class="box">
 <?php
 
-if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') && User::get()->is_admmod) {
+if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') && User::isAdminMod()) {
     echo "\t\t\t\t".'<div id="modcontrols" class="inbox">'."\n";
 
     if ($active_page == 'Forum') {

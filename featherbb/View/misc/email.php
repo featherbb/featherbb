@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.misc.email.start');
 <div id="emailform" class="blockform">
     <h2><span><?php _e('Send email to') ?> <?= Utils::escape($mail['recipient']) ?></span></h2>
     <div class="box">
-        <form id="email" method="post" action="<?= Router::pathFor('email', ['id' => $id]) ?>">
+        <form id="email" method="post" action="<?= Router::pathFor('email', ['id' => intval($mail['recipient_id'])]) ?>">
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>

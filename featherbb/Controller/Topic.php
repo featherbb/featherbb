@@ -41,7 +41,7 @@ class Topic
         Container::get('hooks')->fire('controller.topic.display', $args['id'], $args['name'], $args['page'], $args['pid']);
 
         // Antispam feature
-        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/antispam.php';
+        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // Fetch some information about the topic
@@ -49,7 +49,7 @@ class Topic
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
-        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $is_admmod = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         // Can we or can we not post replies?
         $post_link = $this->model->get_post_link($args['id'], $cur_topic['closed'], $cur_topic['post_replies'], $is_admmod);
@@ -62,10 +62,10 @@ class Topic
         }
 
         // Determine the post offset (based on $_GET['p'])
-        $num_pages = ceil(($cur_topic['num_replies'] + 1) / User::get()->disp_posts);
+        $num_pages = ceil(($cur_topic['num_replies'] + 1) / User::getPref('disp.posts'));
 
         $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
-        $start_from = User::get()->disp_posts * ($p - 1);
+        $start_from = User::getPref('disp.posts') * ($p - 1);
 
         $url_topic = Url::url_friendly($cur_topic['subject']);
         $url_forum = Url::url_friendly($cur_topic['forum_name']);
@@ -210,18 +210,18 @@ class Topic
         $moderators = $forumModel->get_moderators($args['fid']);
         $mods_array = ($moderators != '') ? unserialize($moderators) : array();
 
-        if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))) {
+        if (!User::isAdmin() && (!User::isAdminMod() || !array_key_exists(User::get()->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
         }
 
         $cur_topic = $this->model->get_topic_info($args['fid'], $args['id']);
 
         // Determine the post offset (based on $_GET['p'])
-        $num_pages = ceil(($cur_topic['num_replies'] + 1) / User::get()->disp_posts);
+        $num_pages = ceil(($cur_topic['num_replies'] + 1) / User::getPref('disp.posts'));
 
         $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
 
-        $start_from = User::get()->disp_posts * ($p - 1);
+        $start_from = User::getPref('disp.posts') * ($p - 1);
 
         // Delete one or more posts
         if (Input::post('delete_posts_comply')) {
@@ -258,7 +258,7 @@ class Topic
             $button_status = ($cur_topic['num_replies'] == 0) ? ' disabled="disabled"' : '';
 
             /*if (isset($_GET['action']) && $_GET['action'] == 'all') {
-                    User::get()->disp_posts = $cur_topic['num_replies'] + 1;
+                    User::getPref('disp.posts') = $cur_topic['num_replies'] + 1;
             }*/
 
             if (ForumSettings::get('o_censoring') == '1') {

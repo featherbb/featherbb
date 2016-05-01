@@ -44,7 +44,7 @@ class Profile
         if (!empty($cur_user['password'])) {
             $old_password_hash = Utils::password_hash($old_password);
 
-            if (Utils::password_verify($old_password, $cur_user['password']) || User::get()->is_admmod) {
+            if (Utils::password_verify($old_password, $cur_user['password']) || User::isAdminMod()) {
                 $authorized = true;
             }
         }
@@ -121,7 +121,7 @@ class Profile
                     throw new Error(__('Banned email'), 403);
                 } elseif (ForumSettings::get('o_mailing_list') != '') {
                     // Load the "banned email change" template
-                    $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/mail_templates/banned_email_change.tpl'));
+                    $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/mail_templates/banned_email_change.tpl'));
                     $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_tpl', $mail_tpl);
 
                     // The first row contains the subject
@@ -158,7 +158,7 @@ class Profile
                     }
 
                     // Load the "dupe email change" template
-                    $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/mail_templates/dupe_email_change.tpl'));
+                    $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/mail_templates/dupe_email_change.tpl'));
                     $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_dupe_tpl', $mail_tpl);
 
                     // The first row contains the subject
@@ -195,7 +195,7 @@ class Profile
             $user = $user->save();
 
             // Load the "activate email" template
-            $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/mail_templates/activate_email.tpl'));
+            $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/mail_templates/activate_email.tpl'));
             $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_activate_tpl', $mail_tpl);
 
             // The first row contains the subject
@@ -355,13 +355,8 @@ class Profile
             Container::get('cache')->store('admin_ids', Cache::get_admin_ids());
         }
 
-        $new_group_mod = DB::for_table('groups')
-            ->where('g_id', $new_group_id);
-        $new_group_mod = Container::get('hooks')->fireDB('model.profile.update_group_membership_new_mod', $new_group_mod);
-        $new_group_mod = $new_group_mod->find_one_col('g_moderator');
-
         // If the user was a moderator or an administrator, we remove him/her from the moderator list in all forums as well
-        if ($new_group_id != ForumEnv::get('FEATHER_ADMIN') && $new_group_mod != '1') {
+        if ($new_group_id != ForumEnv::get('FEATHER_ADMIN') && !Container::get('perms')->getGroupPermissions($new_group_id, 'mod.is_mod')) {
 
             // Loop through all forums
             $result = $this->loop_mod_forums();
@@ -491,12 +486,7 @@ class Profile
         $pid = Container::get('hooks')->fire('model.profile.promote_user.post_id', $pid);
 
         // Find the group ID to promote the user to
-        $next_group_id = DB::for_table('groups')
-            ->table_alias('g')
-            ->inner_join('users', array('u.group_id', '=', 'g.g_id'), 'u')
-            ->where('u.id', $id);
-        $next_group_id = Container::get('hooks')->fireDB('model.profile.promote_user.next_group_id', $next_group_id);
-        $next_group_id = $next_group_id->find_one_col('g_promote_next_group');
+        $next_group_id = Container::get('hooks')->fire('model.profile.promote_user.next_group_id', User::getPref('promote.next_group', $id));
 
         if (!$next_group_id) {
             throw new Error(__('Bad request'), 404);
@@ -543,12 +533,7 @@ class Profile
 
         if (Input::post('delete_user_comply')) {
             // If the user is a moderator or an administrator, we remove him/her from the moderator list in all forums as well
-            $group_mod = DB::for_table('groups')
-                ->where('g_id', $group_id);
-            $group_mod = Container::get('hooks')->fireDB('model.profile.delete_user_group_mod', $group_mod);
-            $group_mod = $group_mod->find_one_col('g_moderator');
-
-            if ($group_id == ForumEnv::get('FEATHER_ADMIN') || $group_mod == '1') {
+            if ($group_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->getGroupPermissions($group_id, 'mod.is_mod')) {
 
                 // Loop through all forums
                 $result = $this->loop_mod_forums();
@@ -664,7 +649,7 @@ class Profile
     {
         $info = array();
 
-        $info['select'] = array('old_username' => 'u.username', 'group_id' => 'u.group_id', 'is_moderator' => 'g.g_moderator');
+        $info['select'] = array('old_username' => 'u.username', 'group_id' => 'u.group_id');
 
         $info = DB::for_table('users')
             ->table_alias('u')
@@ -684,36 +669,36 @@ class Profile
     public function update_profile($id, $info, $section)
     {
         $info = Container::get('hooks')->fire('model.profile.update_profile_start', $info, $id, $section);
+        $section = Container::get('hooks')->fire('model.profile.update_profile_section', $section, $id, $info);
 
         $username_updated = false;
-
-        $section = Container::get('hooks')->fire('model.profile.update_profile_section', $section, $id, $info);
+        $form = $prefs = array();
 
         // Validate input depending on section
         switch ($section) {
             case 'essentials':
             {
-                $form = array(
+                $prefs = array(
                     'timezone'        => floatval(Input::post('form_timezone')),
                     'dst'            => Input::post('form_dst') ? '1' : '0',
-                    'time_format'    => intval(Input::post('form_time_format')),
-                    'date_format'    => intval(Input::post('form_date_format')),
+                    'time_format'    => Input::post('form_time_format'),
+                    'date_format'    => Input::post('form_date_format'),
                 );
 
                 // Make sure we got a valid language string
                 if (Input::post('form_language')) {
                     $languages = \FeatherBB\Core\Lister::getLangs();
-                    $form['language'] = Utils::trim(Input::post('form_language'));
-                    if (!in_array($form['language'], $languages)) {
+                    $prefs['language'] = Utils::trim(Input::post('form_language'));
+                    if (!in_array($prefs['language'], $languages)) {
                         throw new Error(__('Bad request'), 404);
                     }
                 }
 
-                if (User::get()->is_admmod) {
+                if (User::isAdminMod()) {
                     $form['admin_note'] = Utils::trim(Input::post('admin_note'));
 
                     // Are we allowed to change usernames?
-                    if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && User::get()->g_mod_rename_users == '1')) {
+                    if (User::isAdmin() || (User::isAdminMod() && User::can('mod.rename_users'))) {
                         $form['username'] = Utils::trim(Input::post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
@@ -728,12 +713,12 @@ class Profile
                     }
 
                     // We only allow administrators to update the post count
-                    if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
+                    if (User::isAdmin()) {
                         $form['num_posts'] = intval(Input::post('num_posts'));
                     }
                 }
 
-                if (ForumSettings::get('o_regs_verify') == '0' || User::get()->is_admmod) {
+                if (ForumSettings::get('o_regs_verify') == '0' || User::isAdminMod()) {
                     // Validate the email address
                     $form['email'] = strtolower(Utils::trim(Input::post('req_email')));
                     if (!Container::get('email')->is_valid_email($form['email'])) {
@@ -753,7 +738,7 @@ class Profile
                 );
 
                 // Add http:// if the URL doesn't contain it already (while allowing https://, too)
-                if (User::get()->g_post_links == '1') {
+                if (User::can('post.links')) {
                     if ($form['url'] != '') {
                         $url = Url::is_valid($form['url']);
 
@@ -771,9 +756,9 @@ class Profile
                     $form['url'] = '';
                 }
 
-                if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
+                if (User::isAdmin()) {
                     $form['title'] = Utils::trim(Input::post('title'));
-                } elseif (User::get()->g_set_title == '1') {
+                } elseif (User::can('user.set_title')) {
                     $form['title'] = Utils::trim(Input::post('title'));
 
                     if ($form['title'] != '') {
@@ -803,7 +788,7 @@ class Profile
                         throw new Error(sprintf(__('Sig too long'), ForumSettings::get('p_sig_length'), Utils::strlen($form['signature']) - ForumSettings::get('p_sig_length')));
                     } elseif (substr_count($form['signature'], "\n") > (ForumSettings::get('p_sig_lines')-1)) {
                         throw new Error(sprintf(__('Sig too many lines'), ForumSettings::get('p_sig_lines')));
-                    } elseif ($form['signature'] && ForumSettings::get('p_sig_all_caps') == '0' && Utils::is_all_uppercase($form['signature']) && !User::get()->is_admmod) {
+                    } elseif ($form['signature'] && ForumSettings::get('p_sig_all_caps') == '0' && Utils::is_all_uppercase($form['signature']) && !User::isAdminMod()) {
                         $form['signature'] = utf8_ucwords(utf8_strtolower($form['signature']));
                     }
 
@@ -824,40 +809,44 @@ class Profile
 
             case 'display':
             {
-                $form = array(
-                    'disp_topics'        => Utils::trim(Input::post('form_disp_topics')),
-                    'disp_posts'        => Utils::trim(Input::post('form_disp_posts')),
-                    'show_smilies'        => Input::post('form_show_smilies') ? '1' : '0',
-                    'show_img'            => Input::post('form_show_img') ? '1' : '0',
-                    'show_img_sig'        => Input::post('form_show_img_sig') ? '1' : '0',
-                    'show_avatars'        => Input::post('form_show_avatars') ? '1' : '0',
-                    'show_sig'            => Input::post('form_show_sig') ? '1' : '0',
+                $prefs = array(
+                    'disp.topics'         => Input::post('form_disp_topics'),
+                    'disp.posts'          => Input::post('form_disp_posts'),
+                    'show.smilies'        => Input::post('form_show_smilies') ? '1' : '0',
+                    'show.img'            => Input::post('form_show_img') ? '1' : '0',
+                    'show.img.sig'        => Input::post('form_show_img_sig') ? '1' : '0',
+                    'show.avatars'        => Input::post('form_show_avatars') ? '1' : '0',
+                    'show.sig'            => Input::post('form_show_sig') ? '1' : '0',
                 );
 
-                if ($form['disp_topics'] != '') {
-                    $form['disp_topics'] = intval($form['disp_topics']);
-                    if ($form['disp_topics'] < 3) {
-                        $form['disp_topics'] = 3;
-                    } elseif ($form['disp_topics'] > 75) {
-                        $form['disp_topics'] = 75;
+                if ($prefs['disp.topics'] != '') {
+                    $prefs['disp.topics'] = intval($prefs['disp.topics']);
+                    if ($prefs['disp.topics'] < 3) {
+                        $prefs['disp.topics'] = 3;
+                    } elseif ($prefs['disp.topics'] > 75) {
+                        $prefs['disp.topics'] = 75;
                     }
+                } else {
+                    unset($prefs['disp.topics']);
                 }
 
-                if ($form['disp_posts'] != '') {
-                    $form['disp_posts'] = intval($form['disp_posts']);
-                    if ($form['disp_posts'] < 3) {
-                        $form['disp_posts'] = 3;
-                    } elseif ($form['disp_posts'] > 75) {
-                        $form['disp_posts'] = 75;
+                if ($prefs['disp.posts'] != '') {
+                    $prefs['disp.posts'] = intval($prefs['disp.posts']);
+                    if ($prefs['disp.posts'] < 3) {
+                        $prefs['disp.posts'] = 3;
+                    } elseif ($prefs['disp.posts'] > 75) {
+                        $prefs['disp.posts'] = 75;
                     }
+                } else {
+                    unset($prefs['disp.posts']);
                 }
 
                 // Make sure we got a valid style string
                 if (Input::post('form_style')) {
                     $styles = \FeatherBB\Core\Lister::getStyles();
-                    $form['style'] = Utils::trim(Input::post('form_style'));
-                    if (!in_array($form['style'], $styles)) {
-                        throw new Error(__('Bad request'), 404);
+                    $prefs['style'] = Utils::trim(Input::post('form_style'));
+                    if (!in_array($prefs['style'], $styles)) {
+                        $prefs['style'] = ForumSettings::get('style');
                     }
                 }
 
@@ -866,14 +855,14 @@ class Profile
 
             case 'privacy':
             {
-                $form = array(
-                    'email_setting'            => intval(Input::post('form_email_setting')),
+                $prefs = array(
+                    'email.setting'            => intval(Input::post('form_email_setting')),
                     'notify_with_post'        => Input::post('form_notify_with_post') ? '1' : '0',
                     'auto_notify'            => Input::post('form_auto_notify') ? '1' : '0',
                 );
 
-                if ($form['email_setting'] < 0 || $form['email_setting'] > 2) {
-                    $form['email_setting'] = ForumSettings::get('o_default_email_setting');
+                if ($prefs['email.setting'] < 0 || $prefs['email.setting'] > 2) {
+                    $prefs['email.setting'] = ForumSettings::get('email.setting');
                 }
 
                 break;
@@ -891,16 +880,22 @@ class Profile
             $temp[$key] = $input;
         }
 
-        if (empty($temp)) {
+        if (empty($temp) && empty($prefs)) {
             throw new Error(__('Bad request'), 404);
         }
 
+        // Update general user infos
         $update_user = DB::for_table('users')
             ->where('id', $id)
             ->find_one()
             ->set($temp);
         $update_user = Container::get('hooks')->fireDB('model.profile.update_profile_query', $update_user);
         $update_user = $update_user->save();
+
+        // Update user prefs
+        if (!empty($prefs)) {
+            Container::get('prefs')->setUser($id, $prefs);
+        }
 
         // If we changed the username we have to update some stuff
         if ($username_updated) {
@@ -942,16 +937,10 @@ class Profile
             // If the user is a moderator or an administrator we have to update the moderator lists
             $group_id = DB::for_table('users')
                 ->where('id', $id);
-            // TODO: restore hook
-            // $group_id = Container::get('hooks')->fireDB('model.profile.update_profile_group_id', $update_online);
+            $group_id = Container::get('hooks')->fireDB('model.profile.update_profile_group_id', $group_id);
             $group_id = $group_id->find_one_col('group_id');
 
-            $group_mod = DB::for_table('groups')
-                ->where('g_id', $group_id);
-            $group_mod = Container::get('hooks')->fireDB('model.profile.update_profile_group_mod', $group_mod);
-            $group_mod = $group_mod->find_one_col('g_moderator');
-
-            if ($group_id == ForumEnv::get('FEATHER_ADMIN') || $group_mod == '1') {
+            if ($group_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->getGroupPermissions($group_id, 'mod.is_mod')) {
 
                 // Loop through all forums
                 $result = $this->loop_mod_forums();
@@ -994,7 +983,7 @@ class Profile
 
     public function get_user_info($id)
     {
-        $user['select'] = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.disp_topics', 'u.disp_posts', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.show_smilies', 'u.show_img', 'u.show_img_sig', 'u.show_avatars', 'u.show_sig', 'u.timezone', 'u.dst', 'u.language', 'u.style', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.date_format', 'u.time_format', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
+        $user['select'] = array('u.id', 'u.group_id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title');
 
         $user = DB::for_table('users')
             ->table_alias('u')
@@ -1007,6 +996,8 @@ class Profile
         if (!$user) {
             throw new Error(__('Bad request'), 404);
         }
+
+        $user['prefs'] = ($id == User::get()->id) ? User::get()->prefs : Container::get('prefs')->loadPrefs($user);
 
         return $user;
     }
@@ -1040,9 +1031,9 @@ class Profile
             $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
 
-        if ($user['email_setting'] == '0' && !User::get()->is_guest && User::get()->g_send_email == '1') {
+        if ($user['prefs']['email.setting'] == '0' && !User::get()->is_guest && User::can('email.send')) {
             $user['email_field'] = '<a href="mailto:'.Utils::escape($user['email']).'">'.Utils::escape($user['email']).'</a>';
-        } elseif ($user['email_setting'] == '1' && !User::get()->is_guest && User::get()->g_send_email == '1') {
+        } elseif ($user['prefs']['email.setting'] == '1' && !User::get()->is_guest && User::can('email.send')) {
             $user['email_field'] = '<a href="'.Router::pathFor('email', ['id' => $user['id']]).'">'.__('Send email').'</a>';
         } else {
             $user['email_field'] = '';
@@ -1068,16 +1059,16 @@ class Profile
         }
 
         $posts_field = '';
-        if (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) {
+        if (ForumSettings::get('o_show_post_count') == '1' || User::isAdminMod()) {
             $posts_field = Utils::forum_number_format($user['num_posts']);
         }
-        if (User::get()->g_search == '1') {
+        if (User::can('search.topics')) {
             $quick_searches = array();
             if ($user['num_posts'] > 0) {
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$user['id'].'">'.__('Show topics').'</a>';
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Show posts').'</a>';
             }
-            if (User::get()->is_admmod && ForumSettings::get('o_topic_subscriptions') == '1') {
+            if (User::isAdminMod() && ForumSettings::get('o_topic_subscriptions') == '1') {
                 $quick_searches[] = '<a href="'.Router::pathFor('search').'?action=show_subscriptions&amp;user_id='.$user['id'].'">'.__('Show subscriptions').'</a>';
             }
 
@@ -1109,8 +1100,8 @@ class Profile
 
         $user_disp = Container::get('hooks')->fire('model.profile.edit_essentials_start', $user_disp, $id, $user);
 
-        if (User::get()->is_admmod) {
-            if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || User::get()->g_mod_rename_users == '1') {
+        if (User::isAdminMod()) {
+            if (User::isAdmin() || User::can('mod.rename_users')) {
                 $user_disp['username_field'] = '<label class="required"><strong>'.__('Username').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_username" value="'.Utils::escape($user['username']).'" size="25" maxlength="25" required /><br /></label>'."\n";
             } else {
                 $user_disp['username_field'] = '<p>'.sprintf(__('Username info'), Utils::escape($user['username'])).'</p>'."\n";
@@ -1130,13 +1121,13 @@ class Profile
         $user_disp['posts_field'] = '';
         $posts_actions = array();
 
-        if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
+        if (User::isAdmin()) {
             $user_disp['posts_field'] .= '<label>'.__('Posts').'<br /><input type="text" name="num_posts" value="'.$user['num_posts'].'" size="8" maxlength="8" /><br /></label>';
-        } elseif (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) {
+        } elseif (ForumSettings::get('o_show_post_count') == '1' || User::isAdminMod()) {
             $posts_actions[] = sprintf(__('Posts info'), Utils::forum_number_format($user['num_posts']));
         }
 
-        if (User::get()->g_search == '1' || User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
+        if (User::can('search.topics') || User::isAdmin()) {
             $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$id.'">'.__('Show topics').'</a>';
             $posts_actions[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$id.'">'.__('Show posts').'</a>';
 
@@ -1283,10 +1274,11 @@ class Profile
     {
         $recipient_id = Container::get('hooks')->fire('model.profile.get_info_mail_start', $recipient_id);
 
-        $mail['select'] = array('username', 'email', 'email_setting');
-
         $mail = DB::for_table('users')
-                ->select_many($mail['select'])
+                ->select('username', 'recipient')
+                ->select('email', 'recipient_email')
+                ->select('id')
+                ->select('group_id')
                 ->where('id', $recipient_id);
         $mail = Container::get('hooks')->fireDB('model.profile.get_info_mail_query', $mail);
         $mail = $mail->find_one();
@@ -1295,8 +1287,8 @@ class Profile
             throw new Error(__('Bad request'), 404);
         }
 
-        $mail['recipient'] = $mail['username'];
-        $mail['recipient_email'] = $mail['email'];
+        $mail['recipient_id'] = $mail['id'];
+        $mail['email_setting'] = User::getPref('email.setting', $mail);
 
         $mail = Container::get('hooks')->fireDB('model.profile.get_info_mail', $mail);
 
@@ -1321,12 +1313,12 @@ class Profile
             throw new Error(__('Too long email message'), 400);
         }
 
-        if (User::get()->last_email_sent != '' && (time() - User::get()->last_email_sent) < User::get()->g_email_flood && (time() - User::get()->last_email_sent) >= 0) {
-            throw new Error(sprintf(__('Email flood'), User::get()->g_email_flood, User::get()->g_email_flood - (time() - User::get()->last_email_sent)), 429);
+        if (User::get()->last_email_sent != '' && (time() - User::get()->last_email_sent) < User::getPref('email.min_interval') && (time() - User::get()->last_email_sent) >= 0) {
+            throw new Error(sprintf(__('Email flood'), User::getPref('email.min_interval'), User::getPref('email.min_interval') - (time() - User::get()->last_email_sent)), 429);
         }
 
         // Load the "form email" template
-        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/mail_templates/form_email.tpl'));
+        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language', $mail['recipient_id']).'/mail_templates/form_email.tpl'));
         $mail_tpl = Container::get('hooks')->fire('model.profile.send_email_mail_tpl', $mail_tpl);
 
         // The first row contains the subject
@@ -1350,10 +1342,7 @@ class Profile
         $update_last_mail_sent = Container::get('hooks')->fireDB('model.profile.send_email_update_last_mail_sent', $update_last_mail_sent);
         $update_last_mail_sent = $update_last_mail_sent->save();
 
-        // Try to determine if the data in redirect_url is valid (if not, we redirect to index.php after the email is sent) TODO
-        //$redirect_url = validate_redirect(Input::post('redirect_url'), 'index.php');
-
-        return Router::redirect(Router::pathFor('home'), __('Email sent redirect'));
+        return Router::redirect(Router::pathFor('userProfile', ['id' => $mail['recipient_id']]), __('Email sent redirect'));
     }
 
     public function display_ip_info($ip)

@@ -11,6 +11,7 @@ namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 
 class Permissions
 {
@@ -18,6 +19,9 @@ class Permissions
     {
         $this->model = new \FeatherBB\Model\Admin\Permissions();
         translate('admin/permissions');
+        if (!User::isAdmin()) {
+            throw new Error(__('No permission'), '403');
+        }
     }
 
     public function display($req, $res, $args)

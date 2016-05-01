@@ -12,6 +12,7 @@ namespace FeatherBB\Controller\Admin;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
 use FeatherBB\Model\Cache;
 
 class Forums
@@ -20,6 +21,9 @@ class Forums
     {
         $this->model = new \FeatherBB\Model\Admin\Forums();
         translate('admin/forums');
+        if (!User::isAdmin()) {
+            throw new Error(__('No permission'), '403');
+        }
     }
 
     public function add()
@@ -70,7 +74,7 @@ class Forums
                 foreach($permissions as $perm_group) {
                     $permissions_data = array('group_id' => $perm_group['g_id'],
                                                 'forum_id' => $args['id']);
-                    if ($perm_group['g_read_board'] == '1' && isset(Input::post('read_forum_new')[$perm_group['g_id']]) && Input::post('read_forum_new')[$perm_group['g_id']] == '1') {
+                    if ($perm_group['board.read'] == '1' && isset(Input::post('read_forum_new')[$perm_group['g_id']]) && Input::post('read_forum_new')[$perm_group['g_id']] == '1') {
                         $permissions_data['read_forum'] = '1';
                     }
                     else {
@@ -84,7 +88,7 @@ class Forums
                         $permissions_data['post_replies'] != Input::post('post_replies_old')[$perm_group['g_id']] ||
                         $permissions_data['post_topics'] != Input::post('post_topics_old')[$perm_group['g_id']]) {
                             // If there is no group permissions override for this forum
-                            if ($permissions_data['read_forum'] == '1' && $permissions_data['post_replies'] == $perm_group['g_post_replies'] && $permissions_data['post_topics'] == $perm_group['g_post_topics']) {
+                            if ($permissions_data['read_forum'] == '1' && $permissions_data['post_replies'] == $perm_group['topic.reply'] && $permissions_data['post_topics'] == $perm_group['topic.post']) {
                                 $this->model->delete_permissions($args['id'], $perm_group['g_id']);
                             } else {
                             // Run an UPDATE and see if it affected a row, if not, INSERT

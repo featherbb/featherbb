@@ -83,15 +83,15 @@ Container::get('hooks')->fire('view.header.before.head.tag');
 <?php
 $navlinks[] = '<li id="navindex"'.(($active_page == 'index') ? ' class="isactive"' : '').'><a href="'.Url::base().'/">'.__('Index').'</a></li>';
 
-if (User::get()->g_read_board == '1' && User::get()->g_view_users == '1') {
+if (User::can('board.read') && User::can('users.view')) {
     $navlinks[] = '<li id="navuserlist"'.(($active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('userList').'">'.__('User list').'</a></li>';
 }
 
-if (ForumSettings::get('o_rules') == '1' && (!User::get()->is_guest || User::get()->g_read_board == '1' || ForumSettings::get('o_regs_allow') == '1')) {
+if (ForumSettings::get('o_rules') == '1' && (!User::get()->is_guest || User::can('board.read') || ForumSettings::get('o_regs_allow') == '1')) {
     $navlinks[] = '<li id="navrules"'.(($active_page == 'rules') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('rules').'">'.__('Rules').'</a></li>';
 }
 
-if (User::get()->g_read_board == '1' && User::get()->g_search == '1') {
+if (User::can('board.read') && User::can('search.topics')) {
     $navlinks[] = '<li id="navsearch"'.(($active_page == 'search') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('search').'">'.__('Search').'</a></li>';
 }
 
@@ -101,7 +101,7 @@ if (User::get()->is_guest) {
 } else {
     $navlinks[] = '<li id="navprofile"'.(($active_page == 'profile') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('userProfile', ['id' => User::get()->id]).'">'.__('Profile').'</a></li>';
 
-    if (User::get()->is_admmod) {
+    if (User::isAdminMod()) {
         $navlinks[] = '<li id="navadmin"'.(($active_page == 'admin') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('adminIndex').'">'.__('Admin').'</a></li>';
     }
 
@@ -111,7 +111,7 @@ if (User::get()->is_guest) {
 // Are there any additional navlinks we should insert into the array before imploding it?
 $hooksLinks = Container::get('hooks')->fire('view.header.navlinks', []);
 $extraLinks = ForumSettings::get('o_additional_navlinks')."\n".implode("\n", $hooksLinks);
-if (User::get()->g_read_board == '1' && ($extraLinks != '')) {
+if (User::can('board.read') && ($extraLinks != '')) {
     if (preg_match_all('%([0-9]+)\s*=\s*(.*?)\n%s', $extraLinks."\n", $results)) {
         // Insert any additional links into the $links array (at the correct index)
         $num_links = count($results[1]);
@@ -153,7 +153,7 @@ if (User::get()->is_guest) { ?>
     echo "\n\t\t\t\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape(User::get()->username).'</strong></span></li>'."\n";
     echo "\t\t\t\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), Container::get('utils')->format_time(User::get()->last_visit)).'</span></li>'."\n";
 
-    if (User::get()->is_admmod) {
+    if (User::isAdminMod()) {
         if (ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2') {
             if ($has_reports) {
                 echo "\t\t\t\t\t\t\t".'<li class="reportlink"><span><strong><a href="'.Router::pathFor('adminReports').'">'.__('New reports').'</a></strong></span></li>'."\n";
@@ -168,7 +168,7 @@ if (User::get()->is_guest) { ?>
     echo "\t\t\t\t\t\t".'</ul>'."\n";
 }
 
-if (User::get()->g_read_board == '1' && User::get()->g_search == '1') {
+if (User::can('board.read') && User::can('search.topics')) {
     echo "\t\t\t\t\t\t".'<ul class="conr">'."\n";
     echo "\t\t\t\t\t\t\t".'<li><span>'.__('Topic searches').' ';
     if (!User::get()->is_guest) {
@@ -188,7 +188,7 @@ Container::get('hooks')->fire('view.header.brdwelcome');
                 </div>
                 <div class="clear"></div>
             </div>
-<?php if (User::get()->g_read_board == '1' && ForumSettings::get('o_announcement') == '1') : ?>
+<?php if (User::can('board.read') && ForumSettings::get('o_announcement') == '1') : ?>
             <div id="announce" class="block">
                 <div class="hd"><h2><span><?php _e('Announcement') ?></span></h2></div>
                 <div class="box">

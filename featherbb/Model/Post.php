@@ -100,7 +100,7 @@ class Post
     // Checks the post for errors before posting
     public function check_errors_before_post($fid, $errors)
     {
-        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/antispam.php';
+        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
 
         $fid = Container::get('hooks')->fire('model.post.check_errors_before_post_start', $fid);
 
@@ -127,8 +127,8 @@ class Post
         }
 
         // Flood protection
-        if (Input::post('preview') != '' && User::get()->last_post != '' && (time() - User::get()->last_post) < Container::get('prefs')->get(User::get(), 'post.min_interval')) {
-            $errors[] = sprintf(__('Flood start'), Container::get('prefs')->get(User::get(), 'post.min_interval'), Container::get('prefs')->get(User::get(), 'post.min_interval') - (time() - User::get()->last_post));
+        if (Input::post('preview') != '' && User::get()->last_post != '' && (time() - User::get()->last_post) < User::getPref('post.min_interval')) {
+            $errors[] = sprintf(__('Flood start'), User::getPref('post.min_interval'), User::getPref('post.min_interval') - (time() - User::get()->last_post));
         }
 
         // If it's a new topic
@@ -147,7 +147,7 @@ class Post
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !User::get()->is_admmod) {
+            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !User::isAdminMod()) {
                 $errors[] = __('All caps subject');
             }
 
@@ -183,7 +183,7 @@ class Post
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > ForumEnv::get('FEATHER_MAX_POSTSIZE')) {
             $errors[] = sprintf(__('Too long message'), Utils::forum_number_format(ForumEnv::get('FEATHER_MAX_POSTSIZE')));
-        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::is_all_uppercase($message) && !User::get()->is_admmod) {
+        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::is_all_uppercase($message) && !User::isAdminMod()) {
             $errors[] = __('All caps message');
         }
 
@@ -548,8 +548,8 @@ class Post
             throw new Error(__('Reason too long'), 400);
         }
 
-        if (User::get()->last_report_sent != '' && (time() - User::get()->last_report_sent) < User::get()->g_report_flood && (time() - User::get()->last_report_sent) >= 0) {
-            throw new Error(sprintf(__('Report flood'), User::get()->g_report_flood, User::get()->g_report_flood - (time() - User::get()->last_report_sent)), 429);
+        if (User::get()->last_report_sent != '' && (time() - User::get()->last_report_sent) < User::getPref('report.min_interval') && (time() - User::get()->last_report_sent) >= 0) {
+            throw new Error(sprintf(__('Report flood'), User::getPref('report.min_interval'), User::getPref('report.min_interval') - (time() - User::get()->last_report_sent)), 429);
         }
 
         // Get the topic ID
@@ -597,7 +597,7 @@ class Post
             // We send it to the complete mailing-list in one swoop
             if (ForumSettings::get('o_mailing_list') != '') {
                 // Load the "new report" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/mail_templates/new_report.tpl'));
+                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/mail_templates/new_report.tpl'));
                 $mail_tpl = Container::get('hooks')->fire('model.post.insert_report_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
@@ -784,7 +784,7 @@ class Post
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
-        $result['select'] = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
+        $result['select'] = array('u.id', 'u.email', 'u.group_id');
 
         $result = DB::for_table('users')
                     ->table_alias('u')
@@ -815,15 +815,16 @@ class Post
 
             // Loop through subscribed users and send emails
             foreach($result as $cur_subscriber) {
-                // Is the subscription email for $cur_subscriber['language'] cached or not?
-                if (!isset($notification_emails[$cur_subscriber['language']])) {
-                    if (file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl')) {
+                $cur_subscriber['prefs'] = Container::get('prefs')->loadPrefs($cur_subscriber);
+                // Is the subscription email for User::getPref('language', $cur_subscriber['id']) cached or not?
+                if (!isset($notification_emails[$cur_subscriber['prefs']['language']])) {
+                    if (file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['prefs']['language'].'/mail_templates/new_reply.tpl')) {
                         // Load the "new reply" template
-                        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl'));
+                        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['prefs']['language'].'/mail_templates/new_reply.tpl'));
                         $mail_tpl = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_tpl', $mail_tpl);
 
                         // Load the "new reply full" template (with post included)
-                        $mail_tpl_full = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_reply_full.tpl'));
+                        $mail_tpl_full = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['prefs']['language'].'/mail_templates/new_reply_full.tpl'));
                         $mail_tpl_full = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_tpl_full', $mail_tpl_full);
 
                         // The first row contains the subject (it also starts with "Subject:")
@@ -853,21 +854,21 @@ class Post
                         $mail_message_full = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message_full);
                         $mail_message_full = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_message_full', $mail_message_full);
 
-                        $notification_emails[$cur_subscriber['language']][0] = $mail_subject;
-                        $notification_emails[$cur_subscriber['language']][1] = $mail_message;
-                        $notification_emails[$cur_subscriber['language']][2] = $mail_subject_full;
-                        $notification_emails[$cur_subscriber['language']][3] = $mail_message_full;
+                        $notification_emails[$cur_subscriber['prefs']['language']][0] = $mail_subject;
+                        $notification_emails[$cur_subscriber['prefs']['language']][1] = $mail_message;
+                        $notification_emails[$cur_subscriber['prefs']['language']][2] = $mail_subject_full;
+                        $notification_emails[$cur_subscriber['prefs']['language']][3] = $mail_message_full;
 
                         $mail_subject = $mail_message = $mail_subject_full = $mail_message_full = null;
                     }
                 }
 
                 // We have to double check here because the templates could be missing
-                if (isset($notification_emails[$cur_subscriber['language']])) {
-                    if ($cur_subscriber['notify_with_post'] == '0') {
-                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
+                if (isset($notification_emails[$cur_subscriber['prefs']['language']])) {
+                    if ($cur_subscriber['prefs']['notify_with_post'] == '0') {
+                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['prefs']['language']][0], $notification_emails[$cur_subscriber['prefs']['language']][1]);
                     } else {
-                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
+                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['prefs']['language']][2], $notification_emails[$cur_subscriber['prefs']['language']][3]);
                     }
                 }
             }
@@ -995,7 +996,7 @@ class Post
             array('fp.read_forum' => 'IS NULL'),
             array('fp.read_forum' => '1')
         );
-        $result['select'] = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
+        $result['select'] = array('u.id', 'u.group_id', 'u.email');
 
         $result = DB::for_table('users')
                     ->table_alias('u')
@@ -1027,15 +1028,16 @@ class Post
 
             // Loop through subscribed users and send emails
             foreach($result as $cur_subscriber) {
-                // Is the subscription email for $cur_subscriber['language'] cached or not?
-                if (!isset($notification_emails[$cur_subscriber['language']])) {
-                    if (file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl')) {
+                $cur_subscriber['prefs'] = Container::get('prefs')->loadPrefs($cur_subscriber);
+                // Is the subscription email for User::getPref('language', $cur_subscriber['id']) cached or not?
+                if (!isset($notification_emails[$cur_subscriber['prefs']['language']])) {
+                    if (file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['prefs']['language'].'/mail_templates/new_topic.tpl')) {
                         // Load the "new topic" template
-                        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl'));
+                        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['prefs']['language'].'/mail_templates/new_topic.tpl'));
                         $mail_tpl = Container::get('hooks')->fire('model.post.send_notifications_new_topic_mail_tpl', $mail_tpl);
 
                         // Load the "new topic full" template (with post included)
-                        $mail_tpl_full = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['language'].'/mail_templates/new_topic_full.tpl'));
+                        $mail_tpl_full = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['prefs']['language'].'/mail_templates/new_topic_full.tpl'));
 
                         // The first row contains the subject (it also starts with "Subject:")
                         $first_crlf = strpos($mail_tpl, "\n");
@@ -1065,19 +1067,19 @@ class Post
                         $mail_message_full = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message_full);
                         $mail_message_full = Container::get('hooks')->fire('model.post.send_notifications_new_topic_mail_message_full', $mail_message_full);
 
-                        $notification_emails[$cur_subscriber['language']][0] = $mail_subject;
-                        $notification_emails[$cur_subscriber['language']][1] = $mail_message;
-                        $notification_emails[$cur_subscriber['language']][2] = $mail_subject_full;
-                        $notification_emails[$cur_subscriber['language']][3] = $mail_message_full;
+                        $notification_emails[$cur_subscriber['prefs']['language']][0] = $mail_subject;
+                        $notification_emails[$cur_subscriber['prefs']['language']][1] = $mail_message;
+                        $notification_emails[$cur_subscriber['prefs']['language']][2] = $mail_subject_full;
+                        $notification_emails[$cur_subscriber['prefs']['language']][3] = $mail_message_full;
                     }
                 }
 
                 // We have to double check here because the templates could be missing
-                if (isset($notification_emails[$cur_subscriber['language']])) {
-                    if ($cur_subscriber['notify_with_post'] == '0') {
-                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
+                if (isset($notification_emails[$cur_subscriber['prefs']['language']])) {
+                    if ($cur_subscriber['prefs']['notify_with_post'] == '0') {
+                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['prefs']['language']][0], $notification_emails[$cur_subscriber['prefs']['language']][1]);
                     } else {
-                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
+                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['prefs']['language']][2], $notification_emails[$cur_subscriber['prefs']['language']][3]);
                     }
                 }
             }
@@ -1094,7 +1096,7 @@ class Post
         Container::get('hooks')->fire('model.post.warn_banned_user_start', $post, $new_post);
 
         // Load the "banned email post" template
-        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/mail_templates/banned_email_post.tpl'));
+        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/mail_templates/banned_email_post.tpl'));
         $mail_tpl = Container::get('hooks')->fire('model.post.warn_banned_user_mail_tpl', $mail_tpl);
 
         // The first row contains the subject
@@ -1126,8 +1128,8 @@ class Post
             $increment = $increment->save();
 
             // Promote this user to a new group if enabled
-            if (User::get()->g_promote_next_group != 0 && User::get()->num_posts + 1 >= User::get()->g_promote_min_posts) {
-                $new_group_id = User::get()->g_promote_next_group;
+            if (User::getPref('promote.next_group') && User::get()->num_posts + 1 >= User::getPref('promote.min_posts')) {
+                $new_group_id = User::getPref('promote.next_group');
                 $promote = DB::for_table('users')
                             ->where('id', User::get()->id)
                             ->find_one()
@@ -1271,7 +1273,7 @@ class Post
         }
 
         if (!User::get()->is_guest) {
-            if (ForumSettings::get('o_smilies') == '1') {
+            if (ForumSettings::get('show.smilies') == '1') {
                 $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(Input::post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
             }
 
@@ -1283,7 +1285,7 @@ class Post
                     $subscr_checked = (Input::post('subscribe')) ? true : false;
                 }
                 // If auto subscribed
-                elseif (User::get()->auto_notify) {
+                elseif (User::getPref('auto_notify')) {
                     $subscr_checked = true;
                 }
                 // If already subscribed to the topic
@@ -1293,7 +1295,7 @@ class Post
 
                 $checkboxes[] = '<label><input type="checkbox" name="subscribe" value="1" tabindex="'.($cur_index++).'"'.($subscr_checked ? ' checked="checked"' : '').' />'.($is_subscribed ? __('Stay subscribed') : __('Subscribe')).'<br /></label>';
             }
-        } elseif (ForumSettings::get('o_smilies') == '1') {
+        } elseif (ForumSettings::get('show.smilies') == '1') {
             $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(Input::post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
         }
 
@@ -1316,7 +1318,7 @@ class Post
             }
         }
 
-        if (ForumSettings::get('o_smilies') == '1') {
+        if (ForumSettings::get('show.smilies') == '1') {
             if (Input::post('hide_smilies') || $cur_post['hide_smilies'] == '1') {
                 $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.__('Hide smilies').'<br /></label>';
             } else {

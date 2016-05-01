@@ -18,6 +18,8 @@ class Permissions
 
     public function getParents($gid = null)
     {
+        // Remove below line if we use again group inheritance later
+        return false;
         $gid = (int) $gid;
         if ($gid > 0) {
             if (!isset($this->parents[$gid])) {
@@ -38,19 +40,20 @@ class Permissions
         return false;
     }
 
-    public function addParent($gid = null, $new_parent = null)
+    public function addParent($gid = null, $new_parents = null)
     {
         $gid = (int) $gid;
-        $new_parent =  (int) $new_parent;
+        $new_parent =  (array) $new_parents;
 
-        if ($gid == $new_parent) {
-            throw new \ErrorException('Internal error : A group cannot be a parent of itself', 500);
-        }
+        $old_parents = ($this->getParents($gid)) ? $this->getParents($gid) : array();
 
-        $parents = ($this->getParents($gid)) ? $this->getParents($gid) : array();
-
-        if (!in_array($new_parent, $parents)) {
-            $this->parents[$gid][] = $new_parent;
+        foreach ($new_parents as $id => $parent) {
+            if ($gid == $parent) {
+                throw new \ErrorException('Internal error : A group cannot be a parent of itself', 500);
+            }
+            if (!in_array($parent, $old_parents)) {
+                $this->parents[$gid][] = $parent;
+            }
         }
 
         $result = DB::for_table('groups')
@@ -97,7 +100,6 @@ class Permissions
 
         if (!isset($this->permissions[$gid][$uid])) {
             $this->getUserPermissions($uid);
-
         }
 
         if (!isset($this->permissions[$gid][$uid][$permission])) {
@@ -124,6 +126,8 @@ class Permissions
                 throw new \ErrorException('Internal error : Unable to add new permission to user', 500);
             }
         }
+        // Reload permissions cache
+        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
         return $this;
     }
 
@@ -164,6 +168,8 @@ class Permissions
                         ))
                         ->save();
         }
+        // Reload permissions cache
+        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
         return $this;
     }
 
@@ -180,7 +186,7 @@ class Permissions
         if ($gid > 0) {
             $group = DB::for_table('groups')->find_one($gid);
             if (!$group) {
-                throw new \ErrorException('Internal error : Unknown user ID', 500);
+                throw new \ErrorException('Internal error : Unknown group ID', 500);
             }
         }
 
@@ -192,16 +198,20 @@ class Permissions
         if ($result) {
             $result->delete();
         }
-        $result = DB::for_table('permissions')
-                    ->create()
-                    ->set(array(
-                        'permission_name' => $permission,
-                        'group' => $gid,
-                        'allow' => 1))
-                    ->save();
-        if ($result) {
-            $this->permissions[$gid] = null; // Harsh, but still the fastest way to do
+
+        // If group or one of his parents have not the permission, add it
+        if (!$this->getGroupPermissions($gid, $permission)) {
+            DB::for_table('permissions')
+                ->create()
+                ->set(array(
+                    'permission_name' => $permission,
+                    'group' => $gid,
+                    'allow' => 1,
+                    'deny'  => null
+                ))
+                ->save();
         }
+
         return $this;
     }
 
@@ -222,6 +232,7 @@ class Permissions
             }
         }
 
+        // Remove group permission from DB if exists
         $result = DB::for_table('permissions')
                     ->where('permission_name', $permission)
                     ->where('group', $gid)
@@ -229,15 +240,21 @@ class Permissions
                     ->find_one();
         if ($result) {
             $result->delete();
-            $this->permissions[$gid] = null; // Harsh, but still the fastest way to do
         }
-        $result = DB::for_table('permissions')
-                    ->create()
-                    ->set(array(
-                        'permission_name' => $permission,
-                        'group' => $gid,
-                        'deny' => 1))
-                    ->save();
+
+        // Check if one of his parents have the permission, and force denied permission if needed
+        if ($this->getGroupPermissions($gid, $permission)) {
+            DB::for_table('permissions')
+                ->create()
+                ->set(array(
+                    'permission_name' => $permission,
+                    'group' => $gid,
+                    'allow' => null,
+                    'deny'  => 1
+                ))
+                ->save();
+        }
+
         return $this;
     }
 
@@ -270,40 +287,73 @@ class Permissions
     public function getUserPermissions($user = null)
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
-
-        $where = array(
-            ['p.user' => $uid],
-            ['p.group' => $gid]);
-
-        if ($parents = $this->getParents($gid)) {
-            foreach ($parents as $parent_id) {
-                $where[] = ['p.group' => (int) $parent_id];
-            }
-        }
-
-        $result = DB::for_table('permissions')
-            ->table_alias('p')
-            ->select_many('p.permission_name', 'p.allow', 'p.deny')
-            ->inner_join('users', array('u.id', '=', $uid), 'u', true)
-            ->where_any_is($where)
-            ->order_by_desc('p.group') // Read groups first to allow user override
-            ->find_array();
-
-        $this->permissions[$gid][$uid] = array();
-        foreach ($result as $perm) {
-            if (!isset($this->permissions[$gid][$uid][$perm['permission_name']])) {
-                if ((bool) $perm['allow']) {
-                    $this->permissions[$gid][$uid][$perm['permission_name']] = true;
-                }
+        // Admins 'got the power!
+        if ($gid == ForumEnv::get('FEATHER_ADMIN')) {
+            $user_perms = array('*' => true);
+        } else { // Regular user
+            $all_permissions = Container::get('cache')->retrieve('permissions');
+            if (isset($all_permissions[$gid][0])) {
+                $group_perms = $all_permissions[$gid];
             } else {
-                if ((bool) $perm['deny']) {
-                    unset($this->permissions[$gid][$uid][$perm['permission_name']]);
+                $group_perms = array([]);
+            }
+
+            // Init user permissions with the group defaults
+            $user_perms = $group_perms[0];
+            if (array_key_exists($uid, $group_perms)) {
+                // If user have custom permissions, override the defaults
+                foreach ($group_perms[$uid] as $permission_name => $is_allowed) {
+                    if (!isset($user_perms[$permission_name])) {
+                        if ((bool) $is_allowed) {
+                            $user_perms[$permission_name] = true;
+                        }
+                    } else {
+                        if ((bool) !$is_allowed) {
+                            unset($user_perms[$permission_name]);
+                        }
+                    }
                 }
             }
         }
 
+        $this->permissions[$gid][$uid] = $user_perms;
         $this->buildRegex($uid, $gid);
-        return $this->permissions;
+        return $user_perms;
+
+        // Legacy code which may be useful later
+        // $where = array(
+        //     ['p.user' => $uid],
+        //     ['p.group' => $gid]);
+        //
+        // if ($parents = $this->getParents($gid)) {
+        //     foreach ($parents as $parent_id) {
+        //         $where[] = ['p.group' => (int) $parent_id];
+        //     }
+        // }
+        //
+        // $result = DB::for_table('permissions')
+        //     ->table_alias('p')
+        //     ->select_many('p.permission_name', 'p.allow', 'p.deny')
+        //     ->inner_join('users', array('u.id', '=', $uid), 'u', true)
+        //     ->where_any_is($where)
+        //     ->order_by_desc('p.group') // Read groups first to allow user override
+        //     ->find_array();
+        //
+        // $this->permissions[$gid][$uid] = array();
+        // foreach ($result as $perm) {
+        //     if (!isset($this->permissions[$gid][$uid][$perm['permission_name']])) {
+        //         if ((bool) $perm['allow']) {
+        //             $this->permissions[$gid][$uid][$perm['permission_name']] = true;
+        //         }
+        //     } else {
+        //         if ((bool) $perm['deny']) {
+        //             unset($this->permissions[$gid][$uid][$perm['permission_name']]);
+        //         }
+        //     }
+        // }
+        //
+        // $this->buildRegex($uid, $gid);
+        // return $this->permissions;
     }
 
     protected function getInfosFromUser($user = null)
@@ -312,7 +362,7 @@ class Permissions
             $uid = $user->id;
             $gid = $user->group_id;
         } elseif ((int) $user > 0) {
-            $data = User::get((int) $user);
+            $data = User::getBasic((int) $user);
             if (!$data) {
                 throw new \ErrorException('Internal error : Unknown user ID', 500);
             }
@@ -322,5 +372,17 @@ class Permissions
             throw new \ErrorException('Internal error : wrong user object type', 500);
         }
         return array((int) $uid, (int) $gid);
+    }
+
+    public function getGroupPermissions($group_id = null, $perm = null)
+    {
+        $group_id = (int) $group_id;
+        $permissions = Container::get('cache')->retrieve('permissions');
+        // Return empty perms array if group id doesn't exist in cache
+        if (!isset($permissions[$group_id]) || !isset($permissions[$group_id][0])) {
+            return array();
+        }
+        // Return full group permissions or the one we asked for
+        return !empty($perm) ? isset($permissions[$group_id][0][$perm]) : $permissions[$group_id][0];
     }
 }

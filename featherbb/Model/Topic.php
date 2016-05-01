@@ -71,7 +71,7 @@ class Topic
 
         $num_posts = Container::get('hooks')->fire('model.topic.redirect_to_post_num', $num_posts);
 
-        $post['get_p'] = ceil(($num_posts + 1) / User::get()->disp_posts);
+        $post['get_p'] = ceil(($num_posts + 1) / User::getPref('disp.posts'));
 
         $post = Container::get('hooks')->fire('model.topic.redirect_to_post', $post);
 
@@ -177,7 +177,7 @@ class Topic
         $closed = Container::get('hooks')->fire('model.topic.get_post_link_start', $closed, $topic_id, $post_replies, $is_admmod);
 
         if ($closed == '0') {
-            if (($post_replies == '' && User::get()->g_post_replies == '1') || $post_replies == '1' || $is_admmod) {
+            if (($post_replies == '' && User::can('topic.reply')) || $post_replies == '1' || $is_admmod) {
                 $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.Router::pathFor('newReply', ['tid' => $topic_id]).'">'.__('Post reply').'</a></p>'."\n";
             } else {
                 $post_link = '';
@@ -201,7 +201,7 @@ class Topic
     public function is_quickpost($post_replies, $closed, $is_admmod)
     {
         $quickpost = false;
-        if (ForumSettings::get('o_quickpost') == '1' && ($post_replies == '1' || ($post_replies == '' && User::get()->g_post_replies == '1')) && ($closed == '0' || $is_admmod)) {
+        if (ForumSettings::get('o_quickpost') == '1' && ($post_replies == '1' || ($post_replies == '' && User::can('topic.reply'))) && ($closed == '0' || $is_admmod)) {
             $quickpost = true;
         }
 
@@ -824,7 +824,7 @@ class Topic
                     ->select('id')
                     ->where('topic_id', $topic_id)
                     ->order_by('id')
-                    ->limit(User::get()->disp_topics)
+                    ->limit(User::getPref('disp.topics'))
                     ->offset($start_from);
         $result = Container::get('hooks')->fireDB('model.topic.print_posts_ids_query', $result);
         $result = $result->find_many();
@@ -839,14 +839,15 @@ class Topic
         }
 
         // Retrieve the posts (and their respective poster/online status)
-        $result['select'] = array('u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'u.email_setting', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'g.g_promote_next_group', 'is_online' => 'o.user_id');
+        $result['select'] = array('u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'email_setting' => 'pr.preference_value', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'is_online' => 'o.user_id');
 
         $result = DB::for_table('posts')
                     ->table_alias('p')
                     ->select_many($result['select'])
                     ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
                     ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
-                    ->raw_join('LEFT OUTER JOIN '.ForumSettings::get('db_prefix').'online', "o.user_id!=1 AND o.idle=0 AND o.user_id=u.id", 'o')
+                    ->raw_join('LEFT OUTER JOIN '.ForumSettings::get('db_prefix').'`online`', "`o`.`user_id`!=1 AND `o`.`idle`=0 AND `o`.`user_id`=`u`.`id`", 'o')
+                    ->raw_join('LEFT OUTER JOIN '.ForumSettings::get('db_prefix').'`preferences`', "`pr`.`user`=`u`.`id` AND `pr`.`preference_name`='email.setting'", 'pr')
                     ->where_in('p.id', $post_ids)
                     ->order_by('p.id');
         $result = Container::get('hooks')->fireDB('model.topic.print_posts_query', $result);
@@ -860,11 +861,12 @@ class Topic
             $cur_post['post_actions'] = array();
             $cur_post['is_online_formatted'] = '';
             $cur_post['signature_formatted'] = '';
+            $cur_post['promote.next_group'] = Container::get('prefs')->getGroupPreferences($cur_post['g_id'], 'promote.next_group');
 
             // If the poster is a registered user
             if ($cur_post['poster_id'] > 1) {
-                if (User::get()->g_view_users == '1') {
-                    $cur_post['username_formatted'] = '<a href="'.Url::base().'/user/'.$cur_post['poster_id'].'/">'.Utils::escape($cur_post['username']).'</a>';
+                if (User::can('users.view')) {
+                    $cur_post['username_formatted'] = '<a href="'.Router::pathFor('userProfile', ['id' => $cur_post['poster_id']]).'/">'.Utils::escape($cur_post['username']).'</a>';
                 } else {
                     $cur_post['username_formatted'] = Utils::escape($cur_post['username']);
                 }
@@ -878,7 +880,7 @@ class Topic
                 // Format the online indicator
                 $cur_post['is_online_formatted'] = ($cur_post['is_online'] == $cur_post['poster_id']) ? '<strong>'.__('Online').'</strong>' : '<span>'.__('Offline').'</span>';
 
-                if (ForumSettings::get('o_avatars') == '1' && User::get()->show_avatars != '0') {
+                if (ForumSettings::get('o_avatars') == '1' && User::getPref('show.avatars') != '0') {
                     if (isset($avatar_cache[$cur_post['poster_id']])) {
                         $cur_post['user_avatar'] = $avatar_cache[$cur_post['poster_id']];
                     } else {
@@ -898,14 +900,17 @@ class Topic
 
                     $cur_post['user_info'][] = '<dd><span>'.__('Registered topic').' '.Utils::format_time($cur_post['registered'], true).'</span></dd>';
 
-                    if (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) {
+                    if (ForumSettings::get('o_show_post_count') == '1' || User::isAdminMod()) {
                         $cur_post['user_info'][] = '<dd><span>'.__('Posts topic').' '.Utils::forum_number_format($cur_post['num_posts']).'</span></dd>';
                     }
 
                     // Now let's deal with the contact links (Email and URL)
-                    if ((($cur_post['email_setting'] == '0' && !User::get()->is_guest) || User::get()->is_admmod) && User::get()->g_send_email == '1') {
+                    if (!isset($cur_post['email_setting']) || is_null($cur_post['email_setting'])) {
+                        $cur_post['email_setting'] = ForumSettings::get('email.setting');
+                    }
+                    if ((($cur_post['email_setting'] == '0' && !User::get()->is_guest) || User::isAdminMod()) && User::can('email.send')) {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.Utils::escape($cur_post['email']).'">'.__('Email').'</a></span>';
-                    } elseif ($cur_post['email_setting'] == '1' && !User::get()->is_guest && User::get()->g_send_email == '1') {
+                    } elseif ($cur_post['email_setting'] == '1' && !User::get()->is_guest && User::can('email.send')) {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="'.Router::pathFor('email', ['id' => $cur_post['poster_id']]).'">'.__('Email').'</a></span>';
                     }
 
@@ -918,13 +923,13 @@ class Topic
                     }
                 }
 
-                if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && User::get()->g_mod_promote_users == '1')) {
-                    if ($cur_post['g_promote_next_group']) {
-                        $cur_post['user_info'][] = '<dd><span><a href="'.Url::base().'/user/'.$cur_post['poster_id'].'/action/promote/pid/'.$cur_post['id'].'">'.__('Promote user').'</a></span></dd>';
+                if (User::isAdmin() || (User::isAdminMod() && User::can('mod.promote_users'))) {
+                    if ($cur_post['promote.next_group']) {
+                        $cur_post['user_info'][] = '<dd><span><a href="'.Router::pathFor('profileAction', ['id' => $cur_post['poster_id'], 'action' => 'promote', 'pid' => $cur_post['id']]).'">'.__('Promote user').'</a></span></dd>';
                     }
                 }
 
-                if (User::get()->is_admmod) {
+                if (User::isAdminMod()) {
                     $cur_post['user_info'][] = '<dd><span><a href="'.Router::pathFor('getPostHost', ['pid' => $cur_post['id']]).'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
 
                     if ($cur_post['admin_note'] != '') {
@@ -937,11 +942,11 @@ class Topic
                 $cur_post['username_formatted'] = Utils::escape($cur_post['username']);
                 $cur_post['user_title_formatted'] = Utils::get_title($cur_post);
 
-                if (User::get()->is_admmod) {
+                if (User::isAdminMod()) {
                     $cur_post['user_info'][] = '<dd><span><a href="'.Router::pathFor('getPostHost', ['pid' => $cur_post['id']]).'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
                 }
 
-                if (ForumSettings::get('o_show_user_info') == '1' && $cur_post['poster_email'] != '' && !User::get()->is_guest && User::get()->g_send_email == '1') {
+                if (ForumSettings::get('o_show_user_info') == '1' && $cur_post['poster_email'] != '' && !User::get()->is_guest && User::can('email.send')) {
                     $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.Utils::escape($cur_post['poster_email']).'">'.__('Email').'</a></span>';
                 }
             }
@@ -954,21 +959,21 @@ class Topic
 
                 if ($cur_topic['closed'] == '0') {
                     if ($cur_post['poster_id'] == User::get()->id) {
-                        if ((($start_from + $post_count) == 1 && User::get()->g_delete_topics == '1') || (($start_from + $post_count) > 1 && User::get()->g_delete_posts == '1')) {
+                        if ((($start_from + $post_count) == 1 && User::can('topic.delete')) || (($start_from + $post_count) > 1 && User::can('post.delete'))) {
                             $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.Router::pathFor('deletePost', ['id' => $cur_post['id']]).'">'.__('Delete').'</a></span></li>';
                         }
-                        if (User::get()->g_edit_posts == '1') {
+                        if (User::can('post.edit')) {
                             $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.Router::pathFor('editPost', ['id' => $cur_post['id']]).'">'.__('Edit').'</a></span></li>';
                         }
                     }
 
-                    if (($cur_topic['post_replies'] == '' && User::get()->g_post_replies == '1') || $cur_topic['post_replies'] == '1') {
+                    if (($cur_topic['post_replies'] == '' && User::can('topic.reply')) || $cur_topic['post_replies'] == '1') {
                         $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.Router::pathFor('newQuoteReply', ['tid' => $topic_id, 'qid' => $cur_post['id']]).'">'.__('Quote').'</a></span></li>';
                     }
                 }
             } else {
                 $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.Router::pathFor('report', ['id' => $cur_post['id']]).'">'.__('Report').'</a></span></li>';
-                if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || !in_array($cur_post['poster_id'], $admin_ids)) {
+                if (User::isAdmin() || !in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
                     $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.Router::pathFor('deletePost', ['id' => $cur_post['id']]).'">'.__('Delete').'</a></span></li>';
                     $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.Router::pathFor('editPost', ['id' => $cur_post['id']]).'">'.__('Edit').'</a></span></li>';
                 }
@@ -979,7 +984,7 @@ class Topic
             $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
             // Do signature parsing/caching
-            if (ForumSettings::get('o_signatures') == '1' && $cur_post['signature'] != '' && User::get()->show_sig != '0') {
+            if (ForumSettings::get('o_signatures') == '1' && $cur_post['signature'] != '' && User::getPref('show.sig') != '0') {
                 // if (isset($avatar_cache[$cur_post['poster_id']])) {
                 //     $cur_post['signature_formatted'] = $avatar_cache[$cur_post['poster_id']];
                 // } else {
@@ -998,7 +1003,7 @@ class Topic
 
     public function display_posts_moderate($tid, $start_from)
     {
-        Container::get('hooks')->fire('model.topic.display_posts_view_start', $tid, $start_from);
+        Container::get('hooks')->fire('model.disp.topics_posts_view_start', $tid, $start_from);
 
         $post_data = array();
 
@@ -1008,9 +1013,9 @@ class Topic
         $find_ids = DB::for_table('posts')->select('id')
             ->where('topic_id', $tid)
             ->order_by('id')
-            ->limit(User::get()->disp_posts)
+            ->limit(User::getPref('disp.posts'))
             ->offset($start_from);
-        $find_ids = Container::get('hooks')->fireDB('model.topic.display_posts_view_find_ids', $find_ids);
+        $find_ids = Container::get('hooks')->fireDB('model.disp.topics_posts_view_find_ids', $find_ids);
         $find_ids = $find_ids->find_many();
 
         foreach ($find_ids as $id) {
@@ -1027,7 +1032,7 @@ class Topic
                     ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
                     ->where_in('p.id', $post_ids)
                     ->order_by('p.id');
-        $result = Container::get('hooks')->fireDB('model.topic.display_posts_view_query', $result);
+        $result = Container::get('hooks')->fireDB('model.disp.topics_posts_view_query', $result);
         $result = $result->find_many();
 
         foreach($result as $cur_post) {
@@ -1035,7 +1040,7 @@ class Topic
 
             // If the poster is a registered user
             if ($cur_post->poster_id > 1) {
-                if (User::get()->g_view_users == '1') {
+                if (User::can('users.view')) {
                     $cur_post->poster_disp = '<a href="'.Router::pathFor('userProfile', ['id' => $cur_post->poster_id]).'">'.Utils::escape($cur_post->poster).'</a>';
                 } else {
                     $cur_post->poster_disp = Utils::escape($cur_post->poster);
@@ -1061,7 +1066,7 @@ class Topic
             $post_data[] = $cur_post;
         }
 
-        $post_data = Container::get('hooks')->fire('model.topic.display_posts_view', $post_data);
+        $post_data = Container::get('hooks')->fire('model.disp.topics_posts_view', $post_data);
 
         return $post_data;
     }

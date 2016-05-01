@@ -233,8 +233,16 @@ class Core
         self::init_db($this->forum_settings, ForumEnv::get('FEATHER_SHOW_INFO'));
         Config::set('displayErrorDetails', ForumEnv::get('FEATHER_DEBUG'));
 
+        // Ensure cached forum data exist
         if (!Container::get('cache')->isCached('config')) {
-            Container::get('cache')->store('config', \FeatherBB\Model\Cache::get_config());
+            $config = array_merge(\FeatherBB\Model\Cache::get_config(), \FeatherBB\Model\Cache::get_preferences());
+            Container::get('cache')->store('config', $config);
+        }
+        if (!Container::get('cache')->isCached('permissions')) {
+            Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
+        }
+        if (!Container::get('cache')->isCached('group_preferences')) {
+            Container::get('cache')->store('group_preferences', \FeatherBB\Model\Cache::get_group_preferences());
         }
 
         // Finalize forum_settings array
@@ -245,8 +253,8 @@ class Core
         self::loadPlugins();
 
         // Define time formats and add them to the container
-        Container::set('forum_time_formats', array(ForumSettings::get('o_time_format'), 'H:i:s', 'H:i', 'g:i:s a', 'g:i a'));
-        Container::set('forum_date_formats', array(ForumSettings::get('o_date_format'), 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'));
+        Container::set('forum_time_formats', array(ForumSettings::get('time_format'), 'H:i:s', 'H:i', 'g:i:s a', 'g:i a'));
+        Container::set('forum_date_formats', array(ForumSettings::get('date_format'), 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'));
 
         // Call FeatherBBAuth middleware
         return $next($req, $res);

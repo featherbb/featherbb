@@ -24,6 +24,18 @@ class Cache
         return $config;
     }
 
+    public static function get_preferences()
+    {
+        $result = DB::for_table('preferences')
+                    ->where('default', 1)
+                    ->find_array();
+        $preferences = array();
+        foreach ($result as $item) {
+            $preferences[$item['preference_name']] = $item['preference_value'];
+        }
+        return $preferences;
+    }
+
     public static function get_bans()
     {
         return DB::for_table('bans')
@@ -69,11 +81,14 @@ class Cache
 
     public static function get_quickjump()
     {
-        $select_quickjump = array('g_id', 'g_read_board');
-        $read_perms = DB::for_table('groups')
-                        ->select_many($select_quickjump)
-                        ->where('g_read_board', 1)
-                        ->find_array();
+        $read_perms = DB::for_table('permissions')
+            ->select('group', 'g_id')
+            ->where_any_is(array(
+                ['permission_name' => 'board.read'],
+                ['permission_name' => '*']
+            ))
+            ->where('allow', 1)
+            ->find_array();
 
         $output = array();
         foreach ($read_perms as $item) {
@@ -111,8 +126,11 @@ class Cache
         return $output;
     }
 
-    public static function get_stopwords($lang_path)
+    public static function get_stopwords($lang_path = null)
     {
+        if (!$lang_path) {
+            $lang_path = ForumEnv::get('FEATHER_ROOT').'featherbb/lang';
+        }
         $files = new \DirectoryIterator($lang_path);
         $stopwords = array();
         foreach($files as $file) {
@@ -121,5 +139,58 @@ class Cache
             }
         }
         return array_map('trim', $stopwords);
+    }
+
+    public static function get_permissions()
+    {
+        // Initial empty array
+        $result = array();
+
+        // First, get default group permissions
+        $groups_perms = DB::for_table('permissions')->where_null('user')->order_by_desc('group')->find_array();
+        foreach ($groups_perms as $perm) {
+            if ((bool) $perm['allow']) {
+                $result[$perm['group']][0][$perm['permission_name']] = true;
+            }
+        }
+
+        // Then get optionnal user permissions to override their group defaults
+        // TODO: Add a page in profile Administration section to display custom permissions
+        $users_perms = DB::for_table('permissions')
+            ->table_alias('p')
+            ->select_many('p.permission_name', 'p.allow', 'p.deny', 'p.user', 'u.group_id')
+            ->inner_join('users', array('u.id', '=', 'p.user'), 'u')
+            ->where_not_null('p.user')
+            ->find_array();
+        foreach ($users_perms as $perm) {
+            $result[$perm['group_id']][$perm['user']][$perm['permission_name']] = (bool) $perm['allow'] || !(bool) $perm['deny'];
+        }
+
+        return $result;
+    }
+
+    public static function get_group_preferences()
+    {
+        $groups_preferences = array();
+
+        $groups = DB::for_table('groups')->select('g_id')->find_array();
+
+        foreach ($groups as $group) {
+            $result = DB::for_table('preferences')
+                ->table_alias('p')
+                ->where_any_is(array(
+                    array('p.group' => $group['g_id']),
+                    array('p.default' => 1),
+                ))
+                ->order_by_desc('p.default')
+                ->find_array();
+
+            $groups_preferences[$group['g_id']] = array();
+            foreach ($result as $pref) {
+                $groups_preferences[$group['g_id']][(string) $pref['preference_name']] = $pref['preference_value'];
+            }
+        }
+
+        return (array) $groups_preferences;
     }
 }

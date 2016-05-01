@@ -58,7 +58,7 @@ Container::get('hooks')->fire('view.install.start');
                                                         <?php
 
                                                         foreach ($languages as $lang) {
-                                                            echo "\t\t\t\t\t".'<option value="'.$lang.'" '.($data['default_lang'] == $lang ? 'selected' : '').'>'.$lang.'</option>'."\n";
+                                                            echo "\t\t\t\t\t".'<option value="'.$lang.'" '.($data['language'] == $lang ? 'selected' : '').'>'.$lang.'</option>'."\n";
                                                         }
 
                                                         ?>
@@ -203,10 +203,10 @@ Container::get('hooks')->fire('view.install.start');
                                                 <label class="required"><strong><?php _e('Base URL') ?> <span><?php _e('Required') ?></span></strong></label>
                                                 <input type="text" name="install[base_url]" value="<?= $data['base_url'] ?>" size="60" maxlength="100" required />
                                                 <label class="required"><strong><?php _e('Default language') ?> <span><?php _e('Required') ?></span></strong></label>
-                                                <select name="install[default_lang]" required />
+                                                <select name="install[language]" required />
                                                 <?php
                                                 foreach ($languages as $lang) {
-                                                    echo "\t\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$lang.'" '.($data['default_lang'] == $lang ? 'selected' : '').' >'.$lang.'</option>'."\n";
+                                                    echo "\t\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$lang.'" '.($data['language'] == $lang ? 'selected' : '').' >'.$lang.'</option>'."\n";
                                                 }
                                                 ?>
                                             </select>

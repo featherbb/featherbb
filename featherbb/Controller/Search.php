@@ -28,7 +28,7 @@ class Search
     {
         Container::get('hooks')->fire('controller.search.display');
 
-        if (User::get()->g_search == '0') {
+        if (!User::can('search.topics')) {
             throw new Error(__('No search permission'), 403);
         }
 

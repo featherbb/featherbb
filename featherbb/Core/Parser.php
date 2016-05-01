@@ -77,11 +77,11 @@ class Parser
         // Set $smile_on flag depending on global flags and whether or not this is a signature.
         if ($this->pd['in_signature'])
         {
-            $smile_on = (ForumSettings::get('o_smilies_sig') && User::get()['show_smilies'] && !$hide_smilies) ? 1 : 0;
+            $smile_on = (ForumSettings::get('show.smilies.sig') && User::getPref('show.smilies') && !$hide_smilies) ? 1 : 0;
         }
         else
         {
-            $smile_on = (ForumSettings::get('o_smilies') && User::get()['show_smilies'] && !$hide_smilies) ? 1 : 0;
+            $smile_on = (ForumSettings::get('show.smilies') && User::getPref('show.smilies') && !$hide_smilies) ? 1 : 0;
         }
         // Split text into hidden and non-hidden chunks. Process the non-hidden content chunks.
         $parts = explode("\1", $text); // Hidden chunks pre-marked like so: "\1\2<code.../code>\1"
@@ -132,7 +132,7 @@ class Parser
     {
         $this->pd['in_signature'] = false;
         // Disable images via the $bbcd['in_post'] flag if globally disabled.
-        if (ForumSettings::get('p_message_img_tag') !== '1' || User::get()['show_img'] !== '1')
+        if (ForumSettings::get('p_message_img_tag') !== '1' || User::getPref('show.img') !== '1')
             if (isset($this->pd['bbcd']['img']))
                 $this->pd['bbcd']['img']['in_post'] = false;
         return $this->parse_bbcode($text, $hide_smilies);
@@ -148,7 +148,7 @@ class Parser
     {
         $this->pd['in_signature'] = true;
         // Disable images via the $bbcd['in_sig'] flag if globally disabled.
-        if (ForumSettings::get('p_sig_img_tag') !== '1' || User::get()['show_img_sig'] !== '1')
+        if (ForumSettings::get('p_sig_img_tag') !== '1' || User::getPref('show.img.sig') !== '1')
             if (isset($this->pd['bbcd']['img']))
                 $this->pd['bbcd']['img']['in_sig'] = false;
         return $this->parse_bbcode($text);
@@ -359,7 +359,7 @@ class Parser
                 // Sanitize contents which is (hopefully) a url link. Trim spaces.
                 $contents = preg_replace(array('/^\s+/', '/\s+$/S'), '', $contents);
                 // Handle special case link to a
-                if (User::get()->g_post_links != '1') {
+                if (!User::can('post.links')) {
                     $new_errors[] = __('BBerr cannot post URLs');
                 }
                 else if (($m = Url::is_valid($contents)))
@@ -409,7 +409,7 @@ class Parser
                 break;
 
             case 'url':
-                if (User::get()->g_post_links != '1') {
+                if (!User::can('post.links')) {
                     $new_errors[] = __('BBerr cannot post URLs');
                 }
                 else if (($m = Url::is_valid($attribute)))

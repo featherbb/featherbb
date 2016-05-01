@@ -107,7 +107,7 @@ class Install
                 }
 
                 // Validate language
-                if (!in_array($data['default_lang'], Lister::getLangs())) {
+                if (!in_array($data['language'], Lister::getLangs())) {
                     $this->errors[] = __('Error default language');
                 }
 
@@ -136,7 +136,7 @@ class Install
                     'errors' => $this->errors,
                 ))->addTemplate('install.php')->display(false);
             } else {
-                $data['default_style'] = $this->default_style;
+                $data['style'] = $this->default_style;
                 $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), array('on', 'true', '1')) ? 1 : 0;
                 return $this->create_config($data);
             }
@@ -145,7 +145,7 @@ class Install
             $data = array('title' => __('My FeatherBB Forum'),
                 'description' => __('Description'),
                 'base_url' => $base_url,
-                'default_lang' => $this->install_lang);
+                'language' => $this->install_lang);
             return View::setPageInfo(array(
                 'languages' => $this->available_langs,
                 'supported_dbs' => $this->supported_dbs,
@@ -191,7 +191,7 @@ class Install
         // Init DB
         Core::init_db($data);
         // Load appropriate language
-        translate('install', 'featherbb', $data['default_lang']);
+        translate('install', 'featherbb', $data['language']);
 
         // Create tables
         foreach ($this->model->get_database_scheme() as $table => $sql) {
@@ -206,24 +206,53 @@ class Install
             $this->model->add_data('groups', $group_data);
         }
 
-        Container::get('perms')->allowGroup(3, array('forum.read', 'users.view', 'search.topics', 'search.users'));
-        Container::get('perms')->allowGroup(4, array('topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'email.send'));
-        Container::get('perms')->allowGroup(2, array('mod.*', 'board.title.set'));
-        Container::get('perms')->allowGroup(1, array('board.*'));
+        // Init permissions
+        // TODO: Reuse groups inheritance later ?
+        // Container::get('perms')->addParent(4, array(3));
+        // Container::get('perms')->addParent(2, array(3,4));
+        // Container::get('perms')->addParent(1, array(2,3,4));
+        // Container::get('perms')->allowGroup(3, array('board.read', 'users.view', 'search.topics', 'search.users'));
+        // Container::get('perms')->allowGroup(4, array('topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send'));
+        // Container::get('perms')->allowGroup(2, array('mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users', 'user.set_title'));
+
+        Container::get('perms')->allowGroup(3, array('board.read', 'users.view', 'search.topics', 'search.users'));
+        Container::get('perms')->allowGroup(4, array('board.read', 'users.view', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send'));
+        Container::get('perms')->allowGroup(2, array('board.read', 'users.view', 'user.set_title', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send', 'mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users'));
+        Container::get('perms')->allowGroup(1, array('*'));
+        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
+        // Init preferences
         Container::get('prefs')->set(array(
+            'disp.topics' => 30,
+            'disp.posts' => 25,
             'post.min_interval' => 60,
             'search.min_interval' => 30,
             'email.min_interval' => 60,
             'report.min_interval' => 60,
-            'core.timezone' => 0,
-            'core.time_format' => 'H:i:s',
-            'core.date_format' => 'Y-m-d',
-            'core.lang' => $data['default_lang'],
-            'core.style' => $data['default_style'],
-            'smilies.post.show' => 1,
-            'smilies.signature.show' => 1,
+            'promote.min_posts' => 0,
+            'promote.next_group' => 0,
+            'timezone' => 0,
+            'dst' => 0,
+            'time_format' => 'H:i:s',
+            'date_format' => 'Y-m-d',
+            'language' => $data['language'],
+            'style' => $data['style'],
+            'show.smilies.sig' => 1,
+            'show.smilies' => 1,
+            'show.img' => 1,
+            'show.img.sig' => 1,
+            'show.avatars' => 1,
+            'show.sig' => 1,
+            'email.setting' => 1,
+            'notify_with_post' => 0,
+            'auto_notify' => 0,
         ));
         Container::get('prefs')->setGroup(2, array(
+            'post.min_interval' => 0,
+            'search.min_interval' => 0,
+            'email.min_interval' => 0,
+            'report.min_interval' => 0
+        ));
+        Container::get('prefs')->setGroup(1, array(
             'post.min_interval' => 0,
             'search.min_interval' => 0,
             'email.min_interval' => 0,
@@ -274,24 +303,24 @@ class Install
             'o_parser_revision'            => ForumEnv::get('FORUM_PARSER_REVISION'),
             'o_board_title'                => $data['title'],
             'o_board_desc'                => $data['description'],
-            'o_default_timezone'        => 0,
-            'o_time_format'                => 'H:i:s',
-            'o_date_format'                => 'Y-m-d',
+            // 'o_default_timezone'        => 0,
+            // 'o_time_format'                => 'H:i:s',
+            // 'o_date_format'                => 'Y-m-d',
             'o_timeout_visit'            => 1800,
             'o_timeout_online'            => 300,
             'o_show_version'            => 0,
             'o_show_user_info'            => 1,
             'o_show_post_count'            => 1,
             'o_signatures'                => 1,
-            'o_smilies'                    => 1,
-            'o_smilies_sig'                => 1,
+            // 'o_smilies'                    => 1,
+            // 'o_smilies_sig'                => 1,
             'o_make_links'                => 1,
-            'o_default_lang'            => $data['default_lang'],
-            'o_default_style'            => $data['default_style'],
+            // 'o_default_lang'            => $data['default_lang'],
+            // 'o_default_style'            => $data['default_style'],
             'o_default_user_group'        => 4,
             'o_topic_review'            => 15,
-            'o_disp_topics_default'        => 30,
-            'o_disp_posts_default'        => 25,
+            // 'o_disp_topics_default'        => 30,
+            // 'o_disp_posts_default'        => 25,
             'o_indent_num_spaces'        => 4,
             'o_quote_depth'                => 3,
             'o_quickpost'                => 1,
@@ -304,7 +333,7 @@ class Install
             'o_additional_navlinks'        => '',
             'o_report_method'            => 0,
             'o_regs_report'                => 0,
-            'o_default_email_setting'    => 1,
+            // 'o_default_email_setting'    => 1,
             'o_mailing_list'            => $data['email'],
             'o_avatars'                    => $data['avatars'],
             'o_avatars_dir'                => 'style/img/avatars',
@@ -329,7 +358,7 @@ class Install
             'o_rules_message'            => __('Rules'),
             'o_maintenance'                => 0,
             'o_maintenance_message'        => __('Maintenance message'),
-            'o_default_dst'                => 0,
+            // 'o_default_dst'                => 0,
             'p_message_bbcode'            => 1,
             'p_message_img_tag'            => 1,
             'p_message_all_caps'        => 1,

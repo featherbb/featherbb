@@ -67,7 +67,7 @@ class Api
         }
 
         // If he is admin or moderator
-        if ($this->user->g_id == ForumEnv::get('FEATHER_ADMIN') || $this->user->g_moderator == '1') {
+        if (User::isAdminMod($this->user)) {
             $this->isAdMod = true;
         }
     }

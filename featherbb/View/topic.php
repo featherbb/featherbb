@@ -37,14 +37,14 @@ Container::get('hooks')->fire('view.topic.start');
 $post_count = 1;
 foreach ($post_data as $post) {
     ?>
-<div id="p<?= $post['id'] ?>" class="blockpost<?php echo($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($post['id'] == $cur_topic['first_post_id']) {
+<div id="p<?= $post['id'] ?>" class="blockpost<?= ($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($post['id'] == $cur_topic['first_post_id']) {
     echo ' firstpost';
 }
     ?><?php if ($post_count == 1) {
     echo ' blockpost1';
 }
     ?>">
-    <h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?= Router::pathFor('viewPost', ['id' => $id, 'name' => $url_topic, 'pid' => $post['id']]).'#p'.$post['id'] ?>"><?= Utils::format_time($post['posted']) ?></a></span></h2>
+    <h2><span><span class="conr">#<?= ($start_from + $post_count) ?></span> <a href="<?= Router::pathFor('viewPost', ['id' => $id, 'name' => $url_topic, 'pid' => $post['id']]).'#p'.$post['id'] ?>"><?= Utils::format_time($post['posted']) ?></a></span></h2>
     <div class="box">
         <div class="inbox">
             <div class="postbody">
@@ -140,7 +140,7 @@ if ($quickpost) {
                         <input type="hidden" name="form_sent" value="1" />
                         <input type="hidden" name="pid" value="<?= Utils::escape($pid) ?>" />
                         <input type="hidden" name="page" value="<?= Utils::escape($page_number) ?>" />
-<?php if (ForumSettings::get('o_topic_subscriptions') == '1' && (User::get()->auto_notify == '1' || $cur_topic['is_subscribed'])): ?>                        <input type="hidden" name="subscribe" value="1" />
+<?php if (ForumSettings::get('o_topic_subscriptions') == '1' && (User::getPref('auto_notify') == '1' || $cur_topic['is_subscribed'])): ?>                        <input type="hidden" name="subscribe" value="1" />
 <?php endif;
 
     if (User::get()->is_guest) {
@@ -161,14 +161,10 @@ if ($quickpost) {
     ?>
                         <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="<?= $cur_index++ ?>" required="required"></textarea></label>
                         <ul class="bblinks">
-                            <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off');
-    ?></span></li>
-                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && User::get()->g_post_links == '1') ? __('on') : __('off');
-    ?></span></li>
-                            <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1') ? __('on') : __('off');
-    ?></span></li>
-                            <li><span><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo(ForumSettings::get('o_smilies') == '1') ? __('on') : __('off');
-    ?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off');?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1' && User::can('post.links')) ? __('on') : __('off');?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1') ? __('on') : __('off');?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?= (ForumSettings::get('show.smilies') == '1') ? __('on') : __('off');?></span></li>
                         </ul>
                     </div>
                 </fieldset>

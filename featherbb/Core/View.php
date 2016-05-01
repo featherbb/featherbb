@@ -158,7 +158,7 @@ class View
     public function display($nested = true)
     {
         if (User::get()) {
-            $this->setStyle(User::get()->style);
+            $this->setStyle(User::getPref('style'));
         }
         return $this->fetch($nested);
     }
@@ -344,7 +344,7 @@ class View
             'tid' => null,
         );
 
-        if (is_object(User::get()) && User::get()->is_admmod) {
+        if (is_object(User::get()) && User::isAdminMod()) {
             $data['has_reports'] = \FeatherBB\Model\Admin\Reports::has_reports();
         }
 

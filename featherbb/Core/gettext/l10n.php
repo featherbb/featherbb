@@ -22,7 +22,7 @@ function translate($mofile, $domain = 'featherbb', $language = false, $path = fa
     // Set default path to forum core translations
     $path = $path ? $path :  ForumEnv::get('FEATHER_ROOT').'featherbb/lang';
     // Set default language to current user
-    $language = $language ? $language : User::get()->language;
+    $language = $language ? $language : User::getPref('language');
 
     /**
      * Try to locate translation file with the following priority order :
@@ -33,8 +33,8 @@ function translate($mofile, $domain = 'featherbb', $language = false, $path = fa
      */
     if (is_readable($path.'/'.$language.'/'.$mofile.'.mo')) {
         $mofile = $path.'/'.$language.'/'.$mofile.'.mo';
-    } elseif (is_readable($path.'/'.ForumSettings::get('o_default_lang').'/'.$mofile.'.mo')) {
-        $mofile = $path.'/'.ForumSettings::get('o_default_lang').'/'.$mofile.'.mo';
+    } elseif (is_readable($path.'/'.ForumSettings::get('language').'/'.$mofile.'.mo')) {
+        $mofile = $path.'/'.ForumSettings::get('language').'/'.$mofile.'.mo';
     } elseif (is_readable($path.'/English/'.$mofile.'.mo')) {
         $mofile = $path.'/English/'.$mofile.'.mo';
     } else {

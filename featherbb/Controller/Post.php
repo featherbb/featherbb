@@ -51,7 +51,7 @@ class Post
         Container::get('hooks')->fire('controller.post.create', $args['fid'], $args['tid'], $args['qid']);
 
         // Antispam feature
-        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::get()->language.'/antispam.php';
+        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions)-1);
 
         // If $_POST['username'] is filled, we are facing a bot
@@ -71,11 +71,11 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
-        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $is_admmod = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         // Do we have permission to post?
-        if ((($args['tid'] && (($cur_posting['post_replies'] == '' && User::get()->g_post_replies == '0') || $cur_posting['post_replies'] == '0')) ||
-                ($args['fid'] && (($cur_posting['post_topics'] == '' && User::get()->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
+        if ((($args['tid'] && (($cur_posting['post_replies'] == '' && !User::can('topic.reply')) || $cur_posting['post_replies'] == '0')) ||
+                ($args['fid'] && (($cur_posting['post_topics'] == '' && !User::can('topic.post')) || $cur_posting['post_topics'] == '0')) ||
                 (isset($cur_posting['closed']) && $cur_posting['closed'] == '1')) &&
                 !$is_admmod) {
             throw new Error(__('No permission'), 403);
@@ -208,13 +208,13 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $is_admmod = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         $is_topic_post = ($args['id'] == $cur_post['first_post_id']) ? true : false;
 
         // Do we have permission to edit this post?
-        if ((User::get()->g_delete_posts == '0' ||
-                (User::get()->g_delete_topics == '0' && $is_topic_post) ||
+        if ((!User::can('post.delete') ||
+                (!User::can('topic.delete') && $is_topic_post) ||
                 $cur_post['poster_id'] != User::get()->id ||
                 $cur_post['closed'] == '1') &&
                 !$is_admmod) {
@@ -249,7 +249,7 @@ class Post
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
-        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $is_admmod = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         $can_edit_subject = $args['id'] == $cur_post['first_post_id'];
 
@@ -259,7 +259,7 @@ class Post
         }
 
         // Do we have permission to edit this post?
-        if ((User::get()->g_edit_posts == '0' || $cur_post['poster_id'] != User::get()->id || $cur_post['closed'] == '1') && !$is_admmod) {
+        if ((!User::can('post.edit') || $cur_post['poster_id'] != User::get()->id || $cur_post['closed'] == '1') && !$is_admmod) {
             throw new Error(__('No permission'), 403);
         }
 
@@ -285,7 +285,7 @@ class Post
                 // Edit the post
                 $this->model->edit_post($args['id'], $can_edit_subject, $post, $cur_post, $is_admmod);
 
-                return Router::redirect(Router::pathFor('viewPost', ['id' => $cur_post->tid, 'name' => Url::url_friendly($post['subject']), 'pid' => $args['id']]).'#p'.$args['id'], __('Post redirect'));
+                return Router::redirect(Router::pathFor('viewPost', ['id' => $cur_post->tid, 'name' => Input::post('topic_subject'), 'pid' => $args['id']]).'#p'.$args['id'], __('Edit redirect'));
             }
         } else {
             $post = '';

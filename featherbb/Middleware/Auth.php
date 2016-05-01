@@ -148,7 +148,7 @@ class Auth
     public function check_bans()
     {
         // Admins and moderators aren't affected
-        if (User::get()->is_admmod || !Container::get('bans')) {
+        if (User::isAdminMod() || !Container::get('bans')) {
             return;
         }
 
@@ -224,12 +224,6 @@ class Auth
     {
         $user = AuthModel::load_user(1);
 
-        $user->disp_topics = ForumSettings::get('o_disp_topics_default');
-        $user->disp_posts = ForumSettings::get('o_disp_posts_default');
-        $user->timezone = ForumSettings::get('o_default_timezone');
-        $user->dst = ForumSettings::get('o_default_dst');
-        $user->language = ForumSettings::get('o_default_lang');
-        $user->style = ForumSettings::get('o_default_style');
         $user->is_guest = true;
         $user->is_admmod = false;
 
@@ -253,22 +247,19 @@ class Auth
 
         if ($jwt && $user = AuthModel::load_user($jwt->data->userId)) {
 
+            // Load permissions and preferences for logged user
+            Container::get('perms')->getUserPermissions($user);
+            $user->prefs = Container::get('prefs')->loadPrefs($user);
+
             $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
 
             $user->is_guest = false;
-            $user->is_admmod = $user->g_id == ForumEnv::get('FEATHER_ADMIN') || $user->g_moderator == '1';
 
-            if (!$user->disp_topics) {
-                $user->disp_topics = ForumSettings::get('o_disp_topics_default');
+            if (!is_dir(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user->prefs['language'])) {
+                Container::get('prefs')->setUser($user, ['language' => ForumSettings::get('language')]);
             }
-            if (!$user->disp_posts) {
-                $user->disp_posts = ForumSettings::get('o_disp_posts_default');
-            }
-            if (!file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user->language)) {
-                $user->language = ForumSettings::get('o_default_lang');
-            }
-            if (!file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$user->style.'/style.css')) {
-                $user->style = ForumSettings::get('o_default_style');
+            if (!file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$user->prefs['style'].'/style.css')) {
+                Container::get('prefs')->setUser($user, ['style' => ForumSettings::get('style')]);
             }
 
             // Add user to DIC
@@ -305,12 +296,14 @@ class Auth
                 DB::for_table('online')->where('ident', Utils::getIp())
                      ->update_many('logged', time());
             }
+
+            // Load permissions and preferences for guest user
+            Container::get('perms')->getUserPermissions($user);
+            $user->prefs = Container::get('prefs')->loadPrefs($user);
+
             // Add $user as guest to DIC
             Container::set('user', $user);
         }
-
-        // Load permissions for user
-        Container::get('perms')->getUserPermissions($user);
 
         translate('common');
         // Load bans from cache

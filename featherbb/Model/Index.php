@@ -189,7 +189,7 @@ class Index
                 $moderators = array();
 
                 foreach ($mods_array as $mod_username => $mod_id) {
-                    if (User::get()->g_view_users == '1') {
+                    if (User::can('users.view')) {
                         $moderators[] = '<a href="'.Router::pathFor('userProfile', ['id' => $mod_id]).'">'.Utils::escape($mod_username).'</a>';
                     } else {
                         $moderators[] = Utils::escape($mod_username);
@@ -233,7 +233,7 @@ class Index
         $stats['total_topics'] = intval($query['total_topics']);
         $stats['total_posts'] = intval($query['total_posts']);
 
-        if (User::get()->g_view_users == '1') {
+        if (User::can('users.view')) {
             $stats['newest_user'] = '<a href="'.Router::pathFor('userProfile', ['id' => $stats['last_user']['id']]).'">'.Utils::escape($stats['last_user']['username']).'</a>';
         } else {
             $stats['newest_user'] = Utils::escape($stats['last_user']['username']);
@@ -268,7 +268,7 @@ class Index
 
         foreach($query as $user_online) {
             if ($user_online->user_id > 1) {
-                if (User::get()->g_view_users == '1') {
+                if (User::can('users.view')) {
                     $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.Router::pathFor('userProfile', ['id' => $user_online->user_id]).'">'.Utils::escape($user_online->ident).'</a>';
                 } else {
                     $online['users'][] = "\n\t\t\t\t".'<dd>'.Utils::escape($user_online->ident);

@@ -21,6 +21,9 @@ class Categories
     {
         $this->model = new \FeatherBB\Model\Admin\Categories();
         translate('admin/categories');
+        if (!User::isAdmin()) {
+            throw new Error(__('No permission'), '403');
+        }
     }
 
     public function add($req, $res, $args)
