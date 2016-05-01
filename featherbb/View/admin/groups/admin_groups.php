@@ -67,7 +67,7 @@ foreach ($groups as $cur_group) {
 <?php
 
 foreach ($groups as $cur_group) {
-    if ($cur_group['g_id'] > ForumEnv::get('FEATHER_GUEST') && $cur_group['g_moderator'] == 0) {
+    if ($cur_group['g_id'] > ForumEnv::get('FEATHER_GUEST') && $cur_group['is_moderator'] == 0) {
         if ($cur_group['g_id'] == ForumSettings::get('o_default_user_group')) {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
         } else {

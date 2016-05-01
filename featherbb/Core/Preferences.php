@@ -264,4 +264,14 @@ class Preferences
         }
         return array((int) $uid, (int) $gid);
     }
+
+    public function getGroupPreferences($group_id = null, $preference = null)
+    {
+        $preferences = Container::get('cache')->retrieve('group_preferences');
+        if (empty($preference)) {
+            return (array) $preferences[$group_id];
+        }
+
+        return isset($preferences[$group_id][$preference]) ? $preferences[$group_id][$preference] : null;
+    }
 }

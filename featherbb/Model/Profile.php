@@ -355,13 +355,8 @@ class Profile
             Container::get('cache')->store('admin_ids', Cache::get_admin_ids());
         }
 
-        $new_group_mod = DB::for_table('groups')
-            ->where('g_id', $new_group_id);
-        $new_group_mod = Container::get('hooks')->fireDB('model.profile.update_group_membership_new_mod', $new_group_mod);
-        $new_group_mod = $new_group_mod->find_one_col('g_moderator');
-
         // If the user was a moderator or an administrator, we remove him/her from the moderator list in all forums as well
-        if ($new_group_id != ForumEnv::get('FEATHER_ADMIN') && $new_group_mod != '1') {
+        if ($new_group_id != ForumEnv::get('FEATHER_ADMIN') && !Container::get('perms')->getGroupPermissions($new_group_id, 'mod.is_mod')) {
 
             // Loop through all forums
             $result = $this->loop_mod_forums();
@@ -491,12 +486,7 @@ class Profile
         $pid = Container::get('hooks')->fire('model.profile.promote_user.post_id', $pid);
 
         // Find the group ID to promote the user to
-        $next_group_id = DB::for_table('groups')
-            ->table_alias('g')
-            ->inner_join('users', array('u.group_id', '=', 'g.g_id'), 'u')
-            ->where('u.id', $id);
-        $next_group_id = Container::get('hooks')->fireDB('model.profile.promote_user.next_group_id', $next_group_id);
-        $next_group_id = $next_group_id->find_one_col('g_promote_next_group');
+        $next_group_id = Container::get('hooks')->fire('model.profile.promote_user.next_group_id', User::getPref('promote.next_group', $id));
 
         if (!$next_group_id) {
             throw new Error(__('Bad request'), 404);
@@ -543,12 +533,7 @@ class Profile
 
         if (Input::post('delete_user_comply')) {
             // If the user is a moderator or an administrator, we remove him/her from the moderator list in all forums as well
-            $group_mod = DB::for_table('groups')
-                ->where('g_id', $group_id);
-            $group_mod = Container::get('hooks')->fireDB('model.profile.delete_user_group_mod', $group_mod);
-            $group_mod = $group_mod->find_one_col('g_moderator');
-
-            if ($group_id == ForumEnv::get('FEATHER_ADMIN') || $group_mod == '1') {
+            if ($group_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->getGroupPermissions($group_id, 'mod.is_mod')) {
 
                 // Loop through all forums
                 $result = $this->loop_mod_forums();
@@ -664,7 +649,7 @@ class Profile
     {
         $info = array();
 
-        $info['select'] = array('old_username' => 'u.username', 'group_id' => 'u.group_id', 'is_moderator' => 'g.g_moderator');
+        $info['select'] = array('old_username' => 'u.username', 'group_id' => 'u.group_id');
 
         $info = DB::for_table('users')
             ->table_alias('u')
@@ -713,7 +698,7 @@ class Profile
                     $form['admin_note'] = Utils::trim(Input::post('admin_note'));
 
                     // Are we allowed to change usernames?
-                    if (User::isAdmin() || (User::can('mod.is_mod') && User::can('mod.rename_users'))) {
+                    if (User::isAdmin() || (User::isAdminMod() && User::can('mod.rename_users'))) {
                         $form['username'] = Utils::trim(Input::post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
@@ -870,14 +855,14 @@ class Profile
 
             case 'privacy':
             {
-                $form = array(
-                    'email_setting'            => intval(Input::post('form_email_setting')),
+                $prefs = array(
+                    'email.setting'            => intval(Input::post('form_email_setting')),
                     'notify_with_post'        => Input::post('form_notify_with_post') ? '1' : '0',
                     'auto_notify'            => Input::post('form_auto_notify') ? '1' : '0',
                 );
 
-                if ($form['email_setting'] < 0 || $form['email_setting'] > 2) {
-                    $form['email_setting'] = ForumSettings::get('o_default_email_setting');
+                if ($prefs['email.setting'] < 0 || $prefs['email.setting'] > 2) {
+                    $prefs['email.setting'] = ForumSettings::get('email.setting');
                 }
 
                 break;
@@ -952,16 +937,10 @@ class Profile
             // If the user is a moderator or an administrator we have to update the moderator lists
             $group_id = DB::for_table('users')
                 ->where('id', $id);
-            // TODO: restore hook
-            // $group_id = Container::get('hooks')->fireDB('model.profile.update_profile_group_id', $update_online);
+            $group_id = Container::get('hooks')->fireDB('model.profile.update_profile_group_id', $group_id);
             $group_id = $group_id->find_one_col('group_id');
 
-            $group_mod = DB::for_table('groups')
-                ->where('g_id', $group_id);
-            $group_mod = Container::get('hooks')->fireDB('model.profile.update_profile_group_mod', $group_mod);
-            $group_mod = $group_mod->find_one_col('g_moderator');
-
-            if ($group_id == ForumEnv::get('FEATHER_ADMIN') || $group_mod == '1') {
+            if ($group_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->getGroupPermissions($group_id, 'mod.is_mod')) {
 
                 // Loop through all forums
                 $result = $this->loop_mod_forums();
@@ -1004,7 +983,7 @@ class Profile
 
     public function get_user_info($id)
     {
-        $user['select'] = array('u.id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.email_setting', 'u.notify_with_post', 'u.auto_notify', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title', 'g.g_moderator');
+        $user['select'] = array('u.id', 'u.group_id', 'u.username', 'u.email', 'u.title', 'u.realname', 'u.url', 'u.location', 'u.signature', 'u.num_posts', 'u.last_post', 'u.registered', 'u.registration_ip', 'u.admin_note', 'u.last_visit', 'g.g_id', 'g.g_user_title');
 
         $user = DB::for_table('users')
             ->table_alias('u')
@@ -1017,6 +996,8 @@ class Profile
         if (!$user) {
             throw new Error(__('Bad request'), 404);
         }
+
+        $user['prefs'] = ($id == User::get()->id) ? User::get()->prefs : Container::get('prefs')->loadPrefs($user);
 
         return $user;
     }
@@ -1050,9 +1031,9 @@ class Profile
             $user_info['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
 
-        if ($user['email_setting'] == '0' && !User::get()->is_guest && User::can('email.send')) {
+        if ($user['prefs']['email.setting'] == '0' && !User::get()->is_guest && User::can('email.send')) {
             $user['email_field'] = '<a href="mailto:'.Utils::escape($user['email']).'">'.Utils::escape($user['email']).'</a>';
-        } elseif ($user['email_setting'] == '1' && !User::get()->is_guest && User::can('email.send')) {
+        } elseif ($user['prefs']['email.setting'] == '1' && !User::get()->is_guest && User::can('email.send')) {
             $user['email_field'] = '<a href="'.Router::pathFor('email', ['id' => $user['id']]).'">'.__('Send email').'</a>';
         } else {
             $user['email_field'] = '';
@@ -1296,8 +1277,8 @@ class Profile
         $mail = DB::for_table('users')
                 ->select('username', 'recipient')
                 ->select('email', 'recipient_email')
-                ->select('id', 'recipient_id')
-                ->select('email_setting')
+                ->select('id')
+                ->select('group_id')
                 ->where('id', $recipient_id);
         $mail = Container::get('hooks')->fireDB('model.profile.get_info_mail_query', $mail);
         $mail = $mail->find_one();
@@ -1305,6 +1286,9 @@ class Profile
         if (!$mail) {
             throw new Error(__('Bad request'), 404);
         }
+
+        $mail['recipient_id'] = $mail['id'];
+        $mail['email_setting'] = User::getPref('email.setting', $mail);
 
         $mail = Container::get('hooks')->fireDB('model.profile.get_info_mail', $mail);
 

@@ -172,8 +172,7 @@ class Users
             $new_group = Container::get('hooks')->fire('model.admin.model.users.move_users.new_group', $new_group);
 
             // Is the new group a moderator group?
-            $new_group_mod = DB::for_table('groups')->where('g_id', $new_group)
-                                ->find_one_col('g_moderator');
+            $new_group_mod = Container::get('perms')->getGroupPermissions($new_group, 'mod.is_mod');
 
             // Fetch user groups
             $user_groups = array();
@@ -193,19 +192,15 @@ class Users
 
             // Are any users moderators?
             $group_ids = array_keys($user_groups);
-            $select_fetch_user_mods = array('g_id', 'g_moderator');
-            $result = DB::for_table('groups')->select_many($select_fetch_user_mods)
-                            ->where_in('g_id', $group_ids)
-                            ->find_many();
-            foreach($result as $cur_group) {
-                if ($cur_group['g_moderator'] == '0') {
-                    unset($user_groups[$cur_group['g_id']]);
+            foreach($group_ids as $group_id) {
+                if (!Container::get('perms')->getGroupPermissions($group_id, 'mod.is_mod')) {
+                    unset($user_groups[$group_id]);
                 }
             }
 
             $user_groups = Container::get('hooks')->fire('model.admin.model.users.move_users.user_groups', $user_groups);
 
-            if (!empty($user_groups) && $new_group != ForumEnv::get('FEATHER_ADMIN') && $new_group_mod != '1') {
+            if (!empty($user_groups) && $new_group != ForumEnv::get('FEATHER_ADMIN') && !$new_group_mod) {
                 // Fetch forum list and clean up their moderator list
                 $select_mods = array('id', 'moderators');
                 $result = DB::for_table('forums')
@@ -291,13 +286,9 @@ class Users
 
             // Are any users moderators?
             $group_ids = array_keys($user_groups);
-            $select_fetch_user_mods = array('g_id', 'g_moderator');
-            $result = DB::for_table('groups')->select_many($select_fetch_user_mods)
-                ->where_in('g_id', $group_ids)
-                ->find_many();
-            foreach($result as $cur_group) {
-                if ($cur_group['g_moderator'] == '0') {
-                    unset($user_groups[$cur_group['g_id']]);
+            foreach($group_ids as $group_id) {
+                if (!Container::get('perms')->getGroupPermissions($group_id, 'mod.is_mod')) {
+                    unset($user_groups[$group_id]);
                 }
             }
 
@@ -436,8 +427,9 @@ class Users
 
         // Also, we cannot ban moderators
         $is_mod = DB::for_table('users')->table_alias('u')
-            ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
-            ->where('g.g_moderator', 1)
+            ->inner_join('permissions', array('u.group_id', '=', 'p.group'), 'p')
+            ->where('p.allow', 1)
+            ->where('p.permission_name', 'mod.is_mod')
             ->where_in('u.id', $user_ids)
             ->find_one();
         if ($is_mod) {

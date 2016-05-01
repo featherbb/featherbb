@@ -14,6 +14,7 @@ use FeatherBB\Core\Error;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Interfaces\User;
 
 class Topic extends Api
 {
@@ -90,11 +91,11 @@ class Topic extends Api
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
-        $is_admmod = ($this->user->g_id == ForumEnv::get('FEATHER_ADMIN') || ($this->user->g_moderator == '1' && array_key_exists($this->user->username, $mods_array))) ? true : false;
+        $is_admmod = (User::isAdmin($this->user) || (User::isAdminMod($this->user) && array_key_exists($this->user->username, $mods_array))) ? true : false;
 
         // Do we have permission to post?
-        if ((($tid && (($cur_posting['post_replies'] == '' && $this->user->g_post_replies == '0') || $cur_posting['post_replies'] == '0')) ||
-                ($fid && (($cur_posting['post_topics'] == '' && $this->user->g_post_topics == '0') || $cur_posting['post_topics'] == '0')) ||
+        if ((($tid && (($cur_posting['post_replies'] == '' && !User::can('topic.reply', $this->user)) || $cur_posting['post_replies'] == '0')) ||
+                ($fid && (($cur_posting['post_topics'] == '' && !User::can('topic.post', $this->user)) || $cur_posting['post_topics'] == '0')) ||
                 (isset($cur_posting['closed']) && $cur_posting['closed'] == '1')) &&
             !$is_admmod) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
@@ -107,7 +108,7 @@ class Topic extends Api
     {
         // Flood protection
         if (Input::post('preview') != '' && $this->user->last_post != '' && (time() - $this->user->last_post) < Container::get('prefs')->get($this->user, 'post.min_interval')) {
-            $errors[] = sprintf(__('Flood start'), Container::get('prefs')->get($this->user, 'post.min_interval'), Container::get('prefs')->get($this->user, 'post.min_interval') - (time() - $this->user->last_post));
+            $errors[] = sprintf(__('Flood start'), User::getPref('post.min_interval', $this->user), User::getPref('post.min_interval', $this->user) - (time() - $this->user->last_post));
         }
 
         // If it's a new topic
@@ -124,7 +125,7 @@ class Topic extends Api
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !$this->user->is_admmod) {
+            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !User::isAdminMod($this->user)) {
                 $errors[] = __('All caps subject');
             }
         }
@@ -156,7 +157,7 @@ class Topic extends Api
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > ForumEnv::get('FEATHER_MAX_POSTSIZE')) {
             $errors[] = sprintf(__('Too long message'), Utils::forum_number_format(ForumEnv::get('FEATHER_MAX_POSTSIZE')));
-        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::is_all_uppercase($message) && !$this->user->is_admmod) {
+        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::is_all_uppercase($message) && !User::isAdminMod($this->user)) {
             $errors[] = __('All caps message');
         }
 
@@ -425,8 +426,8 @@ class Topic extends Api
             $increment = $increment->save();
 
             // Promote this user to a new group if enabled
-            if ($this->user->g_promote_next_group != 0 && $this->user->num_posts + 1 >= $this->user->g_promote_min_posts) {
-                $new_group_id = $this->user->g_promote_next_group;
+            if (User::getPref('promote.next_group', $this->user) && $this->user->num_posts + 1 >= User::getPref('promote.min_posts', $this->user)) {
+                $new_group_id = User::getPref('promote.next_group', $this->user);
                 $promote = DB::for_table('users')
                     ->where('id', $this->user->id)
                     ->find_one()

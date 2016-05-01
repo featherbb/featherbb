@@ -12,6 +12,7 @@ namespace FeatherBB\Controller;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Core\Database as DB;
 use FeatherBB\Model\Delete;
 
 class Profile
@@ -47,7 +48,7 @@ class Profile
 
             return $this->model->update_mod_forums($args['id']);
         } elseif (Input::post('ban')) {
-            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (!User::can('mod.is_mod') || !User::can('mod.ban_users'))) {
+            if (!User::isAdmin() && (!User::isAdminMod() || !User::can('mod.ban_users'))) {
                 throw new Error(__('No permission'), 403);
             }
 
@@ -74,10 +75,10 @@ class Profile
 
             if (User::get()->id != $args['id'] &&                                                            // If we aren't the user (i.e. editing your own profile)
                                     (!User::isAdminMod() ||                                      // and we are not an admin or mod
-                                    (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&                           // or we aren't an admin and ...
+                                    (!User::isAdmin() &&                           // or we aren't an admin and ...
                                     (!User::can('mod.edit_users') ||                         // mods aren't allowed to edit users
                                     $info['group_id'] == ForumEnv::get('FEATHER_ADMIN') ||                            // or the user is an admin
-                                    $info['is_moderator'])))) {                                      // or the user is another mod
+                                    Container::get('perms')->getGroupPermissions($info['group_id'], 'mod.is_mod'))))) {                                      // or the user is another mod
                                     throw new Error(__('No permission'), 403);
             }
 
@@ -95,8 +96,8 @@ class Profile
                 (!User::isAdminMod() ||                           // and we are not an admin or mod
                 (!User::isAdmin() &&                              // or we aren't an admin and ...
                 (!User::can('mod.edit_users') ||                  // mods aren't allowed to edit users
-                User::isAdmin($user['id']) ||                     // or the user is an admin
-                User::isAdminMod($user['id']))))                  // or the user is another mod
+                User::isAdmin($user) ||                     // or the user is an admin
+                User::isAdminMod($user))))                  // or the user is another mod
             )
         {
             $user_info = $this->model->parse_user_info($user);
@@ -201,7 +202,7 @@ class Profile
 
             } elseif ($args['section'] == 'admin') {
 
-                if (!User::isAdminMod() || (User::can('mod.is_mod') && !User::can('mod.ban_users'))) {
+                if (!User::isAdminMod() || (User::isAdminMod() && !User::can('mod.ban_users'))) {
                     throw new Error(__('Bad request'), 404);
                 }
 
@@ -239,6 +240,11 @@ class Profile
             }
         }
 
+        // Make sure user exists
+        if (!DB::for_table('users')->find_one($args['id'])) {
+            throw new Error(__('Bad request'), 404);
+        }
+
         if ($args['action'] == 'change_pass') {
             // Make sure we are allowed to change this user's password
             if (User::get()->id != $args['id']) {
@@ -246,23 +252,9 @@ class Profile
 
                 if (!User::isAdminMod()) { // A regular user trying to change another user's password?
                     throw new Error(__('No permission'), 403);
-                } elseif (User::can('mod.is_mod')) {
+                } elseif (User::isAdminMod()) {
                     // A moderator trying to change a user's password?
-                    $user['select'] = array('u.group_id', 'g.g_moderator');
-
-                    $user = DB::for_table('users')
-                        ->table_alias('u')
-                        ->select_many($user['select'])
-                        ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
-                        ->where('u.id', $args['id']);
-                    $user = Container::get('hooks')->fireDB('controller.profile.change_pass_user_query', $user);
-                    $user = $user->find_one();
-
-                    if (!$user) {
-                        throw new Error(__('Bad request'), 404);
-                    }
-
-                    if (!User::can('mod.edit_users') || !User::can('mod.change_passwords') || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
+                    if (!User::can('mod.edit_users') || !User::can('mod.change_passwords') || User::isAdminMod($args['id'])) {
                         throw new Error(__('No permission'), 403);
                     }
                 }
@@ -287,23 +279,9 @@ class Profile
 
                 if (!User::isAdminMod()) { // A regular user trying to change another user's email?
                     throw new Error(__('No permission'), 403);
-                } elseif (User::can('mod.is_mod')) {
+                } elseif (User::isAdminMod()) {
                     // A moderator trying to change a user's email?
-                    $user['select'] = array('u.group_id', 'g.g_moderator');
-
-                    $user = DB::for_table('users')
-                        ->table_alias('u')
-                        ->select_many($user['select'])
-                        ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
-                        ->where('u.id', $args['id']);
-                    $user = Container::get('hooks')->fireDB('controller.profile.change_email_not_id_query', $user);
-                    $user = $user->find_one();
-
-                    if (!$user) {
-                        throw new Error(__('Bad request'), 404);
-                    }
-
-                    if (!User::can('mod.edit_users') || !User::can('mod.change_passwords') || $user['group_id'] == ForumEnv::get('FEATHER_ADMIN') || $user['g_moderator'] == '1') {
+                    if (!User::can('mod.edit_users') || !User::can('mod.change_passwords') || User::isAdminMod($args['id'])) {
                         throw new Error(__('No permission'), 403);
                     }
                 }
@@ -350,7 +328,7 @@ class Profile
 
             return Router::redirect(Router::pathFor('profileSection', array('id' => $args['id'], 'section' => 'personality')), __('Avatar deleted redirect'));
         } elseif ($args['action'] == 'promote') {
-            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (!User::can('mod.is_mod') || !User::can('mod.promote_users'))) {
+            if (!User::isAdmin() && (!User::isAdminMod() || !User::can('mod.promote_users'))) {
                 throw new Error(__('No permission'), 403);
             }
 

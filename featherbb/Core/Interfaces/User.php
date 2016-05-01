@@ -2,6 +2,7 @@
 namespace FeatherBB\Core\Interfaces;
 
 use FeatherBB\Model\Auth as AuthModel;
+use FeatherBB\Core\Database as DB;
 
 class User extends \Statical\BaseProxy
 {
@@ -12,7 +13,7 @@ class User extends \Statical\BaseProxy
      */
     public static function get($id = null)
     {
-        if (!$id) {
+        if (!$id || $id == Container::get('user')->id) {
             // Get current user by default
             return Container::get('user');
         } else {
@@ -22,17 +23,32 @@ class User extends \Statical\BaseProxy
     }
 
     /**
+     * Load a user minimal infos, e.g for permissions and preferences
+     * @param  mixed    $user Either a user id or user object.
+     * @return object     User id and group id
+     */
+    public static function getBasic($user = null)
+    {
+        if (is_object($user) && isset($user->id) && isset($user->group_id)) {
+            return $user;
+        } elseif (!$user || (is_int($user) && intval($user) == Container::get('user')->id)) {
+            // Get current user by default
+            return Container::get('user');
+        } else {
+            // Load user from DB based on ID
+            return DB::for_table('users')->select('id', 'group_id')->find_one($user);
+        }
+    }
+
+    /**
      * Get a user preference value
      * @param  string $pref The name of preference to get
-     * @param  int     $id  Optionnal user id. If not provided, will return pref for currently logged user
+     * @param  int     $user  Either a user id or user object.
      * @return string       Value of the pref returned by Core/Preferences class
      */
-    public static function getPref($pref = null, $id = null)
+    public static function getPref($pref = null, $user = null)
     {
-        if ($id == Container::get('user')->id) {
-            $id = null;
-        }
-        $user = self::get($id);
+        $user = self::getBasic($user);
         return Container::get('prefs')->get($user, $pref);
     }
 
@@ -44,10 +60,7 @@ class User extends \Statical\BaseProxy
      */
     public static function can($permission = null, $id = null)
     {
-        if ($id == Container::get('user')->id) {
-            $id = null;
-        }
-        $user = self::get($id);
+        $user = self::getBasic($id);
         return Container::get('perms')->can($user, $permission);
     }
 
@@ -58,10 +71,7 @@ class User extends \Statical\BaseProxy
      */
     public static function isAdmin($id = null)
     {
-        if ($id == Container::get('user')->id) {
-            $id = null;
-        }
-        return self::get($id)->g_id == ForumEnv::get('FEATHER_ADMIN');
+        return self::getBasic($id)->group_id == ForumEnv::get('FEATHER_ADMIN');
     }
 
     /**
@@ -71,10 +81,7 @@ class User extends \Statical\BaseProxy
      */
     public static function isAdminMod($id = null)
     {
-        if ($id == Container::get('user')->id) {
-            $id = null;
-        }
-        $user = self::get($id);
-        return $user->g_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->can($user, 'mod.is_mod');
+        $user = self::getBasic($id);
+        return $user->group_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->getGroupPermissions($user->group_id, 'mod.is_mod');
     }
 }

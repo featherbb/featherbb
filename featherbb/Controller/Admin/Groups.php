@@ -118,7 +118,6 @@ class Groups
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'group'    =>    $group,
-                    'groups'    =>    $groups,
                     'id'    => $id,
                     'group_list'    => $this->model->get_group_list($groups, $group),
                 )

@@ -219,6 +219,7 @@ class Install
         Container::get('perms')->allowGroup(4, array('board.read', 'users.view', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send'));
         Container::get('perms')->allowGroup(2, array('board.read', 'users.view', 'user.set_title', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send', 'mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users'));
         Container::get('perms')->allowGroup(1, array('*'));
+        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
         // Init preferences
         Container::get('prefs')->set(array(
             'disp.topics' => 30,
@@ -227,6 +228,8 @@ class Install
             'search.min_interval' => 30,
             'email.min_interval' => 60,
             'report.min_interval' => 60,
+            'promote.min_posts' => 0,
+            'promote.next_group' => 0,
             'timezone' => 0,
             'dst' => 0,
             'time_format' => 'H:i:s',
@@ -239,6 +242,9 @@ class Install
             'show.img.sig' => 1,
             'show.avatars' => 1,
             'show.sig' => 1,
+            'email.setting' => 1,
+            'notify_with_post' => 0,
+            'auto_notify' => 0,
         ));
         Container::get('prefs')->setGroup(2, array(
             'post.min_interval' => 0,
@@ -327,7 +333,7 @@ class Install
             'o_additional_navlinks'        => '',
             'o_report_method'            => 0,
             'o_regs_report'                => 0,
-            'o_default_email_setting'    => 1,
+            // 'o_default_email_setting'    => 1,
             'o_mailing_list'            => $data['email'],
             'o_avatars'                    => $data['avatars'],
             'o_avatars_dir'                => 'style/img/avatars',

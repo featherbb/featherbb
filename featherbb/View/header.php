@@ -177,7 +177,7 @@ if (User::can('board.read') && User::can('search.topics')) {
     }
     echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'recent']).'" title="'.__('Show active topics').'">'.__('Active topics').'</a> | ';
     echo '<a href="'.Router::pathFor('quickSearch', ['show' => 'unanswered']).'" title="'.__('Show unanswered topics').'">'.__('Unanswered topics').'</a>';
-    echo '</li>'."\n";
+    echo '</span></li>'."\n";
     echo "\t\t\t\t\t\t".'</ul>'."\n";
 }
 

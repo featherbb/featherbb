@@ -93,7 +93,7 @@ class Users
 
             // Some helper variables for permissions
             $can_delete = $can_move = User::isAdmin();
-            $can_ban = User::isAdmin() || (User::can('mod.is_mod') && User::can('mod.ban_users'));
+            $can_ban = User::isAdmin() || (User::isAdminMod() && User::can('mod.ban_users'));
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
             View::addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
 
