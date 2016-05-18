@@ -746,14 +746,21 @@ class Search
 
                 $subject = '<a href="'.Router::pathFor('Topic', ['id' => $cur_search['tid'], 'name' => $url_topic]).'">'.Utils::escape($cur_search['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_search['poster']).'</span>';
 
-                if ($cur_search['sticky'] == '1') {
+                if ($cur_search['sticky'] == '1' && $cur_search['closed'] == '0') {
                     $cur_search['item_status'] .= ' isticky';
+                    $cur_search['icon_type'] = 'icon icon-sticky';
                     $status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
+                    // When marked as both sticky and closed, display only the sticky background
+                } elseif ($cur_search['sticky'] == '1' && $cur_search['closed'] == '1') {
+                    $cur_search['item_status'] .= ' isticky';
+                    $cur_search['icon_type'] = '';
+                    $status_text[] = '';
                 }
 
                 if ($cur_search['closed'] != '0') {
                     $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $cur_search['item_status'] .= ' iclosed';
+                    $cur_search['icon_type'] = 'icon icon-closed';
                 }
 
                 if (!User::get()->is_guest && $cur_search['last_post'] > User::get()->last_visit && (!isset($tracked_topics['topics'][$cur_search['tid']]) || $tracked_topics['topics'][$cur_search['tid']] < $cur_search['last_post']) && (!isset($tracked_topics['forums'][$cur_search['forum_id']]) || $tracked_topics['forums'][$cur_search['forum_id']] < $cur_search['last_post'])) {

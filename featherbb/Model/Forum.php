@@ -201,9 +201,15 @@ class Forum
                     $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
                 }
 
-                if ($cur_topic['sticky'] == '1') {
+                if ($cur_topic['sticky'] == '1' && $cur_topic['closed'] == '0') {
                     $cur_topic['item_status'] .= ' isticky';
+                    $cur_topic['icon_type'] = 'icon icon-sticky';
                     $status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
+                    // When marked as both sticky and closed, display only the sticky background
+                } elseif ($cur_topic['sticky'] == '1' && $cur_topic['closed'] == '1') {
+                    $cur_topic['item_status'] .= ' isticky';
+                    $cur_topic['icon_type'] = '';
+                    $status_text[] = '';
                 }
 
                 if ($cur_topic['moved_to'] != 0) {
@@ -216,6 +222,7 @@ class Forum
                     $cur_topic['subject_formatted'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_subject]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
+                    $cur_topic['icon_type'] = 'icon icon-closed';
                 }
 
                 if (!User::get()->is_guest && $cur_topic['last_post'] > User::get()->last_visit && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$forum_id]) || $tracked_topics['forums'][$forum_id] < $cur_topic['last_post']) && is_null($cur_topic['moved_to'])) {
@@ -319,11 +326,17 @@ class Forum
                     $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
                 }
 
-                if ($cur_topic['sticky'] == '1') {
+                if ($cur_topic['sticky'] == '1' && $cur_topic['closed'] == '0') {
                     $cur_topic['item_status'] .= ' isticky';
+                    $cur_topic['icon_type'] = 'icon icon-sticky';
                     $status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
+                    // When marked as both sticky and closed, display only the sticky background
+                } elseif ($cur_topic['sticky'] == '1' && $cur_topic['closed'] == '1') {
+                    $cur_topic['item_status'] .= ' isticky';
+                    $cur_topic['icon_type'] = '';
+                    $status_text[] = '';
                 }
-
+                
                 if ($cur_topic['moved_to'] != 0) {
                     $cur_topic['subject_disp'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['moved_to'], 'name' => $url_topic]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="movedtext">'.__('Moved').'</span>';
@@ -334,6 +347,7 @@ class Forum
                     $cur_topic['subject_disp'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_topic]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
+                    $cur_topic['icon_type'] = 'icon icon-closed';
                 }
 
                 if (!$cur_topic['ghost_topic'] && $cur_topic['last_post'] > User::get()->last_visit && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$fid]) || $tracked_topics['forums'][$fid] < $cur_topic['last_post'])) {
