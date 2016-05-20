@@ -206,18 +206,18 @@ class Forum
                     $status_text[] = '<span class="movedtext">'.__('Moved').'</span>';
                     $cur_topic['item_status'] .= ' imoved';
                 } else {
-                	$cur_topic['subject_formatted'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_subject]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_formatted'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_subject]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                 }
 
-				// Include separate icon, label and background for sticky and closed topics                                
-               	if ($cur_topic['sticky'] == '1') {
+                // Include separate icon, label and background for sticky and closed topics
+                if ($cur_topic['sticky'] == '1') {
                     $cur_topic['item_status'] .= ' isticky';
                     if ($cur_topic['closed'] == '1') {
-                    	$status_text[] = '<span class="stickytext">'.__('Sticky and closed').'</span>';                    
-                    	$cur_topic['icon_type'] = 'icon icon-closed';
+                        $status_text[] = '<span class="stickytext">'.__('Sticky and closed').'</span>';
+                        $cur_topic['icon_type'] = 'icon icon-closed';
                     } else {
-                    	$status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
-                    	$cur_topic['icon_type'] = 'icon icon-sticky';
+                        $status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
+                        $cur_topic['icon_type'] = 'icon icon-sticky';
                     }
                 } elseif ($cur_topic['closed'] == '1') {
                     $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
@@ -331,21 +331,21 @@ class Forum
                     $status_text[] = '<span class="movedtext">'.__('Moved').'</span>';
                     $cur_topic['item_status'] .= ' imoved';
                 } else {
-					$cur_topic['subject_disp'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_topic]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_topic]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                 }
 
-				// Include separate icon, label and background for sticky and closed topics  
-               	if ($cur_topic['sticky'] == '1') {
+                // Include separate icon, label and background for sticky and closed topics
+                if ($cur_topic['sticky'] == '1') {
                     $cur_topic['item_status'] .= ' isticky';
                     if ($cur_topic['closed'] == '1') {
-                   		$status_text[] = '<span class="stickytext">'.__('Sticky and closed').'</span>';
-                    	$cur_topic['icon_type'] = 'icon icon-closed';
+                        $status_text[] = '<span class="stickytext">'.__('Sticky and closed').'</span>';
+                        $cur_topic['icon_type'] = 'icon icon-closed';
                     } else {
-                    	$status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
-                    	$cur_topic['icon_type'] = 'icon icon-sticky';
+                        $status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
+                        $cur_topic['icon_type'] = 'icon icon-sticky';
                     }
                 } elseif ($cur_topic['closed'] == '1') {
-					$status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
+                    $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
                     $cur_topic['icon_type'] = 'icon icon-closed';
                 } 
