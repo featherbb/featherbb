@@ -123,7 +123,7 @@ class Forum
             'p' => $p,
             'url_forum' => $url_forum,
             'cur_forum' => $cur_forum,
-            'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'forum/moderate/'.$args['id'].'/#'),
+            'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'forum/'.$args['id'].'/'.$url_forum.'/moderate/#'),
             'topic_data' => $this->model->display_topics_moderate($args['id'], $sort_by, $start_from),
             'start_from' => $start_from,
             )
