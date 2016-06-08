@@ -201,23 +201,30 @@ class Forum
                     $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
                 }
 
-                if ($cur_topic['sticky'] == '1') {
-                    $cur_topic['item_status'] .= ' isticky';
-                    $status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
-                }
-
                 if ($cur_topic['moved_to'] != 0) {
                     $cur_topic['subject_formatted'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['moved_to'], 'name' => $url_subject]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="movedtext">'.__('Moved').'</span>';
                     $cur_topic['item_status'] .= ' imoved';
-                } elseif ($cur_topic['closed'] == '0') {
-                    $cur_topic['subject_formatted'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_subject]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                 } else {
                     $cur_topic['subject_formatted'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_subject]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
-                    $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
-                    $cur_topic['item_status'] .= ' iclosed';
                 }
 
+                // Include separate icon, label and background for sticky and closed topics
+                if ($cur_topic['sticky'] == '1') {
+                    $cur_topic['item_status'] .= ' isticky';
+                    if ($cur_topic['closed'] == '1') {
+                        $status_text[] = '<span class="stickytext">'.__('Sticky and closed').'</span>';
+                        $cur_topic['icon_type'] = 'icon icon-closed';
+                    } else {
+                        $status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
+                        $cur_topic['icon_type'] = 'icon icon-sticky';
+                    }
+                } elseif ($cur_topic['closed'] == '1') {
+                    $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
+                    $cur_topic['item_status'] .= ' iclosed';
+                    $cur_topic['icon_type'] = 'icon icon-closed';
+                }
+                
                 if (!User::get()->is_guest && $cur_topic['last_post'] > User::get()->last_visit && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$forum_id]) || $tracked_topics['forums'][$forum_id] < $cur_topic['last_post']) && is_null($cur_topic['moved_to'])) {
                     $cur_topic['item_status'] .= ' inew';
                     $cur_topic['icon_type'] = 'icon icon-new';
@@ -319,23 +326,30 @@ class Forum
                     $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
                 }
 
-                if ($cur_topic['sticky'] == '1') {
-                    $cur_topic['item_status'] .= ' isticky';
-                    $status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
-                }
-
                 if ($cur_topic['moved_to'] != 0) {
                     $cur_topic['subject_disp'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['moved_to'], 'name' => $url_topic]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="movedtext">'.__('Moved').'</span>';
                     $cur_topic['item_status'] .= ' imoved';
-                } elseif ($cur_topic['closed'] == '0') {
-                    $cur_topic['subject_disp'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_topic]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
                 } else {
                     $cur_topic['subject_disp'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_topic]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
-                    $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
-                    $cur_topic['item_status'] .= ' iclosed';
                 }
 
+                // Include separate icon, label and background for sticky and closed topics
+                if ($cur_topic['sticky'] == '1') {
+                    $cur_topic['item_status'] .= ' isticky';
+                    if ($cur_topic['closed'] == '1') {
+                        $status_text[] = '<span class="stickytext">'.__('Sticky and closed').'</span>';
+                        $cur_topic['icon_type'] = 'icon icon-closed';
+                    } else {
+                        $status_text[] = '<span class="stickytext">'.__('Sticky').'</span>';
+                        $cur_topic['icon_type'] = 'icon icon-sticky';
+                    }
+                } elseif ($cur_topic['closed'] == '1') {
+                    $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
+                    $cur_topic['item_status'] .= ' iclosed';
+                    $cur_topic['icon_type'] = 'icon icon-closed';
+                } 
+                
                 if (!$cur_topic['ghost_topic'] && $cur_topic['last_post'] > User::get()->last_visit && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$fid]) || $tracked_topics['forums'][$fid] < $cur_topic['last_post'])) {
                     $cur_topic['item_status'] .= ' inew';
                     $cur_topic['icon_type'] = 'icon icon-new';
