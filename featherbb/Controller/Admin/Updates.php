@@ -155,7 +155,7 @@ class Updates
             // Reset cache and update core version in database
             Container::get('cache')->flush();
             if (!Database::for_table('config')->raw_execute('UPDATE `'.ForumSettings::get('db_prefix').'config` SET `conf_value` = :value WHERE `conf_name` = "o_cur_version"', array('value' => ForumEnv::get('FORUM_VERSION')))) {
-                $coreUpdater->_warnings[] = __('Could not update core version in database');
+                $coreUpdater->addWarning(__('Could not update core version in database'));
             }
         }
         // Will not be empty if upgrade has warnings (zip archive or _upgrade.php file could not be deleted)

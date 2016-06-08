@@ -336,6 +336,16 @@ class AutoUpdater
     }
 
     /**
+     * Add a warning
+     *
+     * @param $warning warning to add
+     */
+    public function addWarning($warning)
+    {
+        $this->_warnings[] = $warning;
+    }
+
+    /**
      * Remove directory recursively.
      *
      * @param string $dir

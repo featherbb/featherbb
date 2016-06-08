@@ -121,6 +121,10 @@ class View
     */
     public function getTemplatesDirectory()
     {
+        if (User::get()) {
+            $this->setStyle(User::getPref('style'));
+        }
+
         $output = array();
         if (count($this->directories) > 1) {
             ksort($this->directories);
@@ -157,9 +161,6 @@ class View
 
     public function display($nested = true)
     {
-        if (User::get()) {
-            $this->setStyle(User::getPref('style'));
-        }
         return $this->fetch($nested);
     }
 
