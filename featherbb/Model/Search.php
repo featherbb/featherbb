@@ -564,10 +564,8 @@ class Search
             $cache = Container::get('hooks')->fireDB('model.search.get_search_results_update_cache', $cache);
             $cache = $cache->save();
 
-            if ($search_type[0] != 'action') {
-                // Redirect the user to the cached result page
-                return Router::redirect(Router::pathFor('search', ['search_id' => $search_id]));
-            }
+            // Redirect the user to the cached result page
+            return Router::redirect(Router::pathFor('search', ['search_id' => $search_id]));
         }
 
         // If we're on the new posts search, display a "mark all as read" link
@@ -607,7 +605,7 @@ class Search
             $search['start_from'] = $start_from;
 
             // Generate paging links
-            $search['paging_links'] = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?search_id='.$search_id);
+            $search['paging_links'] = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?');
 
             // throw away the first $start_from of $search_ids, only keep the top $per_page of $search_ids
             $search_ids = array_slice($search_ids, $start_from, $per_page);

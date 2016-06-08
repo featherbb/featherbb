@@ -33,7 +33,7 @@ class Search
         }
 
         // Figure out what to do :-)
-        if (Input::query('action') || $args['search_id']) {
+        if (Input::query('action') || isset($args['search_id'])) {
 
             $search = $this->model->get_search_results($args['search_id']);
 
