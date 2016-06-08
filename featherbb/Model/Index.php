@@ -119,6 +119,7 @@ class Index
             ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
             ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
             ->where_any_is($query['where'])
+            ->where_null('t.moved_to')
             ->order_by_many($query['order_by']);
 
         $query = Container::get('hooks')->fireDB('model.index.query_print_categories_forums', $query);
