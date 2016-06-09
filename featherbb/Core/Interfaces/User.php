@@ -36,7 +36,7 @@ class User extends \Statical\BaseProxy
             return Container::get('user');
         } else {
             // Load user from DB based on ID
-            return DB::for_table('users')->select('id', 'group_id')->find_one($user);
+            return AuthModel::load_user($user);
         }
     }
 
