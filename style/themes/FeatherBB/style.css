@@ -1744,6 +1744,10 @@ img {
     font-size: 14px;
     text-align: center;
 }
+#modcontrols.inbox dl {
+    margin: auto;
+    width:40%;
+}
 #modcontrols.inbox dl dt {
     margin-bottom: 5px;
 }
