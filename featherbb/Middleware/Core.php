@@ -151,8 +151,9 @@ class Core
         $res = $this->set_headers($res);
 
         // Block prefetch requests
-        if ((isset($this->app->environment['HTTP_X_MOZ'])) && ($this->app->environment['HTTP_X_MOZ'] == 'prefetch')) {
-            return $this->app->response->setStatus(403); // Send forbidden header
+        if ((isset($_SERVER['HTTP_X_MOZ'])) && ($_SERVER['HTTP_X_MOZ'] == 'prefetch')) {
+            $res->withStatus(403);
+            return $next($req, $res);
         }
         // Populate Slim object with forum_env vars
         Container::set('forum_env', $this->forum_env);
@@ -225,8 +226,10 @@ class Core
         if (isset($featherbb_config) && is_array($featherbb_config)) {
             $this->forum_settings = array_merge(self::load_default_forum_settings(), $featherbb_config);
         } else {
-            $this->app->response->setStatus(500); // Send forbidden header
-            return $this->app->response->setBody('Wrong config file format');
+            $res->withStatus(500); // Send forbidden header
+            $body = $res->getBody();
+            $body->write('Wrong config file format');
+            return $next($req, $res);
         }
 
         // Init DB and configure Slim
