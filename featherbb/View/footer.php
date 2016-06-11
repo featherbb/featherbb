@@ -22,48 +22,6 @@ Container::get('hooks')->fire('view.footer.start');
         <div id="brdfooter" class="block">
             <h2><span><?php _e('Board footer') ?></span></h2>
             <div class="box">
-<?php
-
-if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') && User::isAdminMod()) {
-    echo "\t\t\t\t".'<div id="modcontrols" class="inbox">'."\n";
-
-    if ($active_page == 'Forum') {
-        echo "\t\t\t\t\t".'<dl>'."\n";
-        echo "\t\t\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
-        echo "\t\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moderateForum', ['id' => $fid, 'name' => $url_forum, 'page' => $page_number]).'">'.__('Moderate forum').'</a></span></dd>'."\n";
-        echo "\t\t\t\t\t".'</dl>'."\n";
-    } elseif ($active_page == 'Topic') {
-        if (isset($pid)) {
-            $parameter = $pid;
-        } elseif (isset($page_number) && $page_number != 1) {
-            $parameter = $page_number;
-        } else {
-            $parameter = '';
-        }
-        echo "\t\t\t\t\t".'<dl>'."\n";
-        echo "\t\t\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
-        echo "\t\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moderateTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject']), 'fid' => $fid, 'page' => $page_number]).'">'.__('Moderate topic').'</a></span></dd>'."\n";
-        echo "\t\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moveTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject']), 'fid' => $fid]).'">'.__('Move topic').'</a></span></dd>'."\n";
-
-        if ($cur_topic['closed'] == '1') {
-            echo "\t\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('openTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Open topic').'</a></span></dd>'."\n";
-        } else {
-            echo "\t\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('closeTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Close topic').'</a></span></dd>'."\n";
-        }
-
-        if ($cur_topic['sticky'] == '1') {
-            echo "\t\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('unstickTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Unstick topic').'</a></span></dd>'."\n";
-        } else {
-            echo "\t\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('stickTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Stick topic').'</a></span></dd>'."\n";
-        }
-
-        echo "\t\t\t\t\t".'</dl>'."\n";
-    }
-
-    Container::get('hooks')->fire('view.footer.mod.actions'); ?>
-                    <div class="clearer"></div>
-                </div>
-<?php } ?>
                 <div id="brdfooternav" class="inbox">
 <?php
 // Display the "Jump to" drop list

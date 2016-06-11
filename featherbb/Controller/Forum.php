@@ -242,7 +242,6 @@ class Forum
             )->addTemplate('moderate/delete_topics.php')->display();
         }
 
-
         // Open or close one or more topics
         elseif (Input::post('open') || Input::post('close')) {
             $action = (Input::post('open')) ? 0 : 1;
@@ -257,6 +256,24 @@ class Forum
                 $this->model->close_multiple_topics($action, $topics);
 
                 $redirect_msg = ($action) ? __('Close topics redirect') : __('Open topics redirect');
+                return Router::redirect(Router::pathFor('moderateForum', array('id' => $args['id'], 'name' => $args['name'], 'page' => $args['page'])), $redirect_msg);
+            }
+        }
+
+        // Stick or unstick one or more topics
+        elseif (Input::post('stick') || Input::post('unstick')) {
+            $action = (Input::post('stick')) ? 1 : 0;
+
+            // There could be an array of topic IDs in $_POST
+            if (Input::post('stick') || Input::post('unstick')) {
+                $topics = Input::post('topics') ? @array_map('intval', @array_keys(Input::post('topics'))) : array();
+                if (empty($topics)) {
+                    throw new Error(__('No topics selected'), 400);
+                }
+
+                $this->model->stick_multiple_topics($action, $topics);
+
+                $redirect_msg = ($action) ? __('Stick topics redirect') : __('Unstick topics redirect');
                 return Router::redirect(Router::pathFor('moderateForum', array('id' => $args['id'], 'name' => $args['name'], 'page' => $args['page'])), $redirect_msg);
             }
         }
