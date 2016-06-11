@@ -11,7 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en\n"
-"X-Generator: Poedit 1.8.4\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 msgid "Mark read redirect"
@@ -33,7 +33,9 @@ msgid "Too long email message"
 msgstr "Messages cannot be longer than 65535 characters (64 KB)."
 
 msgid "Email flood"
-msgstr "At least %s seconds have to pass between sent emails. Please wait %s seconds and try sending again."
+msgstr ""
+"At least %s seconds have to pass between sent emails. Please wait %s seconds "
+"and try sending again."
 
 msgid "Email sent redirect"
 msgstr "Email sent."
@@ -48,7 +50,9 @@ msgid "Email message"
 msgstr "Message"
 
 msgid "Email disclosure note"
-msgstr "Please note that by using this form, your email address will be disclosed to the recipient."
+msgstr ""
+"Please note that by using this form, your email address will be disclosed to "
+"the recipient."
 
 msgid "Write email"
 msgstr "Write and submit your email message"
@@ -60,7 +64,9 @@ msgid "Reason too long"
 msgstr "Your message must be under 65535 bytes (~64kb)."
 
 msgid "Report flood"
-msgstr "At least %s seconds have to pass between reports. Please wait %s seconds and try sending again."
+msgstr ""
+"At least %s seconds have to pass between reports. Please wait %s seconds and "
+"try sending again."
 
 msgid "Report redirect"
 msgstr "Post reported."
@@ -115,6 +121,12 @@ msgstr "Open"
 
 msgid "Close"
 msgstr "Close"
+
+msgid "Stick"
+msgstr "Stick"
+
+msgid "Unstick"
+msgstr "Unstick"
 
 msgid "Move topic"
 msgstr "Move topic"
@@ -173,8 +185,14 @@ msgstr "You must select at least two topics for merge."
 msgid "Stick topic redirect"
 msgstr "Topic sticked."
 
+msgid "Stick topics redirect"
+msgstr "Topics sticked."
+
 msgid "Unstick topic redirect"
 msgstr "Topic unsticked."
+
+msgid "Unstick topics redirect"
+msgstr "Topics unsticked."
 
 msgid "Merge topics"
 msgstr "Merge topics"

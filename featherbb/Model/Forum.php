@@ -518,6 +518,14 @@ class Forum
         $close_multiple_topics = $close_multiple_topics->update_many('closed', $action);
     }
 
+    public function stick_multiple_topics($action, $topics)
+    {
+        $stick_multiple_topics = DB::for_table('topics')
+                                    ->where_in('id', $topics);
+        $stick_multiple_topics = Container::get('hooks')->fireDB('model.forum.stick_topic', $stick_multiple_topics);
+        $stick_multiple_topics = $stick_multiple_topics->update_many('sticky', $action);
+    }
+
     public function delete_topics($topics, $fid)
     {
         Container::get('hooks')->fire('model.forum.delete_topics', $topics, $fid);

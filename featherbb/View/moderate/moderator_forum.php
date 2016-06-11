@@ -91,7 +91,15 @@ Container::get('hooks')->fire('view.moderate.moderator_forum.start');
     <div class="inbox crumbsplus">
         <div class="pagepost">
             <p class="pagelink conl"><?= $paging_links ?></p>
-            <p class="conr modbuttons"><input type="submit" name="move_topics" value="<?php _e('Move') ?>"<?= $button_status ?> /> <input type="submit" name="delete_topics" value="<?php _e('Delete') ?>"<?= $button_status ?> /> <input type="submit" name="merge_topics" value="<?php _e('Merge') ?>"<?= $button_status ?> /> <input type="submit" name="open" value="<?php _e('Open') ?>"<?= $button_status ?> /> <input type="submit" name="close" value="<?php _e('Close') ?>"<?= $button_status ?> /></p>
+            <p class="conr modbuttons">
+                <input type="submit" name="move_topics" value="<?php _e('Move') ?>"<?= $button_status ?> />
+                <input type="submit" name="delete_topics" value="<?php _e('Delete') ?>"<?= $button_status ?> />
+                <input type="submit" name="merge_topics" value="<?php _e('Merge') ?>"<?= $button_status ?> />
+                <input type="submit" name="open" value="<?php _e('Open') ?>"<?= $button_status ?> />
+                <input type="submit" name="close" value="<?php _e('Close') ?>"<?= $button_status ?> />
+                <input type="submit" name="stick" value="<?php _e('Stick') ?>"<?= $button_status ?> />
+                <input type="submit" name="unstick" value="<?php _e('Unstick') ?>"<?= $button_status ?> />
+            </p>
             <div class="clearer"></div>
         </div>
         <ul class="crumbs">

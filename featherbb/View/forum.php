@@ -93,6 +93,17 @@ Container::get('hooks')->fire('view.forum.start');
         <div class="pagepost">
             <p class="pagelink conl"><?= $paging_links ?></p>
 <?= $post_link ?>
+<?php
+if (isset($active_page) && ($active_page == 'Forum') && User::isAdminMod()) {
+    echo "\t\t\t".'<div id="modcontrols" class="inbox">'."\n";
+    echo "\t\t\t\t".'<dl>'."\n";
+    echo "\t\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
+    echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moderateForum', ['id' => $fid, 'name' => $url_forum, 'page' => $page_number]).'">'.__('Moderate forum').'</a></span></dd>'."\n";
+    echo "\t\t\t\t".'</dl>'."\n";
+    echo "\t\t\t".'</div>'."\n";
+}
+Container::get('hooks')->fire('view.forum.mod.actions');
+?>
         </div>
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>/"><?php _e('Index') ?></a></li>
