@@ -33,6 +33,11 @@ class User extends Api
 
         $data = $data->as_array();
 
+        if (!$this->isAdMod) {
+            unset($data['prefs']);
+        }
+
+
         return $data;
     }
 }
