@@ -152,7 +152,7 @@ class Core
 
         // Block prefetch requests
         if ((isset($_SERVER['HTTP_X_MOZ'])) && ($_SERVER['HTTP_X_MOZ'] == 'prefetch')) {
-            $res->withStatus(403);
+            $res = $res->withStatus(403);
             return $next($req, $res);
         }
         // Populate Slim object with forum_env vars
@@ -226,7 +226,7 @@ class Core
         if (isset($featherbb_config) && is_array($featherbb_config)) {
             $this->forum_settings = array_merge(self::load_default_forum_settings(), $featherbb_config);
         } else {
-            $res->withStatus(500); // Send forbidden header
+            $res = $res->withStatus(500); // Send forbidden header
             $body = $res->getBody();
             $body->write('Wrong config file format');
             return $next($req, $res);
@@ -258,8 +258,7 @@ class Core
         // Define time formats and add them to the container
         Container::set('forum_time_formats', array(ForumSettings::get('time_format'), 'H:i:s', 'H:i', 'g:i:s a', 'g:i a'));
         Container::set('forum_date_formats', array(ForumSettings::get('date_format'), 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'));
-
-        // Call FeatherBBAuth middleware
+        
         return $next($req, $res);
     }
 }
