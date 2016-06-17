@@ -29,7 +29,8 @@ class Parser
     }
     
     // Array of BBCode text (title) elements
-    public function tagSummary() {
+    public function tagSummary() 
+    {
         $tagSummary = array(
             'unknown' => 'Unrecognized Tag',
             'code'    => 'Computer Code',
@@ -48,7 +49,7 @@ class Parser
             'center'  => 'Centered Block',
             'err'     => 'Error Codes',
         );
-        $tagSummary = Container::get('hooks')->fire('model.admin.parser.tagSummary.tagSummary', $tagSummary);
+        $tagSummary = Container::get('hooks')->fire('model.admin.parser.tagSummary', $tagSummary);
         
         return $tagSummary;
     }
