@@ -160,7 +160,7 @@ if (User::get()->is_guest) { ?>
             }
         }
         if (ForumSettings::get('o_maintenance') == '1') {
-            echo "\t\t\t\t\t\t\t".'<li class="maintenancelink"><span><strong><a href="'.Router::pathFor('adminMaintenance').'">'.__('Maintenance mode enabled').'</a></strong></span></li>'."\n";
+            echo "\t\t\t\t\t\t\t".'<li class="maintenancelink"><span><strong><a href="'.Router::pathFor('adminOptions').'">'.__('Maintenance mode enabled').'</a></strong></span></li>'."\n";
         }
     }
     $headerToplist = Container::get('hooks')->fire('header.toplist', []);
