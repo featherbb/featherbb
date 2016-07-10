@@ -467,6 +467,7 @@ class Search
 
                     $result = DB::for_table('topics')
                                 ->table_alias('t')
+                                ->distinct()
                                 ->select('t.id')
                                 ->inner_join('topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
                                 ->inner_join('topic_subscriptions', array('s.user_id', '=', $user_id), null, true)
