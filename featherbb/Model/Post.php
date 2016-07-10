@@ -35,8 +35,7 @@ class Post
                             ->select_many($cur_posting['select'])
                             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                             ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
-                            ->left_outer_join('topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
-                            ->left_outer_join('topic_subscriptions', array('s.user_id', '=', User::get()->id), null, true)
+                            ->left_outer_join('topic_subscriptions', 't.id=s.topic_id AND s.user_id='.User::get()->g_id, 's')
                             ->where_any_is($cur_posting['where'])
                             ->where('t.id', $tid);
 
