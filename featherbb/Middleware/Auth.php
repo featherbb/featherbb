@@ -208,16 +208,17 @@ class Auth
 
     public function maintenance_message()
     {
+        // Admins and moderators aren't affected
+        if (User::isAdminMod()) {
+            return;
+        }
+
         // Deal with newlines, tabs and multiple spaces
         $pattern = array("\t", '  ', '  ');
         $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
         $message = str_replace($pattern, $replace, ForumSettings::get('o_maintenance_message'));
 
-        return View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Maintenance')),
-            'msg'    =>    $message,
-            'backlink'    =>   false,
-        ))->addTemplate('maintenance.php')->display();
+        throw new Error($message, 403, false, true);
     }
 
     private function load_default_user()
@@ -316,6 +317,9 @@ class Auth
 
         // Check if current user is banned
         $this->check_bans();
+
+        // Check if we have to display the maintenance message
+        $this->maintenance_message();
 
         // Update online list
         $this->update_users_online();
