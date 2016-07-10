@@ -651,7 +651,7 @@ class Search
                     $subscriber_id = $search_type[2];
                     $subscriber_name = DB::for_table('users')
                                             ->where('id', $subscriber_id);
-                    $subscriber_name = Container::get('hooks')->fireDB('model.search.get_search_results_subscriber_name', $result);
+                    $subscriber_name = Container::get('hooks')->fireDB('model.search.get_search_results_subscriber_name', $subscriber_name);
                     $subscriber_name = $subscriber_name->find_one_col('username');
 
                     if (!$subscriber_name) {
