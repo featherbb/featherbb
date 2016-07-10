@@ -796,7 +796,7 @@ class Topic
                 ->where('id', $new_tid)
                 ->find_one()
                 ->set($update_new_topic['insert'])
-                ->set_expr('num_replies', 'num_replies-'.$num_posts_splitted-1);
+                ->set_expr('num_replies', $num_posts_splitted-1);
             $update_new_topic = Container::get('hooks')->fireDB('model.topic.split_posts_update_new_topic_query', $update_new_topic);
             $update_new_topic = $update_new_topic->save();
 
