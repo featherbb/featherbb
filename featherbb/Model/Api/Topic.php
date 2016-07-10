@@ -54,10 +54,8 @@ class Topic extends Api
                 ->table_alias('t')
                 ->select_many($cur_posting['select'])
                 ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
-                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
-                ->left_outer_join('topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
-                ->left_outer_join('topic_subscriptions', array('s.user_id', '=', $this->user->id), null, true)
+                ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.$this->user->g_id, 'fp')
+                ->left_outer_join('topic_subscriptions', 't.id=s.topic_id AND s.user_id='.$this->user->id, 's')
                 ->where_any_is($cur_posting['where'])
                 ->where('t.id', $tid);
 
@@ -67,8 +65,7 @@ class Topic extends Api
             $cur_posting = DB::for_table('forums')
                 ->table_alias('f')
                 ->select_many($cur_posting['select'])
-                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+                ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.$this->user->g_id, 'fp')
                 ->where_any_is($cur_posting['where'])
                 ->where('f.id', $fid);
         }
@@ -333,8 +330,7 @@ class Topic extends Api
             ->table_alias('u')
             ->select_many($result['select'])
             ->inner_join('forum_subscriptions', array('u.id', '=', 's.user_id'), 's')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', $cur_posting['id']), 'fp', true)
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', 'u.group_id'))
+            ->left_outer_join('forum_perms', 'fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id', 'fp')
             ->left_outer_join('bans', array('u.username', '=', 'b.username'), 'b')
             ->where_null('b.username')
             ->where_any_is($result['where'])

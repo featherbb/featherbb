@@ -47,8 +47,7 @@ class Index
         $query = DB::for_table('forums')
             ->table_alias('f')
             ->select_many($query['select'])
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
             ->where_any_is($query['where'])
             ->where_gt('f.last_post', User::get()->last_visit);
 
@@ -116,8 +115,7 @@ class Index
             ->select_many($query['select'])
             ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
             ->left_outer_join('topics', array('t.last_post_id', '=', 'f.last_post_id'), 't')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
             ->where_any_is($query['where'])
             ->where_null('t.moved_to')
             ->order_by_many($query['order_by']);

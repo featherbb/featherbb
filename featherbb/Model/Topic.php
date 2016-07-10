@@ -139,8 +139,7 @@ class Topic
                 ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
                 ->left_outer_join('topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
                 ->left_outer_join('topic_subscriptions', array('s.user_id', '=', User::get()->id), null, true)
-                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                 ->where_any_is($cur_topic['where'])
                 ->where('t.id', $id)
                 ->where_null('t.moved_to');
@@ -152,8 +151,7 @@ class Topic
                             ->select_many($select_get_info_topic)
                             ->select_expr(0, 'is_subscribed')
                             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
-                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                             ->where_any_is($cur_topic['where'])
                             ->where('t.id', $id)
                             ->where_null('t.moved_to');
@@ -226,8 +224,7 @@ class Topic
 
         $authorized = DB::for_table('topics')
                         ->table_alias('t')
-                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                        ->left_outer_join('forum_perms', 'fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id, 'fp')
                         ->where_any_is($authorized['where'])
                         ->where('t.id', $topic_id)
                         ->where_null('t.moved_to');
@@ -347,8 +344,7 @@ class Topic
                     ->table_alias('c')
                     ->select_many($result['select'])
                     ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
-                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                    ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                     ->where_any_is($result['where'])
                     ->where_null('f.redirect_url')
                     ->order_by_many($result['order_by']);
@@ -376,8 +372,7 @@ class Topic
                     ->table_alias('c')
                     ->select_many($select_get_forum_list_move)
                     ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
-                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                    ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                     ->where_any_is($where_get_forum_list_move)
                     ->where_null('f.redirect_url')
                     ->order_by_many($order_by_get_forum_list_move);
@@ -423,8 +418,7 @@ class Topic
                     ->table_alias('c')
                     ->select_many($result['select'])
                     ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
-                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                    ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                     ->where_any_is($result['where'])
                     ->where_null('f.redirect_url')
                     ->order_by_many($order_by_get_forum_list_split);
@@ -484,8 +478,7 @@ class Topic
 
         $authorized = DB::for_table('forums')
                         ->table_alias('f')
-                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', $new_fid), 'fp', true)
-                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                        ->left_outer_join('forum_perms', 'fp.forum_id='.$new_fid.' AND fp.group_id='.User::get()->g_id, 'fp')
                         ->where_any_is($authorized['where'])
                         ->where_null('f.redirect_url');
         $authorized = Container::get('hooks')->fireDB('model.topic.move_to_authorized', $authorized);
@@ -634,8 +627,7 @@ class Topic
             ->table_alias('t')
             ->select_many($cur_topic['select'])
             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
             ->where_any_is($cur_topic['where'])
             ->where('f.id', $fid)
             ->where('t.id', $tid)
@@ -694,8 +686,7 @@ class Topic
 
             $result = DB::for_table('forums')
                         ->table_alias('f')
-                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', $move_to_forum), 'fp', true)
-                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                        ->left_outer_join('forum_perms', 'fp.forum_id='.$move_to_forum.' AND fp.group_id='.User::get()->g_id, 'fp')
                         ->where_any_is($result['where'])
                         ->where_null('f.redirect_url');
             $result = Container::get('hooks')->fireDB('model.topic.split_posts_second_query', $result);

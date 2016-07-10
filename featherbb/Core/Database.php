@@ -430,7 +430,7 @@ use Serializable;
         }
 
         /**
-         * Internal helper method for executing statments. Logs queries, and
+         * Internal helper method for executing statements. Logs queries, and
          * stores statement object in ::_last_statment, accessible publicly
          * through ::get_last_statement()
          * @param string $query
@@ -1146,7 +1146,7 @@ use Serializable;
         }
 
         /**
-         * Add an INNER JOIN souce to the query
+         * Add an INNER JOIN source to the query
          */
         public function inner_join($table, $constraint, $table_alias = null, $no_escape_second_col = false)
         {
@@ -1154,7 +1154,7 @@ use Serializable;
         }
 
         /**
-         * Add a LEFT OUTER JOIN souce to the query
+         * Add a LEFT OUTER JOIN source to the query
          */
         public function left_outer_join($table, $constraint, $table_alias = null, $no_escape_second_col = false)
         {
@@ -1162,7 +1162,7 @@ use Serializable;
         }
 
         /**
-         * Add an RIGHT OUTER JOIN souce to the query
+         * Add an RIGHT OUTER JOIN source to the query
          */
         public function right_outer_join($table, $constraint, $table_alias = null, $no_escape_second_col = false)
         {
@@ -1170,7 +1170,7 @@ use Serializable;
         }
 
         /**
-         * Add an FULL OUTER JOIN souce to the query
+         * Add an FULL OUTER JOIN source to the query
          */
         public function full_outer_join($table, $constraint, $table_alias = null, $no_escape_second_col = false)
         {

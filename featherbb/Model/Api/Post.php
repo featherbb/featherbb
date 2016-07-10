@@ -87,8 +87,7 @@ class Post extends Api
             ->select_many($cur_post['select'])
             ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.$this->user->g_id, 'fp')
             ->where_any_is($cur_post['where'])
             ->where('p.id', $id);
 
@@ -116,8 +115,7 @@ class Post extends Api
             ->select_many($query['select'])
             ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', $this->user->g_id), null, true)
+            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.$this->user->g_id, 'fp')
             ->where_any_is($query['where'])
             ->where('p.id', $id);
 

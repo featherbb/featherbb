@@ -34,8 +34,7 @@ class Post
                             ->table_alias('t')
                             ->select_many($cur_posting['select'])
                             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
-                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                             ->left_outer_join('topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
                             ->left_outer_join('topic_subscriptions', array('s.user_id', '=', User::get()->id), null, true)
                             ->where_any_is($cur_posting['where'])
@@ -47,8 +46,7 @@ class Post
             $cur_posting = DB::for_table('forums')
                             ->table_alias('f')
                             ->select_many($cur_posting['select'])
-                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                             ->where_any_is($cur_posting['where'])
                             ->where('f.id', $fid);
         }
@@ -81,8 +79,7 @@ class Post
                     ->select_many($cur_post['select'])
                     ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
                     ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
-                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                    ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                     ->where_any_is($cur_post['where'])
                     ->where('p.id', $id);
 
@@ -359,8 +356,7 @@ class Post
             ->select_many($query['select'])
             ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
             ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
             ->where_any_is($query['where'])
             ->where('p.id', $id);
 
@@ -642,8 +638,7 @@ class Post
                         ->select_many($cur_post['select'])
                         ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
                         ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
-                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                        ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                         ->where_any_is($cur_post['where'])
                         ->where('p.id', $post_id);
         $cur_post = Container::get('hooks')->fireDB('model.post.get_info_report_query', $cur_post);
@@ -790,8 +785,7 @@ class Post
                     ->table_alias('u')
                     ->select_many($result['select'])
                     ->inner_join('topic_subscriptions', array('u.id', '=', 's.user_id'), 's')
-                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', $cur_posting['id']), 'fp', true)
-                    ->left_outer_join('forum_perms', array('fp.group_id', '=', 'u.group_id'))
+                    ->left_outer_join('forum_perms', 'fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id', 'fp')
                     ->left_outer_join('online', array('u.id', '=', 'o.user_id'), 'o')
                     ->left_outer_join('bans', array('u.username', '=', 'b.username'), 'b')
                     ->where_raw('COALESCE(o.logged, u.last_visit)>'.$previous_post_time)
@@ -1002,8 +996,7 @@ class Post
                     ->table_alias('u')
                     ->select_many($result['select'])
                     ->inner_join('forum_subscriptions', array('u.id', '=', 's.user_id'), 's')
-                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', $cur_posting['id']), 'fp', true)
-                    ->left_outer_join('forum_perms', array('fp.group_id', '=', 'u.group_id'))
+                    ->left_outer_join('forum_perms', 'fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id', 'fp')
                     ->left_outer_join('bans', array('u.username', '=', 'b.username'), 'b')
                     ->where_null('b.username')
                     ->where_any_is($result['where'])

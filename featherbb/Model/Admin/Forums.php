@@ -139,7 +139,7 @@ class Forums
         $permissions = DB::for_table('groups')
                         ->table_alias('g')
                         ->select_many($select_permissions)
-                        ->left_outer_join('forum_perms', 'g.g_id=fp.group_id AND fp.forum_id='.$forum_id, 'fp') // Workaround
+                        ->left_outer_join('forum_perms', 'g.g_id=fp.group_id AND fp.forum_id='.$forum_id, 'fp')
                         ->where_not_equal('g.g_id', ForumEnv::get('FEATHER_ADMIN'))
                         ->order_by_asc('g.g_id');
         $permissions = Container::get('hooks')->fireDB('model.admin.forums.get_permissions_query', $permissions);

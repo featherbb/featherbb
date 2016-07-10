@@ -32,10 +32,8 @@ class Forum
 
             $cur_forum = DB::for_table('forums')->table_alias('f')
                             ->select_many($cur_forum['select'])
-                            ->left_outer_join('forum_subscriptions', array('f.id', '=', 's.forum_id'), 's')
-                            ->left_outer_join('forum_subscriptions', array('s.user_id', '=', User::get()->id), null, true)
-                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                            ->left_outer_join('forum_subscriptions', 'f.id=s.forum_id AND s.user_id='.User::get()->g_id, 's')
+                            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                             ->where_any_is($cur_forum['where'])
                             ->where('f.id', $id);
         } else {
@@ -44,8 +42,7 @@ class Forum
             $cur_forum = DB::for_table('forums')->table_alias('f')
                             ->select_many($cur_forum['select'])
                             ->select_expr(0, 'is_subscribed')
-                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                             ->where_any_is($cur_forum['where'])
                             ->where('f.id', $id);
         }
@@ -477,8 +474,7 @@ class Forum
 
         $authorized = DB::for_table('forums')
                         ->table_alias('f')
-                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+                        ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                         ->where_any_is($authorized['where'])
                         ->where('f.id', $forum_id);
         $authorized = Container::get('hooks')->fireDB('model.forum.subscribe_forum_authorized_query', $authorized);
