@@ -218,7 +218,9 @@ class Auth
         $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
         $message = str_replace($pattern, $replace, ForumSettings::get('o_maintenance_message'));
 
-        throw new Error($message, 403, false, true);
+        if (ForumSettings::get('o_maintenance') == 1) {
+            throw new Error($message, 403, false, true);
+        }
     }
 
     private function load_default_user()
