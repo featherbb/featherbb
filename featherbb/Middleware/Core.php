@@ -16,6 +16,7 @@ namespace FeatherBB\Middleware;
 use FeatherBB\Controller\Install;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Email;
+use FeatherBB\Core\Error;
 use FeatherBB\Core\Hooks;
 use FeatherBB\Core\Parser;
 use FeatherBB\Core\Plugin as PluginManager;
@@ -33,7 +34,7 @@ class Core
         'Content-type' => 'text/html',
         'X-Frame-Options' => 'deny');
 
-    public function __construct(array $data)
+    public function __construct($data)
     {
         // Handle empty values in data
         $data = array_merge(array('config_file' => 'featherbb/config.php',
@@ -43,7 +44,7 @@ class Core
         $this->forum_env['FEATHER_ROOT'] = realpath(dirname(__FILE__).'/../../').'/';
         $this->forum_env['FORUM_CACHE_DIR'] = is_writable($this->forum_env['FEATHER_ROOT'].$data['cache_dir']) ? realpath($this->forum_env['FEATHER_ROOT'].$data['cache_dir']).'/' : null;
         $this->forum_env['FORUM_CONFIG_FILE'] = $this->forum_env['FEATHER_ROOT'].$data['config_file'];
-        $this->forum_env['FEATHER_DEBUG'] = $this->forum_env['FEATHER_SHOW_QUERIES'] = ($data['debug'] == 'all' || $data['debug'] == true);
+        $this->forum_env['FEATHER_DEBUG'] = $this->forum_env['FEATHER_SHOW_QUERIES'] = ($data['debug'] == 'all' || filter_var($data['debug'], FILTER_VALIDATE_BOOLEAN) == true);
         $this->forum_env['FEATHER_SHOW_INFO'] = ($data['debug'] == 'info' || $data['debug'] == 'all');
 
         // Populate forum_env
@@ -105,14 +106,23 @@ class Core
         $config['db_prefix'] = (!empty($config['db_prefix'])) ? $config['db_prefix'] : '';
         switch ($config['db_type']) {
             case 'mysql':
+                if (!extension_loaded('pdo_mysql')) {
+                    throw new Error('Driver pdo_mysql not installed.', 500, false, false, true);
+                }
                 DB::configure('mysql:host='.$config['db_host'].';dbname='.$config['db_name']);
                 DB::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
                 break;
             case 'sqlite';
             case 'sqlite3';
+                if (!extension_loaded('pdo_sqlite')) {
+                    throw new Error('Driver pdo_mysql not installed.', 500, false, false, true);
+                }
                 DB::configure('sqlite:./'.$config['db_name']);
                 break;
             case 'pgsql':
+                if (!extension_loaded('pdo_pgsql')) {
+                    throw new Error('Driver pdo_mysql not installed.', 500, false, false, true);
+                }
                 DB::configure('pgsql:host='.$config['db_host'].'dbname='.$config['db_name']);
                 break;
         }
@@ -258,6 +268,11 @@ class Core
         // Define time formats and add them to the container
         Container::set('forum_time_formats', array(ForumSettings::get('time_format'), 'H:i:s', 'H:i', 'g:i:s a', 'g:i a'));
         Container::set('forum_date_formats', array(ForumSettings::get('date_format'), 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'));
+
+        // Check if we have DOM support (not installed by default in PHP >= 7.0, results in utf8_decode not defined
+        if (!function_exists('utf8_decode')) {
+            throw new Error('Please install the php7.0-xml package.', 500, false, false, true);
+        }
         
         return $next($req, $res);
     }

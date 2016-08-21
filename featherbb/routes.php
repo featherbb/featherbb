@@ -208,11 +208,27 @@ Container::set('errorHandler', function ($c) {
             'message' => $e->getMessage(),
             'back' => true,
             'html' => false,
+            'hide' => false,
         );
 
         // Hide internal mechanism
-        if (!in_array(get_class($e), array('FeatherBB\Core\Error')) && ForumEnv::get('FEATHER_DEBUG') != 'all') {
+        if (!ForumEnv::get('FEATHER_DEBUG')) {
             $error['message'] = __('Error');
+            $error['hide'] = true;
+        }
+
+        // Display a simple error page that does not require heavy user-specific methods like permissions
+        if (method_exists($e, 'isSimpleError') && $e->isSimpleError()) {
+            ob_end_clean();
+
+            // ob_start to avoid an extra "1" returned by PHP with a successful inclusion
+            ob_start();
+            include(ForumEnv::get('FEATHER_ROOT') . 'featherbb/View/errorSimple.php');
+            $include = ob_get_clean();
+
+            $response->write($include);
+
+            return $response;
         }
 
         if (method_exists($e, 'hasBacklink')) {

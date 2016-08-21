@@ -55,7 +55,7 @@ class User extends \Statical\BaseProxy
     /**
      * Check if the given user has the required permissions
      * @param  string $permission  The name of the action to check
-     * @param  int     $id         Optionnal user id
+     * @param  int     $id         Optional user id
      * @return boolval             True if user is allowed to do this
      */
     public static function can($permission = null, $id = null)
@@ -66,7 +66,7 @@ class User extends \Statical\BaseProxy
 
     /**
      * Check if user is in admin group
-     * @param  int     $id Optionnal user id
+     * @param  int     $id Optional user id
      * @return boolean     Is user in admin group ?
      */
     public static function isAdmin($id = null)
@@ -76,7 +76,7 @@ class User extends \Statical\BaseProxy
 
     /**
      * Check if user is admin or modo
-     * @param  int     $id Optionnal user id
+     * @param  int     $id Optional user id
      * @return boolean     Is user in admin/mod group ?
      */
     public static function isAdminMod($id = null)

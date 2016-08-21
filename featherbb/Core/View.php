@@ -223,7 +223,7 @@ class View
         return $this;
     }
 
-    public function setPageInfo(array $data)
+    public function setPageInfo($data)
     {
         foreach ($data as $key => $value) {
             list($key, $value) = $this->validate($key, $value);

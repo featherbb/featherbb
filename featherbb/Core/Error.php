@@ -15,11 +15,14 @@ class Error extends \Exception
 
     protected $html;
 
-    public function __construct($message, $code = 400, $backlink = true, $html = false)
+    protected $simpleError;
+
+    public function __construct($message, $code = 400, $backlink = true, $html = false, $simpleError = false)
     {
         parent::__construct(Utils::escape($message), $code);
         $this->backlink = (bool) $backlink;
         $this->html = (bool) $html;
+        $this->simpleError = (bool) $simpleError;
     }
 
     public function hasBacklink()
@@ -30,5 +33,10 @@ class Error extends \Exception
     public function displayHtml()
     {
         return $this->html;
+    }
+
+    public function isSimpleError()
+    {
+        return $this->simpleError;
     }
 }

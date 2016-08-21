@@ -45,6 +45,7 @@ use Countable;
 use InvalidArgumentException;
 use IteratorAggregate;
 use PDO;
+use PDOException;
 use Serializable;
 
 {
@@ -245,7 +246,7 @@ use Serializable;
          * this will normally be the first method called in a chain.
          * @param string $table_name
          * @param string $connection_name Which connection to use
-         * @return DB
+         * @return Database
          */
         public static function for_table($table_name, $connection_name = self::DEFAULT_CONNECTION)
         {
@@ -267,15 +268,19 @@ use Serializable;
             ) {
                 self::_setup_db_config($connection_name);
 
-                $db = new PDO(
-                    self::$_config[$connection_name]['connection_string'],
-                    self::$_config[$connection_name]['username'],
-                    self::$_config[$connection_name]['password'],
-                    self::$_config[$connection_name]['driver_options']
-                );
+                try {
+                    $db = new PDO(
+                        self::$_config[$connection_name]['connection_string'],
+                        self::$_config[$connection_name]['username'],
+                        self::$_config[$connection_name]['password'],
+                        self::$_config[$connection_name]['driver_options']
+                    );
 
-                $db->setAttribute(PDO::ATTR_ERRMODE, self::$_config[$connection_name]['error_mode']);
-                self::set_db($db, $connection_name);
+                    $db->setAttribute(PDO::ATTR_ERRMODE, self::$_config[$connection_name]['error_mode']);
+                    self::set_db($db, $connection_name);
+                } catch (\Exception $e) {
+                    throw new Error($e->getMessage(), 500, false, false, true);
+                }
             }
         }
 
@@ -719,7 +724,7 @@ use Serializable;
          * Tell the DB that you are expecting multiple results
          * from your query, and execute it. Will return a result set object
          * containing instances of the DB class.
-         * @return \IdiormResultSet
+         * @return IdiormResultSet
          */
         public function find_result_set()
         {
