@@ -836,8 +836,8 @@ class Topic
                     ->select_many($result['select'])
                     ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
                     ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
-                    ->raw_join('LEFT OUTER JOIN '.ForumSettings::get('db_prefix').'`online`', "`o`.`user_id`!=1 AND `o`.`idle`=0 AND `o`.`user_id`=`u`.`id`", 'o')
-                    ->raw_join('LEFT OUTER JOIN '.ForumSettings::get('db_prefix').'`preferences`', "`pr`.`user`=`u`.`id` AND `pr`.`preference_name`='email.setting'", 'pr')
+                    ->left_outer_join('online', 'o.user_id!=1 AND o.idle=0 AND o.user_id=u.id', 'o')
+                    ->left_outer_join('preferences', 'pr.user=u.id AND pr.preference_name=\'email.setting\'', 'pr')
                     ->where_in('p.id', $post_ids)
                     ->order_by('p.id');
         $result = Container::get('hooks')->fireDB('model.topic.print_posts_query', $result);
