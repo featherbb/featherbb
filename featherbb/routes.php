@@ -8,7 +8,7 @@
  */
 
 use \FeatherBB\Middleware\Logged as IsLogged;
-use FeatherBB\Middleware\ModeratePermission;
+use \FeatherBB\Middleware\ModeratePermission;
 use \FeatherBB\Middleware\ReadBoard as CanReadBoard;
 use \FeatherBB\Middleware\Admin as IsAdmin;
 use \FeatherBB\Middleware\AdminModo as IsAdmMod;
