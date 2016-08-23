@@ -111,7 +111,7 @@ foreach ($post_data as $post) {
             <p class="pagelink conl"><?= $paging_links ?></p>
 <?= $post_link ?>
 <?php
-if (isset($active_page) && $active_page == 'Topic' && User::isAdminMod()) {
+if (isset($active_page) && $active_page == 'Topic' && $is_admmod) {
     if (isset($pid)) {
         $parameter = $pid;
     } elseif (isset($page_number) && $page_number != 1) {

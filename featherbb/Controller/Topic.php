@@ -13,6 +13,7 @@ use FeatherBB\Core\Error;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Model\Forum;
 
 class Topic
 {
@@ -110,6 +111,7 @@ class Topic
             'lang_antispam_questions'        =>    $lang_antispam_questions,
             'url_forum'        =>    $url_forum,
             'url_topic'        =>    $url_topic,
+            'is_admmod' => $is_admmod,
         ))->addTemplate('topic.php')->display();
 
         // Increment "num_views" for topic
@@ -204,15 +206,6 @@ class Topic
     public function moderate($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.topic.moderate');
-
-        // Make sure that only admmods allowed access this page
-        $forumModel = new \FeatherBB\Model\Forum();
-        $moderators = $forumModel->get_moderators($args['fid']);
-        $mods_array = ($moderators != '') ? unserialize($moderators) : array();
-
-        if (!User::isAdmin() && (!User::isAdminMod() || !array_key_exists(User::get()->username, $mods_array))) {
-            throw new Error(__('No permission'), 403);
-        }
 
         $cur_topic = $this->model->get_topic_info($args['fid'], $args['id']);
 

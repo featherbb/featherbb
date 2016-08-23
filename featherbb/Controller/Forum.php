@@ -83,6 +83,7 @@ class Forum
             'start_from' => $start_from,
             'url_forum' => $url_forum,
             'forum_actions' => $forum_actions,
+            'is_admmod' => $is_admmod,
         ))->addTemplate('forum.php')->display();
     }
 

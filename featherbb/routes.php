@@ -8,6 +8,7 @@
  */
 
 use \FeatherBB\Middleware\Logged as IsLogged;
+use FeatherBB\Middleware\ModeratePermission;
 use \FeatherBB\Middleware\ReadBoard as CanReadBoard;
 use \FeatherBB\Middleware\Admin as IsAdmin;
 use \FeatherBB\Middleware\AdminModo as IsAdmMod;
@@ -39,12 +40,12 @@ Route::group('/topic', function() {
     Route::get('/{id:\d+}/{name:[\w\-]+}/action/{action:[\w\-]+}', '\FeatherBB\Controller\Topic:action')->setName('topicAction');
     Route::get('/{id:\d+}/{name:[\w\-]+}/subscribe', '\FeatherBB\Controller\Topic:subscribe')->add(new IsLogged)->setName('subscribeTopic');
     Route::get('/{id:\d+}/{name:[\w\-]+}/unsubscribe', '\FeatherBB\Controller\Topic:unsubscribe')->add(new IsLogged)->setName('unsubscribeTopic');
-    Route::get('/{id:\d+}/{name:[\w\-]+}/close', '\FeatherBB\Controller\Topic:close')->add(new IsAdmMod)->setName('closeTopic');
-    Route::get('/{id:\d+}/{name:[\w\-]+}/open', '\FeatherBB\Controller\Topic:open')->add(new IsAdmMod)->setName('openTopic');
-    Route::get('/{id:\d+}/{name:[\w\-]+}/stick', '\FeatherBB\Controller\Topic:stick')->add(new IsAdmMod)->setName('stickTopic');
-    Route::get('/{id:\d+}/{name:[\w\-]+}/unstick', '\FeatherBB\Controller\Topic:unstick')->add(new IsAdmMod)->setName('unstickTopic');
-    Route::map(['GET', 'POST'], '/{id:\d+}/{name:[\w\-]+}/move/from/{fid:\d+}', '\FeatherBB\Controller\Topic:move')->add(new IsAdmMod)->setName('moveTopic');
-    Route::map(['GET', 'POST'], '/{id:\d+}/{name:[\w\-]+}/moderate/forum/{fid:\d+}[/page/{page:\d+}]', '\FeatherBB\Controller\Topic:moderate')->add(new IsAdmMod)->setName('moderateTopic');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/close', '\FeatherBB\Controller\Topic:close')->add(new IsAdmMod)->add(new ModeratePermission)->setName('closeTopic');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/open', '\FeatherBB\Controller\Topic:open')->add(new IsAdmMod)->add(new ModeratePermission)->setName('openTopic');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/stick', '\FeatherBB\Controller\Topic:stick')->add(new IsAdmMod)->add(new ModeratePermission)->setName('stickTopic');
+    Route::get('/{id:\d+}/{name:[\w\-]+}/unstick', '\FeatherBB\Controller\Topic:unstick')->add(new IsAdmMod)->add(new ModeratePermission)->setName('unstickTopic');
+    Route::map(['GET', 'POST'], '/{id:\d+}/{name:[\w\-]+}/move/from/{fid:\d+}', '\FeatherBB\Controller\Topic:move')->add(new IsAdmMod)->add(new ModeratePermission)->setName('moveTopic');
+    Route::map(['GET', 'POST'], '/{id:\d+}/{name:[\w\-]+}/moderate/forum/{fid:\d+}[/page/{page:\d+}]', '\FeatherBB\Controller\Topic:moderate')->add(new IsAdmMod)->add(new ModeratePermission)->setName('moderateTopic');
 })->add(new CanReadBoard);
 
 // Post routes

@@ -60,7 +60,7 @@ class Forum
         return $cur_forum;
     }
 
-    public function get_moderators($fid)
+    public static function get_moderators($fid)
     {
         $moderators = DB::for_table('forums')
                         ->where('id', $fid);
@@ -68,6 +68,16 @@ class Forum
         $moderators = $moderators->find_one_col('moderators');
 
         return $moderators;
+    }
+
+    public static function get_forum_id($tid)
+    {
+        $fid = DB::for_table('topics')
+            ->where('id', $tid);
+        $fid = Container::get('hooks')->fireDB('model.forum.get_moderators', $fid);
+        $fid = $fid->find_one_col('forum_id');
+
+        return $fid;
     }
 
     // Returns the text required by the query to sort the forum
@@ -726,5 +736,16 @@ class Forum
 
         // Update the forum FROM which the topic was moved and redirect
         self::update($fid);
+    }
+
+    public static function can_moderate($fid)
+    {
+        $moderators = self::get_moderators($fid);
+        $mods_array = ($moderators != '') ? unserialize($moderators) : array();
+
+        // Sort out who has permission to moderate
+        $permission = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+
+        return $permission;
     }
 }
