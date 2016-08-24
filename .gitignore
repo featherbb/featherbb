@@ -9,3 +9,5 @@ cache/*.cache
 !/plugins/test
 /style/img/avatars/*
 !/style/img/avatars/.gitkeep
+vendor/
+temp/
