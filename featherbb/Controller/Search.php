@@ -35,7 +35,7 @@ class Search
         // Figure out what to do :-)
         if (Input::query('action') || isset($args['search_id'])) {
 
-            $search = $this->model->get_search_results($args['search_id']);
+            $search = (isset($args['search_id'])) ? $this->model->get_search_results($args['search_id']) : $this->model->get_search_results();
 
             if (is_object($search)) {
                 // $search is most likely a Router::redirect() to search page (no hits or other error) or to a search_id
