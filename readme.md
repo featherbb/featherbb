@@ -71,6 +71,8 @@ the forums or in the GitHub bug tracker.
 
 * Make use of a PHP accelerator such as OPCache
 * Make sure PHP has the zlib module installed to allow FeatherBB to gzip output
+* If you download directly from the repository, make sure to run a composer install
+to setup the dependencies (Slim Framework and some more)
 
 ## Links
 
