@@ -697,7 +697,7 @@ use Serializable;
          * from your query, and execute it. Will return an array
          * of instances of the DB class, or an empty array if
          * no rows were returned.
-         * @return array|\IdiormResultSet
+         * @return array|IdiormResultSet
          */
         public function find_many()
         {
@@ -2125,6 +2125,16 @@ use Serializable;
             $this->_using_default_result_columns = true;
 
             return $rows;
+        }
+
+        /**
+         * Get the query before it is run
+         * @return array 2 params: the query and its parameters
+         */
+        public function get_query()
+        {
+            $query = $this->_build_select();
+            return array('query' => $query, 'parameters' => $this->_values);
         }
 
         /**
