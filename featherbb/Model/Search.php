@@ -464,7 +464,7 @@ class Search
                                 ->table_alias('t')
                                 ->distinct()
                                 ->select('t.id')
-                                ->left_outer_join('topic_subscriptions', 't.id=s.topic_id AND s.user_id='.$user_id, 's')
+                                ->join('topic_subscriptions', 't.id=s.topic_id AND s.user_id='.$user_id, 's')
                                 ->left_outer_join('forum_perms', 'fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id, 'fp')
                                 ->where_any_is($result['where'])
                                 ->order_by_desc('t.last_post');
