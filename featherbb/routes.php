@@ -220,7 +220,9 @@ Container::set('errorHandler', function ($c) {
 
         // Display a simple error page that does not require heavy user-specific methods like permissions
         if (method_exists($e, 'isSimpleError') && $e->isSimpleError()) {
-            ob_end_clean();
+            if (ob_get_contents()) {
+                ob_end_clean();
+            }
 
             // ob_start to avoid an extra "1" returned by PHP with a successful inclusion
             ob_start();
