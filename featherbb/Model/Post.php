@@ -768,10 +768,13 @@ class Post
 
         // Get the post time for the previous post in this topic
         $previous_post_time = DB::for_table('posts')
+                                ->select('posted')
                                 ->where('topic_id', $tid)
-                                ->order_by_desc('id');
+                                ->order_by_desc('id')
+                                ->limit(1)
+                                ->offset(1);
         $previous_post_time = Container::get('hooks')->fireDB('model.post.send_notifications_reply_previous', $previous_post_time);
-        $previous_post_time = $previous_post_time->find_one_col('posted');
+        $previous_post_time = $previous_post_time->find_one();
 
         // Get any subscribed users that should be notified (banned users are excluded)
         $result['where'] = array(
@@ -787,7 +790,7 @@ class Post
                     ->left_outer_join('forum_perms', 'fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id', 'fp')
                     ->left_outer_join('online', array('u.id', '=', 'o.user_id'), 'o')
                     ->left_outer_join('bans', array('u.username', '=', 'b.username'), 'b')
-                    ->where_raw('COALESCE(o.logged, u.last_visit)>'.$previous_post_time)
+                    ->where_raw('COALESCE(o.logged, u.last_visit)>'.$previous_post_time['posted'])
                     ->where_null('b.username')
                     ->where_any_is($result['where'])
                     ->where('s.topic_id', $tid)
