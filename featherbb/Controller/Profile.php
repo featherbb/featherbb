@@ -28,6 +28,10 @@ class Profile
 
     public function display($req, $res, $args)
     {
+        if ($args['id'] < 2) {
+            throw new Error(__('Bad request'), 400);
+        }
+
         // Include UTF-8 function
         require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/substr_replace.php';
         require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
@@ -241,7 +245,7 @@ class Profile
         }
 
         // Make sure user exists
-        if (!DB::for_table('users')->find_one($args['id'])) {
+        if (!DB::for_table('users')->find_one($args['id']) || $args['id'] < 2) {
             throw new Error(__('Bad request'), 404);
         }
 
