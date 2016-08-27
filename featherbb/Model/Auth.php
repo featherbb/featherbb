@@ -30,12 +30,10 @@ class Auth
                     ->select_many($result['select'])
                     ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
                     ->left_outer_join('online', array('o.user_id', '=', $result['join']), 'o', $escape)
-                    ->where($result['where']);
-        $result = $result->find_result_set();
+                    ->where($result['where'])
+                    ->find_one();
 
-        foreach ($result as $user) {
-            return $user;
-        }
+        return $result;
     }
 
     public static function delete_online_by_ip($ip)
