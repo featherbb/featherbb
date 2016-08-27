@@ -151,7 +151,12 @@ class Register
 
         $new_uid = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'users');
 
-        Container::get('prefs')->setUser($new_uid,['language' => $user['language']]);
+        if (ForumSettings::get('o_regs_verify') == '1') {
+            Container::get('prefs')->setUser($new_uid, ['language' => $user['language']], ForumEnv::get('FEATHER_UNVERIFIED'));
+        }
+        else {
+            Container::get('prefs')->setUser($new_uid, ['language' => $user['language']]);
+        }
 
         // If the mailing list isn't empty, we may need to send out some alerts
         if (ForumSettings::get('o_mailing_list') != '') {

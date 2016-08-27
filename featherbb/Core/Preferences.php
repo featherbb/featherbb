@@ -14,16 +14,16 @@ class Preferences
 {
     protected $preferences = array();
 
-    public function __construct()
-    {
-
-    }
-
     // Add / Update
 
-    public function setUser($user = null, array $prefs)
+    public function setUser($user = null, $prefs, $gid = null)
     {
-        list($uid, $gid) = $this->getInfosFromUser($user);
+        if ($gid === null) {
+            list($uid, $gid) = $this->getInfosFromUser($user);
+        }
+        else {
+            $uid = (int) $user;
+        }
 
         foreach ($prefs as $pref_name => $pref_value) {
             $pref_name = (string) $pref_name;
@@ -63,7 +63,7 @@ class Preferences
         return $this;
     }
 
-    public function setGroup($gid = null, array $prefs)
+    public function setGroup($gid = null, $prefs)
     {
         $gid = (int) $gid;
         if ($gid < 1) {
