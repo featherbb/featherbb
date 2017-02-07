@@ -18,7 +18,7 @@ Container::get('hooks')->fire('view.admin.menu.start');
 ?>
             <div id="adminconsole" class="block2col">
                 <div id="adminmenu" class="blockmenu">
-                    <h2><span><?php _e('Moderator menu') ?></span></h2>
+                    <h2><span><?= __('Moderator menu') ?></span></h2>
                     <div class="box">
                         <div class="inbox">
                             <ul>
@@ -34,7 +34,7 @@ Container::get('hooks')->fire('view.admin.menu.start');
 <?php
 if (User::isAdmin()):
 ?>
-                    <h2 class="block2"><span><?php _e('Admin menu') ?></span></h2>
+                    <h2 class="block2"><span><?= __('Admin menu') ?></span></h2>
                     <div class="box">
                         <div class="inbox">
                             <ul>
@@ -51,7 +51,7 @@ endif;
 
 // Did we find any plugins?
 if (!empty($plugins)): ?>
-                    <h2 class="block2"><span><?php _e('Plugins menu') ?></span></h2>
+                    <h2 class="block2"><span><?= __('Plugins menu') ?></span></h2>
                     <div class="box">
                         <div class="inbox">
                             <ul>

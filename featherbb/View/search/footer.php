@@ -32,7 +32,7 @@ if ($footer['show_as'] == 'topics') :
             <p class="pagelink"><?= $footer['paging_links'] ?></p>
         </div>
         <ul class="crumbs">
-            <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
+            <li><a href="<?= Url::base() ?>"><?= __('Index') ?></a></li>
             <li><span>»&#160;</span><a href="<?= Router::pathFor('search') ?>"><?= $footer['crumbs_text']['show_as'] ?></a></li>
             <li><span>»&#160;</span><strong><?= $footer['crumbs_text']['search_type'] ?></strong></li>
         </ul>

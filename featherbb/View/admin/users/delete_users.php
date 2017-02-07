@@ -16,24 +16,24 @@ Container::get('hooks')->fire('view.admin.users.delete_users.start');
 ?>
 
     <div class="blockform">
-        <h2><span><?php _e('Delete users') ?></span></h2>
+        <h2><span><?= __('Delete users') ?></span></h2>
         <div class="box">
             <form name="confirm_del_users" method="post" action="<?= Router::pathFor('adminUsers') ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <input type="hidden" name="users" value="<?= implode(',', $user_ids) ?>" />
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Confirm delete legend') ?></legend>
+                        <legend><?= __('Confirm delete legend') ?></legend>
                         <div class="infldset">
-                            <p><?php _e('Confirm delete info') ?></p>
+                            <p><?= __('Confirm delete info') ?></p>
                             <div class="rbox">
-                                <label><input type="checkbox" name="delete_posts" value="1" checked="checked" /><?php _e('Delete posts') ?><br /></label>
+                                <label><input type="checkbox" name="delete_posts" value="1" checked="checked" /><?= __('Delete posts') ?><br /></label>
                             </div>
-                            <p class="warntext"><strong><?php _e('Delete warning') ?></strong></p>
+                            <p class="warntext"><strong><?= __('Delete warning') ?></strong></p>
                         </div>
                     </fieldset>
                 </div>
-                <p class="buttons"><input type="submit" name="delete_users_comply" value="<?php _e('Delete') ?>" /> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
+                <p class="buttons"><input type="submit" name="delete_users_comply" value="<?= __('Delete') ?>" /> <a href="javascript:history.go(-1)"><?= __('Go back') ?></a></p>
             </form>
         </div>
     </div>

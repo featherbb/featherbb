@@ -18,26 +18,26 @@ Container::get('hooks')->fire('view.admin.forums.permissions.start');
 ?>
 
     <div class="blockform">
-        <h2><span><?php _e('Edit forum head') ?></span></h2>
+        <h2><span><?= __('Edit forum head') ?></span></h2>
         <div class="box">
             <form id="edit_forum" method="post" action="<?= Router::pathFor('editForum', ['id' => $cur_forum['id']]) ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
-                <p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" tabindex="6" /></p>
+                <p class="submittop"><input type="submit" name="save" value="<?= __('Save changes') ?>" tabindex="6" /></p>
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Edit details subhead') ?></legend>
+                        <legend><?= __('Edit details subhead') ?></legend>
                         <div class="infldset">
                             <table class="aligntop">
                                 <tr>
-                                    <th scope="row"><?php _e('Forum name label') ?></th>
+                                    <th scope="row"><?= __('Forum name label') ?></th>
                                     <td><input type="text" name="forum_name" size="35" maxlength="80" value="<?= Utils::escape($cur_forum['forum_name']) ?>" tabindex="1" /></td>
                                 </tr>
                                 <tr>
-                                    <th scope="row"><?php _e('Forum description label') ?></th>
+                                    <th scope="row"><?= __('Forum description label') ?></th>
                                     <td><textarea name="forum_desc" rows="3" cols="50" tabindex="2"><?= Utils::escape($cur_forum['forum_desc']) ?></textarea></td>
                                 </tr>
                                 <tr>
-                                    <th scope="row"><?php _e('Category label') ?></th>
+                                    <th scope="row"><?= __('Category label') ?></th>
                                     <td>
                                         <select name="cat_id" tabindex="3">
                                             <?php  foreach ($forum_data as $cat_id => $cat_data) {
@@ -48,17 +48,17 @@ Container::get('hooks')->fire('view.admin.forums.permissions.start');
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row"><?php _e('Sort by label') ?></th>
+                                    <th scope="row"><?= __('Sort by label') ?></th>
                                     <td>
                                         <select name="sort_by" tabindex="4">
-                                            <option value="0"<?php if ($cur_forum['sort_by'] == '0') {echo ' selected="selected"';} ?>><?php _e('Last post') ?></option>
-                                            <option value="1"<?php if ($cur_forum['sort_by'] == '1') {echo ' selected="selected"';} ?>><?php _e('Topic start') ?></option>
-                                            <option value="2"<?php if ($cur_forum['sort_by'] == '2') {echo ' selected="selected"';} ?>><?php _e('Subject') ?></option>
+                                            <option value="0"<?php if ($cur_forum['sort_by'] == '0') {echo ' selected="selected"';} ?>><?= __('Last post') ?></option>
+                                            <option value="1"<?php if ($cur_forum['sort_by'] == '1') {echo ' selected="selected"';} ?>><?= __('Topic start') ?></option>
+                                            <option value="2"<?php if ($cur_forum['sort_by'] == '2') {echo ' selected="selected"';} ?>><?= __('Subject') ?></option>
                                         </select>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row"><?php _e('Redirect label') ?></th>
+                                    <th scope="row"><?= __('Redirect label') ?></th>
                                     <td><?= (!empty($cur_forum['num_topics'])) ? __('Redirect help') : '<input type="text" name="redirect_url" size="45" maxlength="100" value="'.Utils::escape($cur_forum['redirect_url']).'" tabindex="5" />'; ?></td>
                                 </tr>
                             </table>
@@ -67,16 +67,16 @@ Container::get('hooks')->fire('view.admin.forums.permissions.start');
                 </div>
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Group permissions subhead') ?></legend>
+                        <legend><?= __('Group permissions subhead') ?></legend>
                         <div class="infldset">
                             <p><?php printf(__('Group permissions info'), '<a href="'.Router::pathFor('adminGroups').'">'.__('User groups').'</a>') ?></p>
                             <table id="forumperms">
                             <thead>
                                 <tr>
                                     <th class="atcl">&#160;</th>
-                                    <th><?php _e('Read forum label') ?></th>
-                                    <th><?php _e('Post replies label') ?></th>
-                                    <th><?php _e('Post topics label') ?></th>
+                                    <th><?= __('Read forum label') ?></th>
+                                    <th><?= __('Post replies label') ?></th>
+                                    <th><?= __('Post topics label') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -105,11 +105,11 @@ Container::get('hooks')->fire('view.admin.forums.permissions.start');
 ?>
                             </tbody>
                             </table>
-                            <div class="fsetsubmit"><input type="submit" name="revert_perms" value="<?php _e('Revert to default') ?>" tabindex="<?= $cur_index++ ?>" /></div>
+                            <div class="fsetsubmit"><input type="submit" name="revert_perms" value="<?= __('Revert to default') ?>" tabindex="<?= $cur_index++ ?>" /></div>
                         </div>
                     </fieldset>
                 </div>
-                <p class="submitend"><input type="submit" name="save" value="<?php _e('Save changes') ?>" tabindex="<?= $cur_index++ ?>" /></p>
+                <p class="submitend"><input type="submit" name="save" value="<?= __('Save changes') ?>" tabindex="<?= $cur_index++ ?>" /></p>
             </form>
         </div>
     </div>

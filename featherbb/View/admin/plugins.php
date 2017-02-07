@@ -19,23 +19,23 @@ Container::get('hooks')->fire('view.admin.plugins.start');
 ?>
 
                 <div class="block">
-                    <h2><?php _e('Installed plugins'); ?> (<?= count($availablePlugins); ?>)</h2>
+                    <h2><?= __('Installed plugins'); ?> (<?= count($availablePlugins); ?>)</h2>
                     <div class="box">
                         <div class="inbox">
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th class="plugin-name"><?php _e('Extension') ?></th>
-                                        <th class="plugin-version"><?php _e('Version') ?></th>
-                                        <th class="plugin-description"><?php _e('Description') ?></th>
-                                        <th class="plugin-status"><?php _e('Active') ?>*</th>
-                                        <th class="plugin-actions"><?php _e('Action') ?></th>
+                                        <th class="plugin-name"><?= __('Extension') ?></th>
+                                        <th class="plugin-version"><?= __('Version') ?></th>
+                                        <th class="plugin-description"><?= __('Description') ?></th>
+                                        <th class="plugin-status"><?= __('Active') ?>*</th>
+                                        <th class="plugin-actions"><?= __('Action') ?></th>
                                     </tr>
                                 </thead>
                                 <tfoot>
                                 	<tr>
                                 		<td colspan="5">
-                                			<div id="toggle-description">* <?php _e('Toggle active state'); ?></div>
+                                			<div id="toggle-description">* <?= __('Toggle active state'); ?></div>
                                 		</td>
                                 	</tr>
                                 </tfoot>
@@ -44,22 +44,22 @@ Container::get('hooks')->fire('view.admin.plugins.start');
                                     <tr<?php if (!in_array($plugin->name, $activePlugins)) echo ' class="plugin-deactivated"'; ?>>
                                         <td class="plugin-name">
                                             <strong><?= Utils::escape($plugin->title); ?></strong>
-                                            <p class="plugin-details"><?php _e('Author') ?> <a href="http://marketplace.featherbb.org/plugins/author/<?= Utils::escape($plugin->author->name); ?>" target="_blank"><?= Utils::escape($plugin->author->name); ?></a></p>
+                                            <p class="plugin-details"><?= __('Author') ?> <a href="http://marketplace.featherbb.org/plugins/author/<?= Utils::escape($plugin->author->name); ?>" target="_blank"><?= Utils::escape($plugin->author->name); ?></a></p>
                                         </td>
                                         <td class="plugin-version"><?= Utils::escape($plugin->version); ?></td>
                                         <td class="plugin-description"><?= Utils::escape($plugin->description); ?></td>
                                         <td class="plugin-status">
 <?php if (in_array($plugin->name, $activePlugins)) { ?>
-                                            <a href="<?= Router::pathFor('deactivatePlugin', ['name' => Utils::escape($plugin->name)]) ?>" title="<?php _e('Deactivate') ?>" class="text-success"><img class="pluginIcons" src="<?= Utils::escape(Url::base(true)) ?>/style/themes/FeatherBB/img/active.png" alt="<?php _e('Deactivate') ?>"/></a>
+                                            <a href="<?= Router::pathFor('deactivatePlugin', ['name' => Utils::escape($plugin->name)]) ?>" title="<?= __('Deactivate') ?>" class="text-success"><img class="pluginIcons" src="<?= Utils::escape(Url::base(true)) ?>/style/themes/FeatherBB/img/active.png" alt="<?= __('Deactivate') ?>"/></a>
 <?php } else { ?>
-                                            <a href="<?= Router::pathFor('activatePlugin', ['name' => Utils::escape($plugin->name)]) ?>" title="<?php _e('Activate') ?>" class="text-error"><img class="pluginIcons" src="<?= Utils::escape(Url::base(true)) ?>/style/themes/FeatherBB/img/inactive.png" alt="<?php _e('Activate') ?>"/></a>
+                                            <a href="<?= Router::pathFor('activatePlugin', ['name' => Utils::escape($plugin->name)]) ?>" title="<?= __('Activate') ?>" class="text-error"><img class="pluginIcons" src="<?= Utils::escape(Url::base(true)) ?>/style/themes/FeatherBB/img/inactive.png" alt="<?= __('Activate') ?>"/></a>
 <?php } ?>
                                         </td>
                                         <td class="plugin-actions">
 <?php if (in_array($plugin->name, $activePlugins)) { ?>
                                             -
 <?php } else { ?>
-                                            <a href="<?= Router::pathFor('uninstallPlugin', ['name' => Utils::escape($plugin->name)]) ?>" onclick="return confirm('<?php _e('Uninstall warning') ?>')"><?php _e('Uninstall') ?></a>
+                                            <a href="<?= Router::pathFor('uninstallPlugin', ['name' => Utils::escape($plugin->name)]) ?>" onclick="return confirm('<?= __('Uninstall warning') ?>')"><?= __('Uninstall') ?></a>
 <?php } ?>
                                         </td>
                                     </tr>
@@ -69,7 +69,7 @@ Container::get('hooks')->fire('view.admin.plugins.start');
                         </div>
                     </div>
 
-                    <h2 class="block2"><?php _e('Upload plugin'); ?></h2>
+                    <h2 class="block2"><?= __('Upload plugin'); ?></h2>
                     <div class="box">
                         <div class="inbox">
                             <form id="upload-plugin" method="post" enctype="multipart/form-data" action="">
@@ -81,22 +81,22 @@ Container::get('hooks')->fire('view.admin.plugins.start');
                                         <input name="req_file" type="file" size="40" required="required" />
                                     </div>
                                 </div>
-                                <p class="buttons" style="float:right"><input type="submit" name="upload" value="<?php _e('Upload'); ?>" /></p>
+                                <p class="buttons" style="float:right"><input type="submit" name="upload" value="<?= __('Upload'); ?>" /></p>
                             </form>
                         </div>
                     </div>
 
-                    <h2 class="block2"><?php _e('Official plugins'); ?> (<?= count($officialPlugins); ?>)</h2>
+                    <h2 class="block2"><?= __('Official plugins'); ?> (<?= count($officialPlugins); ?>)</h2>
                     <div class="box">
                         <div class="inbox">
                             <table class="table">
-                                <caption><?php _e('Official plugins description') ?></caption>
+                                <caption><?= __('Official plugins description') ?></caption>
                                 <thead>
                                 <tr>
-                                    <th class="plugin-name"><?php _e('Extension') ?></th>
-                                    <th class="plugin-version"><?php _e('Version') ?></th>
-                                    <th class="plugin-description"><?php _e('Description') ?></th>
-                                    <th class="plugin-actions"><?php _e('Action') ?></th>
+                                    <th class="plugin-name"><?= __('Extension') ?></th>
+                                    <th class="plugin-version"><?= __('Version') ?></th>
+                                    <th class="plugin-description"><?= __('Description') ?></th>
+                                    <th class="plugin-actions"><?= __('Action') ?></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -104,12 +104,12 @@ Container::get('hooks')->fire('view.admin.plugins.start');
                                     <tr>
                                         <td class="plugin-name">
                                             <strong><?= Utils::escape($plugin->title); ?></strong>
-                                            <p class="plugin-details"><?php _e('Author') ?> <a href="http://marketplace.featherbb.org/plugins/author/<?= Utils::escape($plugin->author->name); ?>" target="_blank"><?= Utils::escape($plugin->author->name); ?></a></p>
+                                            <p class="plugin-details"><?= __('Author') ?> <a href="http://marketplace.featherbb.org/plugins/author/<?= Utils::escape($plugin->author->name); ?>" target="_blank"><?= Utils::escape($plugin->author->name); ?></a></p>
                                         </td>
                                         <td class="plugin-version"><?= Utils::escape($plugin->version); ?></td>
                                         <td class="plugin-description"><?= Utils::escape($plugin->description); ?></td>
                                         <td class="plugin-actions">
-                                            <a href="<?= Router::pathFor('downloadPlugin', ['name' => Utils::escape($plugin->name), 'version' => Utils::escape($plugin->version)]) ?>"><?php _e('Download'); ?></a>
+                                            <a href="<?= Router::pathFor('downloadPlugin', ['name' => Utils::escape($plugin->name), 'version' => Utils::escape($plugin->version)]) ?>"><?= __('Download'); ?></a>
                                         </td>
                                     </tr>
 <?php endforeach; ?>

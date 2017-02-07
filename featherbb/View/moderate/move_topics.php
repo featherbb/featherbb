@@ -23,9 +23,9 @@ Container::get('hooks')->fire('view.moderate.move_topics.start');
             <div class="inform">
                 <input type="hidden" name="topics" value="<?= $topics ?>" />
                 <fieldset>
-                    <legend><?php _e('Move legend') ?></legend>
+                    <legend><?= __('Move legend') ?></legend>
                     <div class="infldset">
-                        <label><?php _e('Move to') ?>
+                        <label><?= __('Move to') ?>
                         <br /><select name="move_to_forum">
                                 <?= $list_forums ?>
                             </optgroup>
@@ -34,12 +34,12 @@ Container::get('hooks')->fire('view.moderate.move_topics.start');
                         <div class="rbox">
                             <label><input type="checkbox" name="with_redirect" value="1"<?php if ($action == 'single') {
     echo ' checked="checked"';
-} ?> /><?php _e('Leave redirect') ?><br /></label>
+} ?> /><?= __('Leave redirect') ?><br /></label>
                         </div>
                     </div>
                 </fieldset>
             </div>
-            <p class="buttons"><input type="submit" name="move_topics_to" value="<?php _e('Move') ?>" /> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
+            <p class="buttons"><input type="submit" name="move_topics_to" value="<?= __('Move') ?>" /> <a href="javascript:history.go(-1)"><?= __('Go back') ?></a></p>
         </form>
     </div>
 </div>

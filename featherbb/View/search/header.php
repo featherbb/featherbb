@@ -19,7 +19,7 @@ Container::get('hooks')->fire('view.search.header.start');
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
-            <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
+            <li><a href="<?= Url::base() ?>"><?= __('Index') ?></a></li>
             <li><span>»&#160;</span><a href="<?= Router::pathFor('search') ?>"><?= $search['crumbs_text']['show_as'] ?></a></li>
             <li><span>»&#160;</span><strong><?= $search['crumbs_text']['search_type'] ?></strong></li>
         </ul>
@@ -34,16 +34,16 @@ Container::get('hooks')->fire('view.search.header.start');
 if ($search['show_as'] == 'topics') :
 ?>
 <div id="vf" class="blocktable">
-    <h2><span><?php _e('Search results') ?></span></h2>
+    <h2><span><?= __('Search results') ?></span></h2>
     <div class="box">
         <div class="inbox">
             <table>
             <thead>
                 <tr>
-                    <th class="tcl" scope="col"><?php _e('Topic') ?></th>
-                    <th class="tc2" scope="col"><?php _e('Forum') ?></th>
-                    <th class="tc3" scope="col"><?php _e('Replies') ?></th>
-                    <th class="tcr" scope="col"><?php _e('Last post') ?></th>
+                    <th class="tcl" scope="col"><?= __('Topic') ?></th>
+                    <th class="tc2" scope="col"><?= __('Forum') ?></th>
+                    <th class="tc3" scope="col"><?= __('Replies') ?></th>
+                    <th class="tcr" scope="col"><?= __('Last post') ?></th>
                 </tr>
             </thead>
             <tbody>

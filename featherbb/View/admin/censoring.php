@@ -18,28 +18,28 @@ Container::get('hooks')->fire('view.admin.censoring.start');
 ?>
 
     <div class="blockform">
-        <h2><span><?php _e('Censoring head') ?></span></h2>
+        <h2><span><?= __('Censoring head') ?></span></h2>
         <div class="box">
             <form id="censoring" method="post" action="<?= Router::pathFor('adminCensoring') ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Add word subhead') ?></legend>
+                        <legend><?= __('Add word subhead') ?></legend>
                         <div class="infldset">
                             <p><?php echo _e('Add word info') . '&nbsp;'; echo (ForumSettings::get('o_censoring') == '1' ? sprintf(__('Censoring enabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Admin options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Admin options').'</a>')) ?></p>
                             <table>
                             <thead>
                                 <tr>
-                                    <th class="tcl" scope="col"><?php _e('Censored word label') ?></th>
-                                    <th class="tc2" scope="col"><?php _e('Replacement label') ?></th>
-                                    <th class="hidehead" scope="col"><?php _e('Action label') ?></th>
+                                    <th class="tcl" scope="col"><?= __('Censored word label') ?></th>
+                                    <th class="tc2" scope="col"><?= __('Replacement label') ?></th>
+                                    <th class="hidehead" scope="col"><?= __('Action label') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td class="tcl"><input type="text" name="new_search_for" size="24" maxlength="60" tabindex="1" autofocus /></td>
                                     <td class="tc2"><input type="text" name="new_replace_with" size="24" maxlength="60" tabindex="2" /></td>
-                                    <td><input type="submit" name="add_word" value="<?php _e('Add') ?>" tabindex="3" /></td>
+                                    <td><input type="submit" name="add_word" value="<?= __('Add') ?>" tabindex="3" /></td>
                                 </tr>
                             </tbody>
                             </table>
@@ -48,7 +48,7 @@ Container::get('hooks')->fire('view.admin.censoring.start');
                 </div>
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Edit remove subhead') ?></legend>
+                        <legend><?= __('Edit remove subhead') ?></legend>
                         <div class="infldset">
 <?php
 if (!empty($word_data)) {
@@ -56,9 +56,9 @@ if (!empty($word_data)) {
                             <table>
                             <thead>
                                 <tr>
-                                    <th class="tcl" scope="col"><?php _e('Censored word label') ?></th>
-                                    <th class="tc2" scope="col"><?php _e('Replacement label') ?></th>
-                                    <th class="hidehead" scope="col"><?php _e('Action label') ?></th>
+                                    <th class="tcl" scope="col"><?= __('Censored word label') ?></th>
+                                    <th class="tc2" scope="col"><?= __('Replacement label') ?></th>
+                                    <th class="hidehead" scope="col"><?= __('Action label') ?></th>
                                 </tr>
                             </thead>
                             <tbody>

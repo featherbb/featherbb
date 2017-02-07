@@ -18,16 +18,16 @@ Container::get('hooks')->fire('view.admin.categories.start');
 ?>
 
     <div class="blockform">
-        <h2><span><?php _e('Add categories head') ?></span></h2>
+        <h2><span><?= __('Add categories head') ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('addCategory') ?>">
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Add categories subhead') ?></legend>
+                        <legend><?= __('Add categories subhead') ?></legend>
                         <div class="infldset">
                             <table class="aligntop">
                                 <tr>
-                                    <th scope="row"><?php _e('Add category label') ?><div><input type="submit" value="<?php _e('Add new submit') ?>" tabindex="2" /></div></th>
+                                    <th scope="row"><?= __('Add category label') ?><div><input type="submit" value="<?= __('Add new submit') ?>" tabindex="2" /></div></th>
                                     <td>
                                         <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                                         <input type="text" name="cat_name" size="35" maxlength="80" tabindex="1" />
@@ -41,17 +41,17 @@ Container::get('hooks')->fire('view.admin.categories.start');
             </form>
         </div>
 
-<?php if (!empty($cat_list)): ?>        <h2 class="block2"><span><?php _e('Delete categories head') ?></span></h2>
+<?php if (!empty($cat_list)): ?>        <h2 class="block2"><span><?= __('Delete categories head') ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('deleteCategory') ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Delete categories subhead') ?></legend>
+                        <legend><?= __('Delete categories subhead') ?></legend>
                         <div class="infldset">
                             <table class="aligntop">
                                 <tr>
-                                    <th scope="row"><?php _e('Delete category label') ?><div><input type="submit" value="<?php _e('Delete') ?>" tabindex="4" /></div></th>
+                                    <th scope="row"><?= __('Delete category label') ?><div><input type="submit" value="<?= __('Delete') ?>" tabindex="4" /></div></th>
                                     <td>
                                         <select name="cat_to_delete" tabindex="3">
 <?php
@@ -62,7 +62,7 @@ Container::get('hooks')->fire('view.admin.categories.start');
 
 ?>
                                         </select>
-                                        <span style="color: red;"><input type="checkbox" name="disclaimer" value="1"> <?php _e('Delete category disclaimer') ?></span>
+                                        <span style="color: red;"><input type="checkbox" name="disclaimer" value="1"> <?= __('Delete category disclaimer') ?></span>
                                     </td>
                                 </tr>
                             </table>
@@ -73,19 +73,19 @@ Container::get('hooks')->fire('view.admin.categories.start');
         </div>
 <?php endif; ?>
 
-<?php if (!empty($cat_list)): ?>        <h2 class="block2"><span><?php _e('Edit categories head') ?></span></h2>
+<?php if (!empty($cat_list)): ?>        <h2 class="block2"><span><?= __('Edit categories head') ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('editCategory') ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Edit categories subhead') ?></legend>
+                        <legend><?= __('Edit categories subhead') ?></legend>
                         <div class="infldset">
                             <table id="categoryedit">
                             <thead>
                                 <tr>
-                                    <th class="tcl" scope="col"><?php _e('Category name label') ?></th>
-                                    <th scope="col"><?php _e('Category position label') ?></th>
+                                    <th class="tcl" scope="col"><?= __('Category name label') ?></th>
+                                    <th scope="col"><?= __('Category position label') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -104,7 +104,7 @@ Container::get('hooks')->fire('view.admin.categories.start');
 ?>
                             </tbody>
                             </table>
-                            <div class="fsetsubmit"><input type="submit" value="<?php _e('Update') ?>" /></div>
+                            <div class="fsetsubmit"><input type="submit" value="<?= __('Update') ?>" /></div>
                         </div>
                     </fieldset>
                 </div>

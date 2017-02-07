@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.install.start');
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title><?php _e('FeatherBB Installation') ?></title>
+    <title><?= __('FeatherBB Installation') ?></title>
     <link rel="stylesheet" type="text/css" href="<?= Url::base() ?>/style/themes/<?= ForumEnv::get('FORUM_NAME') ?>/style.css" />
 </head>
 
@@ -33,8 +33,8 @@ Container::get('hooks')->fire('view.install.start');
                 <div id="brdheader" class="block">
                     <div class="box">
                         <div id="brdtitle" class="inbox">
-                            <h1><span><?php _e('FeatherBB Installation') ?></span></h1>
-                            <div id="brddesc"><p><?php _e('Welcome') ?></p></div>
+                            <h1><span><?= __('FeatherBB Installation') ?></span></h1>
+                            <div id="brddesc"><p><?= __('Welcome') ?></p></div>
                         </div>
                     </div>
                 </div>
@@ -44,16 +44,16 @@ Container::get('hooks')->fire('view.install.start');
                 <div id="brdmain">
                     <?php if (count($languages) > 1): ?>
                         <div class="blockform">
-                            <h2><span><?php _e('Choose install language') ?></span></h2>
+                            <h2><span><?= __('Choose install language') ?></span></h2>
                             <div class="box">
                                 <form id="install" method="post" action="">
                                     <input type="hidden" name="choose_lang" value="1">
                                     <div class="inform">
                                         <fieldset>
-                                            <legend><?php _e('Install language') ?></legend>
+                                            <legend><?= __('Install language') ?></legend>
                                             <div class="infldset">
-                                                <p><?php _e('Choose install language info') ?></p>
-                                                <label><strong><?php _e('Install language') ?></strong>
+                                                <p><?= __('Choose install language info') ?></p>
+                                                <label><strong><?= __('Install language') ?></strong>
                                                     <br /><select name="install_lang">
                                                         <?php
 
@@ -67,7 +67,7 @@ Container::get('hooks')->fire('view.install.start');
                                                 </div>
                                             </fieldset>
                                         </div>
-                                        <p class="buttons"><input type="submit" value="<?php _e('Change language') ?>" /></p>
+                                        <p class="buttons"><input type="submit" value="<?= __('Change language') ?>" /></p>
                                     </form>
                                 </div>
                             </div>
@@ -83,7 +83,7 @@ Container::get('hooks')->fire('view.install.start');
                                     <?php if (!empty($errors)): ?>
                                         <div class="inform">
                                             <div class="forminfo error-info">
-                                                <h3><?php _e('Errors') ?></h3>
+                                                <h3><?= __('Errors') ?></h3>
                                                 <ul class="error-list">
                                                     <?php
                                                     $errors = (!is_array($errors)) ? [$errors] : $errors;
@@ -98,14 +98,14 @@ Container::get('hooks')->fire('view.install.start');
 
                                     <div class="inform">
                                         <div class="forminfo">
-                                            <h3><?php _e('Database setup') ?></h3>
-                                            <p><?php _e('Info 1') ?></p>
+                                            <h3><?= __('Database setup') ?></h3>
+                                            <p><?= __('Info 1') ?></p>
                                         </div>
                                         <fieldset>
-                                            <legend><?php _e('Select database') ?></legend>
+                                            <legend><?= __('Select database') ?></legend>
                                             <div class="infldset">
-                                                <p><?php _e('Info 2') ?></p>
-                                                <label class="required"><strong><?php _e('Database type') ?> <span><?php _e('Required') ?></span></strong></label>
+                                                <p><?= __('Info 2') ?></p>
+                                                <label class="required"><strong><?= __('Database type') ?> <span><?= __('Required') ?></span></strong></label>
                                                 <select name="install[db_type]" required>
                                                     <?php
 
@@ -121,10 +121,10 @@ Container::get('hooks')->fire('view.install.start');
 
                                     <div class="inform">
                                         <fieldset>
-                                            <legend><?php _e('Database hostname') ?></legend>
+                                            <legend><?= __('Database hostname') ?></legend>
                                             <div class="infldset">
-                                                <p><?php _e('Info 3') ?></p>
-                                                <label class="required"><strong><?php _e('Database server hostname') ?> <span><?php _e('Required') ?></span></strong></label>
+                                                <p><?= __('Info 3') ?></p>
+                                                <label class="required"><strong><?= __('Database server hostname') ?> <span><?= __('Required') ?></span></strong></label>
                                                 <input type="text" name="install[db_host]" size="50" value="localhost" required />
                                             </div>
                                         </fieldset>
@@ -132,10 +132,10 @@ Container::get('hooks')->fire('view.install.start');
 
                                     <div class="inform">
                                         <fieldset>
-                                            <legend><?php _e('Database enter name') ?></legend>
+                                            <legend><?= __('Database enter name') ?></legend>
                                             <div class="infldset">
-                                                <p><?php _e('Info 4') ?></p>
-                                                <label class="required"><strong><?php _e('Database name') ?> <span><?php _e('Required') ?></span></strong></label>
+                                                <p><?= __('Info 4') ?></p>
+                                                <label class="required"><strong><?= __('Database name') ?> <span><?= __('Required') ?></span></strong></label>
                                                 <input type="text" name="install[db_name]" size="30" required />
                                             </div>
                                         </fieldset>
@@ -143,12 +143,12 @@ Container::get('hooks')->fire('view.install.start');
 
                                     <div class="inform">
                                         <fieldset>
-                                            <legend><?php _e('Database enter informations') ?></legend>
+                                            <legend><?= __('Database enter informations') ?></legend>
                                             <div class="infldset">
-                                                <p><?php _e('Info 5') ?></p>
-                                                <label class="conl"><?php _e('Database username') ?></label>
+                                                <p><?= __('Info 5') ?></p>
+                                                <label class="conl"><?= __('Database username') ?></label>
                                                 <input type="text" name="install[db_user]" size="30" />
-                                                <label class="conl"><?php _e('Database password') ?></label>
+                                                <label class="conl"><?= __('Database password') ?></label>
                                                 <input type="password" name="install[db_pass]" size="30" />
                                                 <div class="clearer"></div>
                                             </div>
@@ -157,10 +157,10 @@ Container::get('hooks')->fire('view.install.start');
 
                                     <div class="inform">
                                         <fieldset>
-                                            <legend><?php _e('Database enter prefix') ?></legend>
+                                            <legend><?= __('Database enter prefix') ?></legend>
                                             <div class="infldset">
-                                                <p><?php _e('Info 6') ?></p>
-                                                <label><?php _e('Table prefix') ?></label>
+                                                <p><?= __('Info 6') ?></p>
+                                                <label><?= __('Table prefix') ?></label>
                                                 <input type="text" name="install[db_prefix]" size="20" maxlength="30" />
                                             </div>
                                         </fieldset>
@@ -168,21 +168,21 @@ Container::get('hooks')->fire('view.install.start');
 
                                     <div class="inform">
                                         <div class="forminfo">
-                                            <h3><?php _e('Administration setup') ?></h3>
-                                            <p><?php _e('Info 7') ?></p>
+                                            <h3><?= __('Administration setup') ?></h3>
+                                            <p><?= __('Info 7') ?></p>
                                         </div>
                                         <fieldset>
-                                            <legend><?php _e('Administration setup') ?></legend>
+                                            <legend><?= __('Administration setup') ?></legend>
                                             <div class="infldset">
-                                                <p><?php _e('Info 8') ?></p>
-                                                <label class="required"><strong><?php _e('Administrator username') ?> <span><?php _e('Required') ?></span></strong></label>
+                                                <p><?= __('Info 8') ?></p>
+                                                <label class="required"><strong><?= __('Administrator username') ?> <span><?= __('Required') ?></span></strong></label>
                                                 <input type="text" name="install[username]" size="25" maxlength="25" required />
-                                                <label class="conl required"><strong><?php _e('Password') ?> <span><?php _e('Required') ?></span></strong></label>
+                                                <label class="conl required"><strong><?= __('Password') ?> <span><?= __('Required') ?></span></strong></label>
                                                 <input type="password" name="install[password]" size="16" required />
-                                                <label class="conl required"><strong><?php _e('Confirm password') ?> <span><?php _e('Required') ?></span></strong></label>
+                                                <label class="conl required"><strong><?= __('Confirm password') ?> <span><?= __('Required') ?></span></strong></label>
                                                 <input type="password" name="install[password_conf]" size="16" required />
                                                 <!-- <div class="clearer"></div> -->
-                                                <label class="required"><strong><?php _e('Administrator email') ?> <span><?php _e('Required') ?></span></strong></label>
+                                                <label class="required"><strong><?= __('Administrator email') ?> <span><?= __('Required') ?></span></strong></label>
                                                 <input type="text" name="install[email]" size="50" maxlength="80" required />
                                             </div>
                                         </fieldset>
@@ -190,19 +190,19 @@ Container::get('hooks')->fire('view.install.start');
 
                                     <div class="inform">
                                         <div class="forminfo">
-                                            <h3><?php _e('Board setup') ?></h3>
-                                            <p><?php _e('Info 11') ?></p>
+                                            <h3><?= __('Board setup') ?></h3>
+                                            <p><?= __('Info 11') ?></p>
                                         </div>
                                         <fieldset>
-                                            <legend><?php _e('General information') ?></legend>
+                                            <legend><?= __('General information') ?></legend>
                                             <div class="infldset">
-                                                <label class="required"><strong><?php _e('Board title') ?> <span><?php _e('Required') ?></span></strong></label>
+                                                <label class="required"><strong><?= __('Board title') ?> <span><?= __('Required') ?></span></strong></label>
                                                 <input type="text" name="install[title]" value="<?= $data['title'] ?>" size="60" maxlength="255" required />
-                                                <label><?php _e('Board description') ?></label>
+                                                <label><?= __('Board description') ?></label>
                                                 <input type="text" name="install[description]" value="<?= $data['description'] ?>" size="60" maxlength="255" required />
-                                                <label class="required"><strong><?php _e('Base URL') ?> <span><?php _e('Required') ?></span></strong></label>
+                                                <label class="required"><strong><?= __('Base URL') ?> <span><?= __('Required') ?></span></strong></label>
                                                 <input type="text" name="install[base_url]" value="<?= $data['base_url'] ?>" size="60" maxlength="100" required />
-                                                <label class="required"><strong><?php _e('Default language') ?> <span><?php _e('Required') ?></span></strong></label>
+                                                <label class="required"><strong><?= __('Default language') ?> <span><?= __('Required') ?></span></strong></label>
                                                 <select name="install[language]" required />
                                                 <?php
                                                 foreach ($languages as $lang) {
@@ -214,7 +214,7 @@ Container::get('hooks')->fire('view.install.start');
                                     </fieldset>
                                 </div>
 
-                                <p class="buttons"><input type="submit" value="<?php _e('Start install') ?>" /></p>
+                                <p class="buttons"><input type="submit" value="<?= __('Start install') ?>" /></p>
                             </form>
                         </div>
                     </div>

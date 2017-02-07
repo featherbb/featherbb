@@ -21,7 +21,7 @@ Container::get('hooks')->fire('view.topic.start');
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
-            <li><a href="<?= Url::base() ?>/"><?php _e('Index') ?></a></li>
+            <li><a href="<?= Url::base() ?>/"><?= __('Index') ?></a></li>
             <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_topic['forum_id'], 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
             <li><span>»&#160;</span><strong><a href="<?= Router::pathFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></strong></li>
         </ul>
@@ -144,7 +144,7 @@ Container::get('hooks')->fire('view.topic.mod.actions');
 ?>
         </div>
         <ul class="crumbs">
-            <li><a href="<?= Url::base() ?>/"><?php _e('Index') ?></a></li>
+            <li><a href="<?= Url::base() ?>/"><?= __('Index') ?></a></li>
             <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_topic['forum_id'], 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
             <li><span>»&#160;</span><strong><a href="<?= Router::pathFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></strong></li>
         </ul>
@@ -161,13 +161,13 @@ if ($quickpost) {
 
     ?>
 <div id="quickpost" class="blockform">
-    <h2><span><?php _e('Quick post') ?></span></h2>
+    <h2><span><?= __('Quick post') ?></span></h2>
     <div class="box">
         <form id="quickpostform" method="post" action="<?= Router::pathFor('newReply', ['tid' => $id]) ?>">
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
-                    <legend><?php _e('Write message legend') ?></legend>
+                    <legend><?= __('Write message legend') ?></legend>
                     <div class="infldset txtarea">
                         <input type="hidden" name="form_sent" value="1" />
                         <input type="hidden" name="pid" value="<?= Utils::escape($pid) ?>" />
@@ -180,7 +180,7 @@ if ($quickpost) {
         $email_form_name = (ForumSettings::get('p_force_guest_email') == '1') ? 'req_email' : 'email';
         $required = (ForumSettings::get('p_force_guest_email') == '1') ? ' required="required"' : '';
         ?>
-                        <label class="conl required"><strong><?php _e('Guest name') ?> <span><?php _e('Required') ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="<?= $cur_index++ ?>" required="required" /><br /></label>
+                        <label class="conl required"><strong><?= __('Guest name') ?> <span><?= __('Required') ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="<?= $cur_index++ ?>" required="required" /><br /></label>
                         <label class="conl<?= (ForumSettings::get('p_force_guest_email') == '1') ? ' required' : '' ?>"><?= $email_label ?><br /><input type="text" name="<?= $email_form_name ?>" size="50" maxlength="80" tabindex="<?= $cur_index++ ?>" <?= $required; ?> /><br /></label>
                         <div class="clearer"></div>
 <?php
@@ -193,10 +193,10 @@ if ($quickpost) {
     ?>
                         <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="<?= $cur_index++ ?>" required="required"></textarea></label>
                         <ul class="bblinks">
-                            <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off');?></span></li>
-                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?php _e('url tag') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1' && User::can('post.links')) ? __('on') : __('off');?></span></li>
-                            <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1') ? __('on') : __('off');?></span></li>
-                            <li><span><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?= (ForumSettings::get('show.smilies') == '1') ? __('on') : __('off');?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?= __('BBCode') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off');?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open(this.href); return false;"><?= __('url tag') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1' && User::can('post.links')) ? __('on') : __('off');?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?= __('img tag') ?></a> <?= (ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1') ? __('on') : __('off');?></span></li>
+                            <li><span><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?= __('Smilies') ?></a> <?= (ForumSettings::get('show.smilies') == '1') ? __('on') : __('off');?></span></li>
                         </ul>
                     </div>
                 </fieldset>
@@ -204,15 +204,15 @@ if ($quickpost) {
             <?php if (User::get()->is_guest) : ?>
             <div class="inform">
                 <fieldset>
-                    <legend><?php _e('Robot title') ?></legend>
+                    <legend><?= __('Robot title') ?></legend>
                     <div class="infldset">
-                        <p><?php _e('Robot info')    ?></p>
+                        <p><?= __('Robot info')    ?></p>
                         <label class="required"><strong><?php
                              $question = array_keys($lang_antispam_questions);
     $qencoded = md5($question[$index_questions]);
     echo sprintf(__('Robot question'), $question[$index_questions]);
     ?>
-                             <span><?php _e('Required') ?></span></strong>
+                             <span><?= __('Required') ?></span></strong>
                              <br />
                              <input name="captcha" id="captcha" type="text" size="10" maxlength="30" required="required" /><input name="captcha_q" value="<?= $qencoded ?>" type="hidden" /><br />
                         </label>
@@ -221,7 +221,7 @@ if ($quickpost) {
             </div>
             <?php endif;
     ?>
-            <p class="buttons"><input type="submit" name="submit" tabindex="<?= $cur_index++ ?>" value="<?php _e('Submit') ?>" accesskey="s" /> <input type="submit" name="preview" value="<?php _e('Preview') ?>" tabindex="<?= $cur_index++ ?>" accesskey="p" /></p>
+            <p class="buttons"><input type="submit" name="submit" tabindex="<?= $cur_index++ ?>" value="<?= __('Submit') ?>" accesskey="s" /> <input type="submit" name="preview" value="<?= __('Preview') ?>" tabindex="<?= $cur_index++ ?>" accesskey="p" /></p>
         </form>
     </div>
 </div>

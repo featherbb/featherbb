@@ -15,7 +15,7 @@ if (!isset($feather)) {
 Container::get('hooks')->fire('view.misc.rules.start');
 ?>
 <div id="rules" class="block">
-    <div class="hd"><h2><span><?php _e('Forum rules') ?></span></h2></div>
+    <div class="hd"><h2><span><?= __('Forum rules') ?></span></h2></div>
     <div class="box">
         <div id="rules-block" class="inbox">
             <div class="usercontent"><?= ForumSettings::get('o_rules_message') ?></div>

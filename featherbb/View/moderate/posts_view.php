@@ -21,10 +21,10 @@ Container::get('hooks')->fire('view.moderate.posts_view.start');
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
-            <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
+            <li><a href="<?= Url::base() ?>"><?= __('Index') ?></a></li>
             <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $fid, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
             <li><span>»&#160;</span><a href="<?= Router::pathFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></li>
-            <li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
+            <li><span>»&#160;</span><strong><?= __('Moderate') ?></strong></li>
         </ul>
         <div class="pagepost">
             <p class="pagelink conl"><?= $paging_links ?></p>
@@ -58,7 +58,7 @@ foreach ($post_data as $post) {
                         </dl>
                     </div>
                     <div class="postright">
-                        <h3 class="nosize"><?php _e('Message') ?></h3>
+                        <h3 class="nosize"><?= __('Message') ?></h3>
                         <div class="postmsg">
                             <?= $post['message']."\n" ?>
     <?php if ($post['edited'] != '') {
@@ -85,14 +85,14 @@ foreach ($post_data as $post) {
     <div class="inbox crumbsplus">
         <div class="pagepost">
             <p class="pagelink conl"><?= $paging_links ?></p>
-            <p class="conr modbuttons"><input type="submit" name="split_posts" value="<?php _e('Split') ?>"<?= $button_status ?> /> <input type="submit" name="delete_posts" value="<?php _e('Delete') ?>"<?= $button_status ?> /></p>
+            <p class="conr modbuttons"><input type="submit" name="split_posts" value="<?= __('Split') ?>"<?= $button_status ?> /> <input type="submit" name="delete_posts" value="<?= __('Delete') ?>"<?= $button_status ?> /></p>
             <div class="clearer"></div>
         </div>
         <ul class="crumbs">
-            <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
+            <li><a href="<?= Url::base() ?>"><?= __('Index') ?></a></li>
             <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $fid, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_topic['forum_name']) ?></a></li>
             <li><span>»&#160;</span><a href="<?= Router::pathFor('Topic', ['id' => $id, 'name' => $url_topic]) ?>"><?= Utils::escape($cur_topic['subject']) ?></a></li>
-            <li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
+            <li><span>»&#160;</span><strong><?= __('Moderate') ?></strong></li>
         </ul>
         <div class="clearer"></div>
     </div>

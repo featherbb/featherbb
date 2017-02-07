@@ -18,50 +18,50 @@ Container::get('hooks')->fire('view.userlist.start');
 ?>
 
 <div class="blockform">
-    <h2><span><?php _e('User search') ?></span></h2>
+    <h2><span><?= __('User search') ?></span></h2>
     <div class="box">
         <form id="userlist" method="get" action="">
             <div class="inform">
                 <fieldset>
-                    <legend><?php _e('User find legend') ?></legend>
+                    <legend><?= __('User find legend') ?></legend>
                     <div class="infldset">
-<?php if (User::can('search.users')): ?>                        <label class="conl"><?php _e('Username') ?><br /><input type="text" name="username" value="<?= Utils::escape($username) ?>" size="25" maxlength="25" autofocus /><br /></label>
-<?php endif; ?>                        <label class="conl"><?php _e('User group')."\n" ?>
+<?php if (User::can('search.users')): ?>                        <label class="conl"><?= __('Username') ?><br /><input type="text" name="username" value="<?= Utils::escape($username) ?>" size="25" maxlength="25" autofocus /><br /></label>
+<?php endif; ?>                        <label class="conl"><?= __('User group')."\n" ?>
                         <br /><select name="show_group">
                             <option value="-1"<?php if ($show_group == -1) {
     echo ' selected="selected"';
-} ?>><?php _e('All users') ?></option>
+} ?>><?= __('All users') ?></option>
 <?= $dropdown_menu ?>
                         </select>
                         <br /></label>
-                        <label class="conl"><?php _e('Sort by')."\n" ?>
+                        <label class="conl"><?= __('Sort by')."\n" ?>
                         <br /><select name="sort_by">
                             <option value="username"<?php if ($sort_by == 'username') {
     echo ' selected="selected"';
-} ?>><?php _e('Username') ?></option>
+} ?>><?= __('Username') ?></option>
                             <option value="registered"<?php if ($sort_by == 'registered') {
     echo ' selected="selected"';
-} ?>><?php _e('Registered') ?></option>
+} ?>><?= __('Registered') ?></option>
 <?php if ($show_post_count): ?>                            <option value="num_posts"<?php if ($sort_by == 'num_posts') {
     echo ' selected="selected"';
-} ?>><?php _e('No of posts') ?></option>
+} ?>><?= __('No of posts') ?></option>
 <?php endif; ?>                        </select>
                         <br /></label>
-                        <label class="conl"><?php _e('Sort order')."\n" ?>
+                        <label class="conl"><?= __('Sort order')."\n" ?>
                         <br /><select name="sort_dir">
                             <option value="ASC"<?php if ($sort_dir == 'ASC') {
     echo ' selected="selected"';
-} ?>><?php _e('Ascending') ?></option>
+} ?>><?= __('Ascending') ?></option>
                             <option value="DESC"<?php if ($sort_dir == 'DESC') {
     echo ' selected="selected"';
-} ?>><?php _e('Descending') ?></option>
+} ?>><?= __('Descending') ?></option>
                         </select>
                         <br /></label>
                         <p class="clearb"><?php echo(User::can('search.users') ? __('User search info').' ' : '').__('User sort info'); ?></p>
                     </div>
                 </fieldset>
             </div>
-            <p class="buttons"><input type="submit" name="search" value="<?php _e('Submit') ?>" accesskey="s" /></p>
+            <p class="buttons"><input type="submit" name="search" value="<?= __('Submit') ?>" accesskey="s" /></p>
         </form>
     </div>
 </div>
@@ -74,16 +74,16 @@ Container::get('hooks')->fire('view.userlist.start');
 </div>
 
 <div id="users1" class="blocktable">
-    <h2><span><?php _e('User list') ?></span></h2>
+    <h2><span><?= __('User list') ?></span></h2>
     <div class="box">
         <div class="inbox">
             <table>
             <thead>
                 <tr>
-                    <th class="tcl" scope="col"><?php _e('Username') ?></th>
-                    <th class="tc2" scope="col"><?php _e('Title') ?></th>
-<?php if ($show_post_count): ?>                    <th class="tc3" scope="col"><?php _e('Posts') ?></th>
-<?php endif; ?>                    <th class="tcr" scope="col"><?php _e('Registered') ?></th>
+                    <th class="tcl" scope="col"><?= __('Username') ?></th>
+                    <th class="tc2" scope="col"><?= __('Title') ?></th>
+<?php if ($show_post_count): ?>                    <th class="tc3" scope="col"><?= __('Posts') ?></th>
+<?php endif; ?>                    <th class="tcr" scope="col"><?= __('Registered') ?></th>
                 </tr>
             </thead>
             <tbody>

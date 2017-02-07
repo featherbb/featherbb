@@ -20,9 +20,9 @@ Container::get('hooks')->fire('view.admin.users.find_users.start');
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
-            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?php _e('Admin'); echo ' '; _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
-            <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
+            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?= __('Admin'); echo ' '; _e('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminUsers') ?>"><?= __('Users') ?></a></li>
+            <li><span>»&#160;</span><strong><?= __('Results head') ?></strong></li>
         </ul>
         <div class="pagepost">
             <p class="pagelink"><?= $paging_links ?></p>
@@ -35,19 +35,19 @@ Container::get('hooks')->fire('view.admin.users.find_users.start');
 <form id="search-users-form" action="<?= Router::pathFor('adminUsers') ?>" method="post">
 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
 <div id="users2" class="blocktable">
-    <h2><span><?php _e('Results head') ?></span></h2>
+    <h2><span><?= __('Results head') ?></span></h2>
     <div class="box">
         <div class="inbox">
             <table>
             <thead>
                 <tr>
-                    <th class="tcl" scope="col"><?php _e('Results username head') ?></th>
-                    <th class="tc2" scope="col"><?php _e('Results e-mail head') ?></th>
-                    <th class="tc3" scope="col"><?php _e('Results title head') ?></th>
-                    <th class="tc4" scope="col"><?php _e('Results posts head') ?></th>
-                    <th class="tc5" scope="col"><?php _e('Results admin note head') ?></th>
-                    <th class="tcr" scope="col"><?php _e('Results actions head') ?></th>
-<?php if ($can_action): ?>                    <th class="tcmod" scope="col"><?php _e('Select') ?></th>
+                    <th class="tcl" scope="col"><?= __('Results username head') ?></th>
+                    <th class="tc2" scope="col"><?= __('Results e-mail head') ?></th>
+                    <th class="tc3" scope="col"><?= __('Results title head') ?></th>
+                    <th class="tc4" scope="col"><?= __('Results posts head') ?></th>
+                    <th class="tc5" scope="col"><?= __('Results admin note head') ?></th>
+                    <th class="tcr" scope="col"><?= __('Results actions head') ?></th>
+<?php if ($can_action): ?>                    <th class="tcmod" scope="col"><?= __('Select') ?></th>
 <?php endif;
     ?>
                 </tr>
@@ -86,17 +86,17 @@ Container::get('hooks')->fire('view.admin.users.find_users.start');
     <div class="inbox crumbsplus">
         <div class="pagepost">
             <p class="pagelink"><?= $paging_links ?></p>
-<?php if ($can_action): ?>            <p class="conr modbuttons"><a href="#" onclick="return select_checkboxes('search-users-form', this, '<?php _e('Unselect all') ?>')"><?php _e('Select all') ?></a> <?php if ($can_ban) : ?><input type="submit" name="ban_users" value="<?php _e('Ban') ?>" /><?php endif;
-    if ($can_delete) : ?><input type="submit" name="delete_users" value="<?php _e('Delete') ?>" /><?php endif;
-    if ($can_move) : ?><input type="submit" name="move_users" value="<?php _e('Change group') ?>" /><?php endif;
+<?php if ($can_action): ?>            <p class="conr modbuttons"><a href="#" onclick="return select_checkboxes('search-users-form', this, '<?= __('Unselect all') ?>')"><?= __('Select all') ?></a> <?php if ($can_ban) : ?><input type="submit" name="ban_users" value="<?= __('Ban') ?>" /><?php endif;
+    if ($can_delete) : ?><input type="submit" name="delete_users" value="<?= __('Delete') ?>" /><?php endif;
+    if ($can_move) : ?><input type="submit" name="move_users" value="<?= __('Change group') ?>" /><?php endif;
     ?></p>
 <?php endif;
     ?>
         </div>
         <ul class="crumbs">
-            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?php _e('Admin'); echo ' '; _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
-            <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
+            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?= __('Admin'); echo ' '; _e('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminUsers') ?>"><?= __('Users') ?></a></li>
+            <li><span>»&#160;</span><strong><?= __('Results head') ?></strong></li>
         </ul>
         <div class="clearer"></div>
     </div>

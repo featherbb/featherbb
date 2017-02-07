@@ -15,7 +15,7 @@ if (!isset($feather)) {
 Container::get('hooks')->fire('view.admin.maintenance.rebuild.start');
 ?>
 
-<h1><?php _e('Rebuilding index info') ?></h1>
+<h1><?= __('Rebuilding index info') ?></h1>
 
 <script type="text/javascript">window.location="<?= Router::pathFor('adminMaintenance').$query_str ?>"</script>
 

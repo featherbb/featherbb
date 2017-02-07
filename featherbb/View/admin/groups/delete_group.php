@@ -18,16 +18,16 @@ Container::get('hooks')->fire('view.admin.groups.delete_group.start');
 ?>
 
     <div class="blockform">
-        <h2><span><?php _e('Delete group head') ?></span></h2>
+        <h2><span><?= __('Delete group head') ?></span></h2>
         <div class="box">
             <form id="groups" method="post" action="<?= Router::pathFor('deleteGroup', ['id' => $id]) ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Move users subhead') ?></legend>
+                        <legend><?= __('Move users subhead') ?></legend>
                         <div class="infldset">
                             <p><?php printf(__('Move users info'), Utils::escape($group_info['title']), Utils::forum_number_format($group_info['members'])) ?></p>
-                            <label><?php _e('Move users label') ?>
+                            <label><?= __('Move users label') ?>
                             <select name="move_to_group">
                                 <?= $group_list_delete; ?>
                             </select>
@@ -35,7 +35,7 @@ Container::get('hooks')->fire('view.admin.groups.delete_group.start');
                         </div>
                     </fieldset>
                 </div>
-                <p class="buttons"><input type="submit" name="del_group" value="<?php _e('Delete group') ?>" /><a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
+                <p class="buttons"><input type="submit" name="del_group" value="<?= __('Delete group') ?>" /><a href="javascript:history.go(-1)"><?= __('Go back') ?></a></p>
             </form>
         </div>
     </div>

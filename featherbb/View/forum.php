@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.forum.start');
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
-            <li><a href="<?= Url::base() ?>/"><?php _e('Index') ?></a></li>
+            <li><a href="<?= Url::base() ?>/"><?= __('Index') ?></a></li>
             <li><span>»&#160;</span><strong><a href="<?php Router::pathFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
         </ul>
         <div class="pagepost">
@@ -38,10 +38,10 @@ Container::get('hooks')->fire('view.forum.start');
             <table>
             <thead>
                 <tr>
-                    <th class="tcl" scope="col"><?php _e('Topic') ?></th>
-                    <th class="tc2" scope="col"><?php _e('Replies') ?></th>
-<?php if (ForumSettings::get('o_topic_views') == '1'): ?>                    <th class="tc3" scope="col"><?php _e('Views') ?></th>
-<?php endif; ?>                    <th class="tcr" scope="col"><?php _e('Last post') ?></th>
+                    <th class="tcl" scope="col"><?= __('Topic') ?></th>
+                    <th class="tc2" scope="col"><?= __('Replies') ?></th>
+<?php if (ForumSettings::get('o_topic_views') == '1'): ?>                    <th class="tc3" scope="col"><?= __('Views') ?></th>
+<?php endif; ?>                    <th class="tcr" scope="col"><?= __('Last post') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -74,7 +74,7 @@ Container::get('hooks')->fire('view.forum.start');
                             <div class="icon inone"><div class="nosize"><!-- --></div></div>
                             <div class="tclcon">
                                 <div>
-                                    <strong><?php _e('Empty forum') ?></strong>
+                                    <strong><?= __('Empty forum') ?></strong>
                                 </div>
                             </div>
                         </td>
@@ -106,7 +106,7 @@ Container::get('hooks')->fire('view.forum.mod.actions');
 ?>
         </div>
         <ul class="crumbs">
-            <li><a href="<?= Url::base() ?>/"><?php _e('Index') ?></a></li>
+            <li><a href="<?= Url::base() ?>/"><?= __('Index') ?></a></li>
             <li><span>»&#160;</span><strong><a href="<?php Router::pathFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
         </ul>
 <?php echo(!empty($forum_actions) ? "\t\t".'<p class="subscribelink clearb">'.implode(' - ', $forum_actions).'</p>'."\n" : '') ?>

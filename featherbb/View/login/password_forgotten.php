@@ -18,10 +18,10 @@ Container::get('hooks')->fire('view.login.password_forgotten.start');
 if (!empty($errors)) {
     ?>
 <div id="posterror" class="block">
-    <h2><span><?php _e('New password errors') ?></span></h2>
+    <h2><span><?= __('New password errors') ?></span></h2>
     <div class="box">
         <div class="inbox error-info">
-            <p><?php _e('New passworderrors info') ?></p>
+            <p><?= __('New passworderrors info') ?></p>
             <ul class="error-list">
 <?php
 
@@ -39,21 +39,21 @@ if (!empty($errors)) {
 }
 ?>
 <div class="blockform">
-    <h2><span><?php _e('Request pass') ?></span></h2>
+    <h2><span><?= __('Request pass') ?></span></h2>
     <div class="box">
         <form id="request_pass" method="post" action="<?= Router::pathFor('resetPassword') ?>">
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
-                    <legend><?php _e('Request pass legend') ?></legend>
+                    <legend><?= __('Request pass legend') ?></legend>
                     <div class="infldset">
                         <input type="hidden" name="form_sent" value="1" />
-                        <label class="required"><strong><?php _e('Email') ?> <span><?php _e('Required') ?></span></strong><br /><input id="req_email" type="email" name="req_email" size="50" maxlength="80" required autofocus /><br /></label>
-                        <p><?php _e('Request pass info') ?></p>
+                        <label class="required"><strong><?= __('Email') ?> <span><?= __('Required') ?></span></strong><br /><input id="req_email" type="email" name="req_email" size="50" maxlength="80" required autofocus /><br /></label>
+                        <p><?= __('Request pass info') ?></p>
                     </div>
                 </fieldset>
             </div>
-            <p class="buttons"><input type="submit" name="request_pass" value="<?php _e('Submit') ?>" /><?php if (empty($errors)): ?> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a><?php endif; ?></p>
+            <p class="buttons"><input type="submit" name="request_pass" value="<?= __('Submit') ?>" /><?php if (empty($errors)): ?> <a href="javascript:history.go(-1)"><?= __('Go back') ?></a><?php endif; ?></p>
         </form>
     </div>
 </div>

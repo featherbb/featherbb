@@ -21,7 +21,7 @@ if(!empty($crumbs)): ?>
             <div class="linkst">
                 <div class="inbox">
                     <ul class="crumbs">
-                        <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
+                        <li><a href="<?= Url::base() ?>"><?= __('Index') ?></a></li>
 <?php foreach ($crumbs as $link => $text) { ?>
                         <li><span>»&#160;</span><?= (!is_int($link)) ? '<a href="'.$link.'">' : '<strong>' ?><?= Utils::escape($text) ?><?= (!is_int($link)) ? '</a>' : '</strong>' ?></li>
 <?php } ?>

@@ -16,20 +16,20 @@ Container::get('hooks')->fire('view.moderate.delete_topics.start');
 ?>
 
 <div class="blockform">
-    <h2><span><?php _e('Delete topics') ?></span></h2>
+    <h2><span><?= __('Delete topics') ?></span></h2>
     <div class="box">
         <form method="post" action="">
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <input type="hidden" name="topics" value="<?= implode(',', array_map('intval', array_keys($topics))) ?>" />
             <div class="inform">
                 <fieldset>
-                    <legend><?php _e('Confirm delete legend') ?></legend>
+                    <legend><?= __('Confirm delete legend') ?></legend>
                     <div class="infldset">
-                        <p><?php _e('Delete topics comply') ?></p>
+                        <p><?= __('Delete topics comply') ?></p>
                     </div>
                 </fieldset>
             </div>
-            <p class="buttons"><input type="submit" name="delete_topics_comply" value="<?php _e('Delete') ?>" /> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
+            <p class="buttons"><input type="submit" name="delete_topics_comply" value="<?= __('Delete') ?>" /> <a href="javascript:history.go(-1)"><?= __('Go back') ?></a></p>
         </form>
     </div>
 </div>

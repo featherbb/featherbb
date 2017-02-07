@@ -43,7 +43,7 @@ foreach ($display['cur_search'] as $search) {
                             <dt><?= $search['pposter_disp'] ?></dt>
                             <?php if ($search['pid'] == $search['first_post_id']) : ?>
                                 <dd>
-                                    <span><?php _e('Replies') . ' ' . Utils::forum_number_format($search['num_replies']) ?></span>
+                                    <span><?= __('Replies') . ' ' . Utils::forum_number_format($search['num_replies']) ?></span>
                                 </dd>
                             <?php endif; ?>
                             <dd>
@@ -66,10 +66,10 @@ foreach ($display['cur_search'] as $search) {
                     <div class="postfootright">
                         <ul>
                             <li><span><a
-                                        href="<?= Router::pathFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?php _e('Go to topic') ?></a></span>
+                                        href="<?= Router::pathFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?= __('Go to topic') ?></a></span>
                             </li>
                             <li><span><a
-                                        href="<?= Router::pathFor('viewPost', ['id' => $search['tid'], 'name' => $search['url_topic'], 'pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?php _e('Go to post') ?></a></span>
+                                        href="<?= Router::pathFor('viewPost', ['id' => $search['tid'], 'name' => $search['url_topic'], 'pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?= __('Go to post') ?></a></span>
                             </li>
                         </ul>
                     </div>

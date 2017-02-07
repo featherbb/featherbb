@@ -19,7 +19,7 @@ if (!isset($feather)) {
 Container::get('hooks')->fire('view.header.start');
 ?>
 <!doctype html>
-<html lang="<?php _e('lang_identifier') ?>">
+<html lang="<?= __('lang_identifier') ?>">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -128,7 +128,7 @@ echo "\t\t\t\t\t\t\t".implode("\n\t\t\t\t\t\t\t", $navlinks);
                     <div class="navbar-right">
                         <form method="get" action="<?= Router::pathFor('search'); ?>" class="nav-search">
                             <input type="hidden" name="action" value="search">
-                            <input type="text" name="keywords" size="20" maxlength="100" placeholder="<?php _e('Search') ?>">
+                            <input type="text" name="keywords" size="20" maxlength="100" placeholder="<?= __('Search') ?>">
                         </form>
                     </div>
                 </div>
@@ -190,7 +190,7 @@ Container::get('hooks')->fire('view.header.brdwelcome');
             </div>
 <?php if (User::can('board.read') && ForumSettings::get('o_announcement') == '1') : ?>
             <div id="announce" class="block">
-                <div class="hd"><h2><span><?php _e('Announcement') ?></span></h2></div>
+                <div class="hd"><h2><span><?= __('Announcement') ?></span></h2></div>
                 <div class="box">
                     <div id="announce-block" class="inbox">
                         <div class="usercontent"><?= ForumSettings::get('o_announcement_message') ?></div>
@@ -205,7 +205,7 @@ Container::get('hooks')->fire('view.header.brdwelcome');
         <div id="brdmain">
 <?php foreach (Container::get('flash')->getMessages() as $type => $message) { ?>
             <div class="flashmsg <?= $type; ?>" data-type="<?= $type; ?>" id="flashmsg">
-                <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
+                <h2><?= __('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
                 <p><?= htmlspecialchars_decode(Utils::escape($message[0])) ?></p>
             </div>
 <?php }

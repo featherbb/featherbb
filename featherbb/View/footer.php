@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.footer.start');
     </section>
     <footer class="container">
         <div id="brdfooter" class="block">
-            <h2><span><?php _e('Board footer') ?></span></h2>
+            <h2><span><?= __('Board footer') ?></span></h2>
             <div class="box">
                 <div id="brdfooternav" class="inbox">
 <?php
@@ -29,7 +29,7 @@ if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) { ?>
                     <div class="conl">
                         <form id="qjump" method="get" action="">
                             <div>
-                                <label><span><?php _e('Jump to') ?><br /></span></label>
+                                <label><span><?= __('Jump to') ?><br /></span></label>
                                 <select name="id" onchange="window.location=(this.options[this.selectedIndex].value)">
 <?php
                 foreach ($quickjump[(int) User::get()->g_id] as $cat_id => $cat_data) {
@@ -60,14 +60,14 @@ if (!empty($exec_info)) { ?>
 <?php }
 if (!empty($queries_info)) { ?>
         <div id="debug" class="blocktable">
-            <h2><span><?php _e('Debug table') ?></span></h2>
+            <h2><span><?= __('Debug table') ?></span></h2>
             <div class="box">
                 <div class="inbox">
                     <table>
                         <thead>
                             <tr>
-                                <th class="tcl" scope="col"><?php _e('Query times') ?></th>
-                                <th class="tcr" scope="col"><?php _e('Query') ?></th>
+                                <th class="tcl" scope="col"><?= __('Query times') ?></th>
+                                <th class="tcr" scope="col"><?= __('Query') ?></th>
                             </tr>
                         </thead>
                         <tbody>

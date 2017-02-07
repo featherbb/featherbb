@@ -18,7 +18,7 @@ Container::get('hooks')->fire('view.admin.maintenance.prune.start');
 ?>
 
     <div class="blockform">
-        <h2><span><?php _e('Prune head') ?></span></h2>
+        <h2><span><?= __('Prune head') ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('adminMaintenance') ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
@@ -28,14 +28,14 @@ Container::get('hooks')->fire('view.admin.maintenance.prune.start');
                     <input type="hidden" name="prune_sticky" value="<?= $prune_sticky ?>" />
                     <input type="hidden" name="prune_from" value="<?= $prune_from ?>" />
                     <fieldset>
-                        <legend><?php _e('Confirm prune subhead') ?></legend>
+                        <legend><?= __('Confirm prune subhead') ?></legend>
                         <div class="infldset">
                             <p><?php printf(__('Confirm prune info'), $prune['days'], $prune['forum'], Utils::forum_number_format($prune['num_topics'])) ?></p>
-                            <p class="warntext"><?php _e('Confirm prune warn') ?></p>
+                            <p class="warntext"><?= __('Confirm prune warn') ?></p>
                         </div>
                     </fieldset>
                 </div>
-                <p class="buttons"><input type="submit" name="prune_comply" value="<?php _e('Prune') ?>" /><a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
+                <p class="buttons"><input type="submit" name="prune_comply" value="<?= __('Prune') ?>" /><a href="javascript:history.go(-1)"><?= __('Go back') ?></a></p>
             </form>
         </div>
     </div>

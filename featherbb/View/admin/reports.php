@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.admin.reports.start');
 ?>
 
     <div class="blockform">
-        <h2><span><?php _e('New reports head') ?></span></h2>
+        <h2><span><?= __('New reports head') ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('adminReports') ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
@@ -44,7 +44,7 @@ if (!empty($report_data)) {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row"><?php _e('Reason') ?><div><input type="submit" name="zap_id[<?= $report['id'] ?>]" value="<?php _e('Zap') ?>" /></div></th>
+                                    <th scope="row"><?= __('Reason') ?><div><input type="submit" name="zap_id[<?= $report['id'] ?>]" value="<?= __('Zap') ?>" /></div></th>
                                     <td><?= str_replace("\n", '<br />', Utils::escape($report['message'])) ?></td>
                                 </tr>
                             </table>
@@ -58,9 +58,9 @@ if (!empty($report_data)) {
     ?>
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('None') ?></legend>
+                        <legend><?= __('None') ?></legend>
                         <div class="infldset">
-                            <p><?php _e('No new reports') ?></p>
+                            <p><?= __('No new reports') ?></p>
                         </div>
                     </fieldset>
                 </div>
@@ -74,7 +74,7 @@ if (!empty($report_data)) {
     </div>
 
     <div class="blockform block2">
-        <h2><span><?php _e('Last 10 head') ?></span></h2>
+        <h2><span><?= __('Last 10 head') ?></span></h2>
         <div class="box">
             <div class="fakeform">
 <?php
@@ -98,7 +98,7 @@ if (!empty($report_zapped_data)) {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row"><?php _e('Reason') ?></th>
+                                    <th scope="row"><?= __('Reason') ?></th>
                                     <td><?= str_replace("\n", '<br />', Utils::escape($report['message'])) ?></td>
                                 </tr>
                             </table>
@@ -112,9 +112,9 @@ if (!empty($report_zapped_data)) {
     ?>
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('None') ?></legend>
+                        <legend><?= __('None') ?></legend>
                         <div class="infldset">
-                            <p><?php _e('No zapped reports') ?></p>
+                            <p><?= __('No zapped reports') ?></p>
                         </div>
                     </fieldset>
                 </div>

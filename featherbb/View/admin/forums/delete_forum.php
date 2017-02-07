@@ -16,20 +16,20 @@ Container::get('hooks')->fire('view.admin.forums.delete.start');
 ?>
 
     <div class="blockform">
-        <h2><span><?php _e('Confirm delete head') ?></span></h2>
+        <h2><span><?= __('Confirm delete head') ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('deleteForum', ['id' => $cur_forum['id']]) ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Confirm delete subhead') ?></legend>
+                        <legend><?= __('Confirm delete subhead') ?></legend>
                         <div class="infldset">
                             <p><?php printf(__('Confirm delete info'), $cur_forum['forum_name']) ?></p>
-                            <p class="warntext"><?php _e('Confirm delete warn') ?></p>
+                            <p class="warntext"><?= __('Confirm delete warn') ?></p>
                         </div>
                     </fieldset>
                 </div>
-                <p class="buttons"><input type="submit" name="del_forum_comply" value="<?php _e('Delete') ?>" /><a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
+                <p class="buttons"><input type="submit" name="del_forum_comply" value="<?= __('Delete') ?>" /><a href="javascript:history.go(-1)"><?= __('Go back') ?></a></p>
             </form>
         </div>
     </div>

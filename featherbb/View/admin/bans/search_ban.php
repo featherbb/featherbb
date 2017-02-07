@@ -20,9 +20,9 @@ Container::get('hooks')->fire('view.admin.bans.search.start');
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
-            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?php _e('Admin'); echo ' ';  _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= Router::pathFor('addBan') ?>"><?php _e('Bans') ?></a></li>
-            <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
+            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?= __('Admin'); echo ' ';  _e('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('addBan') ?>"><?= __('Bans') ?></a></li>
+            <li><span>»&#160;</span><strong><?= __('Results head') ?></strong></li>
         </ul>
         <div class="pagepost">
             <p class="pagelink"><?= $paging_links ?></p>
@@ -33,19 +33,19 @@ Container::get('hooks')->fire('view.admin.bans.search.start');
 
 
 <div id="bans1" class="blocktable">
-    <h2><span><?php _e('Results head') ?></span></h2>
+    <h2><span><?= __('Results head') ?></span></h2>
     <div class="box">
         <div class="inbox">
             <table>
             <thead>
                 <tr>
-                    <th class="tcl" scope="col"><?php _e('Results username head') ?></th>
-                    <th class="tc2" scope="col"><?php _e('Results e-mail head') ?></th>
-                    <th class="tc3" scope="col"><?php _e('Results IP address head') ?></th>
-                    <th class="tc4" scope="col"><?php _e('Results expire head') ?></th>
-                    <th class="tc5" scope="col"><?php _e('Results message head') ?></th>
-                    <th class="tc6" scope="col"><?php _e('Results banned by head') ?></th>
-                    <th class="tcr" scope="col"><?php _e('Results actions head') ?></th>
+                    <th class="tcl" scope="col"><?= __('Results username head') ?></th>
+                    <th class="tc2" scope="col"><?= __('Results e-mail head') ?></th>
+                    <th class="tc3" scope="col"><?= __('Results IP address head') ?></th>
+                    <th class="tc4" scope="col"><?= __('Results expire head') ?></th>
+                    <th class="tc5" scope="col"><?= __('Results message head') ?></th>
+                    <th class="tc6" scope="col"><?= __('Results banned by head') ?></th>
+                    <th class="tcr" scope="col"><?= __('Results actions head') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -82,9 +82,9 @@ Container::get('hooks')->fire('view.admin.bans.search.start');
             <p class="pagelink"><?= $paging_links ?></p>
         </div>
         <ul class="crumbs">
-            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?php _e('Admin'); echo ' '; _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminBans') ?>"><?php _e('Bans') ?></a></li>
-            <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
+            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?= __('Admin'); echo ' '; _e('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminBans') ?>"><?= __('Bans') ?></a></li>
+            <li><span>»&#160;</span><strong><?= __('Results head') ?></strong></li>
         </ul>
         <div class="clearer"></div>
     </div>

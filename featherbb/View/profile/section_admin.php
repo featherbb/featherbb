@@ -28,9 +28,9 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
 
         if (!User::isAdmin()) {
             ?>
-                                    <legend><?php _e('Delete ban legend') ?></legend>
+                                    <legend><?= __('Delete ban legend') ?></legend>
                                     <div class="infldset">
-                                        <p><input type="submit" name="ban" value="<?php _e('Ban user') ?>" /></p>
+                                        <p><input type="submit" name="ban" value="<?= __('Ban user') ?>" /></p>
                                     </div>
                                 </fieldset>
                             </div>
@@ -39,12 +39,12 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
         } else {
             if (User::get()->id != $id) {
                 ?>
-                                    <legend><?php _e('Group membership legend') ?></legend>
+                                    <legend><?= __('Group membership legend') ?></legend>
                                     <div class="infldset">
                                         <select id="group_id" name="group_id">
 <?= $group_list ?>
                                         </select>
-                                        <input type="submit" name="update_group_membership" value="<?php _e('Save') ?>" />
+                                        <input type="submit" name="update_group_membership" value="<?= __('Save') ?>" />
                                     </div>
                                 </fieldset>
                             </div>
@@ -55,9 +55,9 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
             }
 
             ?>
-                                    <legend><?php _e('Delete ban legend') ?></legend>
+                                    <legend><?= __('Delete ban legend') ?></legend>
                                     <div class="infldset">
-                                        <input type="submit" name="delete_user" value="<?php _e('Delete user') ?>" /> <input type="submit" name="ban" value="<?php _e('Ban user') ?>" />
+                                        <input type="submit" name="delete_user" value="<?= __('Delete user') ?>" /> <input type="submit" name="ban" value="<?= __('Ban user') ?>" />
                                     </div>
                                 </fieldset>
                             </div>
@@ -67,13 +67,13 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
                 ?>
                             <div class="inform">
                                 <fieldset>
-                                    <legend><?php _e('Set mods legend') ?></legend>
+                                    <legend><?= __('Set mods legend') ?></legend>
                                     <div class="infldset">
-                                        <p><?php _e('Moderator in info') ?></p>
+                                        <p><?= __('Moderator in info') ?></p>
 <?= $forum_list ?>
                                             </div>
                                         </div>
-                                        <br class="clearb" /><input type="submit" name="update_forums" value="<?php _e('Update forums') ?>" />
+                                        <br class="clearb" /><input type="submit" name="update_forums" value="<?= __('Update forums') ?>" />
                                     </div>
                                 </fieldset>
                             </div>

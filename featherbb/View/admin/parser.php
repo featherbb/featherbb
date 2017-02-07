@@ -37,9 +37,9 @@ Container::get('hooks')->fire('view.admin.parser.start');
                                     <td colspan="2">
                                         <input type="radio" name="config[textile]" value="1"<?php if ($config['textile']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php _e('Yes') ?></strong>   <input type="radio" name="config[textile]" value="0"<?php if (!$config['textile']) {
+} ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="config[textile]" value="0"<?php if (!$config['textile']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php _e('No') ?></strong>
+} ?> /> <strong><?= __('No') ?></strong>
                                     </td>
                                     <td>
                                         <span><?= _e('textile help') ?></span>
@@ -50,9 +50,9 @@ Container::get('hooks')->fire('view.admin.parser.start');
                                     <td colspan="2">
                                         <input type="radio" name="config[quote_links]" value="1"<?php if ($config['quote_links']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php _e('Yes') ?></strong>   <input type="radio" name="config[quote_links]" value="0"<?php if (!$config['quote_links']) {
+} ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="config[quote_links]" value="0"<?php if (!$config['quote_links']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php _e('No') ?></strong>
+} ?> /> <strong><?= __('No') ?></strong>
                                     </td>
                                     <td>
                                         <span><?= _e('quote_links help') ?></span>
@@ -63,9 +63,9 @@ Container::get('hooks')->fire('view.admin.parser.start');
                                     <td colspan="2">
                                         <input type="radio" name="config[quote_imgs]" value="1"<?php if ($config['quote_imgs']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php _e('Yes') ?></strong>   <input type="radio" name="config[quote_imgs]" value="0"<?php if (!$config['quote_imgs']) {
+} ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="config[quote_imgs]" value="0"<?php if (!$config['quote_imgs']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php _e('No') ?></strong>
+} ?> /> <strong><?= __('No') ?></strong>
                                     </td>
                                     <td>
                                         <span><?= _e('quote_imgs help') ?></span>
@@ -76,9 +76,9 @@ Container::get('hooks')->fire('view.admin.parser.start');
                                     <td colspan="2">
                                         <input type="radio" name="config[click_imgs]" value="1"<?php if ($config['click_imgs']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php _e('Yes') ?></strong>   <input type="radio" name="config[click_imgs]" value="0"<?php if (!$config['click_imgs']) {
+} ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="config[click_imgs]" value="0"<?php if (!$config['click_imgs']) {
     echo ' checked="checked"';
-} ?> /> <strong><?php _e('No') ?></strong>
+} ?> /> <strong><?= __('No') ?></strong>
                                     </td>
                                     <td>
                                         <span><?= _e('click_imgs help') ?></span>
@@ -92,12 +92,12 @@ Container::get('hooks')->fire('view.admin.parser.start');
     echo ' checked="checked"';
 } if (!ini_get('allow_url_fopen')) {
     echo(' disabled="disabled" title="'._e('unavailable').'"');
-} ?> /> <strong><?php _e('Yes') ?></strong>
+} ?> /> <strong><?= __('Yes') ?></strong>
                                         <input type="radio" name="config[valid_imgs]" value="0"<?php if (!$config['valid_imgs']) {
     echo ' checked="checked"';
 } if (!ini_get('allow_url_fopen')) {
     echo(' disabled="disabled" title="'._e('unavailable').'"');
-} ?> /> <strong><?php _e('No') ?></strong>
+} ?> /> <strong><?= __('No') ?></strong>
                                     </td>
                                     <td><?= _e('valid_imgs help') ?></td>
                                 </tr>
@@ -259,19 +259,19 @@ foreach ($bbcd as $tagname => $tagdata) {
                                         <input type="radio" name="<?php echo($tagname) ?>_in_post" value="1"<?php if ($bbcd[$tagname]['in_post']) {
     echo ' checked="checked"';
 }
-    ?> /> <strong><?php _e('Yes') ?></strong>   <input type="radio" name="<?php echo($tagname) ?>_in_post" value="0"<?php if (!$bbcd[$tagname]['in_post']) {
+    ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="<?php echo($tagname) ?>_in_post" value="0"<?php if (!$bbcd[$tagname]['in_post']) {
     echo ' checked="checked"';
 }
-    ?> /> <strong><?php _e('No') ?></strong>
+    ?> /> <strong><?= __('No') ?></strong>
                                     </td>
                                     <td>
                                         <input type="radio" name="<?php echo($tagname) ?>_in_sig" value="1"<?php if ($bbcd[$tagname]['in_sig']) {
     echo ' checked="checked"';
 }
-    ?> /> <strong><?php _e('Yes') ?></strong>   <input type="radio" name="<?php echo($tagname) ?>_in_sig" value="0"<?php if (!$bbcd[$tagname]['in_sig']) {
+    ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="<?php echo($tagname) ?>_in_sig" value="0"<?php if (!$bbcd[$tagname]['in_sig']) {
     echo ' checked="checked"';
 }
-    ?> /> <strong><?php _e('No') ?></strong>
+    ?> /> <strong><?= __('No') ?></strong>
                                     </td>
                                     <td>
                                         <input type="text" size="10" name="<?php echo($tagname) ?>_depth_max" value="<?php echo($bbcd[$tagname]['depth_max']);

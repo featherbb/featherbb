@@ -18,32 +18,32 @@ Container::get('hooks')->fire('view.admin.users.move_users.start');
 ?>
 
     <div class="blockform">
-        <h2><span><?php _e('Move users') ?></span></h2>
+        <h2><span><?= __('Move users') ?></span></h2>
         <div class="box">
             <form name="confirm_move_users" method="post" action="<?= Router::pathFor('adminUsers') ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <input type="hidden" name="users" value="<?= implode(',', $move['user_ids']) ?>" />
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Move users subhead') ?></legend>
+                        <legend><?= __('Move users subhead') ?></legend>
                         <div class="infldset">
                             <table class="aligntop">
                                 <tr>
-                                    <th scope="row"><?php _e('New group label') ?></th>
+                                    <th scope="row"><?= __('New group label') ?></th>
                                     <td>
                                         <select name="new_group" tabindex="1">
 <?php foreach ($move['all_groups'] as $gid => $group) : ?>                                            <option value="<?= $gid ?>"><?= Utils::escape($group) ?></option>
 <?php endforeach;
     ?>
                                         </select>
-                                        <span><?php _e('New group help') ?></span>
+                                        <span><?= __('New group help') ?></span>
                                     </td>
                                 </tr>
                             </table>
                         </div>
                     </fieldset>
                 </div>
-                <p class="submitend"><input type="submit" name="move_users_comply" value="<?php _e('Save') ?>" tabindex="2" /></p>
+                <p class="submitend"><input type="submit" name="move_users_comply" value="<?= __('Save') ?>" tabindex="2" /></p>
             </form>
         </div>
     </div>

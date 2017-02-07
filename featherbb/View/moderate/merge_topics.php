@@ -16,22 +16,22 @@ Container::get('hooks')->fire('view.moderate.merge_topics.start');
 ?>
 
 <div class="blockform">
-    <h2><span><?php _e('Merge topics') ?></span></h2>
+    <h2><span><?= __('Merge topics') ?></span></h2>
     <div class="box">
         <form method="post" action="">
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <input type="hidden" name="topics" value="<?= implode(',', array_map('intval', array_keys($topics))) ?>" />
             <div class="inform">
                 <fieldset>
-                    <legend><?php _e('Confirm merge legend') ?></legend>
+                    <legend><?= __('Confirm merge legend') ?></legend>
                     <div class="infldset">
                         <div class="rbox">
-                            <label><input type="checkbox" name="with_redirect" value="1" /><?php _e('Leave redirect') ?><br /></label>
+                            <label><input type="checkbox" name="with_redirect" value="1" /><?= __('Leave redirect') ?><br /></label>
                         </div>
                     </div>
                 </fieldset>
             </div>
-            <p class="buttons"><input type="submit" name="merge_topics_comply" value="<?php _e('Merge') ?>" /> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
+            <p class="buttons"><input type="submit" name="merge_topics_comply" value="<?= __('Merge') ?>" /> <a href="javascript:history.go(-1)"><?= __('Go back') ?></a></p>
         </form>
     </div>
 </div>

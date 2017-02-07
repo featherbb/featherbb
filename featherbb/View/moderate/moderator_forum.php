@@ -21,9 +21,9 @@ Container::get('hooks')->fire('view.moderate.moderator_forum.start');
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
-            <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
+            <li><a href="<?= Url::base() ?>"><?= __('Index') ?></a></li>
             <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></li>
-            <li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
+            <li><span>»&#160;</span><strong><?= __('Moderate') ?></strong></li>
         </ul>
         <div class="pagepost">
             <p class="pagelink conl"><?= $paging_links ?></p>
@@ -42,11 +42,11 @@ Container::get('hooks')->fire('view.moderate.moderator_forum.start');
             <table>
             <thead>
                 <tr>
-                    <th class="tcl" scope="col"><?php _e('Topic') ?></th>
-                    <th class="tc2" scope="col"><?php _e('Replies') ?></th>
-<?php if (ForumSettings::get('o_topic_views') == '1'): ?>                    <th class="tc3" scope="col"><?php _e('Views') ?></th>
-<?php endif; ?>                    <th class="tcr"><?php _e('Last post') ?></th>
-                    <th class="tcmod" scope="col"><?php _e('Select') ?></th>
+                    <th class="tcl" scope="col"><?= __('Topic') ?></th>
+                    <th class="tc2" scope="col"><?= __('Replies') ?></th>
+<?php if (ForumSettings::get('o_topic_views') == '1'): ?>                    <th class="tc3" scope="col"><?= __('Views') ?></th>
+<?php endif; ?>                    <th class="tcr"><?= __('Last post') ?></th>
+                    <th class="tcmod" scope="col"><?= __('Select') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -92,20 +92,20 @@ Container::get('hooks')->fire('view.moderate.moderator_forum.start');
         <div class="pagepost">
             <p class="pagelink conl"><?= $paging_links ?></p>
             <p class="conr modbuttons">
-                <input type="submit" name="move_topics" value="<?php _e('Move') ?>"<?= $button_status ?> />
-                <input type="submit" name="delete_topics" value="<?php _e('Delete') ?>"<?= $button_status ?> />
-                <input type="submit" name="merge_topics" value="<?php _e('Merge') ?>"<?= $button_status ?> />
-                <input type="submit" name="open" value="<?php _e('Open') ?>"<?= $button_status ?> />
-                <input type="submit" name="close" value="<?php _e('Close') ?>"<?= $button_status ?> />
-                <input type="submit" name="stick" value="<?php _e('Stick') ?>"<?= $button_status ?> />
-                <input type="submit" name="unstick" value="<?php _e('Unstick') ?>"<?= $button_status ?> />
+                <input type="submit" name="move_topics" value="<?= __('Move') ?>"<?= $button_status ?> />
+                <input type="submit" name="delete_topics" value="<?= __('Delete') ?>"<?= $button_status ?> />
+                <input type="submit" name="merge_topics" value="<?= __('Merge') ?>"<?= $button_status ?> />
+                <input type="submit" name="open" value="<?= __('Open') ?>"<?= $button_status ?> />
+                <input type="submit" name="close" value="<?= __('Close') ?>"<?= $button_status ?> />
+                <input type="submit" name="stick" value="<?= __('Stick') ?>"<?= $button_status ?> />
+                <input type="submit" name="unstick" value="<?= __('Unstick') ?>"<?= $button_status ?> />
             </p>
             <div class="clearer"></div>
         </div>
         <ul class="crumbs">
-            <li><a href="<?= Url::base() ?>"><?php _e('Index') ?></a></li>
+            <li><a href="<?= Url::base() ?>"><?= __('Index') ?></a></li>
             <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></li>
-            <li><span>»&#160;</span><strong><?php _e('Moderate') ?></strong></li>
+            <li><span>»&#160;</span><strong><?= __('Moderate') ?></strong></li>
         </ul>
         <div class="clearer"></div>
     </div>

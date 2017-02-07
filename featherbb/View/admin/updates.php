@@ -20,27 +20,27 @@ Container::get('hooks')->fire('view.admin.updates.start');
 
 if (empty($upgrade_results)): ?>
     <div class="blockform">
-        <h2><span><?php _e('Available updates') ?></span></h2>
+        <h2><span><?= __('Available updates') ?></span></h2>
         <div class="box">
             <form id="upgrade-core" method="post" action="<?= Router::pathFor('adminUpgradeCore') ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('FeatherBB core') ?></legend>
+                        <legend><?= __('FeatherBB core') ?></legend>
                         <div class="infldset">
                             <p>
                                 <?= $core_updates_message; ?>
                             </p>
                         </div>
                     </fieldset>
-                    <?php if ($core_updates): ?><p class="buttons"><input type="submit" name="upgrade-core" value="<?php _e('Upgrade core') ?>" /></p><?php endif; ?>
+                    <?php if ($core_updates): ?><p class="buttons"><input type="submit" name="upgrade-core" value="<?= __('Upgrade core') ?>" /></p><?php endif; ?>
                 </div>
             </form>
             <form id="upgrade-plugins" method="post" action="<?= Router::pathFor('adminUpgradePlugins') ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Plugins') ?></legend>
+                        <legend><?= __('Plugins') ?></legend>
                         <div class="infldset">
 <?php
 if (!empty($plugin_updates)) {
@@ -64,7 +64,7 @@ $valid_plugin_updates = 0;
                                     <td class="tcr">
 <?php if(!isset($plugin->errors)): ++$valid_plugin_updates; ?>
                                         <a href="https://github.com/featherbb/<?= $plugin->name; ?>/releases/tag/<?= $plugin->last_version; ?>" target="_blank"><?= $plugin->last_version; ?></a>
-                                        <a href="http://marketplace.featherbb.org/plugins/view/<?= $plugin->name; ?>/changelog" target="_blank"><?php _e('View changelog') ?></a>
+                                        <a href="http://marketplace.featherbb.org/plugins/view/<?= $plugin->name; ?>/changelog" target="_blank"><?= __('View changelog') ?></a>
 <?php else: echo $plugin->errors; endif; ?>
                                     </td>
                                 </tr>
@@ -80,14 +80,14 @@ $valid_plugin_updates = 0;
 ?>
                         </div>
                     </fieldset>
-                    <?php if ($valid_plugin_updates > 0): ?><p class="buttons"><input type="submit" name="upgrade-plugins" value="<?php _e('Upgrade plugins') ?>" /></p><?php endif; ?>
+                    <?php if ($valid_plugin_updates > 0): ?><p class="buttons"><input type="submit" name="upgrade-plugins" value="<?= __('Upgrade plugins') ?>" /></p><?php endif; ?>
                 </div>
             </form>
             <form id="upgrade-themes" method="post" action="<?= Router::pathFor('adminUpgradeThemes') ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Themes') ?></legend>
+                        <legend><?= __('Themes') ?></legend>
                         <div class="infldset">
 <?php
 if (!empty($theme_updates)) {
@@ -95,8 +95,8 @@ if (!empty($theme_updates)) {
                             <table>
                             <thead>
                                 <tr>
-                                    <th class="tcl" scope="col"><?php _e('Theme') ?></th>
-                                    <th class="tcr" scope="col"><?php _e('Latest version label') ?></th>
+                                    <th class="tcl" scope="col"><?= __('Theme') ?></th>
+                                    <th class="tcr" scope="col"><?= __('Latest version label') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -108,7 +108,7 @@ if (!empty($theme_updates)) {
                                     </td>
                                     <td>
                                         <a href="https://github.com/featherbb/<?= $theme->name; ?>/releases/tag/<?= $theme->last_version; ?>" target="_blank"><?= $theme->last_version; ?></a>
-                                        <a href="http://marketplace.featherbb.org/themes/view/<?= $theme->name; ?>/changelog" target="_blank"><?php _e('View changelog') ?></a>
+                                        <a href="http://marketplace.featherbb.org/themes/view/<?= $theme->name; ?>/changelog" target="_blank"><?= __('View changelog') ?></a>
                                     </td>
                                 </tr>
 <?php endforeach; ?>
@@ -124,18 +124,18 @@ if (!empty($theme_updates)) {
                         </div>
                     </fieldset>
                 </div>
-                <?php if (!empty($theme_updates)): ?><p class="buttons"><input type="submit" name="upgrade-themes" value="<?php _e('Upgrade themes') ?>" /></p><?php endif; ?>
+                <?php if (!empty($theme_updates)): ?><p class="buttons"><input type="submit" name="upgrade-themes" value="<?= __('Upgrade themes') ?>" /></p><?php endif; ?>
             </form>
         </div>
     </div>
 <?php else: ?>
     <div class="blockform">
-        <h2><span><?php _e('Upgrade results') ?></span></h2>
+        <h2><span><?= __('Upgrade results') ?></span></h2>
         <div class="box">
             <div class="fakeform">
                 <div class="inform">
                     <fieldset>
-                        <legend><?php _e('Upgrade results') ?></legend>
+                        <legend><?= __('Upgrade results') ?></legend>
                         <div class="infldset">
                             <!-- <p>The pre-defined groups Guests, Administrators, Moderators and Members cannot be removed. However, they can be edited. Please note that in some groups, some options are unavailable (e.g. the <em>edit posts</em> permission for guests). Administrators always have full permissions.</p> -->
                             <table>

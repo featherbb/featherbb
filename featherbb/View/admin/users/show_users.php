@@ -20,9 +20,9 @@ Container::get('hooks')->fire('view.admin.users.show_users.start');
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
-            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?php _e('Admin'); echo ' '; _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
-            <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
+            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?= __('Admin'); echo ' '; _e('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminUsers') ?>"><?= __('Users') ?></a></li>
+            <li><span>»&#160;</span><strong><?= __('Results head') ?></strong></li>
         </ul>
         <div class="pagepost">
             <p class="pagelink"><?= $paging_links ?></p>
@@ -32,18 +32,18 @@ Container::get('hooks')->fire('view.admin.users.show_users.start');
 </div>
 
 <div id="users2" class="blocktable">
-    <h2><span><?php _e('Results head') ?></span></h2>
+    <h2><span><?= __('Results head') ?></span></h2>
     <div class="box">
         <div class="inbox">
             <table>
             <thead>
                 <tr>
-                    <th class="tcl" scope="col"><?php _e('Results username head') ?></th>
-                    <th class="tc2" scope="col"><?php _e('Results e-mail head') ?></th>
-                    <th class="tc3" scope="col"><?php _e('Results title head') ?></th>
-                    <th class="tc4" scope="col"><?php _e('Results posts head') ?></th>
-                    <th class="tc5" scope="col"><?php _e('Results admin note head') ?></th>
-                    <th class="tcr" scope="col"><?php _e('Results actions head') ?></th>
+                    <th class="tcl" scope="col"><?= __('Results username head') ?></th>
+                    <th class="tc2" scope="col"><?= __('Results e-mail head') ?></th>
+                    <th class="tc3" scope="col"><?= __('Results title head') ?></th>
+                    <th class="tc4" scope="col"><?= __('Results posts head') ?></th>
+                    <th class="tc5" scope="col"><?= __('Results admin note head') ?></th>
+                    <th class="tcr" scope="col"><?= __('Results actions head') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -69,7 +69,7 @@ Container::get('hooks')->fire('view.admin.users.show_users.start');
                 <tr>
                     <td class="tcl"><?= Utils::escape($cur_poster['poster']) ?></td>
                     <td class="tc2">&#160;</td>
-                    <td class="tc3"><?php _e('Results guest') ?></td>
+                    <td class="tc3"><?= __('Results guest') ?></td>
                     <td class="tc4">&#160;</td>
                     <td class="tc5">&#160;</td>
                     <td class="tcr">&#160;</td>
@@ -95,9 +95,9 @@ Container::get('hooks')->fire('view.admin.users.show_users.start');
             <p class="pagelink"><?= $paging_links ?></p>
         </div>
         <ul class="crumbs">
-            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?php _e('Admin'); echo ' '; _e('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminUsers') ?>"><?php _e('Users') ?></a></li>
-            <li><span>»&#160;</span><strong><?php _e('Results head') ?></strong></li>
+            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?= __('Admin'); echo ' '; _e('Index') ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('adminUsers') ?>"><?= __('Users') ?></a></li>
+            <li><span>»&#160;</span><strong><?= __('Results head') ?></strong></li>
         </ul>
         <div class="clearer"></div>
     </div>
