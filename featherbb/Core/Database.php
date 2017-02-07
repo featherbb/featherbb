@@ -70,10 +70,10 @@ use Serializable;
         // ------------------------ //
 
         // Class configuration
-        protected static $_default_config = array(
+        protected static $_default_config = [
             'connection_string' => 'sqlite::memory:',
             'id_column' => 'id',
-            'id_column_overrides' => array(),
+            'id_column_overrides' => [],
             'error_mode' => PDO::ERRMODE_EXCEPTION,
             'username' => null,
             'password' => null,
@@ -86,22 +86,22 @@ use Serializable;
             'caching_auto_clear' => false,
             'return_result_sets' => false,
             'prefix' => null, // Add prefix feature
-        );
+        ];
 
         // Map of configuration settings
-        protected static $_config = array();
+        protected static $_config = [];
 
         // Map of database connections, instances of the PDO class
-        protected static $_db = array();
+        protected static $_db = [];
 
         // Last query run, only populated if logging is enabled
         protected static $_last_query;
 
         // Log of all queries run, mapped by connection key, only populated if logging is enabled
-        protected static $_query_log = array();
+        protected static $_query_log = [];
 
         // Query cache, only used if query caching is enabled
-        protected static $_query_cache = array();
+        protected static $_query_cache = [];
 
         // Reference to previously used PDOStatement object to enable low-level access, if needed
         protected static $_last_statement = null;
@@ -120,16 +120,16 @@ use Serializable;
         protected $_table_alias = null;
 
         // Values to be bound to the query
-        protected $_values = array();
+        protected $_values = [];
 
         // Columns to select in the result
-        protected $_result_columns = array('*');
+        protected $_result_columns = ['*'];
 
         // Are we using the default result column or have these been manually changed?
         protected $_using_default_result_columns = true;
 
         // Join sources
-        protected $_join_sources = array();
+        protected $_join_sources = [];
 
         // Should the query include a DISTINCT keyword?
         protected $_distinct = false;
@@ -141,10 +141,10 @@ use Serializable;
         protected $_raw_query = '';
 
         // The raw query parameters
-        protected $_raw_parameters = array();
+        protected $_raw_parameters = [];
 
         // Array of WHERE clauses
-        protected $_where_conditions = array();
+        protected $_where_conditions = [];
 
         // LIMIT
         protected $_limit = null;
@@ -153,23 +153,23 @@ use Serializable;
         protected $_offset = null;
 
         // ORDER BY
-        protected $_order_by = array();
+        protected $_order_by = [];
 
         // GROUP BY
-        protected $_group_by = array();
+        protected $_group_by = [];
 
         // HAVING
-        protected $_having_conditions = array();
+        protected $_having_conditions = [];
 
         // The data for a hydrated instance of the class
-        protected $_data = array();
+        protected $_data = [];
 
         // Fields that have been modified during the
         // lifetime of the object
-        protected $_dirty_fields = array();
+        protected $_dirty_fields = [];
 
         // Fields that are to be inserted in the DB raw
-        protected $_expr_fields = array();
+        protected $_expr_fields = [];
 
         // Is this a new object (has create() been called)?
         protected $_is_new = false;
@@ -235,7 +235,7 @@ use Serializable;
          */
         public static function reset_config()
         {
-            self::$_config = array();
+            self::$_config = [];
         }
 
         /**
@@ -254,7 +254,7 @@ use Serializable;
                 $table_name = self::$_config[$connection_name]['prefix'] . $table_name;
             }
             self::_setup_db($connection_name);
-            return new self($table_name, array(), $connection_name);
+            return new self($table_name, [], $connection_name);
         }
 
         /**
@@ -318,7 +318,7 @@ use Serializable;
          */
         public static function reset_db()
         {
-            self::$_db = array();
+            self::$_db = [];
         }
 
         /**
@@ -418,7 +418,7 @@ use Serializable;
          * @param string $connection_name Which connection to use
          * @return bool Success
          */
-        public static function raw_execute($query, $parameters = array(), $connection_name = self::DEFAULT_CONNECTION)
+        public static function raw_execute($query, $parameters = [], $connection_name = self::DEFAULT_CONNECTION)
         {
             self::_setup_db($connection_name);
             return self::_execute($query, $parameters, $connection_name);
@@ -443,7 +443,7 @@ use Serializable;
          * @param string $connection_name Which connection to use
          * @return bool Response of PDOStatement::execute()
          */
-        protected static function _execute($query, $parameters = array(), $connection_name = self::DEFAULT_CONNECTION)
+        protected static function _execute($query, $parameters = [], $connection_name = self::DEFAULT_CONNECTION)
         {
             $statement = self::get_db($connection_name)->prepare($query);
             self::$_last_statement = $statement;
@@ -491,14 +491,14 @@ use Serializable;
             }
 
             if (!isset(self::$_query_log[$connection_name])) {
-                self::$_query_log[$connection_name] = array();
+                self::$_query_log[$connection_name] = [];
             }
 
             if (empty($parameters)) {
                 $bound_query = $query;
             } else {
                 // Escape the parameters
-                $parameters = array_map(array(self::get_db($connection_name), 'quote'), $parameters);
+                $parameters = array_map([self::get_db($connection_name), 'quote'], $parameters);
 
                 if (array_values($parameters) === $parameters) {
                     // ? placeholders
@@ -567,7 +567,7 @@ use Serializable;
             if (isset(self::$_query_log[$connection_name])) {
                 return self::$_query_log[$connection_name];
             }
-            return array();
+            return [];
         }
 
         /**
@@ -587,7 +587,7 @@ use Serializable;
          * "Private" constructor; shouldn't be called directly.
          * Use the self::for_table factory method instead.
          */
-        protected function __construct($table_name, $data = array(), $connection_name = self::DEFAULT_CONNECTION)
+        protected function __construct($table_name, $data = [], $connection_name = self::DEFAULT_CONNECTION)
         {
             $this->_table_name = $table_name;
             $this->_data = $data;
@@ -717,7 +717,7 @@ use Serializable;
         protected function _find_many()
         {
             $rows = $this->_run();
-            return array_map(array($this, '_create_instance_from_row'), $rows);
+            return array_map([$this, '_create_instance_from_row'], $rows);
         }
 
         /**
@@ -802,7 +802,7 @@ use Serializable;
                 $column = $this->_quote_identifier($column);
             }
             $result_columns = $this->_result_columns;
-            $this->_result_columns = array();
+            $this->_result_columns = [];
             $this->select_expr("$sql_function($column)", $alias);
             $result = $this->find_one();
             $this->_result_columns = $result_columns;
@@ -826,7 +826,7 @@ use Serializable;
          * This will usually be called only from inside the class,
          * but it's public in case you need to call it directly.
          */
-        public function hydrate($data = array())
+        public function hydrate($data = [])
         {
             $this->_data = $data;
             return $this;
@@ -849,7 +849,7 @@ use Serializable;
          * be bound to the placeholders in the query. If this method
          * is called, all other query building methods will be ignored.
          */
-        public function raw_query($query, $parameters = array())
+        public function raw_query($query, $parameters = [])
         {
             $this->_is_raw_query = true;
             $this->_raw_query = $query;
@@ -878,7 +878,7 @@ use Serializable;
             }
 
             if ($this->_using_default_result_columns) {
-                $this->_result_columns = array($expr);
+                $this->_result_columns = [$expr];
                 $this->_using_default_result_columns = false;
             } else {
                 $this->_result_columns[] = $expr;
@@ -1036,7 +1036,7 @@ use Serializable;
          */
         protected function _normalise_select_many_columns($columns)
         {
-            $return = array();
+            $return = [];
             foreach ($columns as $column) {
                 if (is_array($column)) {
                     foreach ($column as $key => $value) {
@@ -1120,7 +1120,7 @@ use Serializable;
         /**
          * Add a RAW JOIN source to the query
          */
-        public function raw_join($table, $constraint, $table_alias, $parameters = array())
+        public function raw_join($table, $constraint, $table_alias, $parameters = [])
         {
             // Add table alias if present
             if (!is_null($table_alias)) {
@@ -1185,7 +1185,7 @@ use Serializable;
         /**
          * Internal method to add a HAVING condition to the query
          */
-        protected function _add_having($fragment, $values = array())
+        protected function _add_having($fragment, $values = [])
         {
             return $this->_add_condition('having', $fragment, $values);
         }
@@ -1204,7 +1204,7 @@ use Serializable;
         public function _add_having_placeholder($column_name, $separator, $values)
         {
             if (!is_array($column_name)) {
-                $data = array($column_name => $values);
+                $data = [$column_name => $values];
             } else {
                 $data = $column_name;
             }
@@ -1222,7 +1222,7 @@ use Serializable;
          */
         public function _add_having_no_value($column_name, $operator)
         {
-            $conditions = (is_array($column_name)) ? $column_name : array($column_name);
+            $conditions = (is_array($column_name)) ? $column_name : [$column_name];
             $result = $this;
             foreach ($conditions as $column) {
                 $column = $this->_quote_identifier($column);
@@ -1234,7 +1234,7 @@ use Serializable;
         /**
          * Internal method to add a WHERE condition to the query
          */
-        protected function _add_where($fragment, $values = array())
+        protected function _add_where($fragment, $values = [])
         {
             return $this->_add_condition('where', $fragment, $values);
         }
@@ -1253,7 +1253,7 @@ use Serializable;
         public function _add_where_placeholder($column_name, $separator, $values)
         {
             if (!is_array($column_name)) {
-                $data = array($column_name => $values);
+                $data = [$column_name => $values];
             } else {
                 $data = $column_name;
             }
@@ -1271,7 +1271,7 @@ use Serializable;
          */
         public function _add_where_no_value($column_name, $operator)
         {
-            $conditions = (is_array($column_name)) ? $column_name : array($column_name);
+            $conditions = (is_array($column_name)) ? $column_name : [$column_name];
             $result = $this;
             foreach ($conditions as $column) {
                 $column = $this->_quote_identifier($column);
@@ -1283,16 +1283,16 @@ use Serializable;
         /**
          * Internal method to add a HAVING or WHERE condition to the query
          */
-        protected function _add_condition($type, $fragment, $values = array())
+        protected function _add_condition($type, $fragment, $values = [])
         {
             $conditions_class_property_name = "_{$type}_conditions";
             if (!is_array($values)) {
-                $values = array($values);
+                $values = [$values];
             }
-            array_push($this->$conditions_class_property_name, array(
+            array_push($this->$conditions_class_property_name, [
                 self::CONDITION_FRAGMENT => $fragment,
                 self::CONDITION_VALUES => $values,
-            ));
+            ]);
             return $this;
         }
 
@@ -1306,7 +1306,7 @@ use Serializable;
          */
         protected function _add_simple_condition($type, $column_name, $separator, $value)
         {
-            $multiple = is_array($column_name) ? $column_name : array($column_name => $value);
+            $multiple = is_array($column_name) ? $column_name : [$column_name => $value];
             $result = $this;
 
             foreach ($multiple as $key => $val) {
@@ -1332,7 +1332,7 @@ use Serializable;
         protected function _create_placeholders($fields)
         {
             if (!empty($fields)) {
-                $db_fields = array();
+                $db_fields = [];
                 foreach ($fields as $key => $value) {
                     // Process expression fields directly into the query
                     if (array_key_exists($key, $this->_expr_fields)) {
@@ -1354,7 +1354,7 @@ use Serializable;
          */
         protected function _get_compound_id_column_values($value)
         {
-            $filtered = array();
+            $filtered = [];
             foreach ($this->_get_id_column_name() as $key) {
                 $filtered[$key] = isset($value[$key]) ? $value[$key] : null;
             }
@@ -1367,7 +1367,7 @@ use Serializable;
          */
         protected function _get_compound_id_column_values_array($values)
         {
-            $filtered = array();
+            $filtered = [];
             foreach ($values as $value) {
                 $filtered[] = $this->_get_compound_id_column_values($value);
             }
@@ -1430,8 +1430,8 @@ use Serializable;
          */
         public function where_any_is($values, $operator = '=')
         {
-            $data = array();
-            $query = array("((");
+            $data = [];
+            $query = ["(("];
             $first = true;
             foreach ($values as $item) {
                 if ($first) {
@@ -1568,7 +1568,7 @@ use Serializable;
          * contain question mark placeholders, which will be bound
          * to the parameters supplied in the second argument.
          */
-        public function where_raw($clause, $parameters = array())
+        public function where_raw($clause, $parameters = [])
         {
             return $this->_add_where($clause, $parameters);
         }
@@ -1808,7 +1808,7 @@ use Serializable;
          * contain question mark placeholders, which will be bound
          * to the parameters supplied in the second argument.
          */
-        public function having_raw($clause, $parameters = array())
+        public function having_raw($clause, $parameters = [])
         {
             return $this->_add_having($clause, $parameters);
         }
@@ -1828,7 +1828,7 @@ use Serializable;
 
             // Build and return the full SELECT statement by concatenating
             // the results of calling each separate builder method.
-            return $this->_join_if_not_empty(" ", array(
+            return $this->_join_if_not_empty(" ", [
                 $this->_build_select_start(),
                 $this->_build_join(),
                 $this->_build_where(),
@@ -1837,7 +1837,7 @@ use Serializable;
                 $this->_build_order_by(),
                 $this->_build_limit(),
                 $this->_build_offset(),
-            ));
+            ]);
         }
 
         /**
@@ -1918,7 +1918,7 @@ use Serializable;
                 return '';
             }
 
-            $conditions = array();
+            $conditions = [];
             foreach ($this->$conditions_class_property_name as $condition) {
                 $conditions[] = $condition[self::CONDITION_FRAGMENT];
                 $this->_values = array_merge($this->_values, $condition[self::CONDITION_VALUES]);
@@ -1978,7 +1978,7 @@ use Serializable;
          */
         protected function _join_if_not_empty($glue, $pieces)
         {
-            $filtered_pieces = array();
+            $filtered_pieces = [];
             foreach ($pieces as $piece) {
                 if (is_string($piece)) {
                     $piece = trim($piece);
@@ -1998,7 +1998,7 @@ use Serializable;
         protected function _quote_one_identifier($identifier)
         {
             $parts = explode('.', $identifier);
-            $parts = array_map(array($this, '_quote_identifier_part'), $parts);
+            $parts = array_map([$this, '_quote_identifier_part'], $parts);
             return join('.', $parts);
         }
 
@@ -2011,7 +2011,7 @@ use Serializable;
         protected function _quote_identifier($identifier)
         {
             if (is_array($identifier)) {
-                $result = array_map(array($this, '_quote_one_identifier'), $identifier);
+                $result = array_map([$this, '_quote_one_identifier'], $identifier);
                 return join(', ', $result);
             } else {
                 return $this->_quote_one_identifier($identifier);
@@ -2044,7 +2044,7 @@ use Serializable;
         protected static function _create_cache_key($query, $parameters, $table_name = null, $connection_name = self::DEFAULT_CONNECTION)
         {
             if (isset(self::$_config[$connection_name]['create_cache_key']) and is_callable(self::$_config[$connection_name]['create_cache_key'])) {
-                return call_user_func_array(self::$_config[$connection_name]['create_cache_key'], array($query, $parameters, $table_name, $connection_name));
+                return call_user_func_array(self::$_config[$connection_name]['create_cache_key'], [$query, $parameters, $table_name, $connection_name]);
             }
             $parameter_string = join(',', $parameters);
             $key = $query . ':' . $parameter_string;
@@ -2058,7 +2058,7 @@ use Serializable;
         protected static function _check_query_cache($cache_key, $table_name = null, $connection_name = self::DEFAULT_CONNECTION)
         {
             if (isset(self::$_config[$connection_name]['check_query_cache']) and is_callable(self::$_config[$connection_name]['check_query_cache'])) {
-                return call_user_func_array(self::$_config[$connection_name]['check_query_cache'], array($cache_key, $table_name, $connection_name));
+                return call_user_func_array(self::$_config[$connection_name]['check_query_cache'], [$cache_key, $table_name, $connection_name]);
             } elseif (isset(self::$_query_cache[$connection_name][$cache_key])) {
                 return self::$_query_cache[$connection_name][$cache_key];
             }
@@ -2070,9 +2070,9 @@ use Serializable;
          */
         public static function clear_cache($table_name = null, $connection_name = self::DEFAULT_CONNECTION)
         {
-            self::$_query_cache = array();
+            self::$_query_cache = [];
             if (isset(self::$_config[$connection_name]['clear_cache']) and is_callable(self::$_config[$connection_name]['clear_cache'])) {
-                return call_user_func_array(self::$_config[$connection_name]['clear_cache'], array($table_name, $connection_name));
+                return call_user_func_array(self::$_config[$connection_name]['clear_cache'], [$table_name, $connection_name]);
             }
         }
 
@@ -2082,9 +2082,9 @@ use Serializable;
         protected static function _cache_query_result($cache_key, $value, $table_name = null, $connection_name = self::DEFAULT_CONNECTION)
         {
             if (isset(self::$_config[$connection_name]['cache_query_result']) and is_callable(self::$_config[$connection_name]['cache_query_result'])) {
-                return call_user_func_array(self::$_config[$connection_name]['cache_query_result'], array($cache_key, $value, $table_name, $connection_name));
+                return call_user_func_array(self::$_config[$connection_name]['cache_query_result'], [$cache_key, $value, $table_name, $connection_name]);
             } elseif (!isset(self::$_query_cache[$connection_name])) {
-                self::$_query_cache[$connection_name] = array();
+                self::$_query_cache[$connection_name] = [];
             }
             self::$_query_cache[$connection_name][$cache_key] = $value;
         }
@@ -2110,7 +2110,7 @@ use Serializable;
             self::_execute($query, $this->_values, $this->_connection_name);
             $statement = self::get_last_statement();
 
-            $rows = array();
+            $rows = [];
             while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
                 $rows[] = $row;
             }
@@ -2120,8 +2120,8 @@ use Serializable;
             }
 
             // reset Idiorm after executing the query
-            $this->_values = array();
-            $this->_result_columns = array('*');
+            $this->_values = [];
+            $this->_result_columns = ['*'];
             $this->_using_default_result_columns = true;
 
             return $rows;
@@ -2134,7 +2134,7 @@ use Serializable;
         public function get_query()
         {
             $query = $this->_build_select();
-            return array('query' => $query, 'parameters' => $this->_values);
+            return ['query' => $query, 'parameters' => $this->_values];
         }
 
         /**
@@ -2162,7 +2162,7 @@ use Serializable;
         public function get($key)
         {
             if (is_array($key)) {
-                $result = array();
+                $result = [];
                 foreach ($key as $column) {
                     $result[$column] = isset($this->_data[$column]) ? $this->_data[$column] : null;
                 }
@@ -2244,7 +2244,7 @@ use Serializable;
         protected function _set_orm_property($key, $value = null, $expr = false)
         {
             if (!is_array($key)) {
-                $key = array($key => $value);
+                $key = [$key => $value];
             }
             foreach ($key as $field => $value) {
                 $this->_data[$field] = $value;
@@ -2282,7 +2282,7 @@ use Serializable;
          */
         public function save()
         {
-            $query = array();
+            $query = [];
 
             // remove any expression fields as they are already baked into the query
             $values = array_values(array_diff_key($this->_dirty_fields, $this->_expr_fields));
@@ -2332,7 +2332,7 @@ use Serializable;
                 }
             }
 
-            $this->_dirty_fields = $this->_expr_fields = array();
+            $this->_dirty_fields = $this->_expr_fields = [];
             return $success;
         }
 
@@ -2342,7 +2342,7 @@ use Serializable;
         public function _add_id_column_conditions(&$query)
         {
             $query[] = "WHERE";
-            $keys = is_array($this->_get_id_column_name()) ? $this->_get_id_column_name() : array($this->_get_id_column_name());
+            $keys = is_array($this->_get_id_column_name()) ? $this->_get_id_column_name() : [$this->_get_id_column_name()];
             $first = true;
             foreach ($keys as $key) {
                 if ($first) {
@@ -2360,10 +2360,10 @@ use Serializable;
          */
         protected function _build_update()
         {
-            $query = array();
+            $query = [];
             $query[] = "UPDATE {$this->_quote_identifier($this->_table_name)} SET";
 
-            $field_list = array();
+            $field_list = [];
             foreach ($this->_dirty_fields as $key => $value) {
                 if (!array_key_exists($key, $this->_expr_fields)) {
                     $value = '?';
@@ -2382,7 +2382,7 @@ use Serializable;
         {
             $query[] = "INSERT INTO";
             $query[] = $this->_quote_identifier($this->_table_name);
-            $field_list = array_map(array($this, '_quote_identifier'), array_keys($this->_dirty_fields));
+            $field_list = array_map([$this, '_quote_identifier'], array_keys($this->_dirty_fields));
             $query[] = "(" . join(", ", $field_list) . ")";
             $query[] = "VALUES";
 
@@ -2401,12 +2401,12 @@ use Serializable;
          */
         public function delete()
         {
-            $query = array(
+            $query = [
                 "DELETE FROM",
                 $this->_quote_identifier($this->_table_name)
-            );
+            ];
             $this->_add_id_column_conditions($query);
-            return self::_execute(join(" ", $query), is_array($this->id(true)) ? array_values($this->id(true)) : array($this->id(true)), $this->_connection_name);
+            return self::_execute(join(" ", $query), is_array($this->id(true)) ? array_values($this->id(true)) : [$this->id(true)], $this->_connection_name);
         }
 
         /**
@@ -2416,11 +2416,11 @@ use Serializable;
         {
             // Build and return the full DELETE statement by concatenating
             // the results of calling each separate builder method.
-            $query = $this->_join_if_not_empty(" ", array(
+            $query = $this->_join_if_not_empty(" ", [
                 "DELETE FROM",
                 $this->_quote_identifier($this->_table_name),
                 $this->_build_where(),
-            ));
+            ]);
 
             return self::_execute($query, $this->_values, $this->_connection_name);
         }
@@ -2432,15 +2432,15 @@ use Serializable;
         {
             // Build and return the full DELETE statement by concatenating
             // the results of calling each separate builder method.
-            $query = $this->_join_if_not_empty(" ", array(
+            $query = $this->_join_if_not_empty(" ", [
                 "UPDATE",
                 $this->_quote_identifier($this->_table_name),
                 "SET",
                 $this->_quote_identifier($key),
                 "= ?",
                 $this->_build_where(),
-            ));
-            $params = array($value);
+            ]);
+            $params = [$value];
             $this->_values = array_merge($params, $this->_values);
 
             return self::_execute($query, $this->_values, $this->_connection_name);
@@ -2453,15 +2453,15 @@ use Serializable;
         {
             // Build and return the full DELETE statement by concatenating
             // the results of calling each separate builder method.
-            $query = $this->_join_if_not_empty(" ", array(
+            $query = $this->_join_if_not_empty(" ", [
                 "UPDATE",
                 $this->_quote_identifier($this->_table_name),
                 "SET",
                 $this->_quote_identifier($key),
                 "= " . $value,
                 $this->_build_where(),
-            ));
-            $this->_values = array_merge(array(), $this->_values);
+            ]);
+            $this->_values = array_merge([], $this->_values);
 
             return self::_execute($query, $this->_values, $this->_connection_name);
         }
@@ -2535,7 +2535,7 @@ use Serializable;
             $method = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $name));
 
             if (method_exists($this, $method)) {
-                return call_user_func_array(array($this, $method), $arguments);
+                return call_user_func_array([$this, $method], $arguments);
             } else {
                 throw new Error("Method $name() does not exist in class " . get_class($this));
             }
@@ -2557,7 +2557,7 @@ use Serializable;
         {
             $method = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $name));
 
-            return call_user_func_array(array('Database', $method), $arguments);
+            return call_user_func_array(['Database', $method], $arguments);
         }
     }
 
@@ -2651,7 +2651,7 @@ use Serializable;
               )                         # End $1: Quoted chunk.
             | ([^\'"\\\\]+)             # or $2: an unquoted chunk (no escapes).
             /sx';
-            return preg_replace_callback($re_parse, array($this, '_str_replace_outside_quotes_cb'), $this->subject);
+            return preg_replace_callback($re_parse, [$this, '_str_replace_outside_quotes_cb'], $this->subject);
         }
 
         /**
@@ -2684,13 +2684,13 @@ use Serializable;
          * The current result set as an array
          * @var array
          */
-        protected $_results = array();
+        protected $_results = [];
 
         /**
          * Optionally set the contents of the result set by passing in array
          * @param array $results
          */
-        public function __construct(array $results = array())
+        public function __construct(array $results = [])
         {
             $this->set_results($results);
         }
@@ -2808,11 +2808,11 @@ use Serializable;
          * @param array $params
          * @return \IdiormResultSet
          */
-        public function __call($method, $params = array())
+        public function __call($method, $params = [])
         {
             foreach ($this->_results as $model) {
                 if (method_exists($model, $method)) {
-                    call_user_func_array(array($model, $method), $params);
+                    call_user_func_array([$model, $method], $params);
                 } else {
                     throw new Error("Method $method() does not exist in class " . get_class($this));
                 }

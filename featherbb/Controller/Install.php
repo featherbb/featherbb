@@ -17,17 +17,17 @@ use FeatherBB\Middleware\Core;
 
 class Install
 {
-    protected $supported_dbs = array('mysql' => 'MySQL',
+    protected $supported_dbs = ['mysql' => 'MySQL',
         'pgsql' => 'PostgreSQL',
         'sqlite' => 'SQLite',
         'sqlite3' => 'SQLite3',
-    );
+    ];
     protected $available_langs;
-    protected $optional_fields = array('db_user', 'db_pass', 'db_prefix');
+    protected $optional_fields = ['db_user', 'db_pass', 'db_prefix'];
     protected $install_lang = 'English';
     protected $default_style = 'FeatherBB';
-    protected $config_keys = array('db_type', 'db_host', 'db_name', 'db_user', 'db_pass', 'db_prefix');
-    protected $errors = array();
+    protected $config_keys = ['db_type', 'db_host', 'db_name', 'db_user', 'db_pass', 'db_prefix'];
+    protected $errors = [];
 
     public function __construct()
     {
@@ -56,7 +56,7 @@ class Install
 
         // Second form has been submitted to start install
         if (Request::isPost() && !Input::post('choose_lang')) {
-            $missing_fields = array();
+            $missing_fields = [];
             $data = array_map(function ($item) {
                 return Utils::escape(Utils::trim($item));
             }, Input::post('install'));
@@ -65,7 +65,7 @@ class Install
                 // Handle empty fields
                 if (empty($value)) {
                     // If the field is required, or if user and pass are missing even though mysql or pgsql are selected as DB
-                    if (!in_array($field, $this->optional_fields) || (in_array($field, array('db_user')) && in_array($data['db_type'], array('mysql', 'pgsql')))) {
+                    if (!in_array($field, $this->optional_fields) || (in_array($field, ['db_user']) && in_array($data['db_type'], ['mysql', 'pgsql']))) {
                         $missing_fields[] = $field;
                     }
                 }
@@ -129,29 +129,29 @@ class Install
 
             // End validation and check errors
             if (!empty($this->errors)) {
-                return View::setPageInfo(array(
+                return View::setPageInfo([
                     'languages' => $this->available_langs,
                     'supported_dbs' => $this->supported_dbs,
                     'data' => $data,
                     'errors' => $this->errors,
-                ))->addTemplate('install.php')->display(false);
+                ])->addTemplate('install.php')->display(false);
             } else {
                 $data['style'] = $this->default_style;
-                $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), array('on', 'true', '1')) ? 1 : 0;
+                $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), ['on', 'true', '1']) ? 1 : 0;
                 return $this->create_config($data);
             }
         } else {
             $base_url = str_replace('index.php', '', Url::base());
-            $data = array('title' => __('My FeatherBB Forum'),
+            $data = ['title' => __('My FeatherBB Forum'),
                 'description' => __('Description'),
                 'base_url' => $base_url,
-                'language' => $this->install_lang);
-            return View::setPageInfo(array(
+                'language' => $this->install_lang];
+            return View::setPageInfo([
                 'languages' => $this->available_langs,
                 'supported_dbs' => $this->supported_dbs,
                 'data' => $data,
-                'alerts' => array(),
-            ))->addTemplate('install.php')->display(false);
+                'alerts' => [],
+            ])->addTemplate('install.php')->display(false);
         }
     }
 
@@ -160,18 +160,18 @@ class Install
         Container::get('hooks')->fire('controller.install.create_config');
 
         // Generate config ...
-        $config = array();
+        $config = [];
         foreach ($data as $key => $value) {
             if (in_array($key, $this->config_keys)) {
                 $config[$key] = $value;
             }
         }
 
-        $config = array_merge($config, array(
+        $config = array_merge($config, [
             'cookie_name' => mb_strtolower(ForumEnv::get('FORUM_NAME')).'_cookie_'.Random::key(7, false, true),
             'jwt_token' => base64_encode(Random::secure_random_bytes(64)),
             'jwt_algorithm' => 'HS512'
-        ));
+        ]);
 
         // ... And write it on disk
         if ($this->write_config($config)) {
@@ -215,13 +215,13 @@ class Install
         // Container::get('perms')->allowGroup(4, array('topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send'));
         // Container::get('perms')->allowGroup(2, array('mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users', 'user.set_title'));
 
-        Container::get('perms')->allowGroup(3, array('board.read', 'users.view', 'search.topics', 'search.users'));
-        Container::get('perms')->allowGroup(4, array('board.read', 'users.view', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send'));
-        Container::get('perms')->allowGroup(2, array('board.read', 'users.view', 'user.set_title', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send', 'mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users'));
-        Container::get('perms')->allowGroup(1, array('*'));
+        Container::get('perms')->allowGroup(3, ['board.read', 'users.view', 'search.topics', 'search.users']);
+        Container::get('perms')->allowGroup(4, ['board.read', 'users.view', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send']);
+        Container::get('perms')->allowGroup(2, ['board.read', 'users.view', 'user.set_title', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send', 'mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users']);
+        Container::get('perms')->allowGroup(1, ['*']);
         Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
         // Init preferences
-        Container::get('prefs')->set(array(
+        Container::get('prefs')->set([
             'disp.topics' => 30,
             'disp.posts' => 25,
             'post.min_interval' => 60,
@@ -245,19 +245,19 @@ class Install
             'email.setting' => 1,
             'notify_with_post' => 0,
             'auto_notify' => 0,
-        ));
-        Container::get('prefs')->setGroup(2, array(
+        ]);
+        Container::get('prefs')->setGroup(2, [
             'post.min_interval' => 0,
             'search.min_interval' => 0,
             'email.min_interval' => 0,
             'report.min_interval' => 0
-        ));
-        Container::get('prefs')->setGroup(1, array(
+        ]);
+        Container::get('prefs')->setGroup(1, [
             'post.min_interval' => 0,
             'search.min_interval' => 0,
             'email.min_interval' => 0,
             'report.min_interval' => 0
-        ));
+        ]);
 
 
         // Populate user table with default values
@@ -296,7 +296,7 @@ class Install
     {
         Container::get('hooks')->fire('controller.install.load_default_config');
 
-        return array(
+        return [
             'o_cur_version'                => ForumEnv::get('FORUM_VERSION'),
             'o_database_revision'        => ForumEnv::get('FORUM_DB_REVISION'),
             'o_searchindex_revision'    => ForumEnv::get('FORUM_SI_REVISION'),
@@ -371,6 +371,6 @@ class Install
             'p_allow_banned_email'        => 1,
             'p_allow_dupe_email'        => 0,
             'p_force_guest_email'        => 1
-        );
+        ];
     }
 }

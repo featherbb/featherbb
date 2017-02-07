@@ -16,7 +16,7 @@ class Parser
     //   stored in the style/img/smilies directory.
     public function get_smiley_files()
     {
-        $imgfiles = array();
+        $imgfiles = [];
         $filelist = scandir(ForumEnv::get('FEATHER_ROOT').'style/img/smilies');
         $filelist = Container::get('hooks')->fire('model.admin.parser.get_smiley_files.filelist', $filelist);
         foreach ($filelist as $file) {
@@ -31,7 +31,7 @@ class Parser
     // Array of BBCode text (title) elements
     public function tagSummary() 
     {
-        $tagSummary = array(
+        $tagSummary = [
             'unknown' => 'Unrecognized Tag',
             'code'    => 'Computer Code',
             'quote'   => 'Block Quotation',
@@ -48,7 +48,7 @@ class Parser
             'tt'      => 'Teletype Text',
             'center'  => 'Centered Block',
             'err'     => 'Error Codes',
-        );
+        ];
         $tagSummary = Container::get('hooks')->fire('model.admin.parser.tagSummary', $tagSummary);
         
         return $tagSummary;

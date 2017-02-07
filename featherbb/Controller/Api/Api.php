@@ -11,5 +11,5 @@ namespace FeatherBB\Controller\Api;
 
 class Api
 {
-    protected $errorMessage = array("error" => "Not Found");
+    protected $errorMessage = ["error" => "Not Found"];
 }

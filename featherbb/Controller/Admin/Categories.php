@@ -51,9 +51,9 @@ class Categories
         }
 
         foreach (Input::post('cat') as $cat_id => $properties) {
-            $category = array('id' => (int) $cat_id,
+            $category = ['id' => (int) $cat_id,
                               'name' => Utils::escape($properties['name']),
-                              'order' => (int) $properties['order'], );
+                              'order' => (int) $properties['order'],];
             if ($category['name'] == '') {
                 return Router::redirect(Router::pathFor('adminCategories'), __('Must enter name message'));
             }
@@ -94,11 +94,11 @@ class Categories
 
         AdminUtils::generateAdminMenu('categories');
 
-        View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Categories')),
+        View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Categories')],
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'cat_list' => $this->model->get_cat_list(),
-            ))->addTemplate('admin/categories.php')->display();
+        ])->addTemplate('admin/categories.php')->display();
     }
 }

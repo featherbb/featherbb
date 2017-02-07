@@ -11,7 +11,7 @@ namespace FeatherBB\Core;
 
 class Url
 {
-    protected static $url_replace = array(
+    protected static $url_replace = [
                                         'À' => 'A',
                                         'Á' => 'A',
                                         'Â' => 'A',
@@ -585,14 +585,14 @@ class Url
                                         '('    =>    '-',
                                         '"'    =>    '-',
                                         "'"    =>    '-',
-                            );
+    ];
 
     //
     // Generate a string with numbered links (for multipage scripts)
     //
     public static function paginate($num_pages, $cur_page, $link, $args = null)
     {
-        $pages = array();
+        $pages = [];
         $link_to_all = false;
 
         // If $cur_page == -1, we link to all pages (used in Forum.php)
@@ -602,7 +602,7 @@ class Url
         }
 
         if ($num_pages <= 1) {
-            $pages = array('<strong class="item1">1</strong>');
+            $pages = ['<strong class="item1">1</strong>'];
         } else {
             // Add a previous page link
             if ($num_pages > 1 && $cur_page > 1) {
@@ -651,7 +651,7 @@ class Url
     //
     public static function paginate_old($num_pages, $cur_page, $link)
     {
-        $pages = array();
+        $pages = [];
         $link_to_all = false;
 
         // If $cur_page == -1, we link to all pages (used in Forum.php)
@@ -661,7 +661,7 @@ class Url
         }
 
         if ($num_pages <= 1) {
-            $pages = array('<strong class="item1">1</strong>');
+            $pages = ['<strong class="item1">1</strong>'];
         } else {
             // Add a previous page link
             if ($num_pages > 1 && $cur_page > 1) {
@@ -712,7 +712,7 @@ class Url
     {
         $str = strtr($str, self::$url_replace);
         $str = strtolower(utf8_decode($str));
-        $str = Utils::trim(preg_replace(array('/[^a-z0-9\s]/', '/[\s]+/'), array('', '-'), $str), '-');
+        $str = Utils::trim(preg_replace(['/[^a-z0-9\s]/', '/[\s]+/'], ['', '-'], $str), '-');
 
         if (empty($str)) {
             $str = 'view';

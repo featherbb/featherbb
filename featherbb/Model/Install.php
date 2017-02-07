@@ -15,7 +15,7 @@ use FeatherBB\Core\Utils;
 
 class Install
 {
-    protected $database_scheme = array(
+    protected $database_scheme = [
         'bans' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `username` varchar(200) DEFAULT NULL,
@@ -217,7 +217,7 @@ class Install
             PRIMARY KEY (`id`),
             UNIQUE KEY `users_username_idx` (`username`(25)),
             KEY `users_registered_idx` (`registered`)
-        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",);
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",];
 
     public function create_table($table_name, $sql)
     {
@@ -244,8 +244,8 @@ class Install
     public function save_config(array $data)
     {
         foreach ($data as $key => $value) {
-            $this->add_data('config', array('conf_name' => $key,
-                                            'conf_value' => $value));
+            $this->add_data('config', ['conf_name' => $key,
+                                            'conf_value' => $value]);
         }
     }
 
@@ -256,43 +256,43 @@ class Install
 
     public static function load_default_groups()
     {
-        $groups['Administrators'] = array(
+        $groups['Administrators'] = [
             'g_id' => 1,
             'g_title' => __('Administrators'),
             'g_user_title' => __('Administrator'),
-        );
-        $groups['Moderators'] = array(
+        ];
+        $groups['Moderators'] = [
             'g_id' => 2,
             'g_title' => __('Moderators'),
             'g_user_title' => __('Moderator'),
-        );
-        $groups['Guests'] = array(
+        ];
+        $groups['Guests'] = [
             'g_id' => 3,
             'g_title' => __('Guests'),
             'g_user_title' => __('Guest'),
-        );
-        $groups['Members'] = array(
+        ];
+        $groups['Members'] = [
             'g_id' => 4,
             'g_title' => __('Members'),
             'g_user_title' => __('Member'),
-        );
+        ];
 
         return $groups;
     }
 
     public static function load_default_user()
     {
-        return $user = array(
+        return $user = [
                 'group_id' => 3,
                 'username' => __('Guest'),
                 'password' => __('Guest'),
-                'email' => __('Guest'));
+                'email' => __('Guest')];
     }
 
     public static function load_admin_user(array $data)
     {
         $now = time();
-        return $user = array(
+        return $user = [
             'group_id' => 1,
             'username' => $data['username'],
             'password' => Utils::password_hash($data['password']),
@@ -301,7 +301,7 @@ class Install
             'last_post' => $now,
             'registered' => $now,
             'registration_ip' => Utils::getIp(),
-            'last_visit' => $now);
+            'last_visit' => $now];
     }
 
     public static function load_mock_forum_data(array $data)
@@ -314,10 +314,10 @@ class Install
         $now = time();
         $ip = Utils::getIp();
 
-        return $mock_data = array(
-            'categories' => array('cat_name' => $cat_name,
-                                  'disp_position' => 1),
-                'forums' => array('forum_name' => $forum_name,
+        return $mock_data = [
+            'categories' => ['cat_name' => $cat_name,
+                                  'disp_position' => 1],
+                'forums' => ['forum_name' => $forum_name,
                                   'forum_desc' => $forum_desc,
                                   'num_topics' => 1,
                                   'num_posts' => 1,
@@ -325,20 +325,20 @@ class Install
                                   'last_post_id' => 1,
                                   'last_poster' => $data['username'],
                                   'disp_position' => 1,
-                                  'cat_id' =>  1),
-                'topics' => array('poster' => $data['username'],
+                                  'cat_id' =>  1],
+                'topics' => ['poster' => $data['username'],
                                   'subject' => $subject,
                                   'posted' => $now,
                                   'first_post_id' => 1,
                                   'last_post' => $now,
                                   'last_post_id' => 1,
                                   'last_poster' => $data['username'],
-                                  'forum_id' => 1),
-                'posts' => array('poster' => $data['username'],
+                                  'forum_id' => 1],
+                'posts' => ['poster' => $data['username'],
                                  'poster_id' => 2,
                                  'poster_ip' => $ip,
                                  'message' => $message,
                                  'posted' => $now,
-                                 'topic_id' => 1));
+                                 'topic_id' => 1]];
     }
 }

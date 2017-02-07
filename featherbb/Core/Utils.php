@@ -122,7 +122,7 @@ class Utils
     //
     public static function linebreaks($str)
     {
-        return str_replace(array("\r\n", "\r"), "\n", $str);
+        return str_replace(["\r\n", "\r"], "\n", $str);
     }
 
 
@@ -176,7 +176,7 @@ class Utils
     //
     public static function file_size($size)
     {
-        $units = array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB');
+        $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB'];
 
         for ($i = 0; $size > 1024; $i++) {
             $size /= 1024;
@@ -191,7 +191,7 @@ class Utils
     public static function generate_page_title($page_title, $p = null)
     {
         if (!is_array($page_title)) {
-            $page_title = array($page_title);
+            $page_title = [$page_title];
         }
 
         $page_title = array_reverse($page_title);
@@ -212,12 +212,12 @@ class Utils
      *
      * @return text
      */
-    public static function generateBreadcrumbs(array $crumbs = array(), array $rightCrumb = array())
+    public static function generateBreadcrumbs(array $crumbs = [], array $rightCrumb = [])
     {
-        \View::setPageInfo(array(
+        \View::setPageInfo([
             'rightCrumb'    =>    $rightCrumb,
             'crumbs'    =>    $crumbs,
-            ), 1
+        ], 1
         )->addTemplate('breadcrumbs.php');
     }
 
@@ -231,7 +231,7 @@ class Utils
 
         // If not already built in a previous call, build an array of lowercase banned usernames
         if (empty($ban_list)) {
-            $ban_list = array();
+            $ban_list = [];
             foreach (Container::get('bans') as $cur_ban) {
                 $ban_list[] = utf8_strtolower($cur_ban['username']);
             }
@@ -303,7 +303,7 @@ class Utils
     //
     public static function generate_avatar_markup($user_id)
     {
-        $filetypes = array('jpg', 'gif', 'png');
+        $filetypes = ['jpg', 'gif', 'png'];
         $avatar_markup = '';
 
         foreach ($filetypes as $cur_type) {

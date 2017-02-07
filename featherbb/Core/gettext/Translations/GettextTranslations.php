@@ -39,9 +39,9 @@ class GettextTranslations extends Translations
             $nplurals = (int) $matches[1];
             $expression = trim($this->parenthesize_plural_exression($matches[2]));
 
-            return array($nplurals, $expression);
+            return [$nplurals, $expression];
         } else {
-            return array(2, 'n != 1');
+            return [2, 'n != 1'];
         }
     }
 
@@ -100,7 +100,7 @@ class GettextTranslations extends Translations
 
     public function make_headers($translation)
     {
-        $headers = array();
+        $headers = [];
         // sometimes \ns are used instead of real new lines
         $translation = str_replace('\n', "\n", $translation);
         $lines = explode("\n", $translation);

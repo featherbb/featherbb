@@ -35,7 +35,7 @@ class Post extends Api
 
     public function getDeletePermissions($cur_post, $args)
     {
-        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
+        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : [];
         $is_admmod = (User::isAdmin($this->user) || (User::isAdminMod($this->user) && array_key_exists($this->user->username, $mods_array))) ? true : false;
 
         $is_topic_post = ($args['id'] == $cur_post['first_post_id']) ? true : false;
@@ -59,7 +59,7 @@ class Post extends Api
     public function getEditPermissions($cur_post)
     {
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
-        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
+        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : [];
         $is_admmod = (User::isAdmin($this->user) || (User::isAdminMod($this->user) && array_key_exists($this->user->username, $mods_array))) ? true : false;
 
         // Do we have permission to edit this post?
@@ -76,17 +76,17 @@ class Post extends Api
 
     public function get_info_edit($id)
     {
-        $cur_post['select'] = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies');
-        $cur_post['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $cur_post['select'] = ['fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies'];
+        $cur_post['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
 
         $cur_post = DB::for_table('posts')
             ->table_alias('p')
             ->select_many($cur_post['select'])
-            ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
-            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+            ->inner_join('topics', ['t.id', '=', 'p.topic_id'], 't')
+            ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
             ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.$this->user->g_id, 'fp')
             ->where_any_is($cur_post['where'])
             ->where('p.id', $id);
@@ -104,17 +104,17 @@ class Post extends Api
     {
         $id = Container::get('hooks')->fire('model.post.get_info_delete_start', $id);
 
-        $query['select'] = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies');
-        $query['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $query['select'] = ['fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies'];
+        $query['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
 
         $query = DB::for_table('posts')
             ->table_alias('p')
             ->select_many($query['select'])
-            ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
-            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+            ->inner_join('topics', ['t.id', '=', 'p.topic_id'], 't')
+            ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
             ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.$this->user->g_id, 'fp')
             ->where_any_is($query['where'])
             ->where('p.id', $id);

@@ -26,11 +26,11 @@ SlimStatic::boot($feather);
 // Allow static proxies to be called from anywhere in App
 Statical::addNamespace('*', __NAMESPACE__.'\\*');
 
-$feather_settings = array(
+$feather_settings = [
     // 'config_file' => 'featherbb/config.php',
     // 'cache_dir' => 'cache/',
     'debug' => 'all'  // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
-);
+];
 
 Feather::add(new \FeatherBB\Middleware\Csrf);
 Feather::add(new \FeatherBB\Middleware\Auth);

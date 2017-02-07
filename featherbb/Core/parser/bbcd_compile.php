@@ -14,11 +14,11 @@ use FeatherBB\Core\Url;
 // or from an admin page web form) into the cache/cache_parser_data.php.
 
 // Initialize a new global parser data array $pd:
-$pd = array(
+$pd = [
     'newer_php_version'        => version_compare(PHP_VERSION, '5.2.0', '>='), // PHP version affects PCRE error checking.
     'in_signature'            => false,                // TRUE when parsing signatures, FALSE when parsing posts.
     'ipass'                    => 0,                    // Pass number (for multi-pass pre-parsing).
-    'tag_stack'                => array('_ROOT_'),        // current stack trace of tags in recursive callback
+    'tag_stack'                => ['_ROOT_'],        // current stack trace of tags in recursive callback
     'config'                => $config,                // Array of various global parser options.
 
 // -----------------------------------------------------------------------------
@@ -168,10 +168,10 @@ $                               # Anchor to end of string.
 (?<!\s)                         # Backtrack to exclude any trailing whitespace.
 (?=\s*\[(?:\*|/list)\])         # Done once we reach a [*] or [/list].
                                 %ix',
-    'smilies'                => array(),                // Array of Smilies, each an array with filename and html.
-    'bbcd'                    => array(),                // Array of BBCode tag definitions.
+    'smilies'                => [],                // Array of Smilies, each an array with filename and html.
+    'bbcd'                    => [],                // Array of BBCode tag definitions.
 
-);
+];
 unset($config);
 
 // If this server's PHP installation won't allow access to remote files,
@@ -181,7 +181,7 @@ if (!ini_get('allow_url_fopen')) {
 }
 
 // Validate and compute replacement texts for smilies array.
-$re_keys = array();                                    // Array of regex-safe smiley texts.
+$re_keys = [];                                    // Array of regex-safe smiley texts.
 $file_path = ForumEnv::get('FEATHER_ROOT') . 'style/img/smilies/';                // File system path to smilies.
 $url_path = Url::base();                        // Convert abs URL to relative URL.
 $url_path = preg_replace('%^https?://[^/]++(.*)$%i', '$1', $url_path) . '/style/img/smilies/';
@@ -208,10 +208,10 @@ foreach ($smilies as $smiley_text => $smiley_img) {    // Loop through all smili
     $url = htmlspecialchars($url);                    // Make sure all [&<>""] are escaped.
     $desc = file2title($smiley_img['file']);        // Convert filename to a title.
     $format = '<img width="%d" height="%d" src="%s" alt="%s" title="%s" />';
-    $pd['smilies'][$smiley_text] = array(
+    $pd['smilies'][$smiley_text] = [
         'file' => $smiley_img['file'],
         'html' => sprintf($format, $w, $h, $url, $desc, $desc)
-        );
+    ];
 }
 // Assemble "the-one-regex-to-match-them-all" (smilies that is!) 8^)
 $pd['re_smilies'] = str_replace('%smilies%', implode('|', $re_keys), $pd['re_smilies']);
@@ -221,9 +221,9 @@ unset($smiley_text); unset($smiley_img); unset($smilies);
 unset($w); unset($h); unset($iw); unset($ih);
 
 // Local arrays:
-$all_tags                    = array();                // array of all tag names allowed in posts
-$all_tags_re                = array();                // array of all tag names allowed in posts (preg_quoted)
-$all_block_tags                = array();                // array of all block type tag names
+$all_tags                    = [];                // array of all tag names allowed in posts
+$all_tags_re                = [];                // array of all tag names allowed in posts (preg_quoted)
+$all_block_tags                = [];                // array of all block type tag names
 
 // loop through all BBCodes to pre-assemble and initialize-once global data structures
 foreach ($bbcd as $tagname => $tagdata) { // pass 1: accumulate regex pattern string fragments counting block and inline types
@@ -253,11 +253,11 @@ foreach ($bbcd as $tagname => $tagdata) { // pass 1: accumulate regex pattern st
         }    // default block nest_type = err
     }
     if (!isset($tag['handlers'])) {
-        $tag['handlers']    = array(
-                'NO_ATTRIB'        => array(
+        $tag['handlers']    = [
+                'NO_ATTRIB'        => [
                     'format' => '<'. $tag['html_name'] .'>%c_str%</'. $tag['html_name'] .'>'
-                )
-            );
+                ]
+        ];
     }
     // Loop through attribute handlers assigning default values to a_type and c_type.
     foreach ($tag['handlers'] as $key => $value) {
@@ -313,7 +313,7 @@ foreach ($bbcd as $tagname => $tagdata) { // pass 1: accumulate regex pattern st
     }
     if ($tag['tag_type'] === 'hidden') {
         $tag['depth_max'] = 1;                        // all hidden tags max depth = 1
-        $tag['tags_allowed']            = array();    // no tags allowed in hidden tags.
+        $tag['tags_allowed']            = [];    // no tags allowed in hidden tags.
     }
     // clean excess whitespace (added for human readable formatting above) from format conversion strings
     foreach ($tag['handlers'] as $ikey => $i) {        // loop through all tag attribute handlers
@@ -324,7 +324,7 @@ foreach ($bbcd as $tagname => $tagdata) { // pass 1: accumulate regex pattern st
             // Consolidate consecutive whitespace into a single space.
             $format_str = preg_replace('/\s++/S', ' ', $format_str);
             // Clean out any old version byte marker cruft.
-            $format_str = str_replace(array("\1", "\2"), '', $format_str);
+            $format_str = str_replace(["\1", "\2"], '', $format_str);
             // Wrap all hidden chunks like so: "\1\2<tag>\1 stuff \1\2</tag>\1".
             if ($tag['tag_type'] === 'hidden' || $tag['handlers'][$ikey]['c_type'] === 'url') {
                 $format_str = "\1\2". $format_str ."\1";
@@ -370,7 +370,7 @@ foreach ($pd['bbcd'] as $tagname => $tagdata) { // pass 2: initialize allowed an
         }
     }
     // Build the (shorter/faster) excluded list to be used in the code. (discard tags_allowed[]).
-    $tag['tags_excluded'] = array();
+    $tag['tags_excluded'] = [];
     foreach ($all_tags as $iname => $value) {
         if (!isset($tag['tags_allowed'][$iname])) {
             $tag['tags_excluded'][$iname] = true;
@@ -378,8 +378,8 @@ foreach ($pd['bbcd'] as $tagname => $tagdata) { // pass 2: initialize allowed an
     }
     // Hidden tags have no use for these arrays so set them to minimum.
     if ($tag['tag_type'] === 'hidden') {
-        $tag['tags_excluded'] = array();
-        $tag['tags_allowed'] = array();
+        $tag['tags_excluded'] = [];
+        $tag['tags_allowed'] = [];
     }
     unset($iname);
     unset($value);
@@ -400,7 +400,7 @@ function file2title($file)
     // Strip off file extention.
     $title = preg_replace('/\.[^.]*$/', '', $file);
     // Convert underscores and dashes to spaces.
-    $title = str_replace(array('_', '-'), ' ', $title);
+    $title = str_replace(['_', '-'], ' ', $title);
     // Make first letter of each word uppercase.
     $title = ucwords($title);
     // Space out camelcase words.

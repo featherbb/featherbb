@@ -21,7 +21,7 @@ use FeatherBB\Core\Utils;
  */
 class Api
 {
-    protected $errorMessage = array("error" => "Not Found");
+    protected $errorMessage = ["error" => "Not Found"];
 
     protected $connected = false;
 

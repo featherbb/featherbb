@@ -43,7 +43,7 @@ class Userlist
 
         $dropdown_menu = '';
 
-        $result['select'] = array('g_id', 'g_title');
+        $result['select'] = ['g_id', 'g_title'];
 
         $result = DB::for_table('groups')
                         ->select_many($result['select'])
@@ -68,7 +68,7 @@ class Userlist
     // Prints the users
     public function print_users($username, $start_from, $sort_by, $sort_dir, $show_group)
     {
-        $userlist_data = array();
+        $userlist_data = [];
 
         $username = Container::get('hooks')->fire('model.userlist.print_users_start', $username, $start_from, $sort_by, $sort_dir, $show_group);
 
@@ -95,18 +95,18 @@ class Userlist
         $result = $result->find_many();
 
         if ($result) {
-            $user_ids = array();
+            $user_ids = [];
             foreach ($result as $cur_user_id) {
                 $user_ids[] = $cur_user_id['id'];
             }
 
             // Grab the users
-            $result['select'] = array('u.id', 'u.username', 'u.title', 'u.num_posts', 'u.registered', 'g.g_id', 'g.g_user_title');
+            $result['select'] = ['u.id', 'u.username', 'u.title', 'u.num_posts', 'u.registered', 'g.g_id', 'g.g_user_title'];
 
             $result = DB::for_table('users')
                           ->table_alias('u')
                           ->select_many($result['select'])
-                          ->left_outer_join('groups' ,array('g.g_id', '=', 'u.group_id'), 'g')
+                          ->left_outer_join('groups' , ['g.g_id', '=', 'u.group_id'], 'g')
                           ->where_in('u.id', $user_ids)
                           ->order_by($sort_by, $sort_dir)
                           ->order_by_asc('u.id');

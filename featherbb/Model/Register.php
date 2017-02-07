@@ -20,7 +20,7 @@ class Register
 {
     public function check_for_errors()
     {
-        $user = array();
+        $user = [];
         $user['errors'] = '';
 
         $user = Container::get('hooks')->fire('model.register.check_for_errors_start', $user);
@@ -64,7 +64,7 @@ class Register
         $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
         $question = Input::post('captcha_q') ? trim(Input::post('captcha_q')) : '';
         $answer = Input::post('captcha') ? strtoupper(trim(Input::post('captcha'))) : '';
-        $lang_antispam_questions_array = array();
+        $lang_antispam_questions_array = [];
 
         foreach ($lang_antispam_questions as $k => $v) {
             $lang_antispam_questions_array[md5($k)] = strtoupper($v);
@@ -89,7 +89,7 @@ class Register
         }
 
         // Check if someone else already has registered with that email address
-        $dupe_list = array();
+        $dupe_list = [];
 
         $dupe_mail = DB::for_table('users')
                         ->select('username')
@@ -133,7 +133,7 @@ class Register
         $password_hash = Utils::password_hash($user['password1']);
 
         // Add the user
-        $user_data = array(
+        $user_data = [
             'username'        => $user['username'],
             'group_id'        => $intial_group_id,
             'password'        => $password_hash,
@@ -141,7 +141,7 @@ class Register
             'registered'      => $now,
             'registration_ip' => Utils::getIp(),
             'last_visit'      => $now,
-        );
+        ];
 
         $insert_user = DB::for_table('users')
                     ->create()

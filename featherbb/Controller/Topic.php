@@ -49,7 +49,7 @@ class Topic
         $cur_topic = $this->model->get_info_topic($args['id']);
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
-        $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
+        $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : [];
         $is_admmod = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         // Can we or can we not post replies?
@@ -91,8 +91,8 @@ class Topic
             }
         }
 
-        View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
+        View::setPageInfo([
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])],
             'active_page' => 'Topic',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,
@@ -112,7 +112,7 @@ class Topic
             'url_forum'        =>    $url_forum,
             'url_topic'        =>    $url_topic,
             'is_admmod' => $is_admmod,
-        ))->addTemplate('topic.php')->display();
+        ])->addTemplate('topic.php')->display();
 
         // Increment "num_views" for topic
         $this->model->increment_views($args['id']);
@@ -185,7 +185,7 @@ class Topic
 
         if ($new_fid = Input::post('move_to_forum')) {
             $this->model->move_to($args['fid'], $new_fid, $args['id']);
-            return Router::redirect(Router::pathFor('Topic', array('id' => $args['id'], 'name' => $args['name'])), __('Move topic redirect'));
+            return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => $args['name']]), __('Move topic redirect'));
         }
 
         // Check if there are enough forums to move the topic
@@ -193,13 +193,13 @@ class Topic
             throw new Error(__('Nowhere to move'), 403);
         }
 
-        View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
+        View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
                 'active_page' => 'moderate',
                 'action'    =>    'single',
                 'topics'    =>    $args['id'],
                 'list_forums'   => $this->model->get_forum_list_move($args['fid']),
-            )
+            ]
         )->addTemplate('moderate/move_topics.php')->display();
     }
 
@@ -223,25 +223,25 @@ class Topic
         else if (Input::post('delete_posts')) {
                 $posts = $this->model->delete_posts($args['id'], $args['fid']);
 
-                return View::setPageInfo(array(
-                        'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
+                return View::setPageInfo([
+                        'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
                         'active_page' => 'moderate',
                         'posts' => $posts,
-                    )
+                    ]
                 )->addTemplate('moderate/delete_posts.php')->display();
         }
         else if (Input::post('split_posts_comply')) {
             return $this->model->split_posts($args['id'], $args['fid'], $p);
         }
         else if (Input::post('split_posts')) {
-            return View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
+            return View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
                     'page' => $p,
                     'active_page' => 'moderate',
                     'id' => $args['id'],
                     'posts' => $this->model->split_posts($args['id'], $args['fid'], $p),
                     'list_forums' => $this->model->get_forum_list_split($args['fid']),
-                )
+                ]
             )->addTemplate('moderate/split_posts.php')->display();
         }
         else {
@@ -258,8 +258,8 @@ class Topic
                 $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
             }
 
-            return View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
+            return View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])],
                     'page' => $p,
                     'active_page' => 'moderate',
                     'cur_topic' => $cur_topic,
@@ -271,7 +271,7 @@ class Topic
                     'post_data' => $this->model->display_posts_moderate($args['id'], $start_from),
                     'button_status' => $button_status,
                     'start_from' => $start_from,
-                )
+                ]
             )->addTemplate('moderate/posts_view.php')->display();
         }
     }

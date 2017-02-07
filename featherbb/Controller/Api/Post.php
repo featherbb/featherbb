@@ -65,7 +65,7 @@ class Post extends Api
         }
 
         // Start with a clean slate
-        $errors = array();
+        $errors = [];
 
         // Let's see if everything went right
         $errors = \FeatherBB\Model\Post::check_errors_before_edit($can_edit_subject, $errors, $is_admmod);

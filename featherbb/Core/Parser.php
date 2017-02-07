@@ -72,7 +72,7 @@ class Parser
         // Parse BBCode if globally enabled.
         if (ForumSettings::get('p_message_bbcode'))
         {
-            $text = preg_replace_callback($this->pd['re_bbcode'], array($this, '_parse_bbcode_callback'), $text);
+            $text = preg_replace_callback($this->pd['re_bbcode'], [$this, '_parse_bbcode_callback'], $text);
         }
         // Set $smile_on flag depending on global flags and whether or not this is a signature.
         if ($this->pd['in_signature'])
@@ -94,10 +94,10 @@ class Parser
             { // If not hidden, process this normal text content.
                 if ($smile_on)
                 { // If smileys enebled, do em all in one whack.
-                    $part = preg_replace_callback($this->pd['re_smilies'], array($this, '_do_smilies_callback'), $part);
+                    $part = preg_replace_callback($this->pd['re_smilies'], [$this, '_do_smilies_callback'], $part);
                 }
                 // Deal with newlines, tabs and multiple spaces
-                $part = str_replace(array("\n", "\t", '  ', '  '), array('<br />', '&#160; &#160; ', '&#160; ', ' &#160;'), $part);
+                $part = str_replace(["\n", "\t", '  ', '  '], ['<br />', '&#160; &#160; ', '&#160; ', ' &#160;'], $part);
             }
             else
                 $part = substr($part, 1); // For hidden chunks, strip \2 marker byte.
@@ -198,7 +198,7 @@ class Parser
         // ---------------------------------------------------------------------------
         if ($tag['tag_type'] !== 'hidden' && strpos($contents, '[') !== false)
         {
-            $contents = preg_replace_callback($this->pd['re_bbcode'], array($this, '_preparse_bbcode_callback'), $contents);
+            $contents = preg_replace_callback($this->pd['re_bbcode'], [$this, '_preparse_bbcode_callback'], $contents);
             if ($contents === null) // On error, preg_replace_callback returns NULL.
 
             { // Error #1: '(%s) Message is too long or too complex. Please shorten.'
@@ -233,7 +233,7 @@ class Parser
                 $fmt_open = '['.$tagname.'=%a_str%]'; // Set empty-attribute opening format.
             }
             // Consolidate consecutive attribute whitespace to a single space. Trim start and end.
-            $attribute = preg_replace(array('/\s++/S', '/^ /', '/ $/'), array(' ', '', ''), $attribute);
+            $attribute = preg_replace(['/\s++/S', '/^ /', '/ $/'], [' ', '', ''], $attribute);
 
             // Determine attribute handler: fixed or variable or none.
             if (isset($tag['handlers'][$attribute]))
@@ -357,7 +357,7 @@ class Parser
 
             case 'url':
                 // Sanitize contents which is (hopefully) a url link. Trim spaces.
-                $contents = preg_replace(array('/^\s+/', '/\s+$/S'), '', $contents);
+                $contents = preg_replace(['/^\s+/', '/\s+$/S'], '', $contents);
                 // Handle special case link to a
                 if (!User::can('post.links')) {
                     $new_errors[] = __('BBerr cannot post URLs');
@@ -734,10 +734,10 @@ class Parser
      */
     function preparse_bbcode($text, &$errors, $is_signature = false)
     {
-        $this->pd['new_errors'] = array(); // Reset the parser error message stack.
+        $this->pd['new_errors'] = []; // Reset the parser error message stack.
         $this->pd['in_signature'] = ($is_signature) ? true : false;
         $this->pd['ipass'] = 1;
-        $newtext = preg_replace_callback($this->pd['re_bbcode'], array($this, '_preparse_bbcode_callback'), $text);
+        $newtext = preg_replace_callback($this->pd['re_bbcode'], [$this, '_preparse_bbcode_callback'], $text);
         if ($newtext === null)
         { // On error, preg_replace_callback returns NULL.
             // Error #1: '(%s) Message is too long or too complex. Please shorten.'
@@ -754,7 +754,7 @@ class Parser
             if ($part[0] !== "\2")
             { // If not hidden, process this normal text content.
                 // Mark erroneous orphan tags.
-                $part = preg_replace_callback($this->pd['re_bbtag'], array($this, '_orphan_callback'), $part);
+                $part = preg_replace_callback($this->pd['re_bbtag'], [$this, '_orphan_callback'], $part);
                 // Process do-clickeys if enabled.
                 if (ForumSettings::get('o_make_links'))
                     $part = $this->linkify($part);
@@ -763,9 +763,9 @@ class Parser
                 if ($this->pd['config']['textile'])
                 {
                     // Do phrase replacements.
-                    $part = preg_replace_callback($this->pd['re_textile'], array($this, '_textile_phrase_callback'), $part);
+                    $part = preg_replace_callback($this->pd['re_textile'], [$this, '_textile_phrase_callback'], $part);
                     // Do lists.
-                    $part = preg_replace_callback('/^([*#]) .*+(?:\n\1 .*+)++$/Sm', array($this, '_textile_list_callback'), $part);
+                    $part = preg_replace_callback('/^([*#]) .*+(?:\n\1 .*+)++$/Sm', [$this, '_textile_list_callback'], $part);
                 }
                 $part = preg_replace('/^[ \t]++$/m', '', $part); // Clear "white" lines of spaces and tabs.
             }
@@ -774,7 +774,7 @@ class Parser
         }
         $text = implode("", $parts); // Put hidden and non-hidden chunks back together.
         $this->pd['ipass'] = 2; // Run a second pass through parser to clean changed content.
-        $text = preg_replace_callback($this->pd['re_bbcode'], array($this, '_preparse_bbcode_callback'), $text);
+        $text = preg_replace_callback($this->pd['re_bbcode'], [$this, '_preparse_bbcode_callback'], $text);
         $text = str_replace("\3", '[', $text); // Fixup CODE sections.
         if (!empty($this->pd['new_errors']))
         {
@@ -834,7 +834,7 @@ class Parser
      */
     private function _textile_phrase_callback($matches)
     {
-        $matches[2] = preg_replace_callback($this->pd['re_textile'], array($this, '_textile_phrase_callback'), $matches[2]);
+        $matches[2] = preg_replace_callback($this->pd['re_textile'], [$this, '_textile_phrase_callback'], $matches[2]);
         switch ($matches[1])
         {
             case '_':
@@ -934,7 +934,7 @@ class Parser
         // Recursively parse any nested BBCode tag markup (unless tag type is hidden).
         if ($tag['tag_type'] !== 'hidden' && strpos($contents, '[') !== false)
         {
-            $contents = preg_replace_callback($this->pd['re_bbcode'], array($this, '_parse_bbcode_callback'), $contents);
+            $contents = preg_replace_callback($this->pd['re_bbcode'], [$this, '_parse_bbcode_callback'], $contents);
         }
         // ------------------------------------------------------------------------------
         // Determine $attribute and format conversion $handler to use based on attribute.
@@ -953,11 +953,11 @@ class Parser
             if ($matches[3])
             { // Non-empty single-quoted value.
                 $attribute = &$matches[3]; // Strip out escape from escapes and single quotes.
-                $attribute = str_replace(array('\\\\', '\\\''), array('\\', '\''), $attribute);
+                $attribute = str_replace(['\\\\', '\\\''], ['\\', '\''], $attribute);
             } elseif ($matches[4])
             { // Non-empty double-quoted value.
                 $attribute = &$matches[4]; // Strip out escape from escapes and double quotes.
-                $attribute = str_replace(array('\\\\', '\\"'), array('\\', '"'), $attribute);
+                $attribute = str_replace(['\\\\', '\\"'], ['\\', '"'], $attribute);
             } elseif ($matches[5])
                 $attribute = &$matches[5]; // Non-empty un-or-any-quoted value.
             else
@@ -1098,7 +1098,7 @@ class Parser
             case 'table': // Clean whitespace cruft bordering <tr> tags.
             case 'tr': // Clean whitespace cruft bordering <td> tags.
                 //        $contents = preg_replace(array('/^\s++/', '/\s+$/S', '%\s+(?=\x01\x02<(?:li|ol|ul)>)%S', '%(?<=</(?:li|ol|ul)>\x01)\s++%S'), '', $contents);
-                $contents = preg_replace(array('/^\s++/', '/\s+$/S', '%\s+(?=\x01\x02<(?:li|ol|ul|tr|td)>)%S', '%(?<=</(?:li|ol|ul|tr|td)>\x01)\s++%S'), '', $contents);
+                $contents = preg_replace(['/^\s++/', '/\s+$/S', '%\s+(?=\x01\x02<(?:li|ol|ul|tr|td)>)%S', '%(?<=</(?:li|ol|ul|tr|td)>\x01)\s++%S'], '', $contents);
                 break;
 
             case 'code':
@@ -1127,7 +1127,7 @@ class Parser
                     {
                         $scripts = &$this->pd['syntaxes'][$attribute];
                         if (!isset($this->pd['code_scripts']))
-                            $this->pd['code_scripts'] = array();
+                            $this->pd['code_scripts'] = [];
                         foreach ($scripts as $file)
                         {
                             if (!in_array($file, $this->pd['code_scripts']))
@@ -1231,7 +1231,7 @@ class Parser
         )*                       # Unroll-the-loop (special normal*)*.
         [a-z0-9\-_~$()*+=\/#[\]@%]    # Last char can\'t be [.!&\',;:?]
       )                           # End $14. Other non-delimited URL.
-    /imx', array($this, '_linkify_callback'), $text);
+    /imx', [$this, '_linkify_callback'], $text);
 //      $url_replace = '$1$4$7$10$13[url]$2$5$8$11$14[/url]$3$6$9$12';
     }
 

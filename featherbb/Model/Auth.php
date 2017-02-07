@@ -20,16 +20,16 @@ class Auth
     public static function load_user($user_id)
     {
         $user_id = (int) $user_id;
-        $result['select'] = array('u.*', 'g.*', 'o.logged', 'o.idle');
-        $result['where'] = array('u.id' => $user_id);
+        $result['select'] = ['u.*', 'g.*', 'o.logged', 'o.idle'];
+        $result['where'] = ['u.id' => $user_id];
         $result['join'] = ($user_id == 1) ? Utils::getIp() : 'u.id';
         $escape = ($user_id == 1) ? true : false;
 
         $result = DB::for_table('users')
                     ->table_alias('u')
                     ->select_many($result['select'])
-                    ->inner_join('groups', array('u.group_id', '=', 'g.g_id'), 'g')
-                    ->left_outer_join('online', array('o.user_id', '=', $result['join']), 'o', $escape)
+                    ->inner_join('groups', ['u.group_id', '=', 'g.g_id'], 'g')
+                    ->left_outer_join('online', ['o.user_id', '=', $result['join']], 'o', $escape)
                     ->where($result['where'])
                     ->find_one();
 
@@ -60,7 +60,7 @@ class Auth
 
     public static function get_user_from_email($email)
     {
-        $result['select'] = array('id', 'username', 'last_email_sent');
+        $result['select'] = ['id', 'username', 'last_email_sent'];
         $result = DB::for_table('users')
             ->select_many($result['select'])
             ->where('email', $email);
@@ -88,11 +88,11 @@ class Auth
 
     public static function set_new_password($pass, $key, $user_id)
     {
-        $query['update'] = array(
+        $query['update'] = [
             'activate_string' => Utils::password_hash($pass),
             'activate_key'    => $key,
             'last_email_sent' => time(),
-        );
+        ];
 
         $query = DB::for_table('users')
                     ->where('id', $user_id)

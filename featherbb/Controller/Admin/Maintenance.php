@@ -38,10 +38,10 @@ class Maintenance
         if ($action == 'rebuild') {
             $this->model->rebuild();
 
-            View::setPageInfo(array(
-                    'page_title'    =>    array(Utils::escape(ForumSettings::get('o_board_title')), __('Rebuilding search index')),
+            View::setPageInfo([
+                    'page_title'    =>    [Utils::escape(ForumSettings::get('o_board_title')), __('Rebuilding search index')],
                     'query_str' => $this->model->get_query_str()
-                )
+                ]
             )->addTemplate('admin/maintenance/rebuild.php')->display();
         }
 
@@ -55,26 +55,26 @@ class Maintenance
                 $this->model->prune_comply($prune_from, $prune_sticky);
             }
 
-            View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Prune')),
+            View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Prune')],
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'prune_sticky'    =>    $prune_sticky,
                     'prune_from'    =>    $prune_from,
                     'prune' => $this->model->get_info_prune($prune_sticky, $prune_from),
-                )
+                ]
             )->addTemplate('admin/maintenance/prune.php')->display();
         }
 
         AdminUtils::generateAdminMenu('maintenance');
 
-        View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Maintenance')),
+        View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Maintenance')],
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'first_id' => $this->model->get_first_id(),
                 'categories' => $this->model->get_categories(),
-            )
+            ]
         )->addTemplate('admin/maintenance/admin_maintenance.php')->display();
     }
 }

@@ -204,13 +204,13 @@ Container::set('notFoundHandler', function ($c) {
 
 Container::set('errorHandler', function ($c) {
     return function ($request, $response, $e) use ($c) {
-        $error = array(
+        $error = [
             'code' => $e->getCode(),
             'message' => $e->getMessage(),
             'back' => true,
             'html' => false,
             'hide' => false,
-        );
+        ];
 
         // Hide internal mechanism
         if (!ForumEnv::get('FEATHER_DEBUG')) {
@@ -242,11 +242,11 @@ Container::set('errorHandler', function ($c) {
             $error['html'] = $e->displayHtml();
         }
 
-        return View::setPageInfo(array(
-            'title' => array(\FeatherBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')),
+        return View::setPageInfo([
+            'title' => [\FeatherBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')],
             'msg'    =>    $error['message'],
             'backlink'    => $error['back'],
             'html'    => $error['html'],
-        ))->addTemplate('error.php')->display();
+        ])->addTemplate('error.php')->display();
     };
 });

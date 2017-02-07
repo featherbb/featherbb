@@ -16,7 +16,7 @@ class Lister
      */
     public static function getPlugins()
     {
-        $plugins = array();
+        $plugins = [];
 
         foreach (glob(ForumEnv::get('FEATHER_ROOT').'plugins/*/featherbb.json') as $plugin_file)
         {
@@ -39,7 +39,7 @@ class Lister
      */
     public static function getOfficialPlugins()
     {
-        $plugins = array();
+        $plugins = [];
 
         // Get the official list from the website
         $content = json_decode(AdminUtils::get_content('http://featherbb.org/plugins.json'));
@@ -61,7 +61,7 @@ class Lister
      */
     public static function getStyles()
     {
-        $styles = array();
+        $styles = [];
 
         $iterator = new \DirectoryIterator(ForumEnv::get('FEATHER_ROOT').'style/themes/');
         foreach ($iterator as $child) {
@@ -80,7 +80,7 @@ class Lister
      */
     public static function getLangs($folder = '')
     {
-        $langs = array();
+        $langs = [];
 
         $iterator = new \DirectoryIterator(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/');
         foreach ($iterator as $child) {

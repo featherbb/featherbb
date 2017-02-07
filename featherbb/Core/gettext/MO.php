@@ -76,7 +76,7 @@ class MO extends GettextTranslations
     {
         $entries = array_filter(
             $this->entries,
-            array($this, 'is_entry_good_for_export')
+            [$this, 'is_entry_good_for_export']
         );
         ksort($entries);
         $magic = 0x950412de;

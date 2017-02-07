@@ -15,7 +15,7 @@ class Plugin
 {
     public static function getActivePlugins()
     {
-        $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : array();
+        $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : [];
 
         return $activePlugins;
     }

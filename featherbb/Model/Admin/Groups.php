@@ -21,7 +21,7 @@ class Groups
     {
         $result = DB::for_table('groups')->order_by('g_id')->find_many();
         Container::get('hooks')->fireDB('model.admin.groups.fetch_groups_query', $result);
-        $groups = array();
+        $groups = [];
         foreach ($result as $cur_group) {
             $groups[$cur_group['g_id']] = $cur_group;
             $groups[$cur_group['g_id']]['is_moderator'] = Container::get('perms')->getGroupPermissions($cur_group['g_id'], 'mod.is_mod');
@@ -34,7 +34,7 @@ class Groups
 
     public function info_add_group($groups, $id)
     {
-        $group = array();
+        $group = [];
 
         if (Input::post('add_group')) {
             $group['base_group'] = $id; // Equals intval(Input::post('base_group'))
@@ -81,7 +81,7 @@ class Groups
     {
         $group_id = Container::get('hooks')->fire('model.admin.groups.get_group_list_delete_start', $group_id);
 
-        $select_get_group_list_delete = array('g_id', 'g_title');
+        $select_get_group_list_delete = ['g_id', 'g_title'];
         $result = DB::for_table('groups')->select_many($select_get_group_list_delete)
                         ->where_not_equal('g_id', ForumEnv::get('FEATHER_GUEST'))
                         ->where_not_equal('g_id', $group_id)
@@ -131,7 +131,7 @@ class Groups
         $promote_min_posts = Input::post('promote_min_posts') ? intval(Input::post('promote_min_posts')) : '0';
         if (Input::post('promote_next_group') &&
                 isset($groups[Input::post('promote_next_group')]) &&
-                !in_array(Input::post('promote_next_group'), array(ForumEnv::get('FEATHER_ADMIN'), ForumEnv::get('FEATHER_GUEST'))) &&
+                !in_array(Input::post('promote_next_group'), [ForumEnv::get('FEATHER_ADMIN'), ForumEnv::get('FEATHER_GUEST')]) &&
                 (Input::post('group_id') || Input::post('promote_next_group') != Input::post('group_id'))) {
             $promote_next_group = Input::post('promote_next_group');
         } else {
@@ -163,19 +163,19 @@ class Groups
         $email_flood = (Input::post('email_flood') && Input::post('email_flood') >= 0) ? Input::post('email_flood') : '0';
         $report_flood = (Input::post('report_flood') && Input::post('report_flood') >= 0) ? Input::post('report_flood') : '0';
 
-        $insert_update_group = array(
+        $insert_update_group = [
             'g_title'               =>  $title,
             'g_user_title'          =>  $user_title,
-        );
-        $group_preferences = array(
+        ];
+        $group_preferences = [
             'post.min_interval'     => (int) $post_flood,
             'search.min_interval'   => (int) $search_flood,
             'email.min_interval'    => (int) $email_flood,
             'report.min_interval'   => (int) $report_flood,
             'promote.min_posts'     => (int) $promote_min_posts,
             'promote.next_group'    => (int) $promote_next_group,
-        );
-        $group_permissions = array(
+        ];
+        $group_permissions = [
             'mod.is_mod'            => (int) $moderator,
             'mod.edit_users'        => (int) $mod_edit_users,
             'mod.rename_users'      => (int) $mod_rename_users,
@@ -194,7 +194,7 @@ class Groups
             'search.topics'         => (int) $search,
             'search.users'          => (int) $search_users,
             'email.send'            => (int) $send_email,
-        );
+        ];
 
         $insert_update_group = Container::get('hooks')->fire('model.admin.groups.add_edit_group.data', $insert_update_group);
         $group_preferences = Container::get('hooks')->fire('model.admin.groups.add_edit_group.preferences', $group_preferences);
@@ -216,20 +216,20 @@ class Groups
             Container::get('prefs')->setGroup($new_group_id, $group_preferences);
 
             // Now lets copy the forum specific permissions from the group which this group is based on
-            $select_forum_perms = array('forum_id', 'read_forum', 'post_replies', 'post_topics');
+            $select_forum_perms = ['forum_id', 'read_forum', 'post_replies', 'post_topics'];
             $result = DB::for_table('forum_perms')->select_many($select_forum_perms)
                             ->where('group_id', Input::post('base_group'));
             $result = Container::get('hooks')->fireDB('model.admin.groups.add_edit_group.select_forum_perms_query', $result);
             $result = $result->find_many();
 
             foreach ($result as $cur_forum_perm) {
-                $insert_perms = array(
+                $insert_perms = [
                     'group_id'       =>  $new_group_id,
                     'forum_id'       =>  $cur_forum_perm['forum_id'],
                     'read_forum'     =>  $cur_forum_perm['read_forum'],
                     'post_replies'   =>  $cur_forum_perm['post_replies'],
                     'post_topics'    =>  $cur_forum_perm['post_topics'],
-                );
+                ];
 
                 DB::for_table('forum_perms')
                         ->create()
@@ -312,7 +312,7 @@ class Groups
         $is_member = DB::for_table('groups')->table_alias('g')
             ->select('g.g_title')
             ->select_expr('COUNT(u.id)', 'members')
-            ->inner_join('users', array('g.g_id', '=', 'u.group_id'), 'u')
+            ->inner_join('users', ['g.g_id', '=', 'u.group_id'], 'u')
             ->where('g.g_id', $group_id)
             ->group_by('g.g_id')
             ->group_by('g_title');
@@ -371,7 +371,7 @@ class Groups
         $group = DB::for_table('groups')->table_alias('g')
                     ->select('g.g_title')
                     ->select_expr('COUNT(u.id)', 'members')
-                    ->inner_join('users', array('g.g_id', '=', 'u.group_id'), 'u')
+                    ->inner_join('users', ['g.g_id', '=', 'u.group_id'], 'u')
                     ->where('g.g_id', $group_id)
                     ->group_by('g.g_id')
                     ->group_by('g_title');

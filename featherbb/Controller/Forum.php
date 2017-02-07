@@ -35,7 +35,7 @@ class Forum
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
-        $mods_array = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : array();
+        $mods_array = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : [];
         $is_admmod = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         $sort_by = $this->model->sort_forum_by($cur_forum['sort_by']);
@@ -69,8 +69,8 @@ class Forum
             }
         }
 
-        View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_forum['forum_name'])),
+        View::setPageInfo([
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_forum['forum_name'])],
             'active_page' => 'Forum',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,
@@ -84,7 +84,7 @@ class Forum
             'url_forum' => $url_forum,
             'forum_actions' => $forum_actions,
             'is_admmod' => $is_admmod,
-        ))->addTemplate('forum.php')->display();
+        ])->addTemplate('forum.php')->display();
     }
 
     public function moderate($req, $res, $args)
@@ -93,7 +93,7 @@ class Forum
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($args['id']);
-        $mods_array = ($moderators != '') ? unserialize($moderators) : array();
+        $mods_array = ($moderators != '') ? unserialize($moderators) : [];
 
         if (!User::isAdmin() && (!User::isAdminMod() || !array_key_exists(User::get()->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
@@ -116,8 +116,8 @@ class Forum
         $start_from = User::getPref('disp.topics') * ($p - 1);
         $url_forum = Url::url_friendly($cur_forum['forum_name']);
 
-        View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_forum['forum_name'])),
+        View::setPageInfo([
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_forum['forum_name'])],
             'active_page' => 'moderate',
             'page' => $p,
             'id' => $args['id'],
@@ -127,7 +127,7 @@ class Forum
             'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'forum/'.$args['id'].'/'.$url_forum.'/moderate/#'),
             'topic_data' => $this->model->display_topics_moderate($args['id'], $sort_by, $start_from),
             'start_from' => $start_from,
-            )
+            ]
         )->addTemplate('moderate/moderator_forum.php')->display();
     }
 
@@ -164,7 +164,7 @@ class Forum
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->get_moderators($args['id']);
-        $mods_array = ($moderators != '') ? unserialize($moderators) : array();
+        $mods_array = ($moderators != '') ? unserialize($moderators) : [];
 
         if (!User::isAdmin() && (!User::isAdminMod() || !array_key_exists(User::get()->username, $mods_array))) {
             throw new Error(__('No permission'), 403);
@@ -174,7 +174,7 @@ class Forum
 
         // Move one or more topics
         if (Input::post('move_topics') || Input::post('move_topics_to')) {
-            $topics = Input::post('topics') ? Input::post('topics') : array();
+            $topics = Input::post('topics') ? Input::post('topics') : [];
             if (empty($topics)) {
                 throw new Error(__('No topics selected'), 400);
             }
@@ -190,14 +190,14 @@ class Forum
                 throw new Error(__('Nowhere to move'), 403);
             }
 
-            return View::setPageInfo(array(
+            return View::setPageInfo([
                     'action'    =>    'multi',
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
                     'active_page' => 'moderate',
                     'id'    =>    $args['id'],
                     'topics'    =>    implode(',', array_map('intval', array_keys($topics))),
                     'list_forums'   => $topicModel->get_forum_list_move($args['id']),
-                )
+                ]
             )->addTemplate('moderate/move_topics.php')->display();
         }
 
@@ -205,41 +205,41 @@ class Forum
         elseif (Input::post('merge_topics') || Input::post('merge_topics_comply')) {
             if (Input::post('merge_topics_comply')) {
                 $this->model->merge_topics($args['id']);
-                return Router::redirect(Router::pathFor('Forum', array('id' => $args['id'], 'name' => $args['name'])), __('Merge topics redirect'));
+                return Router::redirect(Router::pathFor('Forum', ['id' => $args['id'], 'name' => $args['name']]), __('Merge topics redirect'));
             }
 
-            $topics = Input::post('topics') ? Input::post('topics') : array();
+            $topics = Input::post('topics') ? Input::post('topics') : [];
             if (count($topics) < 2) {
                 throw new Error(__('Not enough topics selected'), 400);
             }
 
-            return View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
+            return View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
                     'active_page' => 'moderate',
                     'id'    =>    $args['id'],
                     'topics'    =>    $topics,
-                )
+                ]
             )->addTemplate('moderate/merge_topics.php')->display();
         }
 
         // Delete one or more topics
         elseif (Input::post('delete_topics') || Input::post('delete_topics_comply')) {
-            $topics = Input::post('topics') ? Input::post('topics') : array();
+            $topics = Input::post('topics') ? Input::post('topics') : [];
             if (empty($topics)) {
                 throw new Error(__('No topics selected'), 400);
             }
 
             if (Input::post('delete_topics_comply')) {
                 $this->model->delete_topics($topics, $args['id']);
-                return Router::redirect(Router::pathFor('Forum', array('id' => $args['id'], 'name' => $args['name'])), __('Delete topics redirect'));
+                return Router::redirect(Router::pathFor('Forum', ['id' => $args['id'], 'name' => $args['name']]), __('Delete topics redirect'));
             }
 
-            return View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
+            return View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
                     'active_page' => 'moderate',
                     'id'    =>    $args['id'],
                     'topics'    =>    $topics,
-                )
+                ]
             )->addTemplate('moderate/delete_topics.php')->display();
         }
 
@@ -249,7 +249,7 @@ class Forum
 
             // There could be an array of topic IDs in $_POST
             if (Input::post('open') || Input::post('close')) {
-                $topics = Input::post('topics') ? @array_map('intval', @array_keys(Input::post('topics'))) : array();
+                $topics = Input::post('topics') ? @array_map('intval', @array_keys(Input::post('topics'))) : [];
                 if (empty($topics)) {
                     throw new Error(__('No topics selected'), 400);
                 }
@@ -257,7 +257,7 @@ class Forum
                 $this->model->close_multiple_topics($action, $topics);
 
                 $redirect_msg = ($action) ? __('Close topics redirect') : __('Open topics redirect');
-                return Router::redirect(Router::pathFor('moderateForum', array('id' => $args['id'], 'name' => $args['name'], 'page' => $args['page'])), $redirect_msg);
+                return Router::redirect(Router::pathFor('moderateForum', ['id' => $args['id'], 'name' => $args['name'], 'page' => $args['page']]), $redirect_msg);
             }
         }
 
@@ -267,7 +267,7 @@ class Forum
 
             // There could be an array of topic IDs in $_POST
             if (Input::post('stick') || Input::post('unstick')) {
-                $topics = Input::post('topics') ? @array_map('intval', @array_keys(Input::post('topics'))) : array();
+                $topics = Input::post('topics') ? @array_map('intval', @array_keys(Input::post('topics'))) : [];
                 if (empty($topics)) {
                     throw new Error(__('No topics selected'), 400);
                 }
@@ -275,7 +275,7 @@ class Forum
                 $this->model->stick_multiple_topics($action, $topics);
 
                 $redirect_msg = ($action) ? __('Stick topics redirect') : __('Unstick topics redirect');
-                return Router::redirect(Router::pathFor('moderateForum', array('id' => $args['id'], 'name' => $args['name'], 'page' => $args['page'])), $redirect_msg);
+                return Router::redirect(Router::pathFor('moderateForum', ['id' => $args['id'], 'name' => $args['name'], 'page' => $args['page']]), $redirect_msg);
             }
         }
     }

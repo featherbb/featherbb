@@ -184,10 +184,10 @@ class Parser
                 $sfile = Input::post('smiley_file');
                 $len = count($stext);
                 $good = '';
-                $smilies = array();
+                $smilies = [];
                 for ($i = 0; $i < $len; ++$i) { // Loop through all posted smileys.
                     if ($stext[$i] && $sfile !== 'select new file') {
-                        $smilies[$stext[$i]] = array('file' => $sfile[$i]);
+                        $smilies[$stext[$i]] = ['file' => $sfile[$i]];
                     }
                 }
             }
@@ -198,8 +198,8 @@ class Parser
 
         AdminUtils::generateAdminMenu('parser');
 
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Parser')),
+        return View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Parser')],
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'tag_summary' => $this->model->tagSummary(),
@@ -208,7 +208,7 @@ class Parser
                 'config' => $config,
                 'smilies' =>    $smilies,
                 'i'     =>  -1,
-            )
+            ]
         )->addTemplate('admin/parser.php')->display();
     }
 }

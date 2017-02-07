@@ -35,7 +35,7 @@ class AutoUpdater
      *
      * @var array
      */
-    private $_simulationResults = array();
+    private $_simulationResults = [];
 
     /**
      * Temporary download directory.
@@ -78,14 +78,14 @@ class AutoUpdater
      *
      * @var array
      */
-    protected $_errors = array();
+    protected $_errors = [];
 
     /**
      * Content of warnings fired when updating.
      *
      * @var array
      */
-    protected $_warnings = array();
+    protected $_warnings = [];
 
     /**
      * Current version.
@@ -362,7 +362,7 @@ class AutoUpdater
             return false;
         }
 
-        $objects = array_diff(scandir($dir), array('.', '..'));
+        $objects = array_diff(scandir($dir), ['.', '..']);
         foreach ($objects as $object) {
             if (is_dir($dir . '/' . $object))
                 $this->_removeDir($dir . '/' . $object);

@@ -21,7 +21,7 @@ class Reports
         $result = Container::get('hooks')->fireDB('model.admin.reports.zap_report.query', $result);
         $result = $result->find_one_col('zapped');
 
-        $set_zap_report = array('zapped' => time(), 'zapped_by' => User::get()->id);
+        $set_zap_report = ['zapped' => time(), 'zapped_by' => User::get()->id];
         $set_zap_report = Container::get('hooks')->fire('model.admin.reports.set_zap_report', $set_zap_report);
 
         // Update report to indicate it has been zapped
@@ -62,15 +62,15 @@ class Reports
 
     public function get_reports()
     {
-        $reports = array();
-        $select_reports = array('r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.created', 'r.message', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username');
+        $reports = [];
+        $select_reports = ['r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.created', 'r.message', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username'];
         $reports = DB::for_table('reports')
             ->table_alias('r')
             ->select_many($select_reports)
-            ->left_outer_join('posts', array('r.post_id', '=', 'p.id'), 'p')
-            ->left_outer_join('topics', array('r.topic_id', '=', 't.id'), 't')
-            ->left_outer_join('forums', array('r.forum_id', '=', 'f.id'), 'f')
-            ->left_outer_join('users', array('r.reported_by', '=', 'u.id'), 'u')
+            ->left_outer_join('posts', ['r.post_id', '=', 'p.id'], 'p')
+            ->left_outer_join('topics', ['r.topic_id', '=', 't.id'], 't')
+            ->left_outer_join('forums', ['r.forum_id', '=', 'f.id'], 'f')
+            ->left_outer_join('users', ['r.reported_by', '=', 'u.id'], 'u')
             ->where_null('r.zapped')
             ->order_by_desc('created');
         $reports = Container::get('hooks')->fireDB('model.admin.reports.get_reports.query', $reports);
@@ -82,16 +82,16 @@ class Reports
 
     public function get_zapped_reports()
     {
-        $zapped_reports = array();
-        $select_zapped_reports = array('r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.message', 'r.zapped', 'zapped_by_id' => 'r.zapped_by', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username', 'zapped_by' => 'u2.username');
+        $zapped_reports = [];
+        $select_zapped_reports = ['r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.message', 'r.zapped', 'zapped_by_id' => 'r.zapped_by', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username', 'zapped_by' => 'u2.username'];
         $zapped_reports = DB::for_table('reports')
             ->table_alias('r')
             ->select_many($select_zapped_reports)
-            ->left_outer_join('posts', array('r.post_id', '=', 'p.id'), 'p')
-            ->left_outer_join('topics', array('r.topic_id', '=', 't.id'), 't')
-            ->left_outer_join('forums', array('r.forum_id', '=', 'f.id'), 'f')
-            ->left_outer_join('users', array('r.reported_by', '=', 'u.id'), 'u')
-            ->left_outer_join('users', array('r.zapped_by', '=', 'u2.id'), 'u2')
+            ->left_outer_join('posts', ['r.post_id', '=', 'p.id'], 'p')
+            ->left_outer_join('topics', ['r.topic_id', '=', 't.id'], 't')
+            ->left_outer_join('forums', ['r.forum_id', '=', 'f.id'], 'f')
+            ->left_outer_join('users', ['r.reported_by', '=', 'u.id'], 'u')
+            ->left_outer_join('users', ['r.zapped_by', '=', 'u2.id'], 'u2')
             ->where_not_null('r.zapped')
             ->order_by_desc('zapped')
             ->limit(10);

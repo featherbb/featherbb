@@ -19,7 +19,7 @@ class Debug
         if (empty(DB::get_query_log())) {
             return null;
         }
-        $data = array();
+        $data = [];
         $data['raw'] = array_combine(DB::get_query_log()[0], DB::get_query_log()[1]);
         $data['total_time'] = array_sum(array_keys($data['raw']));
         return $data;
@@ -27,7 +27,7 @@ class Debug
 
     public static function get_info()
     {
-        $data = array('exec_time' => (Utils::get_microtime() - Container::get('start')));
+        $data = ['exec_time' => (Utils::get_microtime() - Container::get('start'))];
         $data['nb_queries'] = (isset(DB::get_query_log()[0])) ? count(DB::get_query_log()[0]) : 'N/A';
         $data['mem_usage'] = (function_exists('memory_get_usage')) ? Utils::file_size(memory_get_usage()) : 'N/A';
         $data['mem_peak_usage'] = (function_exists('memory_get_peak_usage')) ? Utils::file_size(memory_get_peak_usage()) : 'N/A';

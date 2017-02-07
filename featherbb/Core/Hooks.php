@@ -15,14 +15,14 @@ class Hooks
     /**
      * @var array
      */
-    protected $hooks = array(
+    protected $hooks = [
         // 'slim.before' => array(array()),
         // 'slim.before.router' => array(array()),
         // 'slim.before.dispatch' => array(array()),
         // 'slim.after.dispatch' => array(array()),
         // 'slim.after.router' => array(array()),
         // 'slim.after' => array(array())
-    );
+    ];
     /**
      * Assign hook
      * @param  string   $name       The hook name
@@ -32,7 +32,7 @@ class Hooks
     public function bind($name, $callable, $priority = 10)
     {
         if (!isset($this->hooks[$name])) {
-            $this->hooks[$name] = array(array());
+            $this->hooks[$name] = [[]];
         }
         if (is_callable($callable)) {
             $this->hooks[$name][(int) $priority][] = $callable;
@@ -64,7 +64,7 @@ class Hooks
                 ksort($this->hooks[$name]);
             }
 
-            $output = array();
+            $output = [];
             $count = 0;
 
             foreach ($this->hooks[$name] as $priority) {
@@ -82,7 +82,7 @@ class Hooks
                 return $output[0];
             }
             else {
-                $data = array();
+                $data = [];
                 // Move all the keys to the same level
                 array_walk_recursive($output, function ($v, $k) use (&$data) {
                     $data[] = $v;
@@ -114,7 +114,7 @@ class Hooks
                 ksort($this->hooks[$name]);
             }
 
-            $output = array();
+            $output = [];
 
             foreach ($this->hooks[$name] as $priority) {
                 if (!empty($priority)) {
@@ -160,10 +160,10 @@ class Hooks
     public function clearHooks($name = null)
     {
         if (!is_null($name) && isset($this->hooks[(string) $name])) {
-            $this->hooks[(string) $name] = array(array());
+            $this->hooks[(string) $name] = [[]];
         } else {
             foreach ($this->hooks as $key => $value) {
-                $this->hooks[$key] = array(array());
+                $this->hooks[$key] = [[]];
             }
         }
     }

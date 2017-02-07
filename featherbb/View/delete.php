@@ -32,7 +32,7 @@ Container::get('hooks')->fire('view.delete.start');
 <div class="blockform">
     <h2><span><?php _e('Delete post') ?></span></h2>
     <div class="box">
-        <form method="post" action="<?= Router::pathFor('deletePost', array('id'=>$id)) ?>">
+        <form method="post" action="<?= Router::pathFor('deletePost', ['id'=>$id]) ?>">
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <div class="forminfo">

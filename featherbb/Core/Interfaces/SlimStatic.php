@@ -18,11 +18,11 @@ class SlimStatic
         $manager = new \Statical\Manager();
 
         // Add proxies that use the Slim instance
-        $aliases = array('Feather', 'Config', 'Route', 'Router', 'ForumEnv', 'ForumSettings', 'User');
+        $aliases = ['Feather', 'Config', 'Route', 'Router', 'ForumEnv', 'ForumSettings', 'User'];
         static::addInstances($aliases, $manager, $slim);
 
         // Add special-case Slim container instance
-        $aliases = array('Container');
+        $aliases = ['Container'];
         static::addInstances($aliases, $manager, $slim->getContainer());
 
         // Add services that are resolved out of the Slim container
@@ -54,12 +54,12 @@ class SlimStatic
     */
     static protected function addServices($manager, $slim)
     {
-        $services = array(
+        $services = [
             'Input' => 'request',
             'Request' => 'request',
             'Response' => 'response',
             'View' => 'template'
-        );
+        ];
 
         $container = $slim->getContainer();
 

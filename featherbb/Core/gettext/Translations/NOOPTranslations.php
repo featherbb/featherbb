@@ -18,8 +18,8 @@ class NOOPTranslations implements TranslationsInterface
      *
      * @var array
      */
-    public $entries = array();
-    public $headers = array();
+    public $entries = [];
+    public $headers = [];
 
     /**
      * {@inheritdoc}

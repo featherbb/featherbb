@@ -2,7 +2,7 @@
 // Language definitions used in register.php and post.php
 // Based on work by Otomatic
 
-return array(
+return [
   'What is two plus two?'     => '4',
   'What is four minus one?'   => '3',
   'What is three plus two?'   => '5',
@@ -13,4 +13,4 @@ return array(
   'What is eight times two?'  => '16',
   'What is six times two?'    => '12',
   'What is nine minus seven?' => '2'
-);
+];

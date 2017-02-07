@@ -52,8 +52,8 @@ class Register
             }
         }
 
-        View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Register')),
+        View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Register')],
                     'active_page' => 'register',
                     'is_indexed' => true,
                     'errors' => $user['errors'],
@@ -61,7 +61,7 @@ class Register
                     'languages' => \FeatherBB\Core\Lister::getLangs(),
                     'question' => array_keys($lang_antispam_questions),
                     'qencoded' => md5(array_keys($lang_antispam_questions)[$index_questions]),
-                )
+            ]
         )->addTemplate('register/form.php')->display();
     }
 
@@ -90,10 +90,10 @@ class Register
             return Router::redirect(Router::pathFor('register'));
         }
 
-        View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Register'), __('Forum rules')),
+        View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Register'), __('Forum rules')],
                 'active_page' => 'register',
-            )
+            ]
         )->addTemplate('register/rules.php')->display();
     }
 }

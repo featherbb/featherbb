@@ -11,12 +11,12 @@ namespace FeatherBB\Core;
 
 class View
 {
-    protected $directories = array(),
+    protected $directories = [],
     $templates,
     $app,
     $data,
     $assets,
-    $validation = array(
+    $validation = [
         'page_number' => 'intval',
         'active_page' => 'strval',
         'is_indexed' => 'boolval',
@@ -26,7 +26,7 @@ class View
         'footer_style' => 'strval',
         'fid' => 'intval',
         'pid' => 'intval',
-        'tid' => 'intval');
+        'tid' => 'intval'];
 
     /**
     * Constructor
@@ -125,7 +125,7 @@ class View
             $this->setStyle(User::getPref('style'));
         }
 
-        $output = array();
+        $output = [];
         if (count($this->directories) > 1) {
             ksort($this->directories);
         }
@@ -166,7 +166,7 @@ class View
 
     protected function fetch($nested = true)
     {
-        $data = array();
+        $data = [];
         $data = array_merge($this->getDefaultPageInfo(), $this->data->all(), (array) $data);
         $data['feather'] = true;
         $data['assets'] = $this->getAssets();
@@ -205,18 +205,18 @@ class View
             throw new \InvalidArgumentException('The style '.$style.' doesn\'t exist');
         }
         // Add theme main and admin panel (if needed) stylesheets
-        $this->addAsset('css', 'style/themes/'.$style.'/style.css', array('rel' => 'stylesheet', 'type' => 'text/css'));
+        $this->addAsset('css', 'style/themes/'.$style.'/style.css', ['rel' => 'stylesheet', 'type' => 'text/css']);
         if ($this->has('admin_console')) {
             if (file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/base_admin.css')) {
-                $this->addAsset('css', 'style/themes/'.$style.'/base_admin.css', array('rel' => 'stylesheet', 'type' => 'text/css'));
+                $this->addAsset('css', 'style/themes/'.$style.'/base_admin.css', ['rel' => 'stylesheet', 'type' => 'text/css']);
             } else {
-                $this->addAsset('css', 'style/imports/base_admin.css', array('rel' => 'stylesheet', 'type' => 'text/css'));
+                $this->addAsset('css', 'style/imports/base_admin.css', ['rel' => 'stylesheet', 'type' => 'text/css']);
             }
         }
         // Add javascript files in theme root
         foreach (glob(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/*.js') as $script) {
             $parts = explode('/', $script);
-            $this->addAsset('js', 'style/themes/'.$style.'/'.end($parts), array('type' => 'text/javascript'));
+            $this->addAsset('js', 'style/themes/'.$style.'/'.end($parts), ['type' => 'text/javascript']);
         }
         // Override default templates directory if file exists in theme
         $this->addTemplatesDirectory(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/view', 9);
@@ -245,16 +245,16 @@ class View
                 $value = $this->validation[$key]($value);
             }
         }
-        return array($key, $value);
+        return [$key, $value];
     }
 
-    public function addAsset($type, $asset, $params = array())
+    public function addAsset($type, $asset, $params = [])
     {
         $type = (string) $type;
-        if (!in_array($type, array('js', 'css', 'canonical', 'prev', 'next'))) {
+        if (!in_array($type, ['js', 'css', 'canonical', 'prev', 'next'])) {
             throw new \Exception('Invalid asset type : ' . $type);
         }
-        if (in_array($type, array('js', 'css')) && !is_file(ForumEnv::get('FEATHER_ROOT').$asset)) {
+        if (in_array($type, ['js', 'css']) && !is_file(ForumEnv::get('FEATHER_ROOT').$asset)) {
             throw new \Exception('The asset file ' . $asset . ' does not exist');
         }
 
@@ -262,10 +262,10 @@ class View
         if (isset($params['title'])) {
             $params['title'] = Utils::escape($params['title']);
         }
-        $this->assets[$type][] = array(
+        $this->assets[$type][] = [
             'file' => (string) $asset,
             'params' => $params
-        );
+        ];
     }
 
     public function getAssets()
@@ -286,7 +286,7 @@ class View
 
     public function getTemplates()
     {
-        $output = array();
+        $output = [];
         if (count($this->templates) > 1) {
             ksort($this->templates);
         }
@@ -303,7 +303,7 @@ class View
     public function addMessage($msg, $type = 'info')
     {
         if (Container::get('flash')) {
-            if (in_array($type, array('info', 'error', 'warning', 'success'))) {
+            if (in_array($type, ['info', 'error', 'warning', 'success'])) {
                 Container::get('flash')->addMessage($type, (string) $msg);
             }
         }
@@ -330,7 +330,7 @@ class View
 
         $title = Container::get('forum_settings') ? ForumSettings::get('o_board_title') : 'FeatherBB';
 
-        $data = array(
+        $data = [
             'title' => Utils::escape($title),
             'page_number' => null,
             'active_page' => 'index',
@@ -343,7 +343,7 @@ class View
             'fid' => null,
             'pid' => null,
             'tid' => null,
-        );
+        ];
 
         if (is_object(User::get()) && User::isAdminMod()) {
             $data['has_reports'] = \FeatherBB\Model\Admin\Reports::has_reports();
@@ -363,17 +363,17 @@ class View
     {
         switch($type) {
             case 'js':
-                return array('type' => 'text/javascript');
+                return ['type' => 'text/javascript'];
             case 'css':
-                return array('rel' => 'stylesheet', 'type' => 'text/css');
+                return ['rel' => 'stylesheet', 'type' => 'text/css'];
             case 'canonical':
-                return array('rel' => 'canonical');
+                return ['rel' => 'canonical'];
             case 'prev':
-                return array('rel' => 'prev');
+                return ['rel' => 'prev'];
             case 'next':
-                return array('rel' => 'next');
+                return ['rel' => 'next'];
             default:
-                return array();
+                return [];
         }
     }
 }

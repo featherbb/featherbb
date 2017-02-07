@@ -23,10 +23,10 @@ class Topic
     public static function delete($topic_id)
     {
         // Delete the topic and any redirect topics
-        $where_delete_topic = array(
-            array('id' => $topic_id),
-            array('moved_to' => $topic_id)
-        );
+        $where_delete_topic = [
+            ['id' => $topic_id],
+            ['moved_to' => $topic_id]
+        ];
 
         DB::for_table('topics')
             ->where_any_is($where_delete_topic)
@@ -48,7 +48,7 @@ class Topic
     {
         $post_id = Container::get('hooks')->fire('model.topic.redirect_to_post', $post_id);
 
-        $result['select'] = array('topic_id', 'posted');
+        $result['select'] = ['topic_id', 'posted'];
 
         $result = DB::for_table('posts')
                       ->select_many($result['select'])
@@ -125,31 +125,31 @@ class Topic
     // Gets some info about the topic
     public function get_info_topic($id)
     {
-        $cur_topic['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $cur_topic['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
 
         if (!User::get()->is_guest) {
-            $select_get_info_topic = array('t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies', 'is_subscribed' => 's.user_id');
+            $select_get_info_topic = ['t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies', 'is_subscribed' => 's.user_id'];
 
             $cur_topic = DB::for_table('topics')
                 ->table_alias('t')
                 ->select_many($select_get_info_topic)
-                ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+                ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
                 ->left_outer_join('topic_subscriptions', 't.id=s.topic_id AND s.user_id='.User::get()->id, 's')
                 ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                 ->where_any_is($cur_topic['where'])
                 ->where('t.id', $id)
                 ->where_null('t.moved_to');
         } else {
-            $select_get_info_topic = array('t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies');
+            $select_get_info_topic = ['t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies'];
 
             $cur_topic = DB::for_table('topics')
                             ->table_alias('t')
                             ->select_many($select_get_info_topic)
                             ->select_expr(0, 'is_subscribed')
-                            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+                            ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
                             ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                             ->where_any_is($cur_topic['where'])
                             ->where('t.id', $id)
@@ -216,10 +216,10 @@ class Topic
         }
 
         // Make sure the user can view the topic
-        $authorized['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $authorized['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
 
         $authorized = DB::for_table('topics')
                         ->table_alias('t')
@@ -244,10 +244,10 @@ class Topic
             throw new Error(__('Already subscribed topic'), 400);
         }
 
-        $subscription['insert'] = array(
+        $subscription['insert'] = [
             'user_id' => User::get()->id,
             'topic_id'  => $topic_id
-        );
+        ];
 
         // Insert the subscription
         $subscription = DB::for_table('topic_subscriptions')
@@ -332,17 +332,17 @@ class Topic
     {
         Container::get('hooks')->fire('model.topic.check_move_possible_start');
 
-        $result['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
-        $result['where'] = array(
-            array('fp.post_topics' => 'IS NULL'),
-            array('fp.post_topics' => '1')
-        );
-        $result['order_by'] = array('c.disp_position', 'c.id', 'f.disp_position');
+        $result['select'] = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name'];
+        $result['where'] = [
+            ['fp.post_topics' => 'IS NULL'],
+            ['fp.post_topics' => '1']
+        ];
+        $result['order_by'] = ['c.disp_position', 'c.id', 'f.disp_position'];
 
         $result = DB::for_table('categories')
                     ->table_alias('c')
                     ->select_many($result['select'])
-                    ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
+                    ->inner_join('forums', ['c.id', '=', 'f.cat_id'], 'f')
                     ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                     ->where_any_is($result['where'])
                     ->where_null('f.redirect_url')
@@ -360,17 +360,17 @@ class Topic
     {
         $output = '';
 
-        $select_get_forum_list_move = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
-        $where_get_forum_list_move = array(
-            array('fp.post_topics' => 'IS NULL'),
-            array('fp.post_topics' => '1')
-        );
-        $order_by_get_forum_list_move = array('c.disp_position', 'c.id', 'f.disp_position');
+        $select_get_forum_list_move = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name'];
+        $where_get_forum_list_move = [
+            ['fp.post_topics' => 'IS NULL'],
+            ['fp.post_topics' => '1']
+        ];
+        $order_by_get_forum_list_move = ['c.disp_position', 'c.id', 'f.disp_position'];
 
         $result = DB::for_table('categories')
                     ->table_alias('c')
                     ->select_many($select_get_forum_list_move)
-                    ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
+                    ->inner_join('forums', ['c.id', '=', 'f.cat_id'], 'f')
                     ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                     ->where_any_is($where_get_forum_list_move)
                     ->where_null('f.redirect_url')
@@ -406,17 +406,17 @@ class Topic
     {
         $output = '';
 
-        $result['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
-        $result['where'] = array(
-            array('fp.post_topics' => 'IS NULL'),
-            array('fp.post_topics' => '1')
-        );
-        $order_by_get_forum_list_split = array('c.disp_position', 'c.id', 'f.disp_position');
+        $result['select'] = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name'];
+        $result['where'] = [
+            ['fp.post_topics' => 'IS NULL'],
+            ['fp.post_topics' => '1']
+        ];
+        $order_by_get_forum_list_split = ['c.disp_position', 'c.id', 'f.disp_position'];
 
         $result = DB::for_table('categories')
                     ->table_alias('c')
                     ->select_many($result['select'])
-                    ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
+                    ->inner_join('forums', ['c.id', '=', 'f.cat_id'], 'f')
                     ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                     ->where_any_is($result['where'])
                     ->where_null('f.redirect_url')
@@ -470,10 +470,10 @@ class Topic
         }
 
         // Verify that the move to forum ID is valid
-        $authorized['where'] = array(
-            array('fp.post_topics' => 'IS NULL'),
-            array('fp.post_topics' => '1')
-        );
+        $authorized['where'] = [
+            ['fp.post_topics' => 'IS NULL'],
+            ['fp.post_topics' => '1']
+        ];
 
         $authorized = DB::for_table('forums')
                         ->table_alias('f')
@@ -505,7 +505,7 @@ class Topic
         if (Input::post('with_redirect')) {
             foreach ($topics as $cur_topic) {
                 // Fetch info for the redirect topic
-                $moved_to['select'] = array('poster', 'subject', 'posted', 'last_post');
+                $moved_to['select'] = ['poster', 'subject', 'posted', 'last_post'];
 
                 $moved_to = DB::for_table('topics')->select_many($moved_to['select'])
                                 ->where('id', $cur_topic);
@@ -513,14 +513,14 @@ class Topic
                 $moved_to = $moved_to->find_one();
 
                 // Create the redirect topic
-                $insert_move_to = array(
+                $insert_move_to = [
                     'poster' => $moved_to['poster'],
                     'subject'  => $moved_to['subject'],
                     'posted'  => $moved_to['posted'],
                     'last_post'  => $moved_to['last_post'],
                     'moved_to'  => $cur_topic,
                     'forum_id'  => $fid,
-                );
+                ];
 
                 // Insert the report
                 $move_to = DB::for_table('topics')
@@ -538,7 +538,7 @@ class Topic
 
     public function delete_posts($tid, $fid)
     {
-        $posts = Input::post('posts', array());
+        $posts = Input::post('posts', []);
         $posts = Container::get('hooks')->fire('model.topic.delete_posts_start', $posts, $tid, $fid);
 
         if (empty($posts)) {
@@ -578,7 +578,7 @@ class Topic
             $search->strip_search_index($posts);
 
             // Get last_post, last_post_id, and last_poster for the topic after deletion
-            $last_post['select'] = array('id', 'poster', 'posted');
+            $last_post['select'] = ['id', 'poster', 'posted'];
 
             $last_post = DB::for_table('posts')
                 ->select_many($last_post['select'])
@@ -590,11 +590,11 @@ class Topic
             $num_posts_deleted = substr_count($posts, ',') + 1;
 
             // Update the topic
-            $update_topic['insert'] = array(
+            $update_topic['insert'] = [
                 'last_post' => User::get()->id,
                 'last_post_id'  => $last_post['id'],
                 'last_poster'  => $last_post['poster'],
-            );
+            ];
 
             $update_topic = DB::for_table('topics')->where('id', $tid)
                 ->find_one()
@@ -605,7 +605,7 @@ class Topic
             $update_topic = $update_topic->save();
 
             Forum::update($fid);
-            return Router::redirect(Router::pathFor('Topic', array('id' => $tid, 'name' => $topic_subject)), __('Delete posts redirect'));
+            return Router::redirect(Router::pathFor('Topic', ['id' => $tid, 'name' => $topic_subject]), __('Delete posts redirect'));
         }
         else {
             $posts = Container::get('hooks')->fire('model.topic.delete_posts', $posts);
@@ -616,16 +616,16 @@ class Topic
     public function get_topic_info($fid, $tid)
     {
         // Fetch some info about the topic
-        $cur_topic['select'] = array('forum_id' => 'f.id', 'f.forum_name', 't.subject', 't.num_replies', 't.first_post_id');
-        $cur_topic['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $cur_topic['select'] = ['forum_id' => 'f.id', 'f.forum_name', 't.subject', 't.num_replies', 't.first_post_id'];
+        $cur_topic['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
 
         $cur_topic = DB::for_table('topics')
             ->table_alias('t')
             ->select_many($cur_topic['select'])
-            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+            ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
             ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
             ->where_any_is($cur_topic['where'])
             ->where('f.id', $fid)
@@ -643,7 +643,7 @@ class Topic
 
     public function split_posts($tid, $fid, $p = null)
     {
-        $posts = Input::post('posts') ? Input::post('posts') : array();
+        $posts = Input::post('posts') ? Input::post('posts') : [];
         $posts = Container::get('hooks')->fire('model.topic.split_posts_start', $posts, $tid, $fid);
         if (empty($posts)) {
             throw new Error(__('No posts selected'), 404);
@@ -678,10 +678,10 @@ class Topic
             unset($result);
 
             // Verify that the move to forum ID is valid
-            $result['where'] = array(
-                array('fp.post_topics' => 'IS NULL'),
-                array('fp.post_topics' => '1')
-            );
+            $result['where'] = [
+                ['fp.post_topics' => 'IS NULL'],
+                ['fp.post_topics' => '1']
+            ];
 
             $result = DB::for_table('forums')
                         ->table_alias('f')
@@ -705,7 +705,7 @@ class Topic
             }
 
             // Get data from the new first post
-            $select_first_post = array('id', 'poster', 'posted');
+            $select_first_post = ['id', 'poster', 'posted'];
 
             $first_post_data = DB::for_table('posts')
                 ->select_many($select_first_post)
@@ -714,13 +714,13 @@ class Topic
                 ->find_one();
 
             // Create the new topic
-            $topic['insert'] = array(
+            $topic['insert'] = [
                 'poster' => $first_post_data['poster'],
                 'subject'  => $new_subject,
                 'posted'  => $first_post_data['posted'],
                 'first_post_id'  => $first_post_data['id'],
                 'forum_id'  => $move_to_forum,
-            );
+            ];
 
             $topic = DB::for_table('topics')
                 ->create()
@@ -738,10 +738,10 @@ class Topic
             $move_posts->save();
 
             // Apply every subscription to both topics
-            DB::for_table('topic_subscriptions')->raw_query('INSERT INTO '.ForumSettings::get('db_prefix').'topic_subscriptions (user_id, topic_id) SELECT user_id, '.$new_tid.' FROM '.ForumSettings::get('db_prefix').'topic_subscriptions WHERE topic_id=:tid', array('tid' => $tid));
+            DB::for_table('topic_subscriptions')->raw_query('INSERT INTO '.ForumSettings::get('db_prefix').'topic_subscriptions (user_id, topic_id) SELECT user_id, '.$new_tid.' FROM '.ForumSettings::get('db_prefix').'topic_subscriptions WHERE topic_id=:tid', ['tid' => $tid]);
 
             // Get last_post, last_post_id, and last_poster from the topic and update it
-            $last_old_post_data['select'] = array('id', 'poster', 'posted');
+            $last_old_post_data['select'] = ['id', 'poster', 'posted'];
 
             $last_old_post_data = DB::for_table('posts')
                 ->select_many($last_old_post_data['select'])
@@ -751,11 +751,11 @@ class Topic
             $last_old_post_data = $last_old_post_data->find_one();
 
             // Update the old topic
-            $update_old_topic['insert'] = array(
+            $update_old_topic['insert'] = [
                 'last_post' => $last_old_post_data['posted'],
                 'last_post_id'  => $last_old_post_data['id'],
                 'last_poster'  => $last_old_post_data['poster'],
-            );
+            ];
 
             $update_old_topic = DB::for_table('topics')
                                 ->where('id', $tid)
@@ -766,7 +766,7 @@ class Topic
             $update_old_topic->save();
 
             // Get last_post, last_post_id, and last_poster from the new topic and update it
-            $last_new_post_data['select'] = array('id', 'poster', 'posted');
+            $last_new_post_data['select'] = ['id', 'poster', 'posted'];
 
             $last_new_post_data = DB::for_table('posts')
                                     ->select_many($last_new_post_data['select'])
@@ -776,11 +776,11 @@ class Topic
             $last_new_post_data = $last_new_post_data->find_one();
 
             // Update the new topic
-            $update_new_topic['insert'] = array(
+            $update_new_topic['insert'] = [
                 'last_post' => $last_new_post_data['posted'],
                 'last_post_id'  => $last_new_post_data['id'],
                 'last_poster'  => $last_new_post_data['poster'],
-            );
+            ];
 
             $update_new_topic = DB::for_table('topics')
                 ->where('id', $new_tid)
@@ -793,7 +793,7 @@ class Topic
             Forum::update($fid);
             Forum::update($move_to_forum);
 
-            return Router::redirect(Router::pathFor('Topic', array('id' => $new_tid, 'name' => Url::url_friendly($new_subject))), __('Split posts redirect'));
+            return Router::redirect(Router::pathFor('Topic', ['id' => $new_tid, 'name' => Url::url_friendly($new_subject)]), __('Split posts redirect'));
         }
 
         $posts = Container::get('hooks')->fire('model.topic.split_posts', $posts);
@@ -803,7 +803,7 @@ class Topic
     // Prints the posts
     public function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
     {
-        $post_data = array();
+        $post_data = [];
 
         $post_data = Container::get('hooks')->fire('model.topic.print_posts_start', $post_data, $topic_id, $start_from, $cur_topic, $is_admmod);
 
@@ -819,7 +819,7 @@ class Topic
         $result = Container::get('hooks')->fireDB('model.topic.print_posts_ids_query', $result);
         $result = $result->find_many();
 
-        $post_ids = array();
+        $post_ids = [];
         foreach ($result as $cur_post_id) {
             $post_ids[] = $cur_post_id['id'];
         }
@@ -829,13 +829,13 @@ class Topic
         }
 
         // Retrieve the posts (and their respective poster/online status)
-        $result['select'] = array('u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'email_setting' => 'pr.preference_value', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'is_online' => 'o.user_id');
+        $result['select'] = ['u.email', 'u.title', 'u.url', 'u.location', 'u.signature', 'email_setting' => 'pr.preference_value', 'u.num_posts', 'u.registered', 'u.admin_note', 'p.id','username' => 'p.poster', 'p.poster_id', 'p.poster_ip', 'p.poster_email', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by', 'g.g_id', 'g.g_user_title', 'is_online' => 'o.user_id'];
 
         $result = DB::for_table('posts')
                     ->table_alias('p')
                     ->select_many($result['select'])
-                    ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
-                    ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                    ->inner_join('users', ['u.id', '=', 'p.poster_id'], 'u')
+                    ->inner_join('groups', ['g.g_id', '=', 'u.group_id'], 'g')
                     ->left_outer_join('online', 'o.user_id!=1 AND o.idle=0 AND o.user_id=u.id', 'o')
                     ->left_outer_join('preferences', 'pr.user=u.id AND pr.preference_name=\'email.setting\'', 'pr')
                     ->where_in('p.id', $post_ids)
@@ -846,9 +846,9 @@ class Topic
         foreach($result as $cur_post) {
             $post_count++;
             $cur_post['user_avatar'] = '';
-            $cur_post['user_info'] = array();
-            $cur_post['user_contacts'] = array();
-            $cur_post['post_actions'] = array();
+            $cur_post['user_info'] = [];
+            $cur_post['user_contacts'] = [];
+            $cur_post['post_actions'] = [];
             $cur_post['is_online_formatted'] = '';
             $cur_post['signature_formatted'] = '';
             $cur_post['promote.next_group'] = Container::get('prefs')->getGroupPreferences($cur_post['g_id'], 'promote.next_group');
@@ -995,7 +995,7 @@ class Topic
     {
         Container::get('hooks')->fire('model.disp.topics_posts_view_start', $tid, $start_from);
 
-        $post_data = array();
+        $post_data = [];
 
         $post_count = 0; // Keep track of post numbers
 
@@ -1013,13 +1013,13 @@ class Topic
         }
 
         // Retrieve the posts (and their respective poster)
-        $result['select'] = array('u.title', 'u.num_posts', 'g.g_id', 'g.g_user_title', 'p.id', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by');
+        $result['select'] = ['u.title', 'u.num_posts', 'g.g_id', 'g.g_user_title', 'p.id', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by'];
 
         $result = DB::for_table('posts')
                     ->table_alias('p')
                     ->select_many($result['select'])
-                    ->inner_join('users', array('u.id', '=', 'p.poster_id'), 'u')
-                    ->inner_join('groups', array('g.g_id', '=', 'u.group_id'), 'g')
+                    ->inner_join('users', ['u.id', '=', 'p.poster_id'], 'u')
+                    ->inner_join('groups', ['g.g_id', '=', 'u.group_id'], 'g')
                     ->where_in('p.id', $post_ids)
                     ->order_by('p.id');
         $result = Container::get('hooks')->fireDB('model.disp.topics_posts_view_query', $result);

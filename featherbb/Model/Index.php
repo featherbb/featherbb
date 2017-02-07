@@ -21,7 +21,7 @@ class Index
     {
         Container::get('hooks')->fire('model.index.get_forum_actions_start');
 
-        $forum_actions = array();
+        $forum_actions = [];
 
         // Display a "mark all as read" link
         if (!User::get()->is_guest) {
@@ -38,11 +38,11 @@ class Index
     {
         Container::get('hooks')->fire('model.index.get_new_posts_start');
 
-        $query['select'] = array('f.id', 'f.last_post');
-        $query['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $query['select'] = ['f.id', 'f.last_post'];
+        $query['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
 
         $query = DB::for_table('forums')
             ->table_alias('f')
@@ -55,7 +55,7 @@ class Index
 
         $query = $query->find_result_set();
 
-        $forums = $new_topics = array();
+        $forums = $new_topics = [];
         $tracked_topics = Track::get_tracked_topics();
 
         foreach ($query as $cur_forum) {
@@ -68,7 +68,7 @@ class Index
             if (empty($tracked_topics['topics'])) {
                 $new_topics = $forums;
             } else {
-                $query['select'] = array('forum_id', 'id', 'last_post');
+                $query['select'] = ['forum_id', 'id', 'last_post'];
 
                 $query = DB::for_table('topics')
                     ->select_many($query['select'])
@@ -103,18 +103,18 @@ class Index
             $new_topics = $this->get_new_posts();
         }
 
-        $query['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.forum_desc', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.num_posts', 'f.last_post', 'f.last_post_id', 'last_post_tid' => 't.id', 'last_post_subject' => 't.subject', 'f.last_poster');
-        $query['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
-        $query['order_by'] = array('c.disp_position', 'c.id', 'f.disp_position');
+        $query['select'] = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.forum_desc', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.num_posts', 'f.last_post', 'f.last_post_id', 'last_post_tid' => 't.id', 'last_post_subject' => 't.subject', 'f.last_poster'];
+        $query['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
+        $query['order_by'] = ['c.disp_position', 'c.id', 'f.disp_position'];
 
         $query = DB::for_table('categories')
             ->table_alias('c')
             ->select_many($query['select'])
-            ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
-            ->left_outer_join('topics', array('t.last_post_id', '=', 'f.last_post_id'), 't')
+            ->inner_join('forums', ['c.id', '=', 'f.cat_id'], 'f')
+            ->left_outer_join('topics', ['t.last_post_id', '=', 'f.last_post_id'], 't')
             ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
             ->where_any_is($query['where'])
             ->where_null('t.moved_to')
@@ -124,7 +124,7 @@ class Index
 
         $query = $query->find_result_set();
 
-        $index_data = array();
+        $index_data = [];
         $i = 0;
         foreach ($query as $cur_forum) {
             if ($i == 0) {
@@ -185,7 +185,7 @@ class Index
 
             if ($cur_forum->moderators != '') {
                 $mods_array = unserialize($cur_forum->moderators);
-                $moderators = array();
+                $moderators = [];
 
                 foreach ($mods_array as $mod_username => $mod_id) {
                     if (User::can('users.view')) {
@@ -249,12 +249,12 @@ class Index
         Container::get('hooks')->fire('model.index.fetch_users_online_start');
 
         // Fetch users online info and generate strings for output
-        $online = array();
+        $online = [];
         $online['num_guests'] = 0;
 
-        $query['select'] = array('user_id', 'ident');
-        $query['where'] = array('idle' => '0');
-        $query['order_by'] = array('ident');
+        $query['select'] = ['user_id', 'ident'];
+        $query['where'] = ['idle' => '0'];
+        $query['order_by'] = ['ident'];
 
         $query = DB::for_table('online')
             ->select_many($query['select'])

@@ -38,7 +38,7 @@ class Updates
         $coreUpdates = false;
         $coreUpdatesMessage = __('FeatherBB core up to date');
 
-        $pluginUpdates = array();
+        $pluginUpdates = [];
         $allPlugins = Lister::getPlugins();
 
         // Check FeatherBB core updates
@@ -75,14 +75,14 @@ class Updates
 
         AdminUtils::generateAdminMenu('updates');
 
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Updates')),
+        return View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Updates')],
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'plugin_updates' => $pluginUpdates,
                 'core_updates' => $coreUpdates,
                 'core_updates_message' => $coreUpdatesMessage
-            )
+            ]
         )->addTemplate('admin/updates.php')->display();
     }
 
@@ -125,12 +125,12 @@ class Updates
         // Display upgrade results
         AdminUtils::generateAdminMenu('updates');
 
-        return View::setPageInfo(array(
-                'title'           => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Updates')),
+        return View::setPageInfo([
+                'title'           => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Updates')],
                 'active_page'     => 'admin',
                 'admin_console'   => true,
                 'upgrade_results' => $upgrade_results
-            )
+            ]
         )->addTemplate('admin/updates.php')->display();
     }
 
@@ -154,7 +154,7 @@ class Updates
             $upgrade_results[$key]['message'] = sprintf(__('Successful upgrade message'), ForumEnv::get('FORUM_VERSION'), $coreUpdater->getLatestVersion());
             // Reset cache and update core version in database
             Container::get('cache')->flush();
-            if (!Database::for_table('config')->raw_execute('UPDATE `'.ForumSettings::get('db_prefix').'config` SET `conf_value` = :value WHERE `conf_name` = "o_cur_version"', array('value' => ForumEnv::get('FORUM_VERSION')))) {
+            if (!Database::for_table('config')->raw_execute('UPDATE `'.ForumSettings::get('db_prefix').'config` SET `conf_value` = :value WHERE `conf_name` = "o_cur_version"', ['value' => ForumEnv::get('FORUM_VERSION')])) {
                 $coreUpdater->addWarning(__('Could not update core version in database'));
             }
         }
@@ -164,12 +164,12 @@ class Updates
         // Display upgrade results
         AdminUtils::generateAdminMenu('updates');
 
-        return View::setPageInfo(array(
-                'title'           => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Updates')),
+        return View::setPageInfo([
+                'title'           => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Updates')],
                 'active_page'     => 'admin',
                 'admin_console'   => true,
                 'upgrade_results' => $upgrade_results
-            )
+            ]
         )->addTemplate('admin/updates.php')->display();
     }
 }

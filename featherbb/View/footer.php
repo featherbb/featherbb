@@ -91,7 +91,7 @@ if (!empty($queries_info)) { ?>
 <script type="text/javascript">
     var baseUrl = '<?= Utils::escape(Url::base()); ?>',
         bodyId = 'pun<?= $active_page; ?>',
-        phpVars = <?= isset($jsVars) ? json_encode($jsVars) : json_encode(array()); ?>;
+        phpVars = <?= isset($jsVars) ? json_encode($jsVars) : json_encode([]); ?>;
 </script>
 <?php
 if (!empty($assets['js'])) {

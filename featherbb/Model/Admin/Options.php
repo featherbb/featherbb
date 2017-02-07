@@ -19,7 +19,7 @@ class Options
 {
     public function update_options()
     {
-        $form = array(
+        $form = [
             'board_title'            => Utils::trim(Input::post('form_board_title')),
             'board_desc'            => Utils::trim(Input::post('form_board_desc')),
             'base_url'                => Utils::trim(Input::post('form_base_url')),
@@ -76,9 +76,9 @@ class Options
             'announcement_message'    => Utils::trim(Input::post('form_announcement_message')),
             'maintenance'            => Input::post('form_maintenance') != '1' ? '0' : '1',
             'maintenance_message'    => Utils::trim(Input::post('form_maintenance_message')),
-        );
+        ];
 
-        $prefs = array(
+        $prefs = [
             'language'            => Utils::trim(Input::post('form_default_lang')),
             'style'            => Utils::trim(Input::post('form_default_style')),
             'dst'            => Input::post('form_default_dst') != '1' ? '0' : '1',
@@ -90,7 +90,7 @@ class Options
             'disp.topics'    => intval(Input::post('form_disp_topics_default')),
             'disp.posts'    => intval(Input::post('form_disp_posts_default')),
             'email.setting'    => intval(Input::post('form_default_email_setting')),
-        );
+        ];
 
         $form = Container::get('hooks')->fire('model.admin.options.update_options.form', $form);
         $prefs = Container::get('hooks')->fire('model.admin.options.update_options.prefs', $prefs);
@@ -272,7 +272,7 @@ class Options
 
     public function get_times()
     {
-        $times = array(5, 15, 30, 60);
+        $times = [5, 15, 30, 60];
         $times = Container::get('hooks')->fire('model.admin.options.get_times.times', $times);
 
         $output = '';

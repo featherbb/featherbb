@@ -49,11 +49,11 @@ class Index
 
         AdminUtils::generateAdminMenu('index');
 
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Index')),
+        return View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Index')],
                 'active_page' => 'admin',
                 'admin_console' => true
-            )
+            ]
         )->addTemplate('admin/index.php')->display();
     }
 }

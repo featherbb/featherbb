@@ -42,25 +42,25 @@ class Topic extends Api
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
-        $cur_posting['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $cur_posting['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
 
         if ($tid) {
-            $cur_posting['select'] = array('f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics', 't.subject', 't.closed', 'is_subscribed' => 's.user_id');
+            $cur_posting['select'] = ['f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics', 't.subject', 't.closed', 'is_subscribed' => 's.user_id'];
 
             $cur_posting = DB::for_table('topics')
                 ->table_alias('t')
                 ->select_many($cur_posting['select'])
-                ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+                ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
                 ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.$this->user->g_id, 'fp')
                 ->left_outer_join('topic_subscriptions', 't.id=s.topic_id AND s.user_id='.$this->user->id, 's')
                 ->where_any_is($cur_posting['where'])
                 ->where('t.id', $tid);
 
         } else {
-            $cur_posting['select'] = array('f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics');
+            $cur_posting['select'] = ['f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics'];
 
             $cur_posting = DB::for_table('forums')
                 ->table_alias('f')
@@ -87,7 +87,7 @@ class Topic extends Api
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
-        $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
+        $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : [];
         $is_admmod = (User::isAdmin($this->user) || (User::isAdminMod($this->user) && array_key_exists($this->user->username, $mods_array))) ? true : false;
 
         // Do we have permission to post?
@@ -182,7 +182,7 @@ class Topic extends Api
     // If the previous check went OK, setup some variables used later
     public function setup_variables($errors, $is_admmod)
     {
-        $post = array();
+        $post = [];
 
         if (!$this->user->is_guest) {
             $post['username'] = $this->user->username;
@@ -220,10 +220,10 @@ class Topic extends Api
     // Insert a topic
     public function insert_topic($post, $fid)
     {
-        $new = array();
+        $new = [];
 
         // Create the topic
-        $topic['insert'] = array(
+        $topic['insert'] = [
             'poster' => $post['username'],
             'subject' => $post['subject'],
             'posted'  => $post['time'],
@@ -231,7 +231,7 @@ class Topic extends Api
             'last_poster'  => $post['username'],
             'sticky'  => $post['stick_topic'],
             'forum_id'  => $fid,
-        );
+        ];
 
         $topic = DB::for_table('topics')
             ->create()
@@ -244,10 +244,10 @@ class Topic extends Api
             // To subscribe or not to subscribe, that ...
             if (ForumSettings::get('o_topic_subscriptions') == '1' && $post['subscribe']) {
 
-                $subscription['insert'] = array(
+                $subscription['insert'] = [
                     'user_id'   =>  $this->user->id,
                     'topic_id'  =>  $new['tid']
-                );
+                ];
 
                 $subscription = DB::for_table('topic_subscriptions')
                     ->create()
@@ -257,7 +257,7 @@ class Topic extends Api
             }
 
             // Create the post ("topic post")
-            $query['insert'] = array(
+            $query['insert'] = [
                 'poster' => $post['username'],
                 'poster_id' => $this->user->id,
                 'poster_ip' => Utils::getIp(),
@@ -265,7 +265,7 @@ class Topic extends Api
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
                 'topic_id'  => $new['tid'],
-            );
+            ];
 
             $query = DB::for_table('posts')
                 ->create()
@@ -274,14 +274,14 @@ class Topic extends Api
         } else {
             // It's a guest
             // Create the post ("topic post")
-            $query['insert'] = array(
+            $query['insert'] = [
                 'poster' => $post['username'],
                 'poster_ip' => Utils::getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
                 'topic_id'  => $new['tid'],
-            );
+            ];
 
             if (ForumSettings::get('p_force_guest_email') == '1' || $post['email'] != '') {
                 $query['poster_email'] = $post['email'];
@@ -296,10 +296,10 @@ class Topic extends Api
 
         // Update the topic with last_post_id
         unset($topic);
-        $topic['update'] = array(
+        $topic['update'] = [
             'last_post_id'  =>  $new['pid'],
             'first_post_id' =>  $new['pid'],
-        );
+        ];
 
         $topic = DB::for_table('topics')
             ->where('id', $new['tid'])
@@ -320,18 +320,18 @@ class Topic extends Api
     public function send_notifications_new_topic($post, $cur_posting, $new_tid)
     {
         // Get any subscribed users that should be notified (banned users are excluded)
-        $result['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
-        $result['select'] = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
+        $result['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
+        $result['select'] = ['u.id', 'u.email', 'u.notify_with_post', 'u.language'];
 
         $result = DB::for_table('users')
             ->table_alias('u')
             ->select_many($result['select'])
-            ->inner_join('forum_subscriptions', array('u.id', '=', 's.user_id'), 's')
+            ->inner_join('forum_subscriptions', ['u.id', '=', 's.user_id'], 's')
             ->left_outer_join('forum_perms', 'fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id', 'fp')
-            ->left_outer_join('bans', array('u.username', '=', 'b.username'), 'b')
+            ->left_outer_join('bans', ['u.username', '=', 'b.username'], 'b')
             ->where_null('b.username')
             ->where_any_is($result['where'])
             ->where('s.forum_id', $cur_posting['id'])
@@ -339,7 +339,7 @@ class Topic extends Api
         $result = $result->find_many();
 
         if ($result) {
-            $notification_emails = array();
+            $notification_emails = [];
 
             $censored_message = Utils::trim(Utils::censor($post['message']));
             $censored_subject = Utils::trim(Utils::censor($post['subject']));
@@ -448,7 +448,7 @@ class Topic extends Api
     // Insert a reply
     public function insert_reply($post, $tid, $cur_posting, $is_subscribed)
     {
-        $new = array();
+        $new = [];
 
         $new = Container::get('hooks')->fireDB('model.post.insert_reply_start', $new, $post, $tid, $cur_posting, $is_subscribed);
 
@@ -456,7 +456,7 @@ class Topic extends Api
             $new['tid'] = $tid;
 
             // Insert the new post
-            $query['insert'] = array(
+            $query['insert'] = [
                 'poster' => $post['username'],
                 'poster_id' => $this->user->id,
                 'poster_ip' => Utils::getIp(),
@@ -464,7 +464,7 @@ class Topic extends Api
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
                 'topic_id'  => $tid,
-            );
+            ];
 
             $query = DB::for_table('posts')
                 ->create()
@@ -480,10 +480,10 @@ class Topic extends Api
                 // Let's do it
                 if (isset($post['subscribe']) && $post['subscribe'] && !$is_subscribed) {
 
-                    $subscription['insert'] = array(
+                    $subscription['insert'] = [
                         'user_id'   =>  $this->user->id,
                         'topic_id'  =>  $tid
-                    );
+                    ];
 
                     $subscription = DB::for_table('topic_subscriptions')
                         ->create()
@@ -504,14 +504,14 @@ class Topic extends Api
             }
         } else {
             // It's a guest. Insert the new post
-            $query['insert'] = array(
+            $query['insert'] = [
                 'poster' => $post['username'],
                 'poster_ip' => Utils::getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
                 'topic_id'  => $tid,
-            );
+            ];
 
             if (ForumSettings::get('p_force_guest_email') == '1' || $post['email'] != '') {
                 $query['insert']['poster_email'] = $post['email'];
@@ -527,11 +527,11 @@ class Topic extends Api
         }
 
         // Update topic
-        $topic['update'] = array(
+        $topic['update'] = [
             'last_post' => $post['time'],
             'last_post_id'  => $new['pid'],
             'last_poster'  => $post['username'],
-        );
+        ];
 
         $topic = DB::for_table('topics')
             ->where('id', $tid)

@@ -70,7 +70,7 @@ class Post
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
-        $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : array();
+        $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : [];
         $is_admmod = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         // Do we have permission to post?
@@ -82,7 +82,7 @@ class Post
         }
 
         // Start with a clean slate
-        $errors = array();
+        $errors = [];
 
         $post = '';
 
@@ -174,8 +174,8 @@ class Post
             $post_data = '';
         }
 
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), $action),
+        return View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), $action],
                 'active_page' => 'post',
                 'post' => $post,
                 'tid' => $args['tid'],
@@ -191,7 +191,7 @@ class Post
                 'url_topic' => $url_topic,
                 'quote' => $quote,
                 'errors'    =>    $errors,
-            )
+            ]
         )->addTemplate('post.php')->display();
     }
 
@@ -207,7 +207,7 @@ class Post
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
-        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
+        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : [];
         $is_admmod = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         $is_topic_post = ($args['id'] == $cur_post['first_post_id']) ? true : false;
@@ -231,13 +231,13 @@ class Post
 
         $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
-        return View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Delete post')),
+        return View::setPageInfo([
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Delete post')],
             'active_page' => 'delete',
             'cur_post' => $cur_post,
             'id' => $args['id'],
             'is_topic_post' => $is_topic_post
-        ))->addTemplate('delete.php')->display();
+        ])->addTemplate('delete.php')->display();
     }
 
     public function editpost($req, $res, $args)
@@ -248,7 +248,7 @@ class Post
         $cur_post = $this->model->get_info_edit($args['id']);
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
-        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
+        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : [];
         $is_admmod = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         $can_edit_subject = $args['id'] == $cur_post['first_post_id'];
@@ -268,7 +268,7 @@ class Post
         }
 
         // Start with a clean slate
-        $errors = array();
+        $errors = [];
 
         if (Request::isPost()) {
             Container::get('hooks')->fire('controller.post.edit.submit', $args['id']);
@@ -298,8 +298,8 @@ class Post
             $preview_message = '';
         }
 
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Edit post')),
+        return View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Edit post')],
                 'cur_post' => $cur_post,
                 'errors' => $errors,
                 'preview_message' => $preview_message,
@@ -307,7 +307,7 @@ class Post
                 'checkboxes' => $this->model->get_edit_checkboxes($can_edit_subject, $is_admmod, $cur_post, 1),
                 'can_edit_subject' => $can_edit_subject,
                 'post' => $post,
-            )
+            ]
         )->addTemplate('edit.php')->display();
     }
 
@@ -326,12 +326,12 @@ class Post
             $cur_post['subject'] = Utils::censor($cur_post['subject']);
         }
 
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Report post')),
+        return View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Report post')],
                 'active_page' => 'report',
                 'id' => $args['id'],
                 'cur_post' => $cur_post
-            )
+            ]
         )->addTemplate('misc/report.php')->display();
     }
 

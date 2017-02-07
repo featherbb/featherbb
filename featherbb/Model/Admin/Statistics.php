@@ -33,7 +33,7 @@ class Statistics
             $load_averages = Container::get('hooks')->fire('model.admin.model.statistics.get_server_load.load_averages', $load_averages);
 
             $server_load = isset($load_averages[2]) ? $load_averages[0].' '.$load_averages[1].' '.$load_averages[2] : __('Not available');
-        } elseif (!in_array(PHP_OS, array('WINNT', 'WIN32')) && preg_match('%averages?: ([0-9\.]+),?\s+([0-9\.]+),?\s+([0-9\.]+)%i', @exec('uptime'), $load_averages)) {
+        } elseif (!in_array(PHP_OS, ['WINNT', 'WIN32']) && preg_match('%averages?: ([0-9\.]+),?\s+([0-9\.]+),?\s+([0-9\.]+)%i', @exec('uptime'), $load_averages)) {
             $server_load = $load_averages[1].' '.$load_averages[2].' '.$load_averages[3];
         } else {
             $server_load = __('Not available');
@@ -54,7 +54,7 @@ class Statistics
 
     public function get_total_size()
     {
-        $total = array();
+        $total = [];
 
         if (ForumSettings::get('db_type') == 'mysql' || ForumSettings::get('db_type') == 'mysqli' || ForumSettings::get('db_type') == 'mysql_innodb' || ForumSettings::get('db_type') == 'mysqli_innodb') {
             // Calculate total db size/row count

@@ -21,7 +21,7 @@ class Track
             arsort($tracked_topics['topics'], SORT_NUMERIC);
             arsort($tracked_topics['forums'], SORT_NUMERIC);
         } else {
-            $tracked_topics = array('topics' => array(), 'forums' => array());
+            $tracked_topics = ['topics' => [], 'forums' => []];
         }
 
         return setcookie(ForumSettings::get('cookie_name') . '_track', json_encode($tracked_topics), time() + ForumSettings::get('o_timeout_visit'), '/', '', false, true);
@@ -39,6 +39,6 @@ class Track
             $cookie_data = json_decode($cookie_raw, true);
             return $cookie_data;
         }
-        return array('topics' => array(), 'forums' => array());
+        return ['topics' => [], 'forums' => []];
     }
 }

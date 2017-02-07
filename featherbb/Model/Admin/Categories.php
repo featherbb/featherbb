@@ -17,7 +17,7 @@ class Categories
     {
         $cat_name = Container::get('hooks')->fire('model.admin.categories.add_category', $cat_name);
 
-        $set_add_category = array('cat_name' => $cat_name);
+        $set_add_category = ['cat_name' => $cat_name];
 
         return DB::for_table('categories')
                 ->create()
@@ -29,8 +29,8 @@ class Categories
     {
         $category = Container::get('hooks')->fire('model.admin.categories.update_category', $category);
 
-        $set_update_category = array('cat_name' => $category['name'],
-                                    'disp_position' => $category['order']);
+        $set_update_category = ['cat_name' => $category['name'],
+                                    'disp_position' => $category['order']];
 
         return DB::for_table('categories')
                 ->find_one($category['id'])
@@ -62,7 +62,7 @@ class Categories
         // Delete orphan redirect forums
         $orphans = DB::for_table('topics')
                     ->table_alias('t1')
-                    ->left_outer_join('topics', array('t1.moved_to', '=', 't2.id'), 't2')
+                    ->left_outer_join('topics', ['t1.moved_to', '=', 't2.id'], 't2')
                     ->where_null('t2.id')
                     ->where_not_null('t1.moved_to');
         $orphans = Container::get('hooks')->fireDB('model.admin.categories.delete_orphan_forums_query', $orphans);
@@ -82,8 +82,8 @@ class Categories
 
     public function get_cat_list()
     {
-        $cat_list = array();
-        $select_get_cat_list = array('id', 'cat_name', 'disp_position');
+        $cat_list = [];
+        $select_get_cat_list = ['id', 'cat_name', 'disp_position'];
 
         $cat_list = DB::for_table('categories')
             ->select($select_get_cat_list)

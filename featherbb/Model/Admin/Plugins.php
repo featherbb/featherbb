@@ -227,7 +227,7 @@ class Plugins
 
         if (is_uploaded_file($uploaded_file['tmp_name'])) {
             // Preliminary file check, adequate in most cases
-            $allowed_types = array('application/zip', 'application/x-compressed', 'application/x-zip-compressed', 'application/download');
+            $allowed_types = ['application/zip', 'application/x-compressed', 'application/x-zip-compressed', 'application/download'];
             if (!in_array($uploaded_file['type'], $allowed_types)) {
                 throw new Error(__('Bad type'));
             }

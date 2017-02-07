@@ -75,11 +75,11 @@ class Auth
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                        DB::for_table('online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged));
+                        DB::for_table('online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', [':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged]);
                         break;
 
                     default:
-                        DB::for_table('online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE user_id=:user_id)', array(':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged));
+                        DB::for_table('online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE user_id=:user_id)', [':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged]);
                         break;
                 }
 
@@ -98,7 +98,7 @@ class Auth
 
                 $idle_sql = (User::get()->idle == '1') ? ', idle=0' : '';
 
-                DB::for_table('online')->raw_execute('UPDATE '.ForumSettings::get('db_prefix').'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', array(':user_id' => User::get()->id));
+                DB::for_table('online')->raw_execute('UPDATE '.ForumSettings::get('db_prefix').'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', [':user_id' => User::get()->id]);
 
                 // Update tracked topics with the current expire time
                 $cookie_tracked_topics = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
@@ -116,7 +116,7 @@ class Auth
     public function update_users_online()
     {
         // Fetch all online list entries that are older than "o_timeout_online"
-        $select_update_users_online = array('user_id', 'ident', 'logged', 'idle');
+        $select_update_users_online = ['user_id', 'ident', 'logged', 'idle'];
 
         $result = DB::for_table('online')
                     ->select_many($select_update_users_online)
@@ -214,8 +214,8 @@ class Auth
         }
 
         // Deal with newlines, tabs and multiple spaces
-        $pattern = array("\t", '  ', '  ');
-        $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
+        $pattern = ["\t", '  ', '  '];
+        $replace = ['&#160; &#160; ', '&#160; ', ' &#160;'];
         $message = str_replace($pattern, $replace, ForumSettings::get('o_maintenance_message'));
 
         if (ForumSettings::get('o_maintenance') == 1) {
@@ -288,11 +288,11 @@ class Auth
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                    DB::for_table('online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => Utils::getIp(), ':logged' => $user->logged));
+                    DB::for_table('online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', [':ident' => Utils::getIp(), ':logged' => $user->logged]);
                         break;
 
                     default:
-                        DB::for_table('online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE ident=:ident)', array(':ident' => Utils::getIp(), ':logged' => $user->logged));
+                        DB::for_table('online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE ident=:ident)', [':ident' => Utils::getIp(), ':logged' => $user->logged]);
                         break;
                 }
             } else {

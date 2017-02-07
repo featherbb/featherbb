@@ -36,11 +36,11 @@ if (!empty($report_data)) {
                                 <tr>
                                     <th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.Router::pathFor('userProfile', ['id' => $report['reported_by']]).'">'.Utils::escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
                                     <td class="location">
-                                        <?= AdminUtils::breadcrumbs_admin(array(
+                                        <?= AdminUtils::breadcrumbs_admin([
                                             $report['forum_name'] => Router::pathFor('Forum', ['id' => $report['forum_id'], 'name' => Url::url_friendly($report['forum_name'])]),
                                             $report['subject'] => Router::pathFor('Topic', ['id' => $report['topic_id'], 'name' => Url::url_friendly($report['subject'])]),
                                             sprintf(__('Post ID'), $report['pid']) => Router::pathFor('viewPost', ['id' => $report['topic_id'], 'name' => Url::url_friendly($report['subject']), 'pid' => $report['pid']]).'#p'.$report['pid']
-                                        )); ?>
+                                        ]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -90,11 +90,11 @@ if (!empty($report_zapped_data)) {
                                 <tr>
                                     <th scope="row"><?php printf(__('Reported by'), ($report['reporter'] != '') ? '<a href="'.Router::pathFor('userProfile', ['id' => $report['reported_by']]).'">'.Utils::escape($report['reporter']).'</a>' : __('Deleted user')) ?></th>
                                     <td class="location">
-                                        <?= AdminUtils::breadcrumbs_admin(array(
+                                        <?= AdminUtils::breadcrumbs_admin([
                                             $report['forum_name'] => Router::pathFor('Forum', ['id' => $report['forum_id'], 'name' => Url::url_friendly($report['forum_name'])]),
                                             $report['subject'] => Router::pathFor('Topic', ['id' => $report['topic_id'], 'name' => Url::url_friendly($report['subject'])]),
                                             sprintf(__('Post ID'), $report['pid']) => Router::pathFor('viewPost', ['id' => $report['topic_id'], 'name' => Url::url_friendly($report['subject']), 'pid' => $report['pid']]).'#p'.$report['pid']
-                                        )) ?>
+                                        ]) ?>
                                     </td>
                                 </tr>
                                 <tr>

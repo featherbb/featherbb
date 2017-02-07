@@ -45,12 +45,12 @@ class Censoring
 
         AdminUtils::generateAdminMenu('censoring');
 
-        return View::setPageInfo(array(
-                'title'    =>    array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Censoring')),
+        return View::setPageInfo([
+                'title'    =>    [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Censoring')],
                 'active_page'    =>    'admin',
                 'admin_console'    =>    true,
                 'word_data'    =>    $this->model->get_words(),
-            )
+            ]
         )->addTemplate('admin/censoring.php')->display();
     }
 }

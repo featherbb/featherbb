@@ -37,13 +37,13 @@ class Groups
 
         AdminUtils::generateAdminMenu('user groups');
 
-        View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
+        View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'groups' => $groups,
                 'cur_index' => 5,
-            )
+            ]
         )->addTemplate('admin/groups/admin_groups.php')->display();
     }
 
@@ -70,27 +70,27 @@ class Groups
             } else {
                 AdminUtils::generateAdminMenu('user groups');
 
-                return View::setPageInfo(array(
-                        'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
+                return View::setPageInfo([
+                        'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
                         'active_page' => 'admin',
                         'admin_console' => true,
                         'group_title'      =>  $this->model->get_group_title($args['id']),
                         'id'    => $args['id'],
-                    )
+                    ]
                 )->addTemplate('admin/groups/confirm_delete.php')->display();
             }
         }
 
         AdminUtils::generateAdminMenu('user groups');
 
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
+        return View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'id'    => $args['id'],
                 'group_info'      =>  $this->model->get_title_members($args['id']),
                 'group_list_delete'      =>  $this->model->get_group_list_delete($args['id']),
-            )
+            ]
         )->addTemplate('admin/groups/delete_group.php')->display();
     }
 
@@ -113,14 +113,14 @@ class Groups
             $id = isset($args['id']) ? intval($args['id']) : intval(Input::post('base_group'));
             $group = $this->model->info_add_group($groups, $id);
 
-            View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
+            View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'group'    =>    $group,
                     'id'    => $id,
                     'group_list'    => $this->model->get_group_list($groups, $group),
-                )
+                ]
             )->addTemplate('admin/groups/add_edit_group.php')->display();
         }
     }

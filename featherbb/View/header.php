@@ -116,7 +116,7 @@ if (User::can('board.read') && ($extraLinks != '')) {
         // Insert any additional links into the $links array (at the correct index)
         $num_links = count($results[1]);
         for ($i = 0; $i < $num_links; ++$i) {
-            array_splice($navlinks, $results[1][$i], 0, array('<li id="navextra'.($i + 1).'"'.(($active_page == 'navextra'.($i + 1)) ? ' class="isactive"' : '').'>'.$results[2][$i].'</li>'));
+            array_splice($navlinks, $results[1][$i], 0, ['<li id="navextra'.($i + 1).'"'.(($active_page == 'navextra'.($i + 1)) ? ' class="isactive"' : '').'>'.$results[2][$i].'</li>']);
         }
     }
 }

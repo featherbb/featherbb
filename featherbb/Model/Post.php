@@ -22,25 +22,25 @@ class Post
     {
         Container::get('hooks')->fire('model.post.get_info_post_start', $tid, $fid);
 
-        $cur_posting['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $cur_posting['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
 
         if ($tid) {
-            $cur_posting['select'] = array('f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics', 't.subject', 't.closed', 'is_subscribed' => 's.user_id');
+            $cur_posting['select'] = ['f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics', 't.subject', 't.closed', 'is_subscribed' => 's.user_id'];
 
             $cur_posting = DB::for_table('topics')
                             ->table_alias('t')
                             ->select_many($cur_posting['select'])
-                            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+                            ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
                             ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                             ->left_outer_join('topic_subscriptions', 't.id=s.topic_id AND s.user_id='.User::get()->g_id, 's')
                             ->where_any_is($cur_posting['where'])
                             ->where('t.id', $tid);
 
         } else {
-            $cur_posting['select'] = array('f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics');
+            $cur_posting['select'] = ['f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics'];
 
             $cur_posting = DB::for_table('forums')
                             ->table_alias('f')
@@ -67,17 +67,17 @@ class Post
     {
         $id = Container::get('hooks')->fire('model.post.get_info_edit_start', $id);
 
-        $cur_post['select'] = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies');
-        $cur_post['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $cur_post['select'] = ['fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies'];
+        $cur_post['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
 
         $cur_post = DB::for_table('posts')
                     ->table_alias('p')
                     ->select_many($cur_post['select'])
-                    ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
-                    ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+                    ->inner_join('topics', ['t.id', '=', 'p.topic_id'], 't')
+                    ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
                     ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                     ->where_any_is($cur_post['where'])
                     ->where('p.id', $id);
@@ -111,7 +111,7 @@ class Post
 
             $question = Input::post('captcha_q') ? trim(Input::post('captcha_q')) : '';
             $answer = Input::post('captcha') ? strtoupper(trim(Input::post('captcha'))) : '';
-            $lang_antispam_questions_array = array();
+            $lang_antispam_questions_array = [];
 
             foreach ($lang_antispam_questions as $k => $v) {
                 $lang_antispam_questions_array[md5($k)] = strtoupper($v);
@@ -267,7 +267,7 @@ class Post
     // If the previous check went OK, setup some variables used later
     public function setup_variables($errors, $is_admmod)
     {
-        $post = array();
+        $post = [];
 
         $post = Container::get('hooks')->fire('model.post.setup_variables_start', $post, $errors, $is_admmod);
 
@@ -311,7 +311,7 @@ class Post
     {
         Container::get('hooks')->fire('model.post.setup_edit_variables_start');
 
-        $post = array();
+        $post = [];
 
         $post['hide_smilies'] = Input::post('hide_smilies') ? '1' : '0';
         $post['stick_topic'] = Input::post('stick_topic') ? '1' : '0';
@@ -344,17 +344,17 @@ class Post
     {
         $id = Container::get('hooks')->fire('model.post.get_info_delete_start', $id);
 
-        $query['select'] = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies');
-        $query['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $query['select'] = ['fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies'];
+        $query['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
 
         $query = DB::for_table('posts')
             ->table_alias('p')
             ->select_many($query['select'])
-            ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
-            ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+            ->inner_join('topics', ['t.id', '=', 'p.topic_id'], 't')
+            ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
             ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
             ->where_any_is($query['where'])
             ->where('p.id', $id);
@@ -386,7 +386,7 @@ class Post
             Topic::delete($tid);
             Forum::update($fid);
 
-            return Router::redirect(Router::pathFor('Forum', array('id' => $fid, 'name' => $forum_url)), __('Topic del redirect'));
+            return Router::redirect(Router::pathFor('Forum', ['id' => $fid, 'name' => $forum_url]), __('Topic del redirect'));
         } else {
             Container::get('hooks')->fire('model.post.handle_deletion', $is_topic_post, $id, $cur_post);
 
@@ -450,12 +450,12 @@ class Post
         if ($last_id == $post_id) {
             // If there is a $second_last_id there is more than 1 reply to the topic
             if (isset($second_last_id)) {
-                $update_topic = array(
+                $update_topic = [
                     'last_post'  => $second_posted,
                     'last_post_id'  => $second_last_id,
                     'last_poster'  => $second_poster,
                     'num_replies'  => $num_replies,
-                );
+                ];
                 DB::for_table('topics')
                     ->where('id', $topic_id)
                     ->find_one()
@@ -488,15 +488,15 @@ class Post
 
         if ($can_edit_subject) {
             // Update the topic and any redirect topics
-            $where_topic = array(
-                array('id' => $cur_post['tid']),
-                array('moved_to' => $cur_post['tid'])
-            );
+            $where_topic = [
+                ['id' => $cur_post['tid']],
+                ['moved_to' => $cur_post['tid']]
+            ];
 
-            $query['update_topic'] = array(
+            $query['update_topic'] = [
                 'subject' => $post['subject'],
                 'sticky'  => $post['stick_topic']
-            );
+            ];
 
             $query = DB::for_table('topics')->where_any_is($where_topic)
                                             ->find_one()
@@ -514,10 +514,10 @@ class Post
 
         // Update the post
         unset($query);
-        $query['update_post'] = array(
+        $query['update_post'] = [
             'message' => $post['message'],
             'hide_smilies'  => $post['hide_smilies']
-        );
+        ];
 
         if (!Input::post('silent') || !$is_admmod) {
             $query['update_post']['edited'] = time();
@@ -558,7 +558,7 @@ class Post
         }
 
         // Get the subject and forum ID
-        $report['select'] = array('subject', 'forum_id');
+        $report['select'] = ['subject', 'forum_id'];
         $report = DB::for_table('topics')->select_many($report['select'])
                                         ->where('id', $topic['topic_id']);
         $report = Container::get('hooks')->fireDB('model.post.insert_report_get_subject', $report);
@@ -572,14 +572,14 @@ class Post
         if (ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2') {
 
             // Insert the report
-            $query['insert'] = array(
+            $query['insert'] = [
                 'post_id' => $post_id,
                 'topic_id'  => $topic['topic_id'],
                 'forum_id'  => $report['forum_id'],
                 'reported_by'  => User::get()->id,
                 'created'  => time(),
                 'message'  => $reason,
-            );
+            ];
             $query = DB::for_table('reports')
                 ->create()
                 ->set($query['insert']);
@@ -626,17 +626,17 @@ class Post
     {
         $post_id = Container::get('hooks')->fire('model.post.get_info_report_start', $post_id);
 
-        $cur_post['select'] = array('fid' => 'f.id', 'f.forum_name', 'tid' => 't.id', 't.subject');
-        $cur_post['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $cur_post['select'] = ['fid' => 'f.id', 'f.forum_name', 'tid' => 't.id', 't.subject'];
+        $cur_post['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
 
         $cur_post = DB::for_table('posts')
                         ->table_alias('p')
                         ->select_many($cur_post['select'])
-                        ->inner_join('topics', array('t.id', '=', 'p.topic_id'), 't')
-                        ->inner_join('forums', array('f.id', '=', 't.forum_id'), 'f')
+                        ->inner_join('topics', ['t.id', '=', 'p.topic_id'], 't')
+                        ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
                         ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                         ->where_any_is($cur_post['where'])
                         ->where('p.id', $post_id);
@@ -655,7 +655,7 @@ class Post
     // Insert a reply
     public function insert_reply($post, $tid, $cur_posting, $is_subscribed)
     {
-        $new = array();
+        $new = [];
 
         $new = Container::get('hooks')->fireDB('model.post.insert_reply_start', $new, $post, $tid, $cur_posting, $is_subscribed);
 
@@ -663,7 +663,7 @@ class Post
             $new['tid'] = $tid;
 
             // Insert the new post
-            $query['insert'] = array(
+            $query['insert'] = [
                 'poster' => $post['username'],
                 'poster_id' => User::get()->id,
                 'poster_ip' => Utils::getIp(),
@@ -671,7 +671,7 @@ class Post
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
                 'topic_id'  => $tid,
-            );
+            ];
 
             $query = DB::for_table('posts')
                         ->create()
@@ -687,10 +687,10 @@ class Post
                 // Let's do it
                 if (isset($post['subscribe']) && $post['subscribe'] && !$is_subscribed) {
 
-                    $subscription['insert'] = array(
+                    $subscription['insert'] = [
                         'user_id'   =>  User::get()->id,
                         'topic_id'  =>  $tid
-                    );
+                    ];
 
                     $subscription = DB::for_table('topic_subscriptions')
                                         ->create()
@@ -711,14 +711,14 @@ class Post
             }
         } else {
             // It's a guest. Insert the new post
-            $query['insert'] = array(
+            $query['insert'] = [
                 'poster' => $post['username'],
                 'poster_ip' => Utils::getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
                 'topic_id'  => $tid,
-            );
+            ];
 
             if (ForumSettings::get('p_force_guest_email') == '1' || $post['email'] != '') {
                 $query['insert']['poster_email'] = $post['email'];
@@ -734,11 +734,11 @@ class Post
         }
 
         // Update topic
-        $topic['update'] = array(
+        $topic['update'] = [
             'last_post' => $post['time'],
             'last_post_id'  => $new['pid'],
             'last_poster'  => $post['username'],
-        );
+        ];
 
         $topic = DB::for_table('topics')
                     ->where('id', $tid)
@@ -777,19 +777,19 @@ class Post
         $previous_post_time = $previous_post_time->find_one();
 
         // Get any subscribed users that should be notified (banned users are excluded)
-        $result['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
-        $result['select'] = array('u.id', 'u.email', 'u.group_id');
+        $result['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
+        $result['select'] = ['u.id', 'u.email', 'u.group_id'];
 
         $result = DB::for_table('users')
                     ->table_alias('u')
                     ->select_many($result['select'])
-                    ->inner_join('topic_subscriptions', array('u.id', '=', 's.user_id'), 's')
+                    ->inner_join('topic_subscriptions', ['u.id', '=', 's.user_id'], 's')
                     ->left_outer_join('forum_perms', 'fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id', 'fp')
-                    ->left_outer_join('online', array('u.id', '=', 'o.user_id'), 'o')
-                    ->left_outer_join('bans', array('u.username', '=', 'b.username'), 'b')
+                    ->left_outer_join('online', ['u.id', '=', 'o.user_id'], 'o')
+                    ->left_outer_join('bans', ['u.username', '=', 'b.username'], 'b')
                     ->where_raw('COALESCE(o.logged, u.last_visit)>'.$previous_post_time['posted'])
                     ->where_null('b.username')
                     ->where_any_is($result['where'])
@@ -799,7 +799,7 @@ class Post
         $result = $result->find_many();
 
         if ($result) {
-            $notification_emails = array();
+            $notification_emails = [];
 
             $censored_message = Utils::trim(Utils::censor($post['message']));
 
@@ -878,12 +878,12 @@ class Post
     // Insert a topic
     public function insert_topic($post, $fid)
     {
-        $new = array();
+        $new = [];
 
         $new = Container::get('hooks')->fireDB('model.post.insert_topic_start', $new, $post, $fid);
 
         // Create the topic
-        $topic['insert'] = array(
+        $topic['insert'] = [
             'poster' => $post['username'],
             'subject' => $post['subject'],
             'posted'  => $post['time'],
@@ -891,7 +891,7 @@ class Post
             'last_poster'  => $post['username'],
             'sticky'  => $post['stick_topic'],
             'forum_id'  => $fid,
-        );
+        ];
 
         $topic = DB::for_table('topics')
                     ->create()
@@ -905,10 +905,10 @@ class Post
             // To subscribe or not to subscribe, that ...
             if (ForumSettings::get('o_topic_subscriptions') == '1' && $post['subscribe']) {
 
-                $subscription['insert'] = array(
+                $subscription['insert'] = [
                     'user_id'   =>  User::get()->id,
                     'topic_id'  =>  $new['tid']
-                );
+                ];
 
                 $subscription = DB::for_table('topic_subscriptions')
                                     ->create()
@@ -919,7 +919,7 @@ class Post
             }
 
             // Create the post ("topic post")
-            $query['insert'] = array(
+            $query['insert'] = [
                 'poster' => $post['username'],
                 'poster_id' => User::get()->id,
                 'poster_ip' => Utils::getIp(),
@@ -927,7 +927,7 @@ class Post
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
                 'topic_id'  => $new['tid'],
-            );
+            ];
 
             $query = DB::for_table('posts')
                         ->create()
@@ -937,14 +937,14 @@ class Post
         } else {
             // It's a guest
             // Create the post ("topic post")
-            $query['insert'] = array(
+            $query['insert'] = [
                 'poster' => $post['username'],
                 'poster_ip' => Utils::getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
                 'topic_id'  => $new['tid'],
-            );
+            ];
 
             if (ForumSettings::get('p_force_guest_email') == '1' || $post['email'] != '') {
                 $query['poster_email'] = $post['email'];
@@ -961,10 +961,10 @@ class Post
 
         // Update the topic with last_post_id
         unset($topic);
-        $topic['update'] = array(
+        $topic['update'] = [
             'last_post_id'  =>  $new['pid'],
             'first_post_id' =>  $new['pid'],
-        );
+        ];
 
         $topic = DB::for_table('topics')
                     ->where('id', $new['tid'])
@@ -988,18 +988,18 @@ class Post
         Container::get('hooks')->fire('model.post.send_notifications_new_topic_start', $post, $cur_posting, $new_tid);
 
         // Get any subscribed users that should be notified (banned users are excluded)
-        $result['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
-        $result['select'] = array('u.id', 'u.group_id', 'u.email');
+        $result['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
+        $result['select'] = ['u.id', 'u.group_id', 'u.email'];
 
         $result = DB::for_table('users')
                     ->table_alias('u')
                     ->select_many($result['select'])
-                    ->inner_join('forum_subscriptions', array('u.id', '=', 's.user_id'), 's')
+                    ->inner_join('forum_subscriptions', ['u.id', '=', 's.user_id'], 's')
                     ->left_outer_join('forum_perms', 'fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id', 'fp')
-                    ->left_outer_join('bans', array('u.username', '=', 'b.username'), 'b')
+                    ->left_outer_join('bans', ['u.username', '=', 'b.username'], 'b')
                     ->where_null('b.username')
                     ->where_any_is($result['where'])
                     ->where('s.forum_id', $cur_posting['id'])
@@ -1008,7 +1008,7 @@ class Post
         $result = $result->find_many();
 
         if ($result) {
-            $notification_emails = array();
+            $notification_emails = [];
 
             $censored_message = Utils::trim(Utils::censor($post['message']));
             $censored_subject = Utils::trim(Utils::censor($post['subject']));
@@ -1155,7 +1155,7 @@ class Post
     //
     public function split_text($text, $start, $end, $retab = true)
     {
-        $result = array(0 => array(), 1 => array()); // 0 = inside, 1 = outside
+        $result = [0 => [], 1 => []]; // 0 = inside, 1 = outside
 
         $result = Container::get('hooks')->fire('model.post.split_text_start', $result, $text, $start, $end, $retab);
 
@@ -1181,11 +1181,11 @@ class Post
     // If we are quoting a message
     public static function get_quote_message($qid, $tid)
     {
-        $quote = array();
+        $quote = [];
 
         $quote = Container::get('hooks')->fire('model.post.get_quote_message', $quote, $qid, $tid);
 
-        $quote['select'] = array('poster', 'message');
+        $quote['select'] = ['poster', 'message'];
 
         $quote = DB::for_table('posts')->select_many($quote['select'])
                      ->where('id', $qid)
@@ -1239,7 +1239,7 @@ class Post
                         $quote['poster'] = Utils::escape(str_replace('\\', '\\\\', $quote['poster']));
                         $quote['poster'] = '\''. $quote['poster'] .'#'. $qid .'\'';
                     } else { // otherwise use double quotes.
-                        $quote['poster'] = Utils::escape(str_replace(array('\\', '"'), array('\\\\', '\\"'), $quote['poster']));
+                        $quote['poster'] = Utils::escape(str_replace(['\\', '"'], ['\\\\', '\\"'], $quote['poster']));
                         $quote['poster'] = '"'. $quote['poster'] .'#'. $qid .'"';
                     }
                 } else {
@@ -1262,7 +1262,7 @@ class Post
 
         $cur_index = 1;
 
-        $checkboxes = array();
+        $checkboxes = [];
         if ($fid && $is_admmod) {
             $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'"'.(Input::post('stick_topic') ? ' checked="checked"' : '').' />'.__('Stick topic').'<br /></label>';
         }
@@ -1303,7 +1303,7 @@ class Post
     {
         Container::get('hooks')->fire('model.post.get_checkboxes_start', $can_edit_subject, $is_admmod, $cur_post, $cur_index);
 
-        $checkboxes = array();
+        $checkboxes = [];
 
         if ($can_edit_subject && $is_admmod) {
             if (Input::post('stick_topic') || $cur_post['sticky'] == '1') {
@@ -1337,11 +1337,11 @@ class Post
     // Display the topic review if needed
     public function topic_review($tid)
     {
-        $post_data = array();
+        $post_data = [];
 
         $post_data = Container::get('hooks')->fire('model.post.topic_review_start', $post_data, $tid);
 
-        $select_topic_review = array('poster', 'message', 'hide_smilies', 'posted');
+        $select_topic_review = ['poster', 'message', 'hide_smilies', 'posted'];
 
         $result = DB::for_table('posts')->select_many($select_topic_review)
                     ->where('topic_id', $tid)

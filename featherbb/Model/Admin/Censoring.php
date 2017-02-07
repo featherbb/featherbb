@@ -26,8 +26,8 @@ class Censoring
             throw new Error(__('Must enter word message'), 400);
         }
 
-        $set_search_word = array('search_for' => $search_for,
-                                'replace_with' => $replace_with);
+        $set_search_word = ['search_for' => $search_for,
+                                'replace_with' => $replace_with];
 
         $set_search_word = Container::get('hooks')->fire('model.admin.censoring.add_censoring_word_data', $set_search_word);
 
@@ -54,8 +54,8 @@ class Censoring
             throw new Error(__('Must enter word message'), 400);
         }
 
-        $set_search_word = array('search_for' => $search_for,
-                                'replace_with' => $replace_with);
+        $set_search_word = ['search_for' => $search_for,
+                                'replace_with' => $replace_with];
 
         $set_search_word = Container::get('hooks')->fire('model.admin.censoring.update_censoring_word_start', $set_search_word);
 
@@ -89,7 +89,7 @@ class Censoring
 
     public function get_words()
     {
-        $word_data = array();
+        $word_data = [];
 
         $word_data = DB::for_table('censoring')
                         ->order_by_asc('id');

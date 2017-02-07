@@ -35,11 +35,11 @@ class Permissions
 
         AdminUtils::generateAdminMenu('permissions');
 
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Permissions')),
+        return View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Permissions')],
                 'active_page' => 'admin',
                 'admin_console' => true,
-            )
+            ]
         )->addTemplate('admin/permissions.php')->display();
     }
 }

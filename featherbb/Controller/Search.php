@@ -48,18 +48,18 @@ class Search
                 }
 
                 // We have results to display
-                View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Search results')),
+                View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Search results')],
                     'active_page' => 'search',
                     'search' => $search,
                     'footer' => $search,
-                ));
+                ]);
 
                 $display = $this->model->display_search_results($search);
 
-                View::setPageInfo(array(
+                View::setPageInfo([
                         'display' => $display,
-                    )
+                    ]
                 );
 
                 View::addTemplate('search/header.php', 1);
@@ -76,12 +76,12 @@ class Search
         }
         // Display the form
         else {
-            View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Search')),
+            View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Search')],
                 'active_page' => 'search',
                 'is_indexed' => true,
                 'forums' => $this->model->get_list_forums(),
-            ))->addTemplate('search/form.php')->display();
+            ])->addTemplate('search/form.php')->display();
         }
     }
 

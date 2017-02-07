@@ -65,12 +65,12 @@ class Profile
             if (Input::post('delete_user_comply')) {
                 return $this->model->delete_user($args['id']);
             } else {
-                return View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Confirm delete user')),
+                return View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Confirm delete user')],
                     'active_page' => 'profile',
                     'username' => $this->model->get_username($args['id']),
                     'id' => $args['id'],
-                ))->addTemplate('profile/delete_user.php')->display();
+                ])->addTemplate('profile/delete_user.php')->display();
             }
         } elseif (Input::post('form_sent')) {
 
@@ -106,20 +106,20 @@ class Profile
         {
             $user_info = $this->model->parse_user_info($user);
 
-            View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), sprintf(__('Users profile'), Utils::escape($user['username']))),
+            View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), sprintf(__('Users profile'), Utils::escape($user['username']))],
                 'active_page' => 'profile',
                 'user_info' => $user_info,
                 'id' => $args['id']
-            ));
+            ]);
 
             View::addTemplate('profile/view_profile.php')->display();
         } else {
             if (!isset($args['section']) || $args['section'] == 'essentials') {
                 $user_disp = $this->model->edit_essentials($args['id'], $user);
 
-                View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section essentials')),
+                View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section essentials')],
                     'active_page' => 'profile',
                     'id' => $args['id'],
                     'page' => 'essentials',
@@ -127,7 +127,7 @@ class Profile
                     'user_disp' => $user_disp,
                     'forum_time_formats' => Container::get('forum_time_formats'),
                     'forum_date_formats' => Container::get('forum_date_formats')
-                ));
+                ]);
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_essentials.php')->display();
 
@@ -136,14 +136,14 @@ class Profile
                     $title_field = '<label>'.__('Title').' <em>('.__('Leave blank').')</em><br /><input type="text" name="title" value="'.Utils::escape($user['title']).'" size="30" maxlength="50" /><br /></label>'."\n";
                 }
 
-                View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section personal')),
+                View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section personal')],
                     'active_page' => 'profile',
                     'id' => $args['id'],
                     'page' => 'personal',
                     'user' => $user,
                     'title_field' => $title_field,
-                ));
+                ]);
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_personal.php')->display();
 
@@ -167,8 +167,8 @@ class Profile
                     $signature_preview = '<p>'.__('No sig').'</p>'."\n";
                 }
 
-                View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section personality')),
+                View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section personality')],
                     'active_page' => 'profile',
                     'user_avatar' => $user_avatar,
                     'avatar_field' => $avatar_field,
@@ -176,31 +176,31 @@ class Profile
                     'page' => 'personality',
                     'user' => $user,
                     'id' => $args['id'],
-                ));
+                ]);
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_personality.php')->display();
 
             } elseif ($args['section'] == 'display') {
 
-                View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section display')),
+                View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section display')],
                     'active_page' => 'profile',
                     'page' => 'display',
                     'user' => $user,
                     'id' => $args['id']
-                ));
+                ]);
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_display.php')->display();
 
             } elseif ($args['section'] == 'privacy') {
 
-                View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section privacy')),
+                View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section privacy')],
                     'active_page' => 'profile',
                     'page' => 'privacy',
                     'user' => $user,
                     'id' => $args['id']
-                ));
+                ]);
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_privacy.php')->display();
 
@@ -210,15 +210,15 @@ class Profile
                     throw new Error(__('Bad request'), 404);
                 }
 
-                View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section admin')),
+                View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section admin')],
                     'active_page' => 'profile',
                     'page' => 'admin',
                     'user' => $user,
                     'forum_list' => $this->model->get_forum_list($args['id']),
                     'group_list' => $this->model->get_group_list($user),
                     'id' => $args['id']
-                ));
+                ]);
 
                 return View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_admin.php')->display();
             } else {
@@ -269,11 +269,11 @@ class Profile
                 return $this->model->change_pass($args['id']);
             }
 
-            return View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change pass')),
+            return View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change pass')],
                     'active_page' => 'profile',
                     'id' => $args['id']
-                )
+                ]
             )->addTemplate('profile/change_pass.php')->display();
 
         } elseif ($args['action'] == 'change_email') {
@@ -296,11 +296,11 @@ class Profile
                 return $this->model->change_email($args['id']);
             }
 
-            return View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change email')),
+            return View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change email')],
                     'active_page' => 'profile',
                     'id' => $args['id'],
-                )
+                ]
             )->addTemplate('profile/change_mail.php')->display();
 
         } elseif ($args['action'] == 'upload_avatar' || $args['action'] == 'upload_avatar2') {
@@ -316,11 +316,11 @@ class Profile
                 return $this->model->upload_avatar($args['id'], $_FILES);
             }
 
-            return View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Upload avatar')),
+            return View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Upload avatar')],
                     'active_page' => 'profile',
                     'id' => $args['id'],
-                )
+                ]
             )->addTemplate('profile/upload_avatar.php')->display();
 
         } elseif ($args['action'] == 'delete_avatar') {
@@ -330,7 +330,7 @@ class Profile
 
             $this->model->delete_avatar($args['id']);
 
-            return Router::redirect(Router::pathFor('profileSection', array('id' => $args['id'], 'section' => 'personality')), __('Avatar deleted redirect'));
+            return Router::redirect(Router::pathFor('profileSection', ['id' => $args['id'], 'section' => 'personality']), __('Avatar deleted redirect'));
         } elseif ($args['action'] == 'promote') {
             if (!User::isAdmin() && (!User::isAdminMod() || !User::can('mod.promote_users'))) {
                 throw new Error(__('No permission'), 403);
@@ -364,11 +364,11 @@ class Profile
             return $this->model->send_email($mail);
         }
 
-        return View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Send email to').' '.Utils::escape($mail['recipient'])),
+        return View::setPageInfo([
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Send email to').' '.Utils::escape($mail['recipient'])],
             'active_page' => 'email',
             'mail' => $mail
-        ))->addTemplate('misc/email.php')->display();
+        ])->addTemplate('misc/email.php')->display();
     }
 
     public function gethostip($req, $res, $args)

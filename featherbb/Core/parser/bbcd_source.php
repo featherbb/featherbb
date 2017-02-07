@@ -17,7 +17,7 @@
 // to be hand edited.
 
 // Global parser options (These should eventually be migrated to the config db table?)
-$config = array(
+$config = [
     'textile'        => true,        // Allow simple textile phrase extensions.
     'quote_links'    => true,        // Make quote citation a link back to source post.
     'quote_imgs'    => false,        // Allow IMG tags withing QUOTEs flag.
@@ -29,45 +29,45 @@ $config = array(
     'def_width'        => 240,            // Default width of visual media objects in pixels.
     'def_height'    => 180,            // Default height of visual media objects in pixels.
     'smiley_size'   => 100,            // Percent size adjust for display of smilies.
-); // End $config array.
+]; // End $config array.
 
 // Array of smileys. These files are located in the style/img/smilies folder).
-$smilies = array(
-    ':)'            => array('file'    => 'smile.png'),
-    '=)'            => array('file'    => 'smile.png'),
-    ':|'            => array('file'    => 'neutral.png'),
-    '=|'            => array('file'    => 'neutral.png'),
-    ':('            => array('file'    => 'sad.png'),
-    '=('            => array('file'    => 'sad.png'),
-    ':D'            => array('file'    => 'big_smile.png'),
-    '=D'            => array('file'    => 'big_smile.png'),
-    ':o'            => array('file'    => 'yikes.png'),
-    ':O'            => array('file'    => 'yikes.png'),
-    ';)'            => array('file'    => 'wink.png'),
-    ':/'            => array('file'    => 'hmm.png'),
-    ':P'            => array('file'    => 'tongue.png'),
-    ':p'            => array('file'    => 'tongue.png'),
-    ':lol:'        => array('file'    => 'lol.png'),
-    ':mad:'        => array('file'    => 'mad.png'),
-    ':rolleyes:'    => array('file'    => 'roll.png'),
-    ':cool:'        => array('file'    => 'cool.png')
-); // End $smilies array.
+$smilies = [
+    ':)'            => ['file'    => 'smile.png'],
+    '=)'            => ['file'    => 'smile.png'],
+    ':|'            => ['file'    => 'neutral.png'],
+    '=|'            => ['file'    => 'neutral.png'],
+    ':('            => ['file'    => 'sad.png'],
+    '=('            => ['file'    => 'sad.png'],
+    ':D'            => ['file'    => 'big_smile.png'],
+    '=D'            => ['file'    => 'big_smile.png'],
+    ':o'            => ['file'    => 'yikes.png'],
+    ':O'            => ['file'    => 'yikes.png'],
+    ';)'            => ['file'    => 'wink.png'],
+    ':/'            => ['file'    => 'hmm.png'],
+    ':P'            => ['file'    => 'tongue.png'],
+    ':p'            => ['file'    => 'tongue.png'],
+    ':lol:'        => ['file'    => 'lol.png'],
+    ':mad:'        => ['file'    => 'mad.png'],
+    ':rolleyes:'    => ['file'    => 'roll.png'],
+    ':cool:'        => ['file'    => 'cool.png']
+]; // End $smilies array.
 
 /*
 FluxBB 1.4.3 Old parser tags:
 array('quote', 'code', 'b', 'i', 'u', 's', 'ins', 'del', 'em', 'color', 'colour', 'url', 'email', 'img', 'list', '*', 'h')
 array('quote', 'code', 'b', 'i', 'u',
 */
-$bbcd = array( // Array of recognised BBCode tag structures (arrays).
-    'b' => array(
+$bbcd = [ // Array of recognised BBCode tag structures (arrays).
+    'b' => [
         'html_name'                => 'strong'
-    ),
-    'code' => array(
+    ],
+    'code' => [
         'html_name'                => 'pre',
         'tag_type'                => 'hidden',
         'html_type'                => 'block',
-        'handlers'                => array(
-            'ATTRIB'            => array(
+        'handlers'                => [
+            'ATTRIB'            => [
                 'format'        => '
                     </p>
                     <div class="codebox">
@@ -75,167 +75,167 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
                         <pre>%c_str%</pre>
                     </div>
                     <p>'
-            ),
-            'NO_ATTRIB'            => array(
+            ],
+            'NO_ATTRIB'            => [
                 'format'        => '
                     </p>
                     <div class="codebox">
                         <pre>%c_str%</pre>
                     </div>
                     <p>'
-            )
-        )
-    ),
-    'color' => array(
+            ]
+        ]
+    ],
+    'color' => [
         'html_name'                => 'span',
         'nest_type'                => 'err',
-        'handlers'                => array(
-            'ATTRIB'            => array(
+        'handlers'                => [
+            'ATTRIB'            => [
                 'a_type'        => 'color',
                 'format'        => '<span style="color: %a_str%;">%c_str%</span>'
-            )
-        )
-    ),
-    'colour' => array(
+            ]
+        ]
+    ],
+    'colour' => [
         'html_name'                => 'span',
         'nest_type'                => 'err',
-        'handlers'                => array(
-            'ATTRIB'            => array(
+        'handlers'                => [
+            'ATTRIB'            => [
                 'a_type'        => 'color',
                 'format'        => '<span style="color: %a_str%;">%c_str%</span>'
-            )
-        )
-    ),
-    'del' => array(
+            ]
+        ]
+    ],
+    'del' => [
         'html_name'                => 'del'
-    ),
-    'email' => array(
+    ],
+    'email' => [
         'html_name'                => 'a',
         'nest_type'                => 'err',
-        'tags_excluded'            => array('email' => true, 'url' => true),
-        'handlers'                => array(
-            'ATTRIB'            => array(
+        'tags_excluded'            => ['email' => true, 'url' => true],
+        'handlers'                => [
+            'ATTRIB'            => [
                 'a_type'        => 'email',
                 'c_type'        => 'text',
                 'format'        => '<a href="mailto:%a_str%" rel="nofollow">%c_str%</a>'
-            ),
-            'NO_ATTRIB'            => array(
+            ],
+            'NO_ATTRIB'            => [
                 'a_type'        => 'none',
                 'c_type'        => 'email',
                 'format'        => '<a href="mailto:%c_str%" rel="nofollow">%c_str%</a>'
-            )
-        )
-    ),
-    'em' => array(
+            ]
+        ]
+    ],
+    'em' => [
         'html_name'                => 'em'
-    ),
-    'h' => array(
+    ],
+    'h' => [
         'html_name'                => 'h5',
-        'handlers'                => array(
-            'NO_ATTRIB'            => array(
+        'handlers'                => [
+            'NO_ATTRIB'            => [
                 'format'        => '</p><h5>%c_str%</h5><p>'
-            )
-        )
-    ),
-    'img' => array(
+            ]
+        ]
+    ],
+    'img' => [
         'html_name'                => 'img',
         'tag_type'                => 'atomic',
-        'tags_allowed'            => array('img' => true),
-        'handlers'                => array(
-            'ATTRIB'            => array(
+        'tags_allowed'            => ['img' => true],
+        'handlers'                => [
+            'ATTRIB'            => [
                 'a_type'        => 'width_height',
                 'c_type'        => 'url',
                 'format'        => '<img src="%c_str%" alt="%a_str%" title="%a_str%" width="%w_str%" height="%h_str%" />'
-            ),
-            'NO_ATTRIB'            => array(
+            ],
+            'NO_ATTRIB'            => [
                 'a_type'        => 'none',
                 'c_type'        => 'url',
                 'format'        => '<img src="%c_str%" alt="%c_str%" />'
-            )
-        )
-    ),
-    'ins' => array(
+            ]
+        ]
+    ],
+    'ins' => [
         'html_name'                => 'ins'
-    ),
-    'i' => array(
+    ],
+    'i' => [
         'html_name'                => 'em'
-    ),
+    ],
 
 
-    'table' => array(
+    'table' => [
         'html_name'                => 'table',
         'html_type'                => 'block',
-        'handlers'        => array(
-            'NO_ATTRIB'            => array('format' => '</p><table>%c_str%</table><p>' )
-        ),
+        'handlers'        => [
+            'NO_ATTRIB'            => ['format' => '</p><table>%c_str%</table><p>']
+        ],
         'tags_only'                => true,
-        'tags_allowed'            => array(
+        'tags_allowed'            => [
             'tr'                =>    true,
             'err'                =>    true,
-        )
-    ),
-    'tr' => array(
+        ]
+    ],
+    'tr' => [
         'html_name'                => 'tr',
         'html_type'                => 'block',
-        'parents'                => array('table' => true),
-        'handlers'        => array(
-            'NO_ATTRIB'            => array('format' => '<tr>%c_str%</tr>' )
-        ),
+        'parents'                => ['table' => true],
+        'handlers'        => [
+            'NO_ATTRIB'            => ['format' => '<tr>%c_str%</tr>']
+        ],
         'tags_only'                => true,
-        'tags_allowed'            => array(
+        'tags_allowed'            => [
             'th'                =>    true,
             'td'                =>    true,
             'err'                =>    true,
-        )
-    ),
-    'th' => array(
+        ]
+    ],
+    'th' => [
         'html_name'                => 'th',
         'html_type'                => 'block',
-        'parents'                => array('tr' => true),
-        'handlers'        => array(
-            'NO_ATTRIB'            => array('format' => '<th><p>%c_str%</p></th>' )
-        ),
-    ),
-    'td' => array(
+        'parents'                => ['tr' => true],
+        'handlers'        => [
+            'NO_ATTRIB'            => ['format' => '<th><p>%c_str%</p></th>']
+        ],
+    ],
+    'td' => [
         'html_name'                => 'td',
         'html_type'                => 'block',
-        'parents'                => array('tr' => true),
-        'handlers'        => array(
-            'NO_ATTRIB'            => array('format' => '<td><p>%c_str%</p></td>' )
-        ),
-    ),
+        'parents'                => ['tr' => true],
+        'handlers'        => [
+            'NO_ATTRIB'            => ['format' => '<td><p>%c_str%</p></td>']
+        ],
+    ],
 
 
-    'list' => array(
+    'list' => [
         'html_name'                => 'ul',
         'html_type'                => 'block',
-        'handlers'        => array(
-            '1'                    => array('format' => '</p><ol class="decimal">%c_str%</ol><p>'),
-            'a'                    => array('format' => '</p><ol class="alpha">%c_str%</ol><p>'),
-            '*'                    => array('format' => '</p><ul>%c_str%</ul><p>'),
-            'NO_ATTRIB'            => array('format' => '</p><ul>%c_str%</ul><p>' )
-        ),
+        'handlers'        => [
+            '1'                    => ['format' => '</p><ol class="decimal">%c_str%</ol><p>'],
+            'a'                    => ['format' => '</p><ol class="alpha">%c_str%</ol><p>'],
+            '*'                    => ['format' => '</p><ul>%c_str%</ul><p>'],
+            'NO_ATTRIB'            => ['format' => '</p><ul>%c_str%</ul><p>']
+        ],
         'tags_only'                => true,
-        'tags_allowed'            => array(
+        'tags_allowed'            => [
             'list'                =>    true,
-            '*'                    =>    true)
-    ),
-    '*' => array(
+            '*'                    =>    true]
+    ],
+    '*' => [
         'html_name'                => 'li',
         'html_type'                => 'block',
-        'parents'                => array('list' => true),
-        'handlers'        => array(
-            'NO_ATTRIB'            => array('format' => '<li><p>%c_str%</p></li>' )
-        )
-    ),
-    'quote' => array(
+        'parents'                => ['list' => true],
+        'handlers'        => [
+            'NO_ATTRIB'            => ['format' => '<li><p>%c_str%</p></li>']
+        ]
+    ],
+    'quote' => [
         'html_name'                => 'blockquote',
         'html_type'                => 'block',
         'tag_type'                => 'zombie',
         'nest_type'                => 'clip',
 //        'depth_max'                => 3,
-        'handlers'                => array(
-            'ATTRIB'            => array(
+        'handlers'                => [
+            'ATTRIB'            => [
                 'format'        => '
                 </p>
                 <div class="quotebox">
@@ -247,8 +247,8 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
                     </blockquote>
                 </div>
                 <p>'
-            ),
-            'NO_ATTRIB'            => array(
+            ],
+            'NO_ATTRIB'            => [
                 'format'        => '
                 </p>
                 <div class="quotebox">
@@ -259,97 +259,97 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
                     </blockquote>
                 </div>
                 <p>'
-            ),
-        ),
-    ),
-    'sub' => array(
+            ],
+        ],
+    ],
+    'sub' => [
         'html_name'                => 'sub'
-    ),
-    'sup' => array(
+    ],
+    'sup' => [
         'html_name'                => 'sup'
-    ),
-    's' => array(
+    ],
+    's' => [
         'html_name'                => 'span',
-        'handlers'                => array(
-            'NO_ATTRIB'            => array(
+        'handlers'                => [
+            'NO_ATTRIB'            => [
                 'format'        => '<span class="bbs">%c_str%</span>'
-            )
-        )
-    ),
-    'tt' => array(
+            ]
+        ]
+    ],
+    'tt' => [
         'html_name'                => 'tt',
         'tag_type'                => 'hidden',
-        'handlers'    => array( // count == 1
-            'NO_ATTRIB'    => array( // count == 3
+        'handlers'    => [ // count == 1
+            'NO_ATTRIB'    => [ // count == 3
                 'a_type'    => 'none',
                 'c_type'    => 'text',
                 'format'    => '<tt>%c_str%</tt>'
-            )
-        ),
+            ]
+        ],
 
 
-    ),
-    'url' => array(
+    ],
+    'url' => [
         'html_name'                => 'a',
 //        'nest_type'                => 'err',
-        'tags_excluded'            => array('email' => true, 'url' => true),
-        'handlers'                => array(
-            'ATTRIB'            => array(
+        'tags_excluded'            => ['email' => true, 'url' => true],
+        'handlers'                => [
+            'ATTRIB'            => [
                 'a_type'        => 'url',
                 'c_type'        => 'text',
                 'format'        => '<a href="%a_str%" rel="nofollow">%c_str%</a>'
-            ),
-            'NO_ATTRIB'            => array(
+            ],
+            'NO_ATTRIB'            => [
                 'a_type'        => 'none',
                 'c_type'        => 'url',
                 'format'        => '<a href="%c_str%" rel="nofollow">%c_str%</a>'
-            )
-        )
-    ),
-    'u' => array(
+            ]
+        ]
+    ],
+    'u' => [
         'html_name'                => 'span',
-        'handlers'                => array(
-            'NO_ATTRIB'            => array(
+        'handlers'                => [
+            'NO_ATTRIB'            => [
                 'format'        => '<span class="bbu">%c_str%</span>'
-            )
-        )
-    ),
+            ]
+        ]
+    ],
 
-    'center' => array(
+    'center' => [
         'html_name'                => 'div',
-        'handlers'                => array(
-            'NO_ATTRIB'            => array(
+        'handlers'                => [
+            'NO_ATTRIB'            => [
                 'format'        => '</p><div align="center"><p>%c_str%</p></div><p>'
-            )
-        )
-    ),
-    'right' => array(
+            ]
+        ]
+    ],
+    'right' => [
         'html_name'                => 'div',
-        'handlers'                => array(
-            'NO_ATTRIB'            => array(
+        'handlers'                => [
+            'NO_ATTRIB'            => [
                 'format'        => '</p><div align="right"><p>%c_str%</p></div><p>'
-            )
-        )
-    ),
-    'left' => array(
+            ]
+        ]
+    ],
+    'left' => [
         'html_name'                => 'div',
-        'handlers'                => array(
-            'NO_ATTRIB'            => array(
+        'handlers'                => [
+            'NO_ATTRIB'            => [
                 'format'        => '</p><div align="left"><p>%c_str%</p></div><p>'
-            )
-        )
-    ),
-    'justify' => array(
+            ]
+        ]
+    ],
+    'justify' => [
         'html_name'                => 'div',
-        'handlers'                => array(
-            'NO_ATTRIB'            => array(
+        'handlers'                => [
+            'NO_ATTRIB'            => [
                 'format'        => '</p><div align="justify"><p>%c_str%</p></div><p>'
-            )
-        )
-    ),
+            ]
+        ]
+    ],
 
 
-    'youtube' => array(
+    'youtube' => [
     /* Supplied in one of three acceptable formats:  (Note: smallest good youtube dimensions: 260x225)
         1. XWlhKllqnAk
         2. http://www.youtube.com/watch?v=XWlhKllqnAk
@@ -362,11 +362,11 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
         'in_post'                => true,
         'in_sig'                => false,
         'html_name'                => 'object',
-        'tags_allowed'            => array(),
+        'tags_allowed'            => [],
         'x_padding'                => 20,
         'y_padding'                => 45,
-        'handlers'                => array(
-            'ATTRIB'            => array(
+        'handlers'                => [
+            'ATTRIB'            => [
                 'a_type'        => 'width_height',
                 'c_type'        => 'text',
                 'c_regex'        => '%(?:^|\bv[=/])(\w{10,12})\b%S',
@@ -376,8 +376,8 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
                         <param name="movie" value="http://www.youtube.com/v/%c_str%&amp;hl=en_US&amp;fs=1&amp;border=1" />
                         <param name="allowFullScreen" value="true" />
                     </object>'
-            ),
-            'NO_ATTRIB'            => array(
+            ],
+            'NO_ATTRIB'            => [
                 'a_type'        => 'width_height',
                 'c_type'        => 'width_height',
                 'c_regex'        => '%(?:^|\bv[=/])(\w{10,12})\b%S',
@@ -387,26 +387,26 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
                         <param name="movie" value="http://www.youtube.com/v/%c_str%&amp;hl=en_US&amp;fs=1&amp;border=1" />
                         <param name="allowFullScreen" value="true" />
                     </object>'
-            )
-        )
-    ),
+            ]
+        ]
+    ],
 
-    'large' => array(
+    'large' => [
         'html_name'                => 'span',
-        'handlers'                => array(
-            'NO_ATTRIB'            => array(
+        'handlers'                => [
+            'NO_ATTRIB'            => [
                 'format'        => '<span style="font-size: larger;">%c_str%</span>'
-            )
-        )
-    ),
-    'small' => array(
+            ]
+        ]
+    ],
+    'small' => [
         'html_name'                => 'span',
-        'handlers'                => array(
-            'NO_ATTRIB'            => array(
+        'handlers'                => [
+            'NO_ATTRIB'            => [
                 'format'        => '<span style="font-size: smaller;">%c_str%</span>'
-            )
-        )
-    ),
+            ]
+        ]
+    ],
 
 
 
@@ -415,35 +415,35 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
 
 
     // System Tags. DO NOT DISABLE
-    'err' => array(
+    'err' => [
         'html_name'                => 'span',
         'tag_type'                => 'hidden',
         'html_type'                => 'inline',
-        'handlers'                => array(
-            'ATTRIB'            => array(
+        'handlers'                => [
+            'ATTRIB'            => [
                 'format'        =>
                     '<span class="err" title="%a_str%">%c_str%</span>'
-            ),
-            'NO_ATTRIB'            => array(
+            ],
+            'NO_ATTRIB'            => [
                 'format'        =>
                     '<span class="err">%c_str%</span>'
-            )
-        )
-    ),
-    '_ROOT_' => array(
+            ]
+        ]
+    ],
+    '_ROOT_' => [
         'in_post'                => false,
         'in_sig'                => false,
         'html_name'                => 'div',
         'tag_type'                => 'normal',
         'html_type'                => 'block',
         'depth_max'                => 1,
-        'handlers'                => array( // Default handler for erroneously defined tag.
-            'NO_ATTRIB'            => array(
+        'handlers'                => [ // Default handler for erroneously defined tag.
+            'NO_ATTRIB'            => [
                 'a_type'        => 'text',
                 'c_type'        => 'text',
                 'format'        => "\1\2<span class=\"err\" title=\"_ROOT_\">%c_str%</span>\1",
-            )
-        )
-    )
-) // End $bbcd array.
+            ]
+        ]
+    ]
+] // End $bbcd array.
 ;

@@ -39,7 +39,7 @@ class Topic extends Api
         }
 
         // Start with a clean slate
-        $errors = array();
+        $errors = [];
 
         // Let's see if everything went right
         $errors = $this->model->check_errors_before_post($args['id'], $errors);
@@ -91,7 +91,7 @@ class Topic extends Api
         }
 
         // Start with a clean slate
-        $errors = array();
+        $errors = [];
 
         // Let's see if everything went right
         $errors = $this->model->check_errors_before_post($args['id'], $errors);

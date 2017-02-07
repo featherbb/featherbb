@@ -18,8 +18,8 @@ class Translations implements TranslationsInterface
      *
      * @var array
      */
-    public $entries = array();
-    public $headers = array();
+    public $entries = [];
+    public $headers = [];
 
     /**
      * {@inheritdoc}
@@ -97,10 +97,10 @@ class Translations implements TranslationsInterface
      */
     public function translate($singular, $context = null)
     {
-        $entry = new EntryTranslations(array(
+        $entry = new EntryTranslations([
                 'singular' => $singular,
                 'context' => $context
-            ));
+        ]);
         $translated = $this->translate_entry($entry);
 
         return ($translated && !empty($translated->translations)) ?
@@ -133,11 +133,11 @@ class Translations implements TranslationsInterface
         $count,
         $context = null
     ) {
-        $entry = new EntryTranslations(array(
+        $entry = new EntryTranslations([
                 'singular' => $singular,
                 'plural' => $plural,
                 'context' => $context
-            ));
+        ]);
         $translated = $this->translate_entry($entry);
         $index = $this->select_plural_form($count);
         $total_plural_forms = $this->get_plural_forms_count();

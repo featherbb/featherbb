@@ -129,7 +129,7 @@ Container::get('hooks')->fire('view.help.start');
 <?php
 
 // Display the smiley set
-$smiley_groups = array();
+$smiley_groups = [];
 
 foreach (Container::get('parser')->pd['smilies'] as $smiley_text => $smiley_data) {
     $smiley_groups[$smiley_data['file']][] = $smiley_text;

@@ -12,7 +12,7 @@ use FeatherBB\Core\Database as DB;
 
 class Preferences
 {
-    protected $preferences = array();
+    protected $preferences = [];
 
     // Add / Update
 
@@ -50,11 +50,11 @@ class Preferences
                 } else {
                     DB::for_table('preferences')
                         ->create()
-                        ->set(array(
+                        ->set([
                             'preference_name' => $pref_name,
                             'preference_value' => $pref_value,
                             'user' => $uid
-                        ))
+                        ])
                         ->save();
                 }
             }
@@ -90,11 +90,11 @@ class Preferences
                 } else {
                     DB::for_table('preferences')
                         ->create()
-                        ->set(array(
+                        ->set([
                             'preference_name' => (string) $pref_name,
                             'preference_value' => (string) $pref_value,
                             'group' => $gid
-                        ))
+                        ])
                         ->save();
                 }
             }
@@ -121,11 +121,11 @@ class Preferences
             } else {
                 DB::for_table('preferences')
                     ->create()
-                    ->set(array(
+                    ->set([
                         'preference_name' => (string) $pref_name,
                         'preference_value' => (string) $pref_value,
                         'default' => 1
-                    ))
+                    ])
                     ->save();
             }
             unset($this->preferences);
@@ -231,16 +231,16 @@ class Preferences
 
         $result = DB::for_table('preferences')
                     ->table_alias('p')
-                    ->where_any_is(array(
-                        array('p.user' => $uid),
-                        array('p.group' => $gid),
-                        array('p.default' => 1),
-                    ))
+                    ->where_any_is([
+                        ['p.user' => $uid],
+                        ['p.group' => $gid],
+                        ['p.default' => 1],
+                    ])
                     ->order_by_desc('p.default')
                     ->order_by_asc('p.user')
                     ->find_array();
 
-        $this->preferences[$gid][$uid] = array();
+        $this->preferences[$gid][$uid] = [];
         foreach ($result as $pref) {
             $this->preferences[$gid][$uid][(string) $pref['preference_name']] = $pref['preference_value'];
         }
@@ -262,7 +262,7 @@ class Preferences
         } else {
             throw new \ErrorException('Internal error : wrong user object type', 500);
         }
-        return array((int) $uid, (int) $gid);
+        return [(int) $uid, (int) $gid];
     }
 
     public function getGroupPreferences($group_id = null, $preference = null)

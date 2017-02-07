@@ -43,22 +43,22 @@ class Bans
 
             $ban_data = $this->model->find_ban($start_from);
 
-            View::setPageInfo(array(
+            View::setPageInfo([
                     'admin_console' => true,
                     'page' => $p,
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans'), __('Results head')),
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans'), __('Results head')],
                     'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginate_old($num_pages, $p, '?find_ban=&amp;' . implode('&amp;', $ban_info['query_str'])),
                     'ban_data' => $ban_data['data'],
-                )
+                ]
             )->addTemplate('admin/bans/search_ban.php')->display();
         }
         else {
             AdminUtils::generateAdminMenu('bans');
 
-            View::setPageInfo(array(
+            View::setPageInfo([
                     'admin_console' => true,
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')),
-                )
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')],
+                ]
             )->addTemplate('admin/bans/admin_bans.php')->display();
         }
     }
@@ -73,11 +73,11 @@ class Bans
 
         AdminUtils::generateAdminMenu('bans');
 
-        View::setPageInfo(array(
+        View::setPageInfo([
                 'admin_console' => true,
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')),
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')],
                 'ban' => $this->model->add_ban_info($args['id']),
-            )
+            ]
         )->addTemplate('admin/bans/add_ban.php')->display();
     }
 
@@ -98,11 +98,11 @@ class Bans
         }
         AdminUtils::generateAdminMenu('bans');
 
-        View::setPageInfo(array(
+        View::setPageInfo([
                 'admin_console' => true,
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')),
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')],
                 'ban' => $this->model->edit_ban_info($args['id']),
-            )
+            ]
         )->addTemplate('admin/bans/add_ban.php')->display();
     }
 }

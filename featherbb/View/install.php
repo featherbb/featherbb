@@ -86,7 +86,7 @@ Container::get('hooks')->fire('view.install.start');
                                                 <h3><?php _e('Errors') ?></h3>
                                                 <ul class="error-list">
                                                     <?php
-                                                    $errors = (!is_array($errors)) ? array($errors) : $errors;
+                                                    $errors = (!is_array($errors)) ? [$errors] : $errors;
                                                     foreach ($errors as $error) {
                                                         echo "\t\t\t\t\t\t".'<li><strong>'.$error.'</strong></li>'."\n";
                                                     }

@@ -36,8 +36,8 @@ function utf8_byte_position()
         return false;
     }
 
-    $result = array();
-    $prev = array(0, 0); // Trivial byte index, character offset pair
+    $result = [];
+    $prev = [0, 0]; // Trivial byte index, character offset pair
     $i = utf8_locate_next_chr($str, 300); // Use a short piece of str to estimate bytes per character. $i (& $j) -> byte indexes into $str
     $c = strlen(utf8_decode(substr($str, 0, $i))); // $c -> character offset into $str
 
@@ -66,7 +66,7 @@ function utf8_byte_position()
 
             $j = $i + (int)(($offset-$c) * ($i - $prev[0]) / ($c - $prev[1]));
             $j = utf8_locate_next_chr($str, $j); // Correct to utf8 character boundary
-            $prev = array($i,$c); // Save the index, offset for use next iteration
+            $prev = [$i,$c]; // Save the index, offset for use next iteration
 
             if ($j > $i) {
                 $c += strlen(utf8_decode(substr($str, $i, $j-$i)));

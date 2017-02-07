@@ -2,7 +2,7 @@
 // Language definitions used in register.php and post.php
 // Based on work by Otomatic
 
-return array(
+return [
   'Combien font deux plus deux ?'   => '4',
   'Combien font quatre moins un ?'  => '3',
   'Combien font trois plus deux ?'  => '5',
@@ -13,4 +13,4 @@ return array(
   'Combien font huit fois deux ?'   => '16',
   'Combien font six fois deux ?'    => '12',
   'Combien font neuf moins sept ?'  => '2'
-);
+];

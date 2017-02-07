@@ -26,8 +26,8 @@ class Index
     public function display($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.index.index');
-        return View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title'))),
+        return View::setPageInfo([
+            'title' => [Utils::escape(ForumSettings::get('o_board_title'))],
             'active_page' => 'index',
             'is_indexed' => true,
             'index_data' => $this->model->print_categories_forums(),
@@ -35,7 +35,7 @@ class Index
             'online'    =>    $this->model->fetch_users_online(),
             'forum_actions'        =>    $this->model->get_forum_actions(),
             'cur_cat'   => 0
-        ))->addTemplate('index.php')->display();
+        ])->addTemplate('index.php')->display();
     }
 
     public function rules()
@@ -46,10 +46,10 @@ class Index
             throw new Error(__('Bad request'), 404);
         }
 
-        return View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Forum rules')),
+        return View::setPageInfo([
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Forum rules')],
             'active_page' => 'rules'
-            )
+            ]
         )->addTemplate('misc/rules.php')->display();
     }
 

@@ -45,23 +45,23 @@ class Plugins
             return $this->model->upload_plugin($_FILES);
         }
 
-        View::addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
+        View::addAsset('js', 'style/imports/common.js', ['type' => 'text/javascript']);
 
         $availablePlugins = Lister::getPlugins();
-        $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : array();
+        $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : [];
 
         $officialPlugins = Lister::getOfficialPlugins();
 
         AdminUtils::generateAdminMenu('plugins');
 
-        View::setPageInfo(array(
+        View::setPageInfo([
             'admin_console' => true,
             'active_page' => 'admin',
             'availablePlugins'    =>    $availablePlugins,
             'activePlugins'    =>    $activePlugins,
             'officialPlugins'    =>    $officialPlugins,
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')),
-            )
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')],
+            ]
         )->addTemplate('admin/plugins.php')->display();
     }
 
@@ -88,7 +88,7 @@ class Plugins
 
         $this->model->deactivate($args['name']);
         // Plugin has been deactivated, confirm and redirect
-        return Router::redirect(Router::pathFor('adminPlugins'), array('warning', sprintf(__('Plugin deactivated'), $args['name'])));
+        return Router::redirect(Router::pathFor('adminPlugins'), ['warning', sprintf(__('Plugin deactivated'), $args['name'])]);
     }
 
     public function uninstall($req, $res, $args)
@@ -101,7 +101,7 @@ class Plugins
 
         $this->model->uninstall($args['name']);
         // Plugin has been uninstalled, confirm and redirect
-        return Router::redirect(Router::pathFor('adminPlugins'), array('warning', sprintf(__('Plugin uninstalled'), $args['name'])));
+        return Router::redirect(Router::pathFor('adminPlugins'), ['warning', sprintf(__('Plugin uninstalled'), $args['name'])]);
     }
 
     /**

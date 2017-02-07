@@ -40,7 +40,7 @@ class Forums
             // Regenerate the quick jump cache
             Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
-            return Router::redirect(Router::pathFor('editForum', array('id' => $fid)), __('Forum added redirect'));
+            return Router::redirect(Router::pathFor('editForum', ['id' => $fid]), __('Forum added redirect'));
         } else {
             return Router::redirect(Router::pathFor('adminForums'), __('Unable to add forum'));
         }
@@ -54,17 +54,17 @@ class Forums
             if (Input::post('save') && Input::post('read_forum_old')) {
 
                 // Forums parameters / TODO : better handling of wrong parameters
-                $forum_data = array('forum_name' => Utils::escape(Input::post('forum_name')),
+                $forum_data = ['forum_name' => Utils::escape(Input::post('forum_name')),
                                     'forum_desc' => Input::post('forum_desc') ? Utils::linebreaks(Utils::trim(Input::post('forum_desc'))) : NULL,
                                     'cat_id' => (int) Input::post('cat_id'),
                                     'sort_by' => (int) Input::post('sort_by'),
-                                    'redirect_url' => Url::is_valid(Input::post('redirect_url')) ? Utils::escape(Input::post('redirect_url')) : NULL);
+                                    'redirect_url' => Url::is_valid(Input::post('redirect_url')) ? Utils::escape(Input::post('redirect_url')) : NULL];
 
                 if ($forum_data['forum_name'] == '') {
-                    return Router::redirect(Router::pathFor('editForum', array('id' => $args['id'])), __('Must enter name message'));
+                    return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Must enter name message'));
                 }
                 if ($forum_data['cat_id'] < 1) {
-                    return Router::redirect(Router::pathFor('editForum', array('id' => $args['id'])), __('Must be valid category'));
+                    return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Must be valid category'));
                 }
 
                 $this->model->update_forum($args['id'], $forum_data);
@@ -72,8 +72,8 @@ class Forums
                 // Permissions
                 $permissions = $this->model->get_default_group_permissions(false);
                 foreach($permissions as $perm_group) {
-                    $permissions_data = array('group_id' => $perm_group['g_id'],
-                                                'forum_id' => $args['id']);
+                    $permissions_data = ['group_id' => $perm_group['g_id'],
+                                                'forum_id' => $args['id']];
                     if ($perm_group['board.read'] == '1' && isset(Input::post('read_forum_new')[$perm_group['g_id']]) && Input::post('read_forum_new')[$perm_group['g_id']] == '1') {
                         $permissions_data['read_forum'] = '1';
                     }
@@ -100,7 +100,7 @@ class Forums
                 // Regenerate the quick jump cache
                 Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
-                return Router::redirect(Router::pathFor('editForum', array('id' => $args['id'])), __('Forum updated redirect'));
+                return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Forum updated redirect'));
 
             } elseif (Input::post('revert_perms')) {
                 $this->model->delete_permissions($args['id']);
@@ -108,21 +108,21 @@ class Forums
                 // Regenerate the quick jump cache
                 Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
-                return Router::redirect(Router::pathFor('editForum', array('id' => $args['id'])), __('Perms reverted redirect'));
+                return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Perms reverted redirect'));
             }
 
         } else {
             AdminUtils::generateAdminMenu('forums');
 
-            View::setPageInfo(array(
-                    'title'    =>    array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')),
+            View::setPageInfo([
+                    'title'    =>    [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')],
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
                     'perm_data' => $this->model->get_permissions($args['id']),
                     'cur_index'     =>  7,
                     'cur_forum' => $this->model->get_forum_info($args['id']),
                     'forum_data' => $this->model->get_forums(),
-                )
+                ]
             )->addTemplate('admin/forums/permissions.php')->display();
         }
     }
@@ -147,12 +147,12 @@ class Forums
 
             AdminUtils::generateAdminMenu('forums');
 
-            View::setPageInfo(array(
-                    'title'    =>    array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')),
+            View::setPageInfo([
+                    'title'    =>    [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')],
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
                     'cur_forum' => $cur_forum
-                )
+                ]
             )->addTemplate('admin/forums/delete_forum.php')->display();
         }
     }
@@ -183,14 +183,14 @@ class Forums
         AdminUtils::generateAdminMenu('forums');
 
         $categories_model = new \FeatherBB\Model\Admin\Categories();
-        View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')),
+        View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')],
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'cat_list' => $categories_model->get_cat_list(),
                 'forum_data' => $this->model->get_forums(),
                 'cur_index' => 4,
-            )
+            ]
         )->addTemplate('admin/forums/admin_forums.php')->display();
     }
 }

@@ -5,6 +5,6 @@
 $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
-return array(
-    'FeatherBB\\Plugins\\' => array($baseDir . '/src'),
-);
+return [
+    'FeatherBB\\Plugins\\' => [$baseDir . '/src'],
+];

@@ -92,7 +92,7 @@ class Reader
     {
         if (!function_exists('str_split')) {
             $length = $this->strlen($string);
-            $out = array();
+            $out = [];
             for ($i = 0; $i < $length; $i += $chunk_size) {
                 $out[] = $this->substr($string, $i, $chunk_size);
             }

@@ -28,18 +28,18 @@ class Core
 {
     protected $forum_env,
               $forum_settings;
-    protected $headers = array(
+    protected $headers = [
         'Cache-Control' => 'no-cache, no-store, must-revalidate',
         'Pragma' => 'no-cache',
         'Content-type' => 'text/html',
-        'X-Frame-Options' => 'deny');
+        'X-Frame-Options' => 'deny'];
 
     public function __construct($data)
     {
         // Handle empty values in data
-        $data = array_merge(array('config_file' => 'featherbb/config.php',
+        $data = array_merge(['config_file' => 'featherbb/config.php',
                                   'cache_dir' => 'cache/',
-                                  'debug'   => false), $data);
+                                  'debug'   => false], $data);
         // Define some core variables
         $this->forum_env['FEATHER_ROOT'] = realpath(dirname(__FILE__).'/../../').'/';
         $this->forum_env['FORUM_CACHE_DIR'] = is_writable($this->forum_env['FEATHER_ROOT'].$data['cache_dir']) ? realpath($this->forum_env['FEATHER_ROOT'].$data['cache_dir']).'/' : null;
@@ -60,7 +60,7 @@ class Core
 
     public static function load_default_forum_env()
     {
-        return array(
+        return [
                 'FEATHER_ROOT' => '',
                 'FORUM_CONFIG_FILE' => 'featherbb/config.php',
                 'FORUM_CACHE_DIR' => 'cache/',
@@ -81,12 +81,12 @@ class Core
                 'FEATHER_DEBUG' => false,
                 'FEATHER_SHOW_QUERIES' => false,
                 'FEATHER_SHOW_INFO' => false
-                );
+        ];
     }
 
     public static function load_default_forum_settings()
     {
-        return array(
+        return [
                 // Database
                 'db_type' => 'mysqli',
                 'db_host' => '',
@@ -98,7 +98,7 @@ class Core
                 'cookie_name' => 'feather_cookie',
                 'jwt_token' => 'changeme', // MUST BE CHANGED !!!
                 'jwt_algorithm' => 'HS512'
-                );
+        ];
     }
 
     public static function init_db(array $config, $log_queries = false)
@@ -110,7 +110,7 @@ class Core
                     throw new Error('Driver pdo_mysql not installed.', 500, false, false, true);
                 }
                 DB::configure('mysql:host='.$config['db_host'].';dbname='.$config['db_name']);
-                DB::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+                DB::configure('driver_options', [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
                 break;
             case 'sqlite';
             case 'sqlite3';
@@ -132,9 +132,9 @@ class Core
         if ($log_queries) {
             DB::configure('logging', true);
         }
-        DB::configure('id_column_overrides', array(
+        DB::configure('id_column_overrides', [
             $config['db_prefix'].'groups' => 'g_id',
-        ));
+        ]);
     }
 
     public static function loadPlugins()
@@ -180,9 +180,9 @@ class Core
         // Load FeatherBB cache
         Container::set('cache', function ($container) {
             $path = $this->forum_env['FORUM_CACHE_DIR'];
-            return new \FeatherBB\Core\Cache(array('name' => 'feather',
+            return new \FeatherBB\Core\Cache(['name' => 'feather',
                                                'path' => $path,
-                                               'extension' => '.cache'));
+                                               'extension' => '.cache']);
         });
         // Load FeatherBB permissions
         Container::set('perms', function ($container) {
@@ -266,8 +266,8 @@ class Core
         self::loadPlugins();
 
         // Define time formats and add them to the container
-        Container::set('forum_time_formats', array(ForumSettings::get('time_format'), 'H:i:s', 'H:i', 'g:i:s a', 'g:i a'));
-        Container::set('forum_date_formats', array(ForumSettings::get('date_format'), 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'));
+        Container::set('forum_time_formats', [ForumSettings::get('time_format'), 'H:i:s', 'H:i', 'g:i:s a', 'g:i a']);
+        Container::set('forum_date_formats', [ForumSettings::get('date_format'), 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y']);
 
         // Check if we have DOM support (not installed by default in PHP >= 7.0, results in utf8_decode not defined
         if (!function_exists('utf8_decode')) {

@@ -41,7 +41,7 @@ function utf8_to_unicode($str)
     $mUcs4  = 0;    // Cached Unicode character
     $mBytes = 1;    // Cached expected number of octets in the current sequence
 
-    $out = array();
+    $out = [];
     $len = strlen($str);
 
     for ($i = 0; $i < $len; $i++) {

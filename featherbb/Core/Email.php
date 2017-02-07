@@ -65,11 +65,11 @@ class Email
     //
     public function extract_blocks($text, $start, $end, $retab = true)
     {
-        $code = array();
+        $code = [];
         $start_len = strlen($start);
         $end_len = strlen($end);
         $regex = '%(?:' . preg_quote($start, '%') . '|' . preg_quote($end, '%') . ')%';
-        $matches = array();
+        $matches = [];
 
         if (preg_match_all($regex, $text, $matches)) {
             $counter = $offset = 0;
@@ -105,7 +105,7 @@ class Email
             $text = str_replace("\t", $spaces, $text);
         }
 
-        return array($code, $text);
+        return [$code, $text];
     }
 
 
@@ -122,21 +122,21 @@ class Email
 
         $text = Utils::trim($text, "\t\n ");
 
-        $shortcut_urls = array(
+        $shortcut_urls = [
             'topic' => '/topic/$1/',
             'post' => '/post/$1/#p$1',
             'forum' => '/forum/$1/',
             'user' => '/user/$1/',
-        );
+        ];
 
         // Split code blocks and text so BBcode in codeblocks won't be touched
         list($code, $text) = $this->extract_blocks($text, '[code]', '[/code]');
 
         // Strip all bbcodes, except the quote, url, img, email, code and list items bbcodes
-        $text = preg_replace(array(
+        $text = preg_replace([
             '%\[/?(?!(?:quote|url|topic|post|user|forum|img|email|code|list|\*))[a-z]+(?:=[^\]]+)?\]%i',
             '%\n\[/?list(?:=[^\]]+)?\]%i' // A separate regex for the list tags to get rid of some whitespace
-        ), '', $text);
+        ], '', $text);
 
         // Match the deepest nested bbcode
         // An adapted example from Mastering Regular Expressions
@@ -154,20 +154,20 @@ class Email
         %ix';
 
         $url_index = 1;
-        $url_stack = array();
+        $url_stack = [];
         while (preg_match($match_quote_regex, $text, $matches)) {
             // Quotes
             if ($matches[1] == 'quote') {
                 // Put '>' or '> ' at the start of a line
                 $replacement = preg_replace(
-                    array('%^(?=\>)%m', '%^(?!\>)%m'),
-                    array('>', '> '),
+                    ['%^(?=\>)%m', '%^(?!\>)%m'],
+                    ['>', '> '],
                     $matches[2] . " said:\n" . $matches[3]);
             } // List items
             elseif ($matches[1] == '*') {
                 $replacement = ' * ' . $matches[3];
             } // URLs and emails
-            elseif (in_array($matches[1], array('url', 'email'))) {
+            elseif (in_array($matches[1], ['url', 'email'])) {
                 if (!empty($matches[2])) {
                     $replacement = '[' . $matches[3] . '][' . $url_index . ']';
                     $url_stack[$url_index] = $matches[2];
@@ -186,7 +186,7 @@ class Email
                 $url_stack[$url_index] = $matches[3];
                 $url_index++;
             } // Topic, post, forum and user URLs
-            elseif (in_array($matches[1], array('topic', 'post', 'forum', 'user'))) {
+            elseif (in_array($matches[1], ['topic', 'post', 'forum', 'user'])) {
                 $url = isset($shortcut_urls[$matches[1]]) ? $base_url . $shortcut_urls[$matches[1]] : '';
 
                 if (!empty($matches[2])) {

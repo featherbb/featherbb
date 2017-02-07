@@ -22,9 +22,9 @@ class Help
     {
         Container::get('hooks')->fire('controller.help.start');
 
-        View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Help')),
+        View::setPageInfo([
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Help')],
             'active_page' => 'help',
-        ))->addTemplate('help.php')->display();
+        ])->addTemplate('help.php')->display();
     }
 }

@@ -78,10 +78,10 @@ class Auth
                 throw new Error(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403, true, true);
             }
         } else {
-            View::setPageInfo(array(
+            View::setPageInfo([
                     'active_page' => 'login',
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Login')),
-                )
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Login')],
+                ]
             )->addTemplate('login/form.php')->display();
         }
     }
@@ -191,11 +191,11 @@ class Auth
             }
         }
 
-        View::setPageInfo(array(
+        View::setPageInfo([
 //                'errors'    =>    $this->model->password_forgotten(),
                 'active_page' => 'login',
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Request pass'))
-            )
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Request pass')]
+            ]
         )->addTemplate('login/password_forgotten.php')->display();
     }
 }

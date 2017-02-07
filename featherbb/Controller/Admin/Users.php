@@ -31,12 +31,12 @@ class Users
 
             AdminUtils::generateAdminMenu('users');
 
-            return View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Move users')),
+            return View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Move users')],
                     'active_page' => 'moderate',
                     'admin_console' => true,
                     'move'              =>  $this->model->move_users(),
-                )
+                ]
             )->addTemplate('admin/users/move_users.php')->display();
         }
 
@@ -46,12 +46,12 @@ class Users
 
             AdminUtils::generateAdminMenu('users');
 
-            return View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Delete users')),
+            return View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Delete users')],
                     'active_page' => 'moderate',
                     'admin_console' => true,
                     'user_ids'          => $this->model->delete_users(),
-                )
+                ]
             )->addTemplate('admin/users/delete_users.php')->display();
         }
 
@@ -64,12 +64,12 @@ class Users
 
             AdminUtils::generateAdminMenu('users');
 
-            return View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Bans')),
+            return View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Bans')],
                     'active_page' => 'moderate',
                     'admin_console' => true,
                     'user_ids'          => $this->model->ban_users(),
-                )
+                ]
             )->addTemplate('admin/users/ban_users.php')->display();
         }
 
@@ -95,10 +95,10 @@ class Users
             $can_delete = $can_move = User::isAdmin();
             $can_ban = User::isAdmin() || (User::isAdminMod() && User::can('mod.ban_users'));
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
-            View::addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
+            View::addAsset('js', 'style/imports/common.js', ['type' => 'text/javascript']);
 
-            View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Results head')),
+            View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Results head')],
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'paging_links' => $paging_links,
@@ -109,18 +109,18 @@ class Users
                     'can_action' => $can_action,
                     'can_move' => $can_move,
                     'user_data' =>  $this->model->print_users($search['conditions'], $search['order_by'], $search['direction'], $start_from),
-                )
+                ]
             )->addTemplate('admin/users/find_users.php')->display();
         }
         else {
             AdminUtils::generateAdminMenu('users');
 
-            return View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users')),
+            return View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users')],
                     'active_page' => 'admin',
                     'admin_console' => true,
                     'group_list' => $this->model->get_group_list(),
-                )
+                ]
             )->addTemplate('admin/users/admin_users.php')->display();
         }
     }
@@ -139,15 +139,15 @@ class Users
         $p = (!Input::query('p') || Input::query('p') <= 1 || Input::query('p') > $num_pages) ? 1 : intval(Input::query('p'));
         $start_from = 50 * ($p - 1);
 
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Results head')),
+        return View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Results head')],
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'page' => $p,
                 'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?ip_stats='.$args['id']),
                 'start_from'        =>  $start_from,
                 'ip_data'   =>  $this->model->get_ip_stats($args['id'], $start_from),
-            )
+            ]
         )->addTemplate('admin/users/search_ip.php')->display();
     }
 
@@ -171,15 +171,15 @@ class Users
         $p = (!Input::query('p') || Input::query('p') <= 1 || Input::query('p') > $num_pages) ? 1 : intval(Input::query('p'));
         $start_from = 50 * ($p - 1);
 
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Results head')),
+        return View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Results head')],
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?ip_stats='.$search_ip),
                 'page' => $p,
                 'start_from'        =>  $start_from,
                 'info'   =>  $this->model->get_info_poster($search_ip, $start_from),
-            )
+            ]
         )->addTemplate('admin/users/show_users.php')->display();
     }
 }

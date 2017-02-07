@@ -22,11 +22,11 @@ class EntryTranslations
     public $context = null;
     public $singular = null;
     public $plural = null;
-    public $translations = array();
+    public $translations = [];
     public $translator_comments = '';
     public $extracted_comments = '';
-    public $references = array();
-    public $flags = array();
+    public $references = [];
+    public $flags = [];
 
     /**
      * @param array $args associative array, support following keys:
@@ -39,7 +39,7 @@ class EntryTranslations
      *                    - references (array) -- places in the code this strings is used, in relative_to_root_path/file.php:linenum form
      *                    - flags (array) -- flags like php-format
      */
-    public function __construct($args=array())
+    public function __construct($args= [])
     {
         // if no singular -- empty object
         if (!isset($args['singular'])) {
@@ -53,13 +53,13 @@ class EntryTranslations
             $this->is_plural = true;
         }
         if (!is_array($this->translations)) {
-            $this->translations = array();
+            $this->translations = [];
         }
         if (!is_array($this->references)) {
-            $this->references = array();
+            $this->references = [];
         }
         if (!is_array($this->flags)) {
-            $this->flags = array();
+            $this->flags = [];
         }
     }
 
