@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015-2016 FeatherBB
+ * Copyright (C) 2015-2017 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -36,7 +36,7 @@ class Parser
         if (Input::post('reset') || !file_exists($cache_file)) {
             require_once(ForumEnv::get('FEATHER_ROOT').'featherbb/Core/parser/bbcd_source.php');
             require_once(ForumEnv::get('FEATHER_ROOT').'featherbb/Core/parser/bbcd_compile.php');
-            return Router::redirect(Router::pathFor('adminParser'), _e('reset_success'));
+            return Router::redirect(Router::pathFor('adminParser'), __('reset_success'));
         }
 
         // Load the current BBCode $pd array from featherbb/Core/parser/parser_data.inc.php.
@@ -59,28 +59,28 @@ class Parser
                             if (preg_match('%^image/%', $f['type'])) {        // If we have an image file type?
                                 if ($f['size'] > 0 && $f['size'] <= ForumSettings::get('o_avatars_size')) {
                                     if (move_uploaded_file($f['tmp_name'], ForumEnv::get('FEATHER_ROOT') .'style/img/smilies/'. $name)) {
-                                        return Router::redirect(Router::pathFor('adminParser'), _e('upload success'));
+                                        return Router::redirect(Router::pathFor('adminParser'), __('upload success'));
                                     } else { //  Error #1: 'Smiley upload failed. Unable to move to smiley folder.'.
-                                        throw new Error(_e('upload_err_1'), 500);
+                                        throw new Error(__('upload_err_1'), 500);
                                     }
                                 } else { // Error #2: 'Smiley upload failed. File is too big.'
-                                    throw new Error(_e('upload_err_2'), 400);
+                                    throw new Error(__('upload_err_2'), 400);
                                 }
                             } else { // Error #3: 'Smiley upload failed. File type is not an image.'.
-                                throw new Error(_e('upload_err_3'), 400);
+                                throw new Error(__('upload_err_3'), 400);
                             }
                         } else { // Error #4: 'Smiley upload failed. Bad filename.'
-                            throw new Error(_e('upload_err_4'), 400);
+                            throw new Error(__('upload_err_4'), 400);
                         }
                         break;
                     case 1: // case 1 similar to case 2 so fall through...
-                    case 2: throw new Error(_e('upload_err_2'), 400);    // File exceeds MAX_FILE_SIZE.
-                    case 3: throw new Error(_e('upload_err_5'), 400);    // File only partially uploaded.
+                    case 2: throw new Error(__('upload_err_2'), 400);    // File exceeds MAX_FILE_SIZE.
+                    case 3: throw new Error(__('upload_err_5'), 400);    // File only partially uploaded.
                     //        case 4: break; // No error. Normal response when this form element left empty
-                    case 4: throw new Error(_e('upload_err_6'), 400);    // No filename.
-                    case 6: throw new Error(_e('upload_err_7'), 500);    // No temp folder.
-                    case 7: throw new Error(_e('upload_err_8'), 500);    // Cannot write to disk.
-                    default: throw new Error(_e('upload_err_9'), 500);        // Generic/unknown error
+                    case 4: throw new Error(__('upload_err_6'), 400);    // No filename.
+                    case 6: throw new Error(__('upload_err_7'), 500);    // No temp folder.
+                    case 7: throw new Error(__('upload_err_8'), 500);    // Cannot write to disk.
+                    default: throw new Error(__('upload_err_9'), 500);        // Generic/unknown error
                 }
             }
 
@@ -193,7 +193,7 @@ class Parser
             }
 
             require_once('featherbb/Core/parser/bbcd_compile.php'); // Compile $bbcd and save into $pd['bbcd']
-            return Router::redirect(Router::pathFor('adminParser'), _e('save_success'));
+            return Router::redirect(Router::pathFor('adminParser'), __('save_success'));
         }
 
         AdminUtils::generateAdminMenu('parser');

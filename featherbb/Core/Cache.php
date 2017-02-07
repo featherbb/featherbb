@@ -1,7 +1,7 @@
 <?php
 
 /**
-* Copyright (C) 2015-2016 FeatherBB
+* Copyright (C) 2015-2017 FeatherBB
 * based on code by Christian Metz - MetzWeb Networks
 * API Documentation: https://github.com/cosenary/Simple-PHP-Cache
 * License: BSD http://www.opensource.org/licenses/bsd-license.php

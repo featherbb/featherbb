@@ -28,7 +28,8 @@
         "firebase/php-jwt": "^3.0",
         "vierbergenlars/php-semver": "^3.0",
         "slim/flash": "^0.1.0",
-        "gettext/gettext": "^4.2"
+        "gettext/gettext": "^4.2",
+        "s9e/text-formatter": "^0.9"
     },
     "support": {
         "email": "admin@featherbb.org",
