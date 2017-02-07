@@ -380,7 +380,7 @@ class Topic
 
         $cur_category = 0;
 
-        foreach($result as $cur_forum) {
+        foreach ($result as $cur_forum) {
             if ($cur_forum->fid != $fid) {
                 if ($cur_forum->cid != $cur_category) {
                     // A new category since last iteration?
@@ -426,7 +426,7 @@ class Topic
 
         $cur_category = 0;
 
-        foreach($result as $cur_forum) {
+        foreach ($result as $cur_forum) {
             if ($cur_forum->cid != $cur_category) {
                 // A new category since last iteration?
 
@@ -528,7 +528,6 @@ class Topic
                                     ->set($insert_move_to);
                 $move_to = Container::get('hooks')->fireDB('model.topic.move_to_redirect', $move_to);
                 $move_to = $move_to->save();
-
             }
         }
 
@@ -606,8 +605,7 @@ class Topic
 
             Forum::update($fid);
             return Router::redirect(Router::pathFor('Topic', ['id' => $tid, 'name' => $topic_subject]), __('Delete posts redirect'));
-        }
-        else {
+        } else {
             $posts = Container::get('hooks')->fire('model.topic.delete_posts', $posts);
             return $posts;
         }
@@ -709,7 +707,7 @@ class Topic
 
             $first_post_data = DB::for_table('posts')
                 ->select_many($select_first_post)
-                ->where_in('id',$posts_array )
+                ->where_in('id', $posts_array)
                 ->order_by_asc('id')
                 ->find_one();
 
@@ -843,7 +841,7 @@ class Topic
         $result = Container::get('hooks')->fireDB('model.topic.print_posts_query', $result);
         $result = $result->find_array();
 
-        foreach($result as $cur_post) {
+        foreach ($result as $cur_post) {
             $post_count++;
             $cur_post['user_avatar'] = '';
             $cur_post['user_info'] = [];
@@ -1025,7 +1023,7 @@ class Topic
         $result = Container::get('hooks')->fireDB('model.disp.topics_posts_view_query', $result);
         $result = $result->find_many();
 
-        foreach($result as $cur_post) {
+        foreach ($result as $cur_post) {
             $post_count++;
 
             // If the poster is a registered user

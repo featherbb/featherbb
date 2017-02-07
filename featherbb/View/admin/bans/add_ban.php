@@ -35,8 +35,8 @@ Container::get('hooks')->fire('view.admin.bans.add.start');
                                 <th scope="row"><?= __('Username label') ?></th>
                                 <td>
                                     <input type="text" name="ban_user" size="25" maxlength="25" value="<?php if (isset($ban['ban_user'])) {
-                                        echo Utils::escape($ban['ban_user']);
-                                    } ?>" tabindex="1" autofocus />
+    echo Utils::escape($ban['ban_user']);
+} ?>" tabindex="1" autofocus />
                                     <span><?= __('Username help') ?></span>
                                 </td>
                             </tr>
@@ -44,19 +44,19 @@ Container::get('hooks')->fire('view.admin.bans.add.start');
                                 <th scope="row"><?= __('IP label') ?></th>
                                 <td>
                                     <input type="text" name="ban_ip" size="45" maxlength="255" value="<?php if (isset($ban['ip'])) {
-                                        echo Utils::escape($ban['ip']);
-                                    } ?>" tabindex="2" />
+    echo Utils::escape($ban['ip']);
+} ?>" tabindex="2" />
                                         <span><?= __('IP help') ?><?php if ($ban['ban_user'] != '' && isset($ban['user_id'])) {
-                                                printf(' '.__('IP help link'), '<a href="'.Router::pathFor('usersIpStats', ['id' => $ban['user_id']]).'">'.__('here').'</a>');
-                                            } ?></span>
+    printf(' '.__('IP help link'), '<a href="'.Router::pathFor('usersIpStats', ['id' => $ban['user_id']]).'">'.__('here').'</a>');
+} ?></span>
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row"><?= __('E-mail label') ?></th>
                                 <td>
                                     <input type="text" name="ban_email" size="40" maxlength="80" value="<?php if (isset($ban['email'])) {
-                                        echo Utils::escape($ban['email']);
-                                    } ?>" tabindex="3" />
+    echo Utils::escape($ban['email']);
+} ?>" tabindex="3" />
                                     <span><?= __('E-mail help') ?></span>
                                 </td>
                             </tr>
@@ -74,8 +74,8 @@ Container::get('hooks')->fire('view.admin.bans.add.start');
                                 <th scope="row"><?= __('Ban message label') ?></th>
                                 <td>
                                     <input type="text" name="ban_message" size="50" maxlength="255" value="<?php if (isset($ban['message'])) {
-                                        echo Utils::escape($ban['message']);
-                                    } ?>" tabindex="4" />
+    echo Utils::escape($ban['message']);
+} ?>" tabindex="4" />
                                     <span><?= __('Ban message help') ?></span>
                                 </td>
                             </tr>
@@ -83,8 +83,8 @@ Container::get('hooks')->fire('view.admin.bans.add.start');
                                 <th scope="row"><?= __('Expire date label') ?></th>
                                 <td>
                                     <input type="text" name="ban_expire" size="17" maxlength="10" value="<?php if (isset($ban['expire'])) {
-                                        echo $ban['expire'];
-                                    } ?>" tabindex="5" />
+    echo $ban['expire'];
+} ?>" tabindex="5" />
                                     <span><?= __('Expire date help') ?></span>
                                 </td>
                             </tr>

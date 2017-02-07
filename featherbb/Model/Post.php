@@ -17,7 +17,6 @@ use FeatherBB\Core\Utils;
 
 class Post
 {
-
     public function get_info_post($tid, $fid)
     {
         Container::get('hooks')->fire('model.post.get_info_post_start', $tid, $fid);
@@ -38,7 +37,6 @@ class Post
                             ->left_outer_join('topic_subscriptions', 't.id=s.topic_id AND s.user_id='.User::get()->g_id, 's')
                             ->where_any_is($cur_posting['where'])
                             ->where('t.id', $tid);
-
         } else {
             $cur_posting['select'] = ['f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics'];
 
@@ -425,8 +423,7 @@ class Post
         foreach ($result as $cur_result) {
             if ($i == 0) {
                 $last_id = $cur_result['id'];
-            }
-            else {
+            } else {
                 $second_last_id = $cur_result['id'];
                 $second_poster = $cur_result['poster'];
                 $second_posted = $cur_result['posted'];
@@ -686,7 +683,6 @@ class Post
                 // ... is the question
                 // Let's do it
                 if (isset($post['subscribe']) && $post['subscribe'] && !$is_subscribed) {
-
                     $subscription['insert'] = [
                         'user_id'   =>  User::get()->id,
                         'topic_id'  =>  $tid
@@ -700,13 +696,11 @@ class Post
 
                 // We reply and we don't want to be subscribed anymore
                 } elseif ($post['subscribe'] == '0' && $is_subscribed) {
-
                     $unsubscription = DB::for_table('topic_subscriptions')
                                         ->where('user_id', User::get()->id)
                                         ->where('topic_id', $tid);
                     $unsubscription = Container::get('hooks')->fireDB('model.post.insert_reply_unsubscription', $unsubscription);
                     $unsubscription = $unsubscription->delete_many();
-
                 }
             }
         } else {
@@ -810,7 +804,7 @@ class Post
             }
 
             // Loop through subscribed users and send emails
-            foreach($result as $cur_subscriber) {
+            foreach ($result as $cur_subscriber) {
                 $cur_subscriber['prefs'] = Container::get('prefs')->loadPrefs($cur_subscriber);
                 // Is the subscription email for User::getPref('language', $cur_subscriber['id']) cached or not?
                 if (!isset($notification_emails[$cur_subscriber['prefs']['language']])) {
@@ -904,7 +898,6 @@ class Post
         if (!User::get()->is_guest) {
             // To subscribe or not to subscribe, that ...
             if (ForumSettings::get('o_topic_subscriptions') == '1' && $post['subscribe']) {
-
                 $subscription['insert'] = [
                     'user_id'   =>  User::get()->id,
                     'topic_id'  =>  $new['tid']
@@ -915,7 +908,6 @@ class Post
                                     ->set($subscription['insert']);
                 $subscription = Container::get('hooks')->fireDB('model.post.insert_topic_subscription_member', $subscription);
                 $subscription = $subscription->save();
-
             }
 
             // Create the post ("topic post")
@@ -1022,7 +1014,7 @@ class Post
             $cleaned_subject = ForumSettings::get('o_censoring') == '1' ? $censored_subject : $post['subject'];
 
             // Loop through subscribed users and send emails
-            foreach($result as $cur_subscriber) {
+            foreach ($result as $cur_subscriber) {
                 $cur_subscriber['prefs'] = Container::get('prefs')->loadPrefs($cur_subscriber);
                 // Is the subscription email for User::getPref('language', $cur_subscriber['id']) cached or not?
                 if (!isset($notification_emails[$cur_subscriber['prefs']['language']])) {
@@ -1349,7 +1341,7 @@ class Post
         $result = Container::get('hooks')->fire('model.post.topic_review_query', $result);
         $result = $result->find_many();
 
-        foreach($result as $cur_post) {
+        foreach ($result as $cur_post) {
             $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
             $post_data[] = $cur_post;
         }

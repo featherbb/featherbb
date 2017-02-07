@@ -28,9 +28,15 @@ Container::get('hooks')->fire('view.profile.section_privacy.start');
                                         <input type="hidden" name="form_sent" value="1" />
                                         <p><?= __('Email setting info') ?></p>
                                         <div class="rbox">
-                                            <label><input type="radio" name="form_email_setting" value="0"<?php if (User::getPref('email.setting', $user['id']) == '0') {echo ' checked="checked"';} ?> /><?= __('Email setting 1') ?><br /></label>
-                                            <label><input type="radio" name="form_email_setting" value="1"<?php if (User::getPref('email.setting', $user['id']) == '1') {echo ' checked="checked"';} ?> /><?= __('Email setting 2') ?><br /></label>
-                                            <label><input type="radio" name="form_email_setting" value="2"<?php if (User::getPref('email.setting', $user['id']) == '2') {echo ' checked="checked"';} ?> /><?= __('Email setting 3') ?><br /></label>
+                                            <label><input type="radio" name="form_email_setting" value="0"<?php if (User::getPref('email.setting', $user['id']) == '0') {
+    echo ' checked="checked"';
+} ?> /><?= __('Email setting 1') ?><br /></label>
+                                            <label><input type="radio" name="form_email_setting" value="1"<?php if (User::getPref('email.setting', $user['id']) == '1') {
+    echo ' checked="checked"';
+} ?> /><?= __('Email setting 2') ?><br /></label>
+                                            <label><input type="radio" name="form_email_setting" value="2"<?php if (User::getPref('email.setting', $user['id']) == '2') {
+    echo ' checked="checked"';
+} ?> /><?= __('Email setting 3') ?><br /></label>
                                         </div>
                                     </div>
                                 </fieldset>
@@ -41,9 +47,13 @@ Container::get('hooks')->fire('view.profile.section_privacy.start');
                                     <legend><?= __('Subscription legend') ?></legend>
                                     <div class="infldset">
                                         <div class="rbox">
-                                            <label><input type="checkbox" name="form_notify_with_post" value="1"<?php if (User::getPref('notify_with_post', $user['id']) == '1') {echo ' checked="checked"';} ?> /><?= __('Notify full') ?><br /></label>
+                                            <label><input type="checkbox" name="form_notify_with_post" value="1"<?php if (User::getPref('notify_with_post', $user['id']) == '1') {
+    echo ' checked="checked"';
+} ?> /><?= __('Notify full') ?><br /></label>
 <?php if (ForumSettings::get('o_topic_subscriptions') == '1'): ?>
-                                            <label><input type="checkbox" name="form_auto_notify" value="1"<?php if (User::getPref('auto_notify', $user['id']) == '1') {echo ' checked="checked"';} ?> /><?= __('Auto notify full') ?><br /></label>
+                                            <label><input type="checkbox" name="form_auto_notify" value="1"<?php if (User::getPref('auto_notify', $user['id']) == '1') {
+    echo ' checked="checked"';
+} ?> /><?= __('Auto notify full') ?><br /></label>
 <?php endif; ?>
                                         </div>
                                     </div>

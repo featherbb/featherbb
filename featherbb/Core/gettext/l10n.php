@@ -15,8 +15,8 @@
  *
  * Inspired from Luna <http://getluna.org>
  */
-function translate($mofile, $domain = 'featherbb', $language = false, $path = false) {
-
+function translate($mofile, $domain = 'featherbb', $language = false, $path = false)
+{
     global $l10n;
 
     // Set default path to forum core translations
@@ -55,21 +55,24 @@ function translate($mofile, $domain = 'featherbb', $language = false, $path = fa
     return true;
 }
 
-function __($text, $domain = 'featherbb') {
+function __($text, $domain = 'featherbb')
+{
     return translation($text, $domain);
 }
 
-function _e($text, $domain = 'featherbb') {
+function _e($text, $domain = 'featherbb')
+{
     echo translation($text, $domain);
 }
 
-function translation($text, $domain = 'featherbb') {
-
+function translation($text, $domain = 'featherbb')
+{
     global $l10n;
 
     if (!isset($l10n[$domain])) {
-        if (!class_exists('NOOPTranslations'))
+        if (!class_exists('NOOPTranslations')) {
             require_once dirname(__FILE__) . '/translations/NOOPTranslations.php';
+        }
         $l10n[$domain] = new NOOPTranslations;
     }
 

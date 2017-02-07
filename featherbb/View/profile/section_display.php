@@ -31,8 +31,7 @@ $styles = \FeatherBB\Core\Lister::getStyles();
 if (count($styles) == 1) {
     echo "\t\t\t\t\t\t\t".'<input type="hidden" name="form_style" value="'.$styles[0].'" />'."\n";
 } elseif (count($styles) > 1) {
-
-?>
+    ?>
                             <div class="inform">
                                 <fieldset>
                                     <legend><?= __('Style legend') ?></legend>
@@ -47,9 +46,7 @@ if (count($styles) == 1) {
         } else {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
         }
-    }
-
-?>
+    } ?>
                                         </select>
                                         <br /></label>
                                     </div>
@@ -68,15 +65,25 @@ if (count($styles) == 1) {
                                         <p><?= __('Post display info') ?></p>
                                         <div class="rbox">
 <?php if (ForumSettings::get('show.smilies') == '1' || ForumSettings::get('show.smilies.sig') == '1'): ?>
-                                            <label><input type="checkbox" name="form_show_smilies" value="1"<?php if (User::getPref('show.smilies', $user) == '1') {echo ' checked="checked"';} ?> /><?= __('Show smilies') ?><br /></label>
+                                            <label><input type="checkbox" name="form_show_smilies" value="1"<?php if (User::getPref('show.smilies', $user) == '1') {
+    echo ' checked="checked"';
+} ?> /><?= __('Show smilies') ?><br /></label>
 <?php endif; if (ForumSettings::get('o_signatures') == '1'): ?>
-                                            <label><input type="checkbox" name="form_show_sig" value="1"<?php if (User::getPref('show.sig', $user) == '1') {echo ' checked="checked"';} ?> /><?= __('Show sigs') ?><br /></label>
+                                            <label><input type="checkbox" name="form_show_sig" value="1"<?php if (User::getPref('show.sig', $user) == '1') {
+    echo ' checked="checked"';
+} ?> /><?= __('Show sigs') ?><br /></label>
 <?php endif; if (ForumSettings::get('o_avatars') == '1'): ?>
-                                            <label><input type="checkbox" name="form_show_avatars" value="1"<?php if (User::getPref('show.avatars', $user) == '1') {echo ' checked="checked"';} ?> /><?= __('Show avatars') ?><br /></label>
+                                            <label><input type="checkbox" name="form_show_avatars" value="1"<?php if (User::getPref('show.avatars', $user) == '1') {
+    echo ' checked="checked"';
+} ?> /><?= __('Show avatars') ?><br /></label>
 <?php endif; if (ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1'): ?>
-                                            <label><input type="checkbox" name="form_show_img" value="1"<?php if (User::getPref('show.img', $user) == '1') {echo ' checked="checked"';} ?> /><?= __('Show images') ?><br /></label>
+                                            <label><input type="checkbox" name="form_show_img" value="1"<?php if (User::getPref('show.img', $user) == '1') {
+    echo ' checked="checked"';
+} ?> /><?= __('Show images') ?><br /></label>
 <?php endif; if (ForumSettings::get('o_signatures') == '1' && ForumSettings::get('p_sig_bbcode') == '1' && ForumSettings::get('p_sig_img_tag') == '1'): ?>
-                                            <label><input type="checkbox" name="form_show_img_sig" value="1"<?php if (User::getPref('show.img.sig', $user) == '1') {echo ' checked="checked"';} ?> /><?= __('Show images sigs') ?><br /></label>
+                                            <label><input type="checkbox" name="form_show_img_sig" value="1"<?php if (User::getPref('show.img.sig', $user) == '1') {
+    echo ' checked="checked"';
+} ?> /><?= __('Show images sigs') ?><br /></label>
 <?php endif; ?>
                                         </div>
                                     </div>

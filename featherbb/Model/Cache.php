@@ -132,8 +132,8 @@ class Cache
         }
         $files = new \DirectoryIterator($lang_path);
         $stopwords = [];
-        foreach($files as $file) {
-            if(!$file->isDot() && $file->getBasename() != '.DS_Store' && $file->isDir() && file_exists($file->getPathName().'/stopwords.txt')) {
+        foreach ($files as $file) {
+            if (!$file->isDot() && $file->getBasename() != '.DS_Store' && $file->isDir() && file_exists($file->getPathName().'/stopwords.txt')) {
                 $stopwords = array_merge($stopwords, file($file->getPathName().'/stopwords.txt'));
             }
         }

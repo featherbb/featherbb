@@ -35,8 +35,8 @@ if (!empty($cat_list)) {
                                     <td>
                                         <select name="cat" tabindex="1">
                                             <?php  foreach ($cat_list as $cat) {
-                                                echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat['id'].'">'.Utils::escape($cat['cat_name']).'</option>'."\n";
-                                            } ?>
+        echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat['id'].'">'.Utils::escape($cat['cat_name']).'</option>'."\n";
+    } ?>
                                         </select>
                                         <span><?= __('Add forum help') ?></span>
                                     </td>
@@ -74,7 +74,7 @@ if (!empty($forum_data)) {
                 <p class="submittop"><input type="submit" name="update_positions" value="<?= __('Update positions') ?>" tabindex="3" /></p>
 <?php
     foreach ($forum_data as $cat_id => $cat_data) {
-            ?>
+        ?>
                 <div class="inform">
                     <fieldset>
                         <legend><?= __('Category subhead') ?> <?= Utils::escape($cat_data['cat_name']) ?></legend>
@@ -97,16 +97,16 @@ if (!empty($forum_data)) {
                                     <td class="tcr"><strong><?= Utils::escape($forum['forum_name']) ?></strong></td>
                                 </tr>
 <?php
-    }
-    ?>
+
+    } ?>
                             </tbody>
                             </table>
                         </div>
                     </fieldset>
                 </div>
 <?php
-    }
-?>
+
+    } ?>
                 <p class="submitend"><input type="submit" name="update_positions" value="<?= __('Update positions') ?>" tabindex="<?= $cur_index++ ?>" /></p>
             </form>
         </div>
@@ -114,6 +114,7 @@ if (!empty($forum_data)) {
     <div class="clearer"></div>
 </div>
 <?php
-    }
+
+}
 
 Container::get('hooks')->fire('view.admin.forums.admin_forums.end');

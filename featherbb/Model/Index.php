@@ -265,7 +265,7 @@ class Index
 
         $query = $query->find_result_set();
 
-        foreach($query as $user_online) {
+        foreach ($query as $user_online) {
             if ($user_online->user_id > 1) {
                 if (User::can('users.view')) {
                     $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.Router::pathFor('userProfile', ['id' => $user_online->user_id]).'">'.Utils::escape($user_online->ident).'</a>';

@@ -28,7 +28,6 @@ class Users
 
         // Move multiple users to other user groups
         if (Input::post('move_users') || Input::post('move_users_comply')) {
-
             AdminUtils::generateAdminMenu('users');
 
             return View::setPageInfo([
@@ -43,7 +42,6 @@ class Users
 
         // Delete multiple users
         if (Input::post('delete_users') || Input::post('delete_users_comply')) {
-
             AdminUtils::generateAdminMenu('users');
 
             return View::setPageInfo([
@@ -111,8 +109,7 @@ class Users
                     'user_data' =>  $this->model->print_users($search['conditions'], $search['order_by'], $search['direction'], $start_from),
                 ]
             )->addTemplate('admin/users/find_users.php')->display();
-        }
-        else {
+        } else {
             AdminUtils::generateAdminMenu('users');
 
             return View::setPageInfo([

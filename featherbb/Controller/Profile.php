@@ -102,8 +102,7 @@ class Profile
                 (!User::can('mod.edit_users') ||                  // mods aren't allowed to edit users
                 User::isAdmin($user) ||                     // or the user is an admin
                 User::isAdminMod($user))))                  // or the user is another mod
-            )
-        {
+            ) {
             $user_info = $this->model->parse_user_info($user);
 
             View::setPageInfo([
@@ -130,7 +129,6 @@ class Profile
                 ]);
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_essentials.php')->display();
-
             } elseif ($args['section'] == 'personal') {
                 if (User::can('user.set_title')) {
                     $title_field = '<label>'.__('Title').' <em>('.__('Leave blank').')</em><br /><input type="text" name="title" value="'.Utils::escape($user['title']).'" size="30" maxlength="50" /><br /></label>'."\n";
@@ -146,7 +144,6 @@ class Profile
                 ]);
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_personal.php')->display();
-
             } elseif ($args['section'] == 'personality') {
                 if (ForumSettings::get('o_avatars') == '0' && ForumSettings::get('o_signatures') == '0') {
                     throw new Error(__('Bad request'), 404);
@@ -179,9 +176,7 @@ class Profile
                 ]);
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_personality.php')->display();
-
             } elseif ($args['section'] == 'display') {
-
                 View::setPageInfo([
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section display')],
                     'active_page' => 'profile',
@@ -191,9 +186,7 @@ class Profile
                 ]);
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_display.php')->display();
-
             } elseif ($args['section'] == 'privacy') {
-
                 View::setPageInfo([
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section privacy')],
                     'active_page' => 'profile',
@@ -203,9 +196,7 @@ class Profile
                 ]);
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_privacy.php')->display();
-
             } elseif ($args['section'] == 'admin') {
-
                 if (!User::isAdminMod() || (User::isAdminMod() && !User::can('mod.ban_users'))) {
                     throw new Error(__('Bad request'), 404);
                 }
@@ -275,7 +266,6 @@ class Profile
                     'id' => $args['id']
                 ]
             )->addTemplate('profile/change_pass.php')->display();
-
         } elseif ($args['action'] == 'change_email') {
             // Make sure we are allowed to change this user's email
             if (User::get()->id != $args['id']) {
@@ -302,7 +292,6 @@ class Profile
                     'id' => $args['id'],
                 ]
             )->addTemplate('profile/change_mail.php')->display();
-
         } elseif ($args['action'] == 'upload_avatar' || $args['action'] == 'upload_avatar2') {
             if (ForumSettings::get('o_avatars') == '0') {
                 throw new Error(__('Avatars disabled'), 400);
@@ -322,7 +311,6 @@ class Profile
                     'id' => $args['id'],
                 ]
             )->addTemplate('profile/upload_avatar.php')->display();
-
         } elseif ($args['action'] == 'delete_avatar') {
             if (User::get()->id != $args['id'] && !User::isAdminMod()) {
                 throw new Error(__('No permission'), 403);

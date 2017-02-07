@@ -163,7 +163,7 @@ class Translations implements TranslationsInterface
     public function merge_originals_with(&$other)
     {
         foreach ($other->entries as $entry) {
-            if ( !isset( $this->entries[$entry->key()] )) {
+            if (!isset($this->entries[$entry->key()])) {
                 $this->entries[$entry->key()] = $entry;
             } else {
                 $this->entries[$entry->key()]->merge_with($entry);

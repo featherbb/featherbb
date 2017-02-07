@@ -29,7 +29,7 @@ class Parser
     }
     
     // Array of BBCode text (title) elements
-    public function tagSummary() 
+    public function tagSummary()
     {
         $tagSummary = [
             'unknown' => 'Unrecognized Tag',

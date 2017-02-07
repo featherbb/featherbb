@@ -30,7 +30,7 @@ class Auth
             /*
              * Extract the jwt from the Bearer
              */
-            list($jwt) = sscanf( $authCookie, 'Bearer %s');
+            list($jwt) = sscanf($authCookie, 'Bearer %s');
 
             if ($jwt) {
                 try {
@@ -41,7 +41,6 @@ class Auth
                     $token = JWT::decode($jwt, $secretKey, [ForumSettings::get('jwt_algorithm')]);
 
                     return $token;
-
                 } catch (\Firebase\JWT\ExpiredException $e) {
                     // TODO: (Optionnal) add flash message to say token has expired
                     return false;
@@ -85,7 +84,6 @@ class Auth
 
                 // Reset tracked topics
                 Track::set_tracked_topics(null);
-
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
                 if (User::get()->logged < (Container::get('now')-ForumSettings::get('o_timeout_visit'))) {

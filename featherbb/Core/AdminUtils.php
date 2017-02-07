@@ -56,12 +56,13 @@ class AdminUtils
     /**
      * Delete a folder and all its content
      */
-    public static function delete_folder($dirPath) {
+    public static function delete_folder($dirPath)
+    {
         $it = new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::SKIP_DOTS);
         $files = new RecursiveIteratorIterator($it,
             RecursiveIteratorIterator::CHILD_FIRST);
-        foreach($files as $file) {
-            if ($file->isDir()){
+        foreach ($files as $file) {
+            if ($file->isDir()) {
                 rmdir($file->getRealPath());
             } else {
                 unlink($file->getRealPath());
@@ -103,8 +104,9 @@ class AdminUtils
 
         curl_close($ch);
 
-        if ($http_status != 200)
+        if ($http_status != 200) {
             return false;
+        }
 
         return $content;
     }

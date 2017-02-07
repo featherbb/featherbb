@@ -192,8 +192,8 @@ class Csrf
      *
      * @return RequestInterface PSR7 response object.
      */
-    public function generateNewToken(ServerRequestInterface $request) {
-
+    public function generateNewToken(ServerRequestInterface $request)
+    {
         $pair = $this->generateToken();
 
         $request = $request->withAttribute($this->prefix . '_name', $pair[$this->prefix . '_name'])

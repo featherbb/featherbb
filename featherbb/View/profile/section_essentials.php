@@ -48,50 +48,132 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
                                         <p><?= __('Time zone info') ?></p>
                                         <label><?= __('Time zone') ?><br />
                                             <select name="form_timezone">
-                                                <option value="-12"<?php if (User::getPref('timezone', $user) == -12) {echo ' selected="selected"';} ?>><?= __('UTC-12:00') ?></option>
-                                                <option value="-11"<?php if (User::getPref('timezone', $user) == -11) {echo ' selected="selected"';} ?>><?= __('UTC-11:00') ?></option>
-                                                <option value="-10"<?php if (User::getPref('timezone', $user) == -10) {echo ' selected="selected"';} ?>><?= __('UTC-10:00') ?></option>
-                                                <option value="-9.5"<?php if (User::getPref('timezone', $user) == -9.5) {echo ' selected="selected"';} ?>><?= __('UTC-09:30') ?></option>
-                                                <option value="-9"<?php if (User::getPref('timezone', $user) == -9) {echo ' selected="selected"';} ?>><?= __('UTC-09:00') ?></option>
-                                                <option value="-8.5"<?php if (User::getPref('timezone', $user) == -8.5) {echo ' selected="selected"';} ?>><?= __('UTC-08:30') ?></option>
-                                                <option value="-8"<?php if (User::getPref('timezone', $user) == -8) {echo ' selected="selected"';} ?>><?= __('UTC-08:00') ?></option>
-                                                <option value="-7"<?php if (User::getPref('timezone', $user) == -7) {echo ' selected="selected"';} ?>><?= __('UTC-07:00') ?></option>
-                                                <option value="-6"<?php if (User::getPref('timezone', $user) == -6) {echo ' selected="selected"';} ?>><?= __('UTC-06:00') ?></option>
-                                                <option value="-5"<?php if (User::getPref('timezone', $user) == -5) {echo ' selected="selected"';} ?>><?= __('UTC-05:00') ?></option>
-                                                <option value="-4"<?php if (User::getPref('timezone', $user) == -4) {echo ' selected="selected"';} ?>><?= __('UTC-04:00') ?></option>
-                                                <option value="-3.5"<?php if (User::getPref('timezone', $user) == -3.5) {echo ' selected="selected"';} ?>><?= __('UTC-03:30') ?></option>
-                                                <option value="-3"<?php if (User::getPref('timezone', $user) == -3) {echo ' selected="selected"';} ?>><?= __('UTC-03:00') ?></option>
-                                                <option value="-2"<?php if (User::getPref('timezone', $user) == -2) {echo ' selected="selected"';} ?>><?= __('UTC-02:00') ?></option>
-                                                <option value="-1"<?php if (User::getPref('timezone', $user) == -1) {echo ' selected="selected"';} ?>><?= __('UTC-01:00') ?></option>
-                                                <option value="0"<?php if (User::getPref('timezone', $user) == 0) {echo ' selected="selected"';} ?>><?= __('UTC') ?></option>
-                                                <option value="1"<?php if (User::getPref('timezone', $user) == 1) {echo ' selected="selected"';} ?>><?= __('UTC+01:00') ?></option>
-                                                <option value="2"<?php if (User::getPref('timezone', $user) == 2) {echo ' selected="selected"';} ?>><?= __('UTC+02:00') ?></option>
-                                                <option value="3"<?php if (User::getPref('timezone', $user) == 3) {echo ' selected="selected"';} ?>><?= __('UTC+03:00') ?></option>
-                                                <option value="3.5"<?php if (User::getPref('timezone', $user) == 3.5) {echo ' selected="selected"';} ?>><?= __('UTC+03:30') ?></option>
-                                                <option value="4"<?php if (User::getPref('timezone', $user) == 4) {echo ' selected="selected"';} ?>><?= __('UTC+04:00') ?></option>
-                                                <option value="4.5"<?php if (User::getPref('timezone', $user) == 4.5) {echo ' selected="selected"';} ?>><?= __('UTC+04:30') ?></option>
-                                                <option value="5"<?php if (User::getPref('timezone', $user) == 5) {echo ' selected="selected"';} ?>><?= __('UTC+05:00') ?></option>
-                                                <option value="5.5"<?php if (User::getPref('timezone', $user) == 5.5) {echo ' selected="selected"';} ?>><?= __('UTC+05:30') ?></option>
-                                                <option value="5.75"<?php if (User::getPref('timezone', $user) == 5.75) {echo ' selected="selected"';} ?>><?= __('UTC+05:45') ?></option>
-                                                <option value="6"<?php if (User::getPref('timezone', $user) == 6) {echo ' selected="selected"';} ?>><?= __('UTC+06:00') ?></option>
-                                                <option value="6.5"<?php if (User::getPref('timezone', $user) == 6.5) {echo ' selected="selected"';} ?>><?= __('UTC+06:30') ?></option>
-                                                <option value="7"<?php if (User::getPref('timezone', $user) == 7) {echo ' selected="selected"';} ?>><?= __('UTC+07:00') ?></option>
-                                                <option value="8"<?php if (User::getPref('timezone', $user) == 8) {echo ' selected="selected"';} ?>><?= __('UTC+08:00') ?></option>
-                                                <option value="8.75"<?php if (User::getPref('timezone', $user) == 8.75) {echo ' selected="selected"';} ?>><?= __('UTC+08:45') ?></option>
-                                                <option value="9"<?php if (User::getPref('timezone', $user) == 9) {echo ' selected="selected"';} ?>><?= __('UTC+09:00') ?></option>
-                                                <option value="9.5"<?php if (User::getPref('timezone', $user) == 9.5) {echo ' selected="selected"';} ?>><?= __('UTC+09:30') ?></option>
-                                                <option value="10"<?php if (User::getPref('timezone', $user) == 10) {echo ' selected="selected"';} ?>><?= __('UTC+10:00') ?></option>
-                                                <option value="10.5"<?php if (User::getPref('timezone', $user) == 10.5) {echo ' selected="selected"';} ?>><?= __('UTC+10:30') ?></option>
-                                                <option value="11"<?php if (User::getPref('timezone', $user) == 11) {echo ' selected="selected"';} ?>><?= __('UTC+11:00') ?></option>
-                                                <option value="11.5"<?php if (User::getPref('timezone', $user) == 11.5) {echo ' selected="selected"';} ?>><?= __('UTC+11:30') ?></option>
-                                                <option value="12"<?php if (User::getPref('timezone', $user) == 12) {echo ' selected="selected"';} ?>><?= __('UTC+12:00') ?></option>
-                                                <option value="12.75"<?php if (User::getPref('timezone', $user) == 12.75) {echo ' selected="selected"';} ?>><?= __('UTC+12:45') ?></option>
-                                                <option value="13"<?php if (User::getPref('timezone', $user) == 13) {echo ' selected="selected"';} ?>><?= __('UTC+13:00') ?></option>
-                                                <option value="14"<?php if (User::getPref('timezone', $user) == 14) {echo ' selected="selected"';} ?>><?= __('UTC+14:00') ?></option>
+                                                <option value="-12"<?php if (User::getPref('timezone', $user) == -12) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-12:00') ?></option>
+                                                <option value="-11"<?php if (User::getPref('timezone', $user) == -11) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-11:00') ?></option>
+                                                <option value="-10"<?php if (User::getPref('timezone', $user) == -10) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-10:00') ?></option>
+                                                <option value="-9.5"<?php if (User::getPref('timezone', $user) == -9.5) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-09:30') ?></option>
+                                                <option value="-9"<?php if (User::getPref('timezone', $user) == -9) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-09:00') ?></option>
+                                                <option value="-8.5"<?php if (User::getPref('timezone', $user) == -8.5) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-08:30') ?></option>
+                                                <option value="-8"<?php if (User::getPref('timezone', $user) == -8) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-08:00') ?></option>
+                                                <option value="-7"<?php if (User::getPref('timezone', $user) == -7) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-07:00') ?></option>
+                                                <option value="-6"<?php if (User::getPref('timezone', $user) == -6) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-06:00') ?></option>
+                                                <option value="-5"<?php if (User::getPref('timezone', $user) == -5) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-05:00') ?></option>
+                                                <option value="-4"<?php if (User::getPref('timezone', $user) == -4) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-04:00') ?></option>
+                                                <option value="-3.5"<?php if (User::getPref('timezone', $user) == -3.5) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-03:30') ?></option>
+                                                <option value="-3"<?php if (User::getPref('timezone', $user) == -3) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-03:00') ?></option>
+                                                <option value="-2"<?php if (User::getPref('timezone', $user) == -2) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-02:00') ?></option>
+                                                <option value="-1"<?php if (User::getPref('timezone', $user) == -1) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC-01:00') ?></option>
+                                                <option value="0"<?php if (User::getPref('timezone', $user) == 0) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC') ?></option>
+                                                <option value="1"<?php if (User::getPref('timezone', $user) == 1) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+01:00') ?></option>
+                                                <option value="2"<?php if (User::getPref('timezone', $user) == 2) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+02:00') ?></option>
+                                                <option value="3"<?php if (User::getPref('timezone', $user) == 3) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+03:00') ?></option>
+                                                <option value="3.5"<?php if (User::getPref('timezone', $user) == 3.5) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+03:30') ?></option>
+                                                <option value="4"<?php if (User::getPref('timezone', $user) == 4) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+04:00') ?></option>
+                                                <option value="4.5"<?php if (User::getPref('timezone', $user) == 4.5) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+04:30') ?></option>
+                                                <option value="5"<?php if (User::getPref('timezone', $user) == 5) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+05:00') ?></option>
+                                                <option value="5.5"<?php if (User::getPref('timezone', $user) == 5.5) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+05:30') ?></option>
+                                                <option value="5.75"<?php if (User::getPref('timezone', $user) == 5.75) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+05:45') ?></option>
+                                                <option value="6"<?php if (User::getPref('timezone', $user) == 6) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+06:00') ?></option>
+                                                <option value="6.5"<?php if (User::getPref('timezone', $user) == 6.5) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+06:30') ?></option>
+                                                <option value="7"<?php if (User::getPref('timezone', $user) == 7) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+07:00') ?></option>
+                                                <option value="8"<?php if (User::getPref('timezone', $user) == 8) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+08:00') ?></option>
+                                                <option value="8.75"<?php if (User::getPref('timezone', $user) == 8.75) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+08:45') ?></option>
+                                                <option value="9"<?php if (User::getPref('timezone', $user) == 9) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+09:00') ?></option>
+                                                <option value="9.5"<?php if (User::getPref('timezone', $user) == 9.5) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+09:30') ?></option>
+                                                <option value="10"<?php if (User::getPref('timezone', $user) == 10) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+10:00') ?></option>
+                                                <option value="10.5"<?php if (User::getPref('timezone', $user) == 10.5) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+10:30') ?></option>
+                                                <option value="11"<?php if (User::getPref('timezone', $user) == 11) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+11:00') ?></option>
+                                                <option value="11.5"<?php if (User::getPref('timezone', $user) == 11.5) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+11:30') ?></option>
+                                                <option value="12"<?php if (User::getPref('timezone', $user) == 12) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+12:00') ?></option>
+                                                <option value="12.75"<?php if (User::getPref('timezone', $user) == 12.75) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+12:45') ?></option>
+                                                <option value="13"<?php if (User::getPref('timezone', $user) == 13) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+13:00') ?></option>
+                                                <option value="14"<?php if (User::getPref('timezone', $user) == 14) {
+    echo ' selected="selected"';
+} ?>><?= __('UTC+14:00') ?></option>
                                             </select><br />
                                         </label>
                                         <div class="rbox">
-                                            <label><input type="checkbox" name="form_dst" value="1"<?php if (User::getPref('dst', $user) == '1') {echo ' checked="checked"';} ?> /><?= __('DST') ?><br /></label>
+                                            <label><input type="checkbox" name="form_dst" value="1"<?php if (User::getPref('dst', $user) == '1') {
+    echo ' checked="checked"';
+} ?> /><?= __('DST') ?><br /></label>
                                         </div>
                                         <label><?= __('Time format') ?><br />
                                         <select name="form_time_format">
@@ -144,11 +226,11 @@ if (count($languages) > 1) {
         } else {
             echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
         }
-    }
-?>
+    } ?>
                                         </select>
                                         <br /></label>
 <?php
+
 }
 ?>
                                     </div>

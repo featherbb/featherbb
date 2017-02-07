@@ -25,14 +25,16 @@ Container::get('hooks')->fire('view.header.start');
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
-<?php if ($is_indexed) { ?>
+<?php if ($is_indexed) {
+    ?>
     <meta name="robots" content="noindex, follow">
-<?php } ?>
+<?php 
+} ?>
     <title><?= Utils::generate_page_title($title, $page_number) ?></title>
     <link rel="shortcut icon" href="<?= Url::base() ?>/style/img/favicon.ico" />
 <?php
 
-foreach($assets as $type => $items) {
+foreach ($assets as $type => $items) {
     if ($type == 'js') {
         continue;
     }
@@ -146,9 +148,11 @@ echo "\t\t\t\t\t\t\t".implode("\n\t\t\t\t\t\t\t", $navlinks);
                 <div class="status-avatar">
                     <div id="brdwelcome" class="inbox">
 <?php
-if (User::get()->is_guest) { ?>
+if (User::get()->is_guest) {
+    ?>
                         <p class="conl"><?= __('Not logged in')?></p>
-<?php } else {
+<?php 
+} else {
     echo "\t\t\t\t\t\t".'<ul class="conl">';
     echo "\n\t\t\t\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape(User::get()->username).'</strong></span></li>'."\n";
     echo "\t\t\t\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), Container::get('utils')->format_time(User::get()->last_visit)).'</span></li>'."\n";
@@ -203,10 +207,12 @@ Container::get('hooks')->fire('view.header.brdwelcome');
 
     <section class="container" id="pun<?= $active_page ?>">
         <div id="brdmain">
-<?php foreach (Container::get('flash')->getMessages() as $type => $message) { ?>
+<?php foreach (Container::get('flash')->getMessages() as $type => $message) {
+    ?>
             <div class="flashmsg <?= $type; ?>" data-type="<?= $type; ?>" id="flashmsg">
                 <h2><?= __('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
                 <p><?= htmlspecialchars_decode(Utils::escape($message[0])) ?></p>
             </div>
-<?php }
+<?php 
+}
 Container::get('hooks')->fire('view.header.end');

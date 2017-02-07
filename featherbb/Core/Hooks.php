@@ -53,8 +53,7 @@ class Hooks
             //$this->hooks[$name] = array(array());
             if (isset($args[0])) {
                 return $args[0];
-            }
-            else {
+            } else {
                 return;
             }
         }
@@ -80,8 +79,7 @@ class Hooks
             // let's return the first output
             if ($count == 1 || !is_array($args[0])) {
                 return $output[0];
-            }
-            else {
+            } else {
                 $data = [];
                 // Move all the keys to the same level
                 array_walk_recursive($output, function ($v, $k) use (&$data) {

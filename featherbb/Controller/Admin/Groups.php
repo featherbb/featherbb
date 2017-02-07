@@ -107,7 +107,6 @@ class Groups
 
         // Add/edit a group (stage 1)
         elseif (Input::post('add_group') || isset($args['id'])) {
-
             AdminUtils::generateAdminMenu('user groups');
 
             $id = isset($args['id']) ? intval($args['id']) : intval(Input::post('base_group'));

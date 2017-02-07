@@ -11,12 +11,12 @@ namespace FeatherBB\Core;
 
 class View
 {
-    protected $directories = [],
-    $templates,
-    $app,
-    $data,
-    $assets,
-    $validation = [
+    protected $directories = [];
+    protected $templates;
+    protected $app;
+    protected $data;
+    protected $assets;
+    protected $validation = [
         'page_number' => 'intval',
         'active_page' => 'strval',
         'is_indexed' => 'boolval',
@@ -361,7 +361,7 @@ class View
 
     protected static function getDefaultParams($type)
     {
-        switch($type) {
+        switch ($type) {
             case 'js':
                 return ['type' => 'text/javascript'];
             case 'css':

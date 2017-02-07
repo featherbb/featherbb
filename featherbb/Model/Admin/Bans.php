@@ -256,7 +256,6 @@ class Bans
                 ->set($insert_update_ban)
                 ->save();
         } else {
-
             $result = DB::for_table('bans')
                 ->where('id', Input::post('ban_id'))
                 ->find_one()
@@ -363,8 +362,7 @@ class Bans
             foreach ($result as $cur_ban) {
                 $ban_info['data'][] = $cur_ban;
             }
-        }
-        else {
+        } else {
             $ban_info['num_bans'] = $result->count('id');
         }
 

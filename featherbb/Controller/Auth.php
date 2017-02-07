@@ -46,7 +46,6 @@ class Auth
                 $password_to_convert = Utils::hash_equals($old_password_hash, $user->password);
                 
                 if (Utils::password_verify($form_password, $user->password) || $password_to_convert) {
-
                     if ($password_to_convert) {
                         ModelAuth::update_password($user->id, $form_password);
                         $user = ModelAuth::get_user_from_name($form_username);
@@ -70,8 +69,7 @@ class Auth
                     ModelAuth::feather_setcookie('Bearer ' . $jwt, $expire);
 
                     return Router::redirect(Router::pathFor('home'), __('Login redirect'));
-                }
-                else {
+                } else {
                     throw new Error(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403, true, true);
                 }
             } else {
@@ -163,7 +161,6 @@ class Auth
         }
 
         if (Input::query('key') && Input::query('user_id')) {
-
             $key = Input::query('key');
             $key = Container::get('hooks')->fire('controller.auth.password_forgotten_key', $key);
 

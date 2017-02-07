@@ -52,7 +52,7 @@ class Userlist
         $result = Container::get('hooks')->fireDB('model.userlist.generate_dropdown_menu_query', $result);
         $result = $result->find_many();
 
-        foreach($result as $cur_group) {
+        foreach ($result as $cur_group) {
             if ($cur_group['g_id'] == $show_group) {
                 $dropdown_menu .= "\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
             } else {
@@ -106,14 +106,14 @@ class Userlist
             $result = DB::for_table('users')
                           ->table_alias('u')
                           ->select_many($result['select'])
-                          ->left_outer_join('groups' , ['g.g_id', '=', 'u.group_id'], 'g')
+                          ->left_outer_join('groups', ['g.g_id', '=', 'u.group_id'], 'g')
                           ->where_in('u.id', $user_ids)
                           ->order_by($sort_by, $sort_dir)
                           ->order_by_asc('u.id');
             $result = Container::get('hooks')->fireDB('model.userlist.print_users_grab_query', $result);
             $result = $result->find_many();
 
-            foreach($result as $user_data) {
+            foreach ($result as $user_data) {
                 $userlist_data[] = $user_data;
             }
         }

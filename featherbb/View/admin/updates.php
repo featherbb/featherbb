@@ -44,9 +44,8 @@ if (empty($upgrade_results)): ?>
                         <div class="infldset">
 <?php
 if (!empty($plugin_updates)) {
-// Init valid updates
-$valid_plugin_updates = 0;
-?>
+    // Init valid updates
+$valid_plugin_updates = 0; ?>
                             <table>
                             <thead>
                                 <tr>
@@ -58,14 +57,15 @@ $valid_plugin_updates = 0;
 <?php foreach ($plugin_updates as $plugin): ?>
                                 <tr>
                                     <td class="tcl">
-                                        <?php if(!isset($plugin->errors)): ?><input type="checkbox" name="plugin_updates[<?= $plugin->name ?>]" value="<?= $plugin->version ?>" checked /><?php endif; ?>
+                                        <?php if (!isset($plugin->errors)): ?><input type="checkbox" name="plugin_updates[<?= $plugin->name ?>]" value="<?= $plugin->version ?>" checked /><?php endif; ?>
                                         <strong><?= $plugin->title; ?></strong> <small><?= $plugin->version; ?></small>
                                     </td>
                                     <td class="tcr">
-<?php if(!isset($plugin->errors)): ++$valid_plugin_updates; ?>
+<?php if (!isset($plugin->errors)): ++$valid_plugin_updates; ?>
                                         <a href="https://github.com/featherbb/<?= $plugin->name; ?>/releases/tag/<?= $plugin->last_version; ?>" target="_blank"><?= $plugin->last_version; ?></a>
                                         <a href="http://marketplace.featherbb.org/plugins/view/<?= $plugin->name; ?>/changelog" target="_blank"><?= __('View changelog') ?></a>
-<?php else: echo $plugin->errors; endif; ?>
+<?php else: echo $plugin->errors;
+    endif; ?>
                                     </td>
                                 </tr>
 <?php endforeach; ?>
@@ -144,18 +144,26 @@ if (!empty($theme_updates)) {
                                     <th scope="row"><?= Utils::escape($key) ?></th>
                                     <td>
                                         <span><?= Utils::escape($result['message']); ?></span>
-<?php if (!empty($result['errors'])) { ?>
+<?php if (!empty($result['errors'])) {
+    ?>
                                         <span class="clearb">
                                             <?= __('Errors label'); ?><br>
-                                            <?php foreach ($result['errors'] as $error) { echo "\t\t\t\t\t\t\t\t\t\t".Utils::escape($error).'<br>'."\n"; } ?>
+                                            <?php foreach ($result['errors'] as $error) {
+        echo "\t\t\t\t\t\t\t\t\t\t".Utils::escape($error).'<br>'."\n";
+    } ?>
                                         </span>
-<?php } ?>
-<?php if (!empty($result['warnings'])) { ?>
+<?php 
+} ?>
+<?php if (!empty($result['warnings'])) {
+    ?>
                                         <span class="clearb">
                                             <?= __('Warnings label'); ?><br>
-                                            <?php foreach ($result['warnings'] as $warning) { echo "\t\t\t\t\t\t\t\t\t\t".Utils::escape($warning).'<br>'."\n"; } ?>
+                                            <?php foreach ($result['warnings'] as $warning) {
+        echo "\t\t\t\t\t\t\t\t\t\t".Utils::escape($warning).'<br>'."\n";
+    } ?>
                                         </span>
-<?php } ?>
+<?php 
+} ?>
                                     </td>
                                 </tr>
 <?php endforeach; ?>

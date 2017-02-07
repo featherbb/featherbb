@@ -84,6 +84,5 @@ class EntryTranslations
         if ($this->extracted_comments != $other->extracted_comments) {
             $this->extracted_comments .= $other->extracted_comments;
         }
-
     }
 }

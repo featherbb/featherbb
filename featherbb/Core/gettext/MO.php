@@ -280,7 +280,8 @@ class MO extends GettextTranslations
      *                            0x00 as a plural translations separator
      * @retrun EntryTranslations New entry
      */
-    public static function &make_entry($original, $translation) {
+    public static function &make_entry($original, $translation)
+    {
         $entry = new EntryTranslations();
         // look for context
         $parts = explode(chr(4), $original);

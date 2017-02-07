@@ -102,7 +102,7 @@ class Register
                 $user['errors'][] = __('Dupe email');
             }
 
-            foreach($dupe_mail as $cur_dupe) {
+            foreach ($dupe_mail as $cur_dupe) {
                 $dupe_list[] = $cur_dupe['username'];
             }
         }
@@ -153,8 +153,7 @@ class Register
 
         if (ForumSettings::get('o_regs_verify') == '1') {
             Container::get('prefs')->setUser($new_uid, ['language' => $user['language']], ForumEnv::get('FEATHER_UNVERIFIED'));
-        }
-        else {
+        } else {
             Container::get('prefs')->setUser($new_uid, ['language' => $user['language']]);
         }
 

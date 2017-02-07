@@ -13,7 +13,6 @@ use FeatherBB\Core\Database as DB;
 
 class Forums
 {
-
     public function add_forum($cat_id, $forum_name)
     {
         $set_add_forum = ['forum_name' => $forum_name,
@@ -145,7 +144,7 @@ class Forums
         $permissions = Container::get('hooks')->fireDB('model.admin.forums.get_permissions_query', $permissions);
         $permissions = $permissions->find_many();
 
-        foreach($permissions as $cur_perm) {
+        foreach ($permissions as $cur_perm) {
             $group_permissions = Container::get('perms')->getGroupPermissions($cur_perm['g_id']);
 
             $cur_perm['board.read'] = isset($group_permissions['board.read']);
@@ -206,7 +205,6 @@ class Forums
                     ->set($permissions_data)
                     ->save();
         }
-
     }
 
     public function delete_permissions($forum_id, $group_id = null)

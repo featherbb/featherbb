@@ -27,8 +27,7 @@ if (!empty($errors)) {
 
     foreach ($errors as $cur_error) {
         echo "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
-    }
-    ?>
+    } ?>
             </ul>
         </div>
     </div>

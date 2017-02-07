@@ -38,15 +38,12 @@ Container::get('hooks')->fire('view.moderate.posts_view.start');
 <?php
 $post_count = 0; // Keep track of post numbers
 foreach ($post_data as $post) {
-    $post_count++;
-    ?>
+    $post_count++; ?>
     <div id="p<?= $post['id'] ?>" class="blockpost<?php if ($post['id'] == $cur_topic['first_post_id']) {
-    echo ' firstpost';
-}
-    ?><?php echo($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($post_count == 1) {
-    echo ' blockpost1';
-}
-    ?>">
+        echo ' firstpost';
+    } ?><?php echo($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($post_count == 1) {
+        echo ' blockpost1';
+    } ?>">
         <h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?= Router::pathFor('viewPost', ['id' => $id, 'name' => $url_topic, 'pid' => $post['id']]).'#p'.$post['id'] ?>"><?= Utils::format_time($post['posted']) ?></a></span></h2>
         <div class="box">
             <div class="inbox">
@@ -62,9 +59,8 @@ foreach ($post_data as $post) {
                         <div class="postmsg">
                             <?= $post['message']."\n" ?>
     <?php if ($post['edited'] != '') {
-    echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.Utils::escape($post['edited_by']).' ('.Utils::format_time($post['edited']).')</em></p>'."\n";
-}
-    ?>
+        echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.Utils::escape($post['edited_by']).' ('.Utils::format_time($post['edited']).')</em></p>'."\n";
+    } ?>
                         </div>
                     </div>
                 </div>

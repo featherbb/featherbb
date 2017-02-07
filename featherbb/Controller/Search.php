@@ -34,7 +34,6 @@ class Search
 
         // Figure out what to do :-)
         if (Input::query('action') || isset($args['search_id'])) {
-
             $search = (isset($args['search_id'])) ? $this->model->get_search_results($args['search_id']) : $this->model->get_search_results();
 
             if (is_object($search)) {
@@ -66,8 +65,7 @@ class Search
 
                 if ($search['show_as'] == 'posts') {
                     View::addTemplate('search/posts.php', 5);
-                }
-                else {
+                } else {
                     View::addTemplate('search/topics.php', 5);
                 }
 

@@ -334,8 +334,7 @@ class Utils
 
         if (isset($client) && filter_var($client, FILTER_VALIDATE_IP)) {
             return $client;
-        }
-        elseif(isset($forward) && filter_var($forward, FILTER_VALIDATE_IP)) {
+        } elseif (isset($forward) && filter_var($forward, FILTER_VALIDATE_IP)) {
             return $forward;
         }
 
@@ -363,7 +362,7 @@ class Utils
             return hash_equals((string)$a, (string)$b);
         }
 
-        $a_length = strlen( $a );
+        $a_length = strlen($a);
         if ($a_length !== strlen($b)) {
             return false;
         }
@@ -371,7 +370,7 @@ class Utils
 
         // Do not attempt to "optimize" this.
         for ($i = 0; $i < $a_length; $i++) {
-            $result |= ord( $a[ $i ] ) ^ ord( $b[ $i ] );
+            $result |= ord($a[ $i ]) ^ ord($b[ $i ]);
         }
 
         return $result === 0;

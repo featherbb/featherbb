@@ -35,7 +35,9 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                 <tr>
                                     <th scope="row"><?= __('Group title label') ?></th>
                                     <td>
-                                        <input type="text" name="req_title" size="25" maxlength="50" value="<?php if ($group['mode'] == 'edit') {echo Utils::escape($group['info']['g_title']);} ?>" tabindex="1" required="required" autofocus />
+                                        <input type="text" name="req_title" size="25" maxlength="50" value="<?php if ($group['mode'] == 'edit') {
+    echo Utils::escape($group['info']['g_title']);
+} ?>" tabindex="1" required="required" autofocus />
                                     </td>
                                 </tr>
                                 <tr>
@@ -61,48 +63,72 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                 <tr>
                                     <th scope="row"> <?= __('Mod privileges label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="moderator" value="1"<?php if (isset($group['perms']['mod.is_mod'])) {echo ' checked="checked"';} ?> tabindex="5" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="moderator" value="0"<?php if (!isset($group['perms']['mod.is_mod'])) {echo ' checked="checked"';} ?> tabindex="6" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="moderator" value="1"<?php if (isset($group['perms']['mod.is_mod'])) {
+    echo ' checked="checked"';
+} ?> tabindex="5" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="moderator" value="0"<?php if (!isset($group['perms']['mod.is_mod'])) {
+    echo ' checked="checked"';
+} ?> tabindex="6" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Mod privileges help') ?></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><?= __('Edit profile label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="mod_edit_users" value="1"<?php if (isset($group['perms']['mod.edit_users'])) {echo ' checked="checked"';} ?> tabindex="7" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="mod_edit_users" value="0"<?php if (!isset($group['perms']['mod.edit_users'])) {echo ' checked="checked"';} ?> tabindex="8" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="mod_edit_users" value="1"<?php if (isset($group['perms']['mod.edit_users'])) {
+    echo ' checked="checked"';
+} ?> tabindex="7" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="mod_edit_users" value="0"<?php if (!isset($group['perms']['mod.edit_users'])) {
+    echo ' checked="checked"';
+} ?> tabindex="8" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Edit profile help') ?></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><?= __('Rename users label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="mod_rename_users" value="1"<?php if (isset($group['perms']['mod.rename_users'])) {echo ' checked="checked"';} ?> tabindex="9" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="mod_rename_users" value="0"<?php if (!isset($group['perms']['mod.rename_users'])) {echo ' checked="checked"';} ?> tabindex="10" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="mod_rename_users" value="1"<?php if (isset($group['perms']['mod.rename_users'])) {
+    echo ' checked="checked"';
+} ?> tabindex="9" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="mod_rename_users" value="0"<?php if (!isset($group['perms']['mod.rename_users'])) {
+    echo ' checked="checked"';
+} ?> tabindex="10" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Rename users help') ?></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><?= __('Change passwords label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="mod_change_passwords" value="1"<?php if (isset($group['perms']['mod.change_passwords'])) {echo ' checked="checked"';} ?> tabindex="11" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="mod_change_passwords" value="0"<?php if (!isset($group['perms']['mod.change_passwords'])) {echo ' checked="checked"';} ?> tabindex="12" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="mod_change_passwords" value="1"<?php if (isset($group['perms']['mod.change_passwords'])) {
+    echo ' checked="checked"';
+} ?> tabindex="11" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="mod_change_passwords" value="0"<?php if (!isset($group['perms']['mod.change_passwords'])) {
+    echo ' checked="checked"';
+} ?> tabindex="12" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Change passwords help') ?></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><?= __('Mod promote users label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="mod_promote_users" value="1"<?php if (isset($group['perms']['mod.promote_users'])) {echo ' checked="checked"';} ?> tabindex="13" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="mod_promote_users" value="0"<?php if (!isset($group['perms']['mod.promote_users'])) {echo ' checked="checked"';} ?> tabindex="14" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="mod_promote_users" value="1"<?php if (isset($group['perms']['mod.promote_users'])) {
+    echo ' checked="checked"';
+} ?> tabindex="13" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="mod_promote_users" value="0"<?php if (!isset($group['perms']['mod.promote_users'])) {
+    echo ' checked="checked"';
+} ?> tabindex="14" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Mod promote users help') ?></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><?= __('Ban users label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="mod_ban_users" value="1"<?php if (isset($group['perms']['mod.ban_users'])) {echo ' checked="checked"';} ?> tabindex="15" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="mod_ban_users" value="0"<?php if (!isset($group['perms']['mod.ban_users'])) {echo ' checked="checked"';} ?> tabindex="16" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="mod_ban_users" value="1"<?php if (isset($group['perms']['mod.ban_users'])) {
+    echo ' checked="checked"';
+} ?> tabindex="15" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="mod_ban_users" value="0"<?php if (!isset($group['perms']['mod.ban_users'])) {
+    echo ' checked="checked"';
+} ?> tabindex="16" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Ban users help') ?></span>
                                     </td>
                                 </tr>
@@ -110,32 +136,48 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                 <tr>
                                     <th scope="row"><?= __('Read board label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="read_board" value="1"<?php if (isset($group['perms']['board.read'])) {echo ' checked="checked"';} ?> tabindex="17" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="read_board" value="0"<?php if (!isset($group['perms']['board.read'])) {echo ' checked="checked"';} ?> tabindex="18" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="read_board" value="1"<?php if (isset($group['perms']['board.read'])) {
+    echo ' checked="checked"';
+} ?> tabindex="17" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="read_board" value="0"<?php if (!isset($group['perms']['board.read'])) {
+    echo ' checked="checked"';
+} ?> tabindex="18" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Read board help') ?></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><?= __('View user info label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="view_users" value="1"<?php if (isset($group['perms']['users.view'])) {echo ' checked="checked"';} ?> tabindex="19" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="view_users" value="0"<?php if (!isset($group['perms']['users.view'])) {echo ' checked="checked"';} ?> tabindex="20" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="view_users" value="1"<?php if (isset($group['perms']['users.view'])) {
+    echo ' checked="checked"';
+} ?> tabindex="19" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="view_users" value="0"<?php if (!isset($group['perms']['users.view'])) {
+    echo ' checked="checked"';
+} ?> tabindex="20" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('View user info help') ?></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><?= __('Post replies label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="post_replies" value="1"<?php if (isset($group['perms']['topic.reply'])) {echo ' checked="checked"';} ?> tabindex="21" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="post_replies" value="0"<?php if (!isset($group['perms']['topic.reply'])) {echo ' checked="checked"';} ?> tabindex="22" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="post_replies" value="1"<?php if (isset($group['perms']['topic.reply'])) {
+    echo ' checked="checked"';
+} ?> tabindex="21" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="post_replies" value="0"<?php if (!isset($group['perms']['topic.reply'])) {
+    echo ' checked="checked"';
+} ?> tabindex="22" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Post replies help') ?></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><?= __('Post topics label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="post_topics" value="1"<?php if (isset($group['perms']['topic.post'])) {echo ' checked="checked"';} ?> tabindex="23" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="post_topics" value="0"<?php if (!isset($group['perms']['topic.post'])) {echo ' checked="checked"';} ?> tabindex="24" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="post_topics" value="1"<?php if (isset($group['perms']['topic.post'])) {
+    echo ' checked="checked"';
+} ?> tabindex="23" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="post_topics" value="0"<?php if (!isset($group['perms']['topic.post'])) {
+    echo ' checked="checked"';
+} ?> tabindex="24" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Post topics help') ?></span>
                                     </td>
                                 </tr>
@@ -143,24 +185,36 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                 <tr>
                                     <th scope="row"><?= __('Edit posts label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="edit_posts" value="1"<?php if (isset($group['perms']['post.edit'])) {echo ' checked="checked"';} ?> tabindex="25" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="edit_posts" value="0"<?php if (!isset($group['perms']['post.edit'])) {echo ' checked="checked"';} ?> tabindex="26" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="edit_posts" value="1"<?php if (isset($group['perms']['post.edit'])) {
+    echo ' checked="checked"';
+} ?> tabindex="25" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="edit_posts" value="0"<?php if (!isset($group['perms']['post.edit'])) {
+    echo ' checked="checked"';
+} ?> tabindex="26" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Edit posts help') ?></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><?= __('Delete posts label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="delete_posts" value="1"<?php if (isset($group['perms']['post.delete'])) {echo ' checked="checked"';} ?> tabindex="27" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="delete_posts" value="0"<?php if (!isset($group['perms']['post.delete'])) {echo ' checked="checked"';} ?> tabindex="28" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="delete_posts" value="1"<?php if (isset($group['perms']['post.delete'])) {
+    echo ' checked="checked"';
+} ?> tabindex="27" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="delete_posts" value="0"<?php if (!isset($group['perms']['post.delete'])) {
+    echo ' checked="checked"';
+} ?> tabindex="28" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Delete posts help') ?></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><?= __('Delete topics label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="delete_topics" value="1"<?php if (isset($group['perms']['topic.delete'])) {echo ' checked="checked"';} ?> tabindex="29" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="delete_topics" value="0"<?php if (!isset($group['perms']['topic.delete'])) {echo ' checked="checked"';} ?> tabindex="30" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="delete_topics" value="1"<?php if (isset($group['perms']['topic.delete'])) {
+    echo ' checked="checked"';
+} ?> tabindex="29" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="delete_topics" value="0"<?php if (!isset($group['perms']['topic.delete'])) {
+    echo ' checked="checked"';
+} ?> tabindex="30" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Delete topics help') ?></span>
                                     </td>
                                 </tr>
@@ -168,8 +222,12 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                 <tr>
                                     <th scope="row"><?= __('Post links label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="post_links" value="1"<?php if (isset($group['perms']['post.links'])) {echo ' checked="checked"';} ?> tabindex="31" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="post_links" value="0"<?php if (!isset($group['perms']['post.links'])) {echo ' checked="checked"';} ?> tabindex="32" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="post_links" value="1"<?php if (isset($group['perms']['post.links'])) {
+    echo ' checked="checked"';
+} ?> tabindex="31" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="post_links" value="0"<?php if (!isset($group['perms']['post.links'])) {
+    echo ' checked="checked"';
+} ?> tabindex="32" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Post links help') ?></span>
                                     </td>
                                 </tr>
@@ -177,8 +235,12 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                 <tr>
                                     <th scope="row"><?= __('Set own title label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="set_title" value="1"<?php if (isset($group['perms']['user.set_title'])) {echo ' checked="checked"';} ?> tabindex="33" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="set_title" value="0"<?php if (!isset($group['perms']['user.set_title'])) {echo ' checked="checked"';} ?> tabindex="34" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="set_title" value="1"<?php if (isset($group['perms']['user.set_title'])) {
+    echo ' checked="checked"';
+} ?> tabindex="33" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="set_title" value="0"<?php if (!isset($group['perms']['user.set_title'])) {
+    echo ' checked="checked"';
+} ?> tabindex="34" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Set own title help') ?></span>
                                     </td>
                                 </tr>
@@ -186,16 +248,24 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                 <tr>
                                     <th scope="row"><?= __('User search label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="search" value="1"<?php if (isset($group['perms']['search.topics'])) {echo ' checked="checked"';} ?> tabindex="35" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="search" value="0"<?php if (!isset($group['perms']['search.topics'])) {echo ' checked="checked"';} ?> tabindex="36" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="search" value="1"<?php if (isset($group['perms']['search.topics'])) {
+    echo ' checked="checked"';
+} ?> tabindex="35" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="search" value="0"<?php if (!isset($group['perms']['search.topics'])) {
+    echo ' checked="checked"';
+} ?> tabindex="36" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('User search help') ?></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row"><?= __('User list search label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="search_users" value="1"<?php if (isset($group['perms']['search.users'])) {echo ' checked="checked"';} ?> tabindex="37" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="search_users" value="0"<?php if (!isset($group['perms']['search.users'])) {echo ' checked="checked"';} ?> tabindex="38" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="search_users" value="1"<?php if (isset($group['perms']['search.users'])) {
+    echo ' checked="checked"';
+} ?> tabindex="37" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="search_users" value="0"<?php if (!isset($group['perms']['search.users'])) {
+    echo ' checked="checked"';
+} ?> tabindex="38" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('User list search help') ?></span>
                                     </td>
                                 </tr>
@@ -203,8 +273,12 @@ Container::get('hooks')->fire('view.admin.groups.add_edit_group.start');
                                 <tr>
                                     <th scope="row"><?= __('Send e-mails label') ?></th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="send_email" value="1"<?php if (isset($group['perms']['email.send'])) {echo ' checked="checked"';} ?> tabindex="39" />&#160;<strong><?= __('Yes') ?></strong></label>
-                                        <label class="conl"><input type="radio" name="send_email" value="0"<?php if (!isset($group['perms']['email.send'])) {echo ' checked="checked"';} ?> tabindex="40" />&#160;<strong><?= __('No') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="send_email" value="1"<?php if (isset($group['perms']['email.send'])) {
+    echo ' checked="checked"';
+} ?> tabindex="39" />&#160;<strong><?= __('Yes') ?></strong></label>
+                                        <label class="conl"><input type="radio" name="send_email" value="0"<?php if (!isset($group['perms']['email.send'])) {
+    echo ' checked="checked"';
+} ?> tabindex="40" />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Send e-mails help') ?></span>
                                     </td>
                                 </tr>

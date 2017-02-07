@@ -47,7 +47,7 @@ class Maintenance
                     DB::for_table('search_words')->raw_execute('ALTER TABLE '.ForumSettings::get('db_prefix').'search_words auto_increment=1');
                     break;
 
-                case 'pgsql';
+                case 'pgsql':
                     DB::for_table('search_words')->raw_execute('SELECT setval(\''.ForumSettings::get('db_prefix').'search_words_id_seq\', 1, false)');
             }
         }

@@ -86,7 +86,7 @@ class Plugin
             return $class;
         }
         // Simple plugins, only a featherbb.json and the main class
-        if ( file_exists( $file = $this->checkSimple($plugin) ) ) {
+        if (file_exists($file = $this->checkSimple($plugin))) {
             require_once $file;
             $className = '\FeatherBB\Plugins\\'.$this->getNamespace($plugin);
             $class = new $className();
@@ -97,8 +97,9 @@ class Plugin
     }
 
     // Clean a Simple Plugin's parent folder name to load it
-    protected function getNamespace($path) {
-        return str_replace (" ", "", str_replace ("/", "\\", ucwords (str_replace ('-', ' ', str_replace ('/ ', '/', ucwords (str_replace ('/', '/ ', $path)))))));
+    protected function getNamespace($path)
+    {
+        return str_replace(" ", "", str_replace("/", "\\", ucwords(str_replace('-', ' ', str_replace('/ ', '/', ucwords(str_replace('/', '/ ', $path)))))));
     }
 
     // For plugins that don't need to provide a Composer autoloader, check if it can be loaded
@@ -106,5 +107,4 @@ class Plugin
     {
         return ForumEnv::get('FEATHER_ROOT').'plugins' . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR . $this->getNamespace($plugin) . '.php';
     }
-
 }

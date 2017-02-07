@@ -18,8 +18,7 @@ class Lister
     {
         $plugins = [];
 
-        foreach (glob(ForumEnv::get('FEATHER_ROOT').'plugins/*/featherbb.json') as $plugin_file)
-        {
+        foreach (glob(ForumEnv::get('FEATHER_ROOT').'plugins/*/featherbb.json') as $plugin_file) {
             $plugins[] =  json_decode(file_get_contents($plugin_file));
         }
 
@@ -65,7 +64,7 @@ class Lister
 
         $iterator = new \DirectoryIterator(ForumEnv::get('FEATHER_ROOT').'style/themes/');
         foreach ($iterator as $child) {
-            if(!$child->isDot() && $child->isDir() && file_exists($child->getPathname().DIRECTORY_SEPARATOR.'style.css')) {
+            if (!$child->isDot() && $child->isDir() && file_exists($child->getPathname().DIRECTORY_SEPARATOR.'style.css')) {
                 // If the theme is well formed, add it to the list
                 $styles[] = $child->getFileName();
             }
@@ -84,7 +83,7 @@ class Lister
 
         $iterator = new \DirectoryIterator(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/');
         foreach ($iterator as $child) {
-            if(!$child->isDot() && $child->isDir() && file_exists($child->getPathname().DIRECTORY_SEPARATOR.'common.po')) {
+            if (!$child->isDot() && $child->isDir() && file_exists($child->getPathname().DIRECTORY_SEPARATOR.'common.po')) {
                 // If the lang pack is well formed, add it to the list
                 $langs[] = $child->getFileName();
             }
@@ -93,5 +92,4 @@ class Lister
         natcasesort($langs);
         return $langs;
     }
-
 }

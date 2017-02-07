@@ -18,7 +18,7 @@ Container::get('hooks')->fire('view.admin.parser.start');
 ?>
 
     <div class="blockform">
-        <h2><span><?= _e( 'Parser head') ?></span></h2>
+        <h2><span><?= _e('Parser head') ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('adminParser') ?>" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
@@ -165,15 +165,11 @@ Container::get('hooks')->fire('view.admin.parser.start');
 <?php
     foreach ($smilies as $key => $value) {
         $i++;
-        $oldfile = $value['file'];
-        ?>
+        $oldfile = $value['file']; ?>
                                 <tr>
-                                    <td><input type="text" name="smiley_text[<?php echo($i);
-        ?>]" value="<?php echo(Utils::escape($key));
-        ?>" size="20" maxlength="80" /></td>
+                                    <td><input type="text" name="smiley_text[<?php echo($i); ?>]" value="<?php echo(Utils::escape($key)); ?>" size="20" maxlength="80" /></td>
                                     <td>
-                                        <select name="smiley_file[<?php echo($i);
-        ?>]">
+                                        <select name="smiley_file[<?php echo($i); ?>]">
 <?php
         foreach ($smiley_files as $file) {
             if ($file === $oldfile) {
@@ -181,13 +177,11 @@ Container::get('hooks')->fire('view.admin.parser.start');
             } else {
                 echo("\t\t\t\t\t\t\t\t\t\t\t<option>" . $file . "</option>\n");
             }
-        }
-        ?>
+        } ?>
                                         </select>
                                     </td>
                                     <td>
-                                        <?php echo($value['html']);
-        ?>
+                                        <?php echo($value['html']); ?>
                                     </td>
                                 </tr>
 <?php
@@ -257,28 +251,22 @@ foreach ($bbcd as $tagname => $tagdata) {
                                     <th scope="row" title="<?= _e($title) ?>"><?php echo('['. $tagname .']') ?></th>
                                     <td>
                                         <input type="radio" name="<?php echo($tagname) ?>_in_post" value="1"<?php if ($bbcd[$tagname]['in_post']) {
-    echo ' checked="checked"';
-}
-    ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="<?php echo($tagname) ?>_in_post" value="0"<?php if (!$bbcd[$tagname]['in_post']) {
-    echo ' checked="checked"';
-}
-    ?> /> <strong><?= __('No') ?></strong>
+        echo ' checked="checked"';
+    } ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="<?php echo($tagname) ?>_in_post" value="0"<?php if (!$bbcd[$tagname]['in_post']) {
+        echo ' checked="checked"';
+    } ?> /> <strong><?= __('No') ?></strong>
                                     </td>
                                     <td>
                                         <input type="radio" name="<?php echo($tagname) ?>_in_sig" value="1"<?php if ($bbcd[$tagname]['in_sig']) {
-    echo ' checked="checked"';
-}
-    ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="<?php echo($tagname) ?>_in_sig" value="0"<?php if (!$bbcd[$tagname]['in_sig']) {
-    echo ' checked="checked"';
-}
-    ?> /> <strong><?= __('No') ?></strong>
+        echo ' checked="checked"';
+    } ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="<?php echo($tagname) ?>_in_sig" value="0"<?php if (!$bbcd[$tagname]['in_sig']) {
+        echo ' checked="checked"';
+    } ?> /> <strong><?= __('No') ?></strong>
                                     </td>
                                     <td>
-                                        <input type="text" size="10" name="<?php echo($tagname) ?>_depth_max" value="<?php echo($bbcd[$tagname]['depth_max']);
-    ?>" <?php if ($tagdata['html_type'] === 'inline' || $tagdata['tag_type'] === 'hidden') {
-    echo(' disabled="disabled" style="display: none;"');
-}
-    ?> />
+                                        <input type="text" size="10" name="<?php echo($tagname) ?>_depth_max" value="<?php echo($bbcd[$tagname]['depth_max']); ?>" <?php if ($tagdata['html_type'] === 'inline' || $tagdata['tag_type'] === 'hidden') {
+        echo(' disabled="disabled" style="display: none;"');
+    } ?> />
                                     </td>
                                 </tr>
 <?php 

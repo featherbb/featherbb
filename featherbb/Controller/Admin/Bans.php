@@ -51,8 +51,7 @@ class Bans
                     'ban_data' => $ban_data['data'],
                 ]
             )->addTemplate('admin/bans/search_ban.php')->display();
-        }
-        else {
+        } else {
             AdminUtils::generateAdminMenu('bans');
 
             View::setPageInfo([

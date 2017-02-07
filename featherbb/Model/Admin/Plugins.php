@@ -152,7 +152,7 @@ class Plugins
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER,true);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
@@ -168,7 +168,7 @@ class Plugins
 
         $zip = new ZipArchive;
 
-        if($zip->open($zipFile) != true){
+        if ($zip->open($zipFile) != true) {
             throw new Error(__('Bad request'), 400);
         }
 
@@ -244,7 +244,7 @@ class Plugins
 
         $zip = new ZipArchive;
 
-        if($zip->open(ForumEnv::get('FEATHER_ROOT').'plugins'.'/'.$name) != true){
+        if ($zip->open(ForumEnv::get('FEATHER_ROOT').'plugins'.'/'.$name) != true) {
             throw new Error(__('Bad request'), 400);
         }
 
@@ -267,5 +267,4 @@ class Plugins
         unlink(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$name);
         return Router::redirect(Router::pathFor('adminPlugins'), __('Plugin downloaded'));
     }
-
 }

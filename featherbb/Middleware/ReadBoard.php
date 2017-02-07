@@ -20,7 +20,6 @@ use FeatherBB\Core\Error;
  */
 class ReadBoard
 {
-
     public function __invoke($request, $response, $next)
     {
         // Display error page

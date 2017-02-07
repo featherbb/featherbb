@@ -20,11 +20,10 @@ use FeatherBB\Core\Error;
  */
 class AdminModo
 {
-
     public function __invoke($request, $response, $next)
     {
         // Middleware to check if user is allowed to moderate, if he's not redirect to error page.
-        if(!User::isAdminMod()) {
+        if (!User::isAdminMod()) {
             throw new Error(__('No permission'), 403);
         }
         $response = $next($request, $response);

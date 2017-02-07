@@ -46,8 +46,7 @@ if (!empty($errors)) {
 
     foreach ($errors as $cur_error) {
         echo "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
-    }
-    ?>
+    } ?>
             </ul>
         </div>
     </div>
@@ -56,8 +55,7 @@ if (!empty($errors)) {
 <?php
 
 } elseif (Input::post('preview')) {
-    $preview_message = Container::get('parser')->parse_message($post['message'], $post['hide_smilies']);
-?>
+    $preview_message = Container::get('parser')->parse_message($post['message'], $post['hide_smilies']); ?>
 <div id="postpreview" class="blockpost">
     <h2><span><?= __('Post preview') ?></span></h2>
     <div class="box">
@@ -74,6 +72,7 @@ if (!empty($errors)) {
 </div>
 
 <?php
+
 }
 
 $cur_index = 1;
@@ -92,8 +91,7 @@ $cur_index = 1;
 if (User::get()->is_guest) {
     $email_label = (ForumSettings::get('p_force_guest_email') == '1') ? '<strong>'.__('Email').' <span>'.__('Required').'</span></strong>' : __('Email');
     $email_form_name = (ForumSettings::get('p_force_guest_email') == '1') ? 'req_email' : 'email';
-    $required = (ForumSettings::get('p_force_guest_email') == '1') ? ' required="required"' : '';
-    ?>
+    $required = (ForumSettings::get('p_force_guest_email') == '1') ? ' required="required"' : ''; ?>
                         <label class="conl required"><strong><?= __('Guest name') ?> <span><?= __('Required') ?></span></strong><br /><input type="text" name="req_username" value="<?= Input::post('req_username')?>" size="25" maxlength="25" tabindex="<?= $cur_index++ ?>" required="required" autofocus /><br /></label>
                         <label class="conl<?= (ForumSettings::get('p_force_guest_email') == '1') ? ' required' : '' ?>"><?= $email_label ?><br /><input type="email" name="<?= $email_form_name ?>" value="<?= Input::post($email_form_name) ?>" size="50" maxlength="80" tabindex="<?= $cur_index++ ?>" <?= $required; ?> /><br /></label>
                         <div class="clearer"></div>
@@ -126,6 +124,7 @@ if (!empty($checkboxes)) {
                     </div>
                 </fieldset>
 <?php
+
 }
 ?>
             </div>
@@ -164,8 +163,7 @@ if ($tid && ForumSettings::get('o_topic_review') != '0') :
     $post_count = 0;
 
     foreach ($post_data as $post) {
-        ++$post_count;
-        ?>
+        ++$post_count; ?>
     <div class="blockpost">
     <div class="box<?php echo($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?>">
         <div class="inbox">

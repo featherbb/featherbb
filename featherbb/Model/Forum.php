@@ -156,7 +156,7 @@ class Forum
         // If there are topics in this forum
         if ($result) {
             $topic_ids = [];
-            foreach($result as $cur_topic_id) {
+            foreach ($result as $cur_topic_id) {
                 $topic_ids[] = $cur_topic_id['id'];
             }
 
@@ -297,7 +297,6 @@ class Forum
 
         // If there are topics in this forum
         if ($result) {
-
             foreach ($result as $id) {
                 $topic_ids[] = $id['id'];
             }
@@ -314,7 +313,7 @@ class Forum
             $result = $result->find_many();
 
             $topic_count = 0;
-            foreach($result as $cur_topic) {
+            foreach ($result as $cur_topic) {
                 ++$topic_count;
                 $status_text = [];
                 $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
@@ -355,7 +354,7 @@ class Forum
                     $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
                     $cur_topic['icon_type'] = 'icon icon-closed';
-                } 
+                }
                 
                 if (!$cur_topic['ghost_topic'] && $cur_topic['last_post'] > User::get()->last_visit && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$fid]) || $tracked_topics['forums'][$fid] < $cur_topic['last_post'])) {
                     $cur_topic['item_status'] .= ' inew';

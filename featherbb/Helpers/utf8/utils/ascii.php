@@ -210,7 +210,7 @@ function utf8_accents_to_ascii($str, $case=0)
             ];
         }
 
-        $str = str_replace(array_keys($UTF8_UPPER_ACCENTS), array_values($UTF8_UPPER_ACCENTS),  $str);
+        $str = str_replace(array_keys($UTF8_UPPER_ACCENTS), array_values($UTF8_UPPER_ACCENTS), $str);
     }
 
     return $str;

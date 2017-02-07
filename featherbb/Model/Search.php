@@ -212,7 +212,7 @@ class Search
                                 $result = $result->find_many();
 
                                 $row = [];
-                                foreach($result as $temp) {
+                                foreach ($result as $temp) {
                                     $row[$temp['post_id']] = $temp['topic_id'];
 
                                     if (!$word_count) {
@@ -276,7 +276,7 @@ class Search
                         $result = Container::get('hooks')->fireDB('model.search.get_search_results_search_second_query', $result);
                         $result = $result->find_many();
 
-                        foreach($result as $temp) {
+                        foreach ($result as $temp) {
                             $author_results[$temp['post_id']] = $temp['topic_id'];
                         }
 
@@ -379,7 +379,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        return Router::redirect(Router::pathFor('home'),__('No recent posts'));
+                        return Router::redirect(Router::pathFor('home'), __('No recent posts'));
                     }
                 }
                 // If it's a search for topics in which the user has posted
@@ -403,7 +403,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        return Router::redirect(Router::pathFor('home'),__('No user posts'));
+                        return Router::redirect(Router::pathFor('home'), __('No user posts'));
                     }
                 }
                 // If it's a search for posts by a specific user ID
@@ -425,7 +425,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        return Router::redirect(Router::pathFor('search'),__('No user posts'));
+                        return Router::redirect(Router::pathFor('search'), __('No user posts'));
                     }
 
                     // Pass on the user ID so that we can later know whose posts we're searching for
@@ -448,7 +448,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        return Router::redirect(Router::pathFor('search'),__('No user topics'));
+                        return Router::redirect(Router::pathFor('search'), __('No user topics'));
                     }
 
                     // Pass on the user ID so that we can later know whose topics we're searching for
@@ -475,7 +475,7 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        return Router::redirect(Router::pathFor('search'),__('No subscriptions'));
+                        return Router::redirect(Router::pathFor('search'), __('No subscriptions'));
                     }
 
                     // Pass on user ID so that we can later know whose subscriptions we're searching for
@@ -498,12 +498,12 @@ class Search
                     $num_hits = count($result);
 
                     if (!$num_hits) {
-                        return Router::redirect(Router::pathFor('home'),__('No unanswered'));
+                        return Router::redirect(Router::pathFor('home'), __('No unanswered'));
                     }
                 }
 
                 $search_ids = [];
-                foreach($result as $row) {
+                foreach ($result as $row) {
                     $search_ids[] = $row['id'];
                 }
 
@@ -522,7 +522,7 @@ class Search
             $result = $result->find_many();
 
             if ($result) {
-                foreach($result as $row) {
+                foreach ($result as $row) {
                     $old_searches[] = $row['ident'];
                 }
 
@@ -628,7 +628,7 @@ class Search
             }
             $result = $result->find_array();
             $search['search_set'] = [];
-            foreach($result as $row) {
+            foreach ($result as $row) {
                 $search['search_set'][] = $row;
             }
 
@@ -728,7 +728,6 @@ class Search
                 } else {
                     $cur_search['pposter_disp'] = '<strong>'.$pposter.'</strong>';
                 }
-
             } else {
                 ++$topic_count;
                 $status_text = [];
@@ -737,7 +736,7 @@ class Search
 
                 $subject = '<a href="'.Router::pathFor('Topic', ['id' => $cur_search['tid'], 'name' => $url_topic]).'">'.Utils::escape($cur_search['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_search['poster']).'</span>';
 
-                // Include separate icon, label and background for sticky and closed topics   
+                // Include separate icon, label and background for sticky and closed topics
                 if ($cur_search['sticky'] == '1') {
                     $cur_search['item_status'] .= ' isticky';
                     if ($cur_search['closed'] == '1') {
@@ -829,7 +828,7 @@ class Search
             $output .= "\t\t\t\t\t\t".'<div class="checklist">'."\n";
 
             $cur_category = 0;
-            foreach($result as $cur_forum) {
+            foreach ($result as $cur_forum) {
                 if ($cur_forum['cid'] != $cur_category) {
                     // A new category since last iteration?
 
@@ -861,7 +860,7 @@ class Search
             $output .= "\t\t\t\t\t\t".'<select id="forum" name="forum">'."\n";
 
             $cur_category = 0;
-            foreach($result as $cur_forum) {
+            foreach ($result as $cur_forum) {
                 if ($cur_forum['cid'] != $cur_category) {
                     // A new category since last iteration?
 

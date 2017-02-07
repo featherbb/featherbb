@@ -28,8 +28,7 @@ foreach ($index_data as $forum) {
         </div>
     </div>
     </div>
-    <?php endif;
-    ?>
+    <?php endif; ?>
     <div id="idx<?= $forum->cid ?>" class="blocktable">
     <h2><span><?= Utils::escape($forum->cat_name) ?></span></h2>
     <div class="box">
@@ -46,8 +45,7 @@ foreach ($index_data as $forum) {
             <tbody>
     <?php
     $cur_cat = $forum->cid;
-    endif;
-    ?>
+    endif; ?>
                 <tr class="<?= $forum->item_status ?>">
                     <td class="tcl">
                         <div class="<?= $forum->icon_type ?>"><div class="nosize"><?= Utils::forum_number_format($forum->forum_count_formatted) ?></div></div>

@@ -248,8 +248,7 @@ class Email
     public function feather_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
     {
         // Define line breaks in mail headers; possible values can be PHP_EOL, "\r\n", "\n" or "\r"
-        if (!defined('FORUM_EOL'))
-        {
+        if (!defined('FORUM_EOL')) {
             define('FORUM_EOL', PHP_EOL);
         }
 
@@ -288,8 +287,7 @@ class Email
 
         if ($smtp) {
             $this->smtp_mail($to, $subject, $message, $headers);
-        }
-        else {
+        } else {
             mail($to, $subject, $message, $headers);
         }
     }

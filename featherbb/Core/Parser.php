@@ -20,17 +20,15 @@ namespace FeatherBB\Core;
 // executable to stack-overflow, and seg-fault crash with no warning. Taking the
 // following precaution, prevents this severe error and allows the program to
 // gracefully recover and display an appropriate error message.
-if (isset($_ENV['OS']) && $_ENV['OS'] === "Windows_NT")
-{ // Are we: Win NT, 2K, XP, Vista or 7)?
+if (isset($_ENV['OS']) && $_ENV['OS'] === "Windows_NT") { // Are we: Win NT, 2K, XP, Vista or 7)?
     ini_set("pcre.recursion_limit", "524"); // 256KB / 500 = 524
-}
-else
-{ // Otherwise assume we are on a *nix box.
+} else { // Otherwise assume we are on a *nix box.
     ini_set("pcre.recursion_limit", "16777"); // 8MB / 500 = 16777
 }
 
-if (!defined('PARSER_ROOT'))
+if (!defined('PARSER_ROOT')) {
     define('PARSER_ROOT', dirname(__FILE__).'/parser/');
+}
 
 
 class Parser
@@ -49,8 +47,6 @@ class Parser
         if (!isset($pd)) {
             $this->pd = Parser::compile();
         }
-
-
     }
 
     /**
@@ -62,45 +58,38 @@ class Parser
      */
     public function parse_bbcode(&$text, $hide_smilies = 0)
     {
-        if (ForumSettings::get('o_censoring') === '1')
-        {
+        if (ForumSettings::get('o_censoring') === '1') {
             $text = Utils::censor($text);
         }
         // Convert [&<>] characters to HTML entities (but preserve [""''] quotes).
         $text = htmlspecialchars($text, ENT_NOQUOTES);
 
         // Parse BBCode if globally enabled.
-        if (ForumSettings::get('p_message_bbcode'))
-        {
+        if (ForumSettings::get('p_message_bbcode')) {
             $text = preg_replace_callback($this->pd['re_bbcode'], [$this, '_parse_bbcode_callback'], $text);
         }
         // Set $smile_on flag depending on global flags and whether or not this is a signature.
-        if ($this->pd['in_signature'])
-        {
+        if ($this->pd['in_signature']) {
             $smile_on = (ForumSettings::get('show.smilies.sig') && User::getPref('show.smilies') && !$hide_smilies) ? 1 : 0;
-        }
-        else
-        {
+        } else {
             $smile_on = (ForumSettings::get('show.smilies') && User::getPref('show.smilies') && !$hide_smilies) ? 1 : 0;
         }
         // Split text into hidden and non-hidden chunks. Process the non-hidden content chunks.
         $parts = explode("\1", $text); // Hidden chunks pre-marked like so: "\1\2<code.../code>\1"
-        for ($i = 0, $len = count($parts); $i < $len; ++$i)
-        { // Loop through hidden and non-hidden text chunks.
+        for ($i = 0, $len = count($parts); $i < $len; ++$i) { // Loop through hidden and non-hidden text chunks.
             $part = &$parts[$i]; // Use shortcut alias
-            if (empty($part))
-                continue; // Skip empty string chunks.
-            if ($part[0] !== "\2")
-            { // If not hidden, process this normal text content.
-                if ($smile_on)
-                { // If smileys enebled, do em all in one whack.
+            if (empty($part)) {
+                continue;
+            } // Skip empty string chunks.
+            if ($part[0] !== "\2") { // If not hidden, process this normal text content.
+                if ($smile_on) { // If smileys enebled, do em all in one whack.
                     $part = preg_replace_callback($this->pd['re_smilies'], [$this, '_do_smilies_callback'], $part);
                 }
                 // Deal with newlines, tabs and multiple spaces
                 $part = str_replace(["\n", "\t", '  ', '  '], ['<br />', '&#160; &#160; ', '&#160; ', ' &#160;'], $part);
-            }
-            else
-                $part = substr($part, 1); // For hidden chunks, strip \2 marker byte.
+            } else {
+                $part = substr($part, 1);
+            } // For hidden chunks, strip \2 marker byte.
         }
         $text = implode("", $parts); // Put hidden and non-hidden chunks back together.
 
@@ -132,9 +121,11 @@ class Parser
     {
         $this->pd['in_signature'] = false;
         // Disable images via the $bbcd['in_post'] flag if globally disabled.
-        if (ForumSettings::get('p_message_img_tag') !== '1' || User::getPref('show.img') !== '1')
-            if (isset($this->pd['bbcd']['img']))
+        if (ForumSettings::get('p_message_img_tag') !== '1' || User::getPref('show.img') !== '1') {
+            if (isset($this->pd['bbcd']['img'])) {
                 $this->pd['bbcd']['img']['in_post'] = false;
+            }
+        }
         return $this->parse_bbcode($text, $hide_smilies);
     }
 
@@ -148,9 +139,11 @@ class Parser
     {
         $this->pd['in_signature'] = true;
         // Disable images via the $bbcd['in_sig'] flag if globally disabled.
-        if (ForumSettings::get('p_sig_img_tag') !== '1' || User::getPref('show.img.sig') !== '1')
-            if (isset($this->pd['bbcd']['img']))
+        if (ForumSettings::get('p_sig_img_tag') !== '1' || User::getPref('show.img.sig') !== '1') {
+            if (isset($this->pd['bbcd']['img'])) {
                 $this->pd['bbcd']['img']['in_sig'] = false;
+            }
+        }
         return $this->parse_bbcode($text);
     }
 
@@ -196,12 +189,9 @@ class Parser
         // ---------------------------------------------------------------------------
         // Recursively parse any nested BBCode tag markup (unless tag type is hidden):
         // ---------------------------------------------------------------------------
-        if ($tag['tag_type'] !== 'hidden' && strpos($contents, '[') !== false)
-        {
+        if ($tag['tag_type'] !== 'hidden' && strpos($contents, '[') !== false) {
             $contents = preg_replace_callback($this->pd['re_bbcode'], [$this, '_preparse_bbcode_callback'], $contents);
-            if ($contents === null) // On error, preg_replace_callback returns NULL.
-
-            { // Error #1: '(%s) Message is too long or too complex. Please shorten.'
+            if ($contents === null) { // On error, preg_replace_callback returns NULL. // Error #1: '(%s) Message is too long or too complex. Please shorten.'
                 $new_errors[] = sprintf(__('BBerr pcre'), preg_error());
                 $contents = ''; // Zero out the contents.
             }
@@ -211,24 +201,18 @@ class Parser
         // Process optional $attribute. Set $fmt_open, $fmt_close and $handler based on attribute.
         // ---------------------------------------------------------------------------------------
         $fmt_close = '[/'.$tagname.']'; // BBCode closing tag format specifier string.
-        if ($matches[2])
-        { // Check if attribute specified?
+        if ($matches[2]) { // Check if attribute specified?
             // Attribute specified. Pick value from one of the three possible quote delimitations.
-            if ($matches[3])
-            { // Non-empty single-quoted value.
+            if ($matches[3]) { // Non-empty single-quoted value.
                 $attribute = &$matches[3]; // Set attribute to quoted content.
                 $fmt_open = '['.$tagname.'=\'%a_str%\']'; // Set 'single-quoted' opening format.
-            } elseif ($matches[4])
-            { // Non-empty double-quoted value.
+            } elseif ($matches[4]) { // Non-empty double-quoted value.
                 $attribute = &$matches[4]; // Set attribute to quoted content.
                 $fmt_open = '['.$tagname.'="%a_str%"]'; // Set "double-quoted" opening format.
-            } elseif ($matches[5])
-            { // Non-empty un-or-any-quoted value.
+            } elseif ($matches[5]) { // Non-empty un-or-any-quoted value.
                 $attribute = &$matches[5]; // Set attribute to unquoted content.
                 $fmt_open = '['.$tagname.'=%a_str%]'; // Set un-'or'-"any"-quoted opening format.
-            }
-            else
-            { // Otherwise must be empty.
+            } else { // Otherwise must be empty.
                 $attribute = ''; // Set empty attribute.
                 $fmt_open = '['.$tagname.'=%a_str%]'; // Set empty-attribute opening format.
             }
@@ -236,54 +220,39 @@ class Parser
             $attribute = preg_replace(['/\s++/S', '/^ /', '/ $/'], [' ', '', ''], $attribute);
 
             // Determine attribute handler: fixed or variable or none.
-            if (isset($tag['handlers'][$attribute]))
-            { // If attribute matches handler key
+            if (isset($tag['handlers'][$attribute])) { // If attribute matches handler key
                 $handler = &$tag['handlers'][$attribute]; // use the fixed-attribute handler.
-            } elseif (isset($tag['handlers']['ATTRIB']))
-            { // Else if we have one, use this tags
+            } elseif (isset($tag['handlers']['ATTRIB'])) { // Else if we have one, use this tags
                 $handler = &$tag['handlers']['ATTRIB']; // variable attribute handler. Otherwise...
-            } elseif (isset($tag['handlers']['NO_ATTRIB']) && count($tag['handlers']) == 1)
-            { // Otherwise we have an erroneous attribute which is either unexpected or unrecognized.
+            } elseif (isset($tag['handlers']['NO_ATTRIB']) && count($tag['handlers']) == 1) { // Otherwise we have an erroneous attribute which is either unexpected or unrecognized.
                 // Error #2: 'Unexpected attribute: "%1$s". (No attribute allowed for [%2$s].'.
                 $handler = &$this->pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
                 $new_errors[] = sprintf(__('BBerr unexpected attribute'), $attribute, $tagname);
-            }
-            else
-            { // Error #3: 'Unrecognized attribute: "%1$s", is not valid for [%2$s].'
+            } else { // Error #3: 'Unrecognized attribute: "%1$s", is not valid for [%2$s].'
                 $handler = &$this->pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
                 $new_errors[] = sprintf(__('BBerr unrecognized attribute'), $attribute, $tagname);
             }
 
             // Make sure attribute does nor contain a valid BBcode tag.
-            if (preg_match($this->pd['re_bbtag'], $attribute))
-            { // Error #4: 'Attribute may NOT contain open or close bbcode tags'
+            if (preg_match($this->pd['re_bbtag'], $attribute)) { // Error #4: 'Attribute may NOT contain open or close bbcode tags'
                 $handler = &$this->pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
                 $new_errors[] = sprintf(__('BBerr bbcode attribute'));
             }
 
             // Validate and filter tag's attribute value if and according to custom attribute regex.
-            if (isset($handler['a_regex']))
-            { // Check if this tag has an attribute regex? (very rare)
-                if (preg_match($handler['a_regex'], $attribute, $m))
-                { // Yes. Check if regex matches attribute?
+            if (isset($handler['a_regex'])) { // Check if this tag has an attribute regex? (very rare)
+                if (preg_match($handler['a_regex'], $attribute, $m)) { // Yes. Check if regex matches attribute?
                     $attribute = $m[1];
-                }
-                else
-                { // Error #4b: 'Invalid attribute, [%s] requires specific attribute.'
+                } else { // Error #4b: 'Invalid attribute, [%s] requires specific attribute.'
                     $new_errors[] = sprintf(__('BBerr invalid attrib'), $tagname);
                 }
             }
-        }
-        else
-        { // Attribute not specified. Use the NO_ATTRIB handler if it exixts else error.
+        } else { // Attribute not specified. Use the NO_ATTRIB handler if it exixts else error.
             $attribute = ''; // No attribute? Make it so.
             $fmt_open = '['.$tagname.']'; // Set no-attribute fmt_open string.
-            if (isset($tag['handlers']['NO_ATTRIB']))
-            { // If we have one, use this tags
+            if (isset($tag['handlers']['NO_ATTRIB'])) { // If we have one, use this tags
                 $handler = &$tag['handlers']['NO_ATTRIB']; // no-attribute handler. Otherwise...
-            }
-            else
-            { // Error #5: '[%1$s] is missing a required attribute.'.
+            } else { // Error #5: '[%1$s] is missing a required attribute.'.
                 $handler = &$this->pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
                 $new_errors[] = sprintf(__('BBerr missing attribute'), $tagname);
             }
@@ -293,10 +262,8 @@ class Parser
         // Do some validation checks. Fix problems where possible:
         // -------------------------------------------------------
         // Handle tag nesting depth overflow.
-        if ($tag['depth'] > $tag['depth_max'])
-        { // Allowable tag nesting level exceeded?
-            switch ($tag['nest_type'])
-            { // Overflow. Handle based upon tag's "nest_type"
+        if ($tag['depth'] > $tag['depth_max']) { // Allowable tag nesting level exceeded?
+            switch ($tag['nest_type']) { // Overflow. Handle based upon tag's "nest_type"
                 case 'clip': // Silently strip overly nested tags and content.
                     $contents = '';
                     break;
@@ -311,46 +278,36 @@ class Parser
         }
 
         // Verify this tag is not in its parent's excluded tags list.
-        if (isset($this->pd['bbcd'][$parent]['tags_excluded'][$tagname]))
-        { // Are we illegitimate?
+        if (isset($this->pd['bbcd'][$parent]['tags_excluded'][$tagname])) { // Are we illegitimate?
             // Yes. Pick between error #6 and #7.
-            if ($parent === $tagname)
-            { // Error #7: '[%s] was opened within itself, this is not allowed.'
+            if ($parent === $tagname) { // Error #7: '[%s] was opened within itself, this is not allowed.'
                 $new_errors[] = sprintf(__('BBerr self-nesting'), $tagname);
-            }
-            else
-            { // Error #8: '[%1$s] was opened within [%2$s], this is not allowed.'
+            } else { // Error #8: '[%1$s] was opened within [%2$s], this is not allowed.'
                 $new_errors[] = sprintf(__('BBerr invalid nesting'), $tagname, $parent);
             }
         }
 
         // Verify our parent tag is in our 'parents' allowable array if it exists.
-        if (isset($tag['parents']) && !isset($tag['parents'][$parent]))
-        { // Error #9: '[%1$s] cannot be within: [%2$s]. Allowable parent tags: %3$s.'.
+        if (isset($tag['parents']) && !isset($tag['parents'][$parent])) { // Error #9: '[%1$s] cannot be within: [%2$s]. Allowable parent tags: %3$s.'.
             $new_errors[] = sprintf(__('BBerr invalid parent'), $tagname, $parent, '('.implode('), (', array_keys($tag['parents'])).')');
         }
 
         // -----------------------------------------
         // Perform content-type-specific processing:
         // -----------------------------------------
-        switch ($handler['c_type'])
-        {
+        switch ($handler['c_type']) {
             case 'width_height':
-                if (preg_match('/\b(\d++)[Xx](\d++)\b/S', $contents, $m))
-                {
+                if (preg_match('/\b(\d++)[Xx](\d++)\b/S', $contents, $m)) {
                     $width = (int)$m[1];
                     $height = (int)$m[2];
                 }
-                if (preg_match('/\bw(?:idth)?+\s*+=\s*+[\'"]?+(\d++)\b/Si', $contents, $m))
-                {
+                if (preg_match('/\bw(?:idth)?+\s*+=\s*+[\'"]?+(\d++)\b/Si', $contents, $m)) {
                     $width = (int)$m[1];
                 }
-                if (preg_match('/\bh(?:eight)?+\s*+=\s*+[\'"]?+(\d++)\b/Si', $contents, $m))
-                {
+                if (preg_match('/\bh(?:eight)?+\s*+=\s*+[\'"]?+(\d++)\b/Si', $contents, $m)) {
                     $height = (int)$m[1];
                 }
-                if (isset($height, $tag['x_padding'], $tag['y_padding']))
-                {
+                if (isset($height, $tag['x_padding'], $tag['y_padding'])) {
                     $height -= $tag['y_padding'] - $tag['x_padding']; // Adjust for height of embedded controller.
                 }
                 break;
@@ -361,21 +318,16 @@ class Parser
                 // Handle special case link to a
                 if (!User::can('post.links')) {
                     $new_errors[] = __('BBerr cannot post URLs');
-                }
-                else if (($m = Url::is_valid($contents)))
-                {
+                } elseif (($m = Url::is_valid($contents))) {
                     $contents = $m['url']; // Fetch possibly more complete url address.
-                }
-                else
-                { // Error #10a: 'Invalid URL name: %s'.
+                } else { // Error #10a: 'Invalid URL name: %s'.
                     $new_errors[] = sprintf(__('BBerr Invalid URL name'), $contents);
                 }
                 break;
 
             case 'email':
                 // TODO: improve this quick-n-dirty email check.
-                if (!preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i', $contents))
-                { // Error #10c: 'Invalid email address: %s'.
+                if (!preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i', $contents)) { // Error #10c: 'Invalid email address: %s'.
                     $new_errors[] = sprintf(__('BBerr Invalid email address'), $contents);
                 }
                 break;
@@ -386,22 +338,17 @@ class Parser
         // -------------------------------------------
         // Perform attribute-type-specific processing:
         // -------------------------------------------
-        switch ($handler['a_type'])
-        {
+        switch ($handler['a_type']) {
             case 'width_height':
-                if ($attribute)
-                {
-                    if (preg_match('/\b(\d++)[Xx](\d++)\b/', $attribute, $m))
-                    { // Check for a "123x456" WxH spec?
+                if ($attribute) {
+                    if (preg_match('/\b(\d++)[Xx](\d++)\b/', $attribute, $m)) { // Check for a "123x456" WxH spec?
                         $width = (int)$m[1]; // Yes. Set both dimensions.
                         $height = (int)$m[2];
                     }
-                    if (preg_match('/\bw(?:idth)?+\s*+=\s*+[\'"]?+(\d++)\b/i', $attribute, $m))
-                    {
+                    if (preg_match('/\bw(?:idth)?+\s*+=\s*+[\'"]?+(\d++)\b/i', $attribute, $m)) {
                         $width = (int)$m[1];
                     }
-                    if (preg_match('/\bh(?:eight)?+\s*+=\s*+[\'"]?+(\d++)\b/i', $attribute, $m))
-                    {
+                    if (preg_match('/\bh(?:eight)?+\s*+=\s*+[\'"]?+(\d++)\b/i', $attribute, $m)) {
                         $height = (int)$m[1];
                     }
                     $attribute = preg_replace('/[;\s]?+\b(?:(?:w(?:idth)?+|h(?:eight)?+)\s*+=\s*+|\d++[Xx])\d++\b/Si', '', $attribute);
@@ -411,28 +358,22 @@ class Parser
             case 'url':
                 if (!User::can('post.links')) {
                     $new_errors[] = __('BBerr cannot post URLs');
-                }
-                else if (($m = Url::is_valid($attribute)))
-                {
+                } elseif (($m = Url::is_valid($attribute))) {
                     $attribute = $m['url']; // Fetch possibly more complete url address.
-                }
-                else
-                { // Error #10b: 'Invalid URL name: %s'.
+                } else { // Error #10b: 'Invalid URL name: %s'.
                     $new_errors[] = sprintf(__('BBerr Invalid URL name'), $attribute);
                 }
                 break;
 
             case 'color':
-                if (!preg_match($this->pd['re_color'], $attribute))
-                { // Error #11: 'Invalid color attribute: %s'.
+                if (!preg_match($this->pd['re_color'], $attribute)) { // Error #11: 'Invalid color attribute: %s'.
                     $new_errors[] = sprintf(__('BBerr Invalid color'), $attribute);
                 }
                 break;
 
             case 'email':
                 // TODO: improve this quick-n-dirty email check.
-                if (!preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i', $attribute))
-                { // Error #10c: 'Invalid email address: %s'.
+                if (!preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,6}$/i', $attribute)) { // Error #10c: 'Invalid email address: %s'.
                     $new_errors[] = sprintf(__('BBerr Invalid email address'), $attribute);
                 }
                 break;
@@ -444,105 +385,75 @@ class Parser
         // ----------------------------------------------------------
         // Perform tag-specific processing of attribute and contents:
         // ----------------------------------------------------------
-        switch ($tagname)
-        {
+        switch ($tagname) {
             case 'img': // Handle bad image url, file too big, then scale-to-fit within forum defaults if too large.
-                if ($tag['depth'] === 1)
-                { // Check if not overly nested?
-                    if (($this->pd['ipass'] === 2) && $this->pd['config']['valid_imgs'] && Url::is_valid($contents))
-                    { // Valid URI?
+                if ($tag['depth'] === 1) { // Check if not overly nested?
+                    if (($this->pd['ipass'] === 2) && $this->pd['config']['valid_imgs'] && Url::is_valid($contents)) { // Valid URI?
                         // Yes. Fetch file headers containing file type and size ("Content-Type" and "Content-Length").
                         // ??? Should this call to get_headers have an @ in case of weird errors?
-                        if (($http = @get_headers($contents)) !== false && is_array($http))
-                        {
-                            if (preg_match('/\b200\s++OK\s*+$/i', $http[0]))
-                            { // Good response header?
-                                for ($i = 1, $len = count($http); $i < $len; ++$i)
-                                { // Yes. Loop through HTTP response headers.
-                                    if (preg_match('/^\s*+Content-Length\s*+:\s*+(\d++)\s*+$/i', $http[$i], $m))
-                                        $size = (int)$m[1]; // File size found.
-                                    if (preg_match('/^\s*+Content-Type\s*+:\s*+image\/(.++)$/i', $http[$i], $m))
-                                        $type = $m[1]; // Image file type found.
+                        if (($http = @get_headers($contents)) !== false && is_array($http)) {
+                            if (preg_match('/\b200\s++OK\s*+$/i', $http[0])) { // Good response header?
+                                for ($i = 1, $len = count($http); $i < $len; ++$i) { // Yes. Loop through HTTP response headers.
+                                    if (preg_match('/^\s*+Content-Length\s*+:\s*+(\d++)\s*+$/i', $http[$i], $m)) {
+                                        $size = (int)$m[1];
+                                    } // File size found.
+                                    if (preg_match('/^\s*+Content-Type\s*+:\s*+image\/(.++)$/i', $http[$i], $m)) {
+                                        $type = $m[1];
+                                    } // Image file type found.
                                 }
                                 // Verify Content-Type is an image.
-                                if (isset($type))
-                                {
+                                if (isset($type)) {
                                     // Verify remote file size is not too big. (If too big, handle error.)
-                                    if (isset($size))
-                                    {
-                                        if ($size <= $this->pd['config']['max_size'])
-                                        {
+                                    if (isset($size)) {
+                                        if ($size <= $this->pd['config']['max_size']) {
                                             // Filesize is ok. Do nothing.
-                                            if (($info = @getimagesize($contents)) && is_array($info))
-                                            { // Fetch width & height.
+                                            if (($info = @getimagesize($contents)) && is_array($info)) { // Fetch width & height.
                                                 // Now we know the filesize, width and height of remote image.
-                                                if (($iwidth = (int)$info[0]) && ($iheight = (int)$info[1]))
-                                                {
+                                                if (($iwidth = (int)$info[0]) && ($iheight = (int)$info[1])) {
                                                     // To resize or not resize, that is the question.
                                                     // If bigger than default, scale down. Otherwise dont touch.
                                                     // Scale image to fit within forum default width/height box dimensions.
                                                     $ar = ((float)$iwidth) / ((float)$iheight);
                                                     // Otherwise, for images that naturally fit inside the box,
                                                     // leave the attribute clean (or unset).
-                                                    if (!isset($width) && !isset($height) && ($iwidth > $this->pd['config']['def_width'] || $iheight > $this->pd['config']['def_height']))
-                                                    { // Remote file dimensions are too big to fit within default box.
+                                                    if (!isset($width) && !isset($height) && ($iwidth > $this->pd['config']['def_width'] || $iheight > $this->pd['config']['def_height'])) { // Remote file dimensions are too big to fit within default box.
                                                         // Explicitly scale a new width and height in IMG attribute.
                                                         $width = $this->pd['config']['def_width'];
                                                         $height = (int)((((float)$width) / $ar) + 0.5);
-                                                        if ($height > $this->pd['config']['def_height'])
-                                                        {
+                                                        if ($height > $this->pd['config']['def_height']) {
                                                             $height = $this->pd['config']['def_height'];
                                                             $width = (int)((((float)$height) * $ar) + 0.5);
                                                         }
                                                     } // Else remote image fits. Do nothing special with width and height.
                                                 }
-                                            }
-                                            else
-                                            { // Error #13: 'Unable to retrieve image data from remote url: %s'.
+                                            } else { // Error #13: 'Unable to retrieve image data from remote url: %s'.
                                                 $new_errors[] = sprintf(__('BBerr bad meta data'), $contents);
                                             } // NOTE: cannot generate this error.
-                                        }
-                                        else
-                                        { // Filesize of remote image is too big. Silently convert to link if possible.
-                                            if (isset($this->pd['bbcd']['url']) && $this->pd['bbcd']['url']['depth'] === 0)
-                                            {
+                                        } else { // Filesize of remote image is too big. Silently convert to link if possible.
+                                            if (isset($this->pd['bbcd']['url']) && $this->pd['bbcd']['url']['depth'] === 0) {
                                                 $fmt_open = '{[url='.$contents.']';
                                                 $fmt_close = '[/url]}';
                                                 $contents = __('BBmsg big image');
-                                            }
-                                            else
-                                            { // Image within a url cannot be linkified. Just display url name.
+                                            } else { // Image within a url cannot be linkified. Just display url name.
                                                 $contents = '{'.$contents.'}';
                                                 $fmt_open = '';
                                                 $fmt_close = '';
                                             }
                                         }
-                                    }
-                                    else // $size not set.
-
-                                    { // Error #14: 'Unable to determine remote file size.'.
+                                    } else { // $size not set. // Error #14: 'Unable to determine remote file size.'.
                                         $new_errors[] = __('BBerr no file size');
                                     } // NOTE: cannot generate this error.
-                                }
-                                else
-                                { // Error #15: 'Remote url does not have Content-Type: "image".'
+                                } else { // Error #15: 'Remote url does not have Content-Type: "image".'
                                     $new_errors[] = __('BBerr non image');
                                 }
-                            }
-                            else
-                            { // Error #16: 'Bad HTTP response header: "%s"'.
+                            } else { // Error #16: 'Bad HTTP response header: "%s"'.
                                 $new_errors[] = sprintf(__('BBerr bad http response'), $http[0]);
                             }
-                        }
-                        else
-                        { // Error #17: 'Unable to read remote image http headers.'.
+                        } else { // Error #17: 'Unable to read remote image http headers.'.
                             $new_errors[] = __('BBerr bad headers');
                         }
-
                     } // Image validation turned off. Do nothing.
-                }
-                else
-                { // Non-Error: IMG tag self nesting. Handle by silently stripping tags with no error.
+                } else { // Non-Error: IMG tag self nesting. Handle by silently stripping tags with no error.
                     $fmt_open = $fmt_close = '';
                 }
                 break;
@@ -557,15 +468,13 @@ class Parser
                 \[/\*\]\s*+
                 )++
                 $
-                %x', $contents))
-                { // Not well formed. Do fixup to ensure list contents are only * tags.
+                %x', $contents)) { // Not well formed. Do fixup to ensure list contents are only * tags.
                     // First regex wraps invalid characters at start of LIST in a [*]...[/*] tag.
                     $contents = preg_replace($this->pd['re_fixlist_1'], '[*]$1[/*]', $contents);
                     // Second regex wraps invalid characters between [/*] and [*] (or [/list]).
                     $contents = preg_replace($this->pd['re_fixlist_2'], '$1[/*]', $contents);
                 } // Well-formed LIST contents!
-                if ($parent === 'list')
-                {
+                if ($parent === 'list') {
                     $fmt_open = '[*]'.$fmt_open;
                     $fmt_close .= '[/*]';
                 }
@@ -577,119 +486,100 @@ class Parser
         // -------------------------------------------
         // Process width and height values if present.
         // -------------------------------------------
-        if (isset($width) || isset($height))
-        { // Check if dimension specified in attrib or contents?
+        if (isset($width) || isset($height)) { // Check if dimension specified in attrib or contents?
             // Yes. Clip both $width and/or $height to their respective config maximums.
-            if (isset($width))
-            { // Clip to max. Set to default if zero.
-                if ($width > $this->pd['config']['max_width'])
+            if (isset($width)) { // Clip to max. Set to default if zero.
+                if ($width > $this->pd['config']['max_width']) {
                     $width = $this->pd['config']['max_width'];
-                elseif ($width === 0)
+                } elseif ($width === 0) {
                     $width = $this->pd['config']['def_width'];
+                }
             }
-            if (isset($height))
-            { // Clip to max. Set to default if zero.
-                if ($height > $this->pd['config']['max_height'])
+            if (isset($height)) { // Clip to max. Set to default if zero.
+                if ($height > $this->pd['config']['max_height']) {
                     $height = $this->pd['config']['max_height'];
-                elseif ($height === 0)
+                } elseif ($height === 0) {
                     $height = $this->pd['config']['def_height'];
+                }
             }
-            if (isset($ar))
-            { // If the real image dimensions are known ($ar), then adjust to fit in box and maintain $ar.
-                if (isset($width) && isset($height))
-                { // Check if both dimensions set?
-                    if ($ar > (((float)$width) / ((float)$height)))
-                    { // Yes. Check if $width more precise than $height?
+            if (isset($ar)) { // If the real image dimensions are known ($ar), then adjust to fit in box and maintain $ar.
+                if (isset($width) && isset($height)) { // Check if both dimensions set?
+                    if ($ar > (((float)$width) / ((float)$height))) { // Yes. Check if $width more precise than $height?
                         $height = (int)((((float)$width) / $ar) + 0.5); // Yes. Compute height from width and AR.
-                        if ($height > $this->pd['config']['max_height'])
-                        {
+                        if ($height > $this->pd['config']['max_height']) {
                             $height = $this->pd['config']['max_height'];
                             $width = (int)((((float)$height) * $ar) + 0.5);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         $width = (int)((((float)$height) * $ar) + 0.5); // Compute width from height and AR.
-                        if ($width > $this->pd['config']['max_width'])
-                        {
+                        if ($width > $this->pd['config']['max_width']) {
                             $width = $this->pd['config']['max_width'];
                             $height = (int)((((float)$width) / $ar) + 0.5);
                         }
                     }
-                } elseif (isset($width))
-                {
+                } elseif (isset($width)) {
                     $height = (int)((((float)$width) / $ar) + 0.5); // Compute height from width and AR.
-                    if ($height > $this->pd['config']['max_height'])
-                    {
+                    if ($height > $this->pd['config']['max_height']) {
                         $height = $this->pd['config']['max_height'];
                         $width = (int)((((float)$height) * $ar) + 0.5);
                     }
-                }
-                else
-                {
+                } else {
                     $width = (int)((((float)$height) * $ar) + 0.5); // Compute width from height and AR.
-                    if ($width > $this->pd['config']['max_width'])
-                    {
+                    if ($width > $this->pd['config']['max_width']) {
                         $width = $this->pd['config']['max_width'];
                         $height = (int)((((float)$width) / $ar) + 0.5);
                     }
                 }
             }
             // Unconditionally write width and/or height data back into attribute.
-            if ($width === 0)
+            if ($width === 0) {
                 $width = 1;
-            if ($height === 0)
-                $height = 1;
-            if ($attribute)
-                $attribute .= ';'; // Add delimiter for non-empty attrib.
-            if (isset($width) && isset($height))
-            {
-                $attribute .= $width.'x'.$height;
-            } elseif (isset($width))
-            {
-                $attribute .= 'w='.$width;
             }
-            else
-            {
+            if ($height === 0) {
+                $height = 1;
+            }
+            if ($attribute) {
+                $attribute .= ';';
+            } // Add delimiter for non-empty attrib.
+            if (isset($width) && isset($height)) {
+                $attribute .= $width.'x'.$height;
+            } elseif (isset($width)) {
+                $attribute .= 'w='.$width;
+            } else {
                 $attribute .= 'h='.$height;
             }
             $fmt_open = '['.$tagname.'=%a_str%]'; // Set open tag format to receive attribute.
         }
         // Validate and filter tag's contents if and according to optional contents regex.
-        if (isset($handler['c_regex']))
-        { // Check if this tag has a contents regex? (youtube, vimeo, etc.)
+        if (isset($handler['c_regex'])) { // Check if this tag has a contents regex? (youtube, vimeo, etc.)
             // Yes. Check if regex matches contents?
-            if (preg_match($handler['c_regex'], $contents, $m))
+            if (preg_match($handler['c_regex'], $contents, $m)) {
                 $contents = $m[1];
-            else
-            { // Error #12: 'Invalid content, [%s] requires specific content.'
+            } else { // Error #12: 'Invalid content, [%s] requires specific content.'
                 $new_errors[] = sprintf(__('BBerr invalid content'), $tagname);
             }
         }
         // Silently strip empty or all-white tags:
-        if (preg_match('/^\s*+$/', $contents))
+        if (preg_match('/^\s*+$/', $contents)) {
             $contents = '';
+        }
 
         // Unconditionally hide all opening square brackets within hidden CODE contents.
         // This is necessary otherwise the LIST fixup code would process "[*]" within CODE tags.
         // These \3 byte markers are subsequently removed by preparse_bbcode().
-        if ($tag['tag_type'] === 'hidden')
-        {
+        if ($tag['tag_type'] === 'hidden') {
             $contents = str_replace('[', "\3", $contents);
         }
         // On first pass, fix inline tags which span paragraphs by closting then re-opening.
-        if ($this->pd['ipass'] === 1 && $tag['html_type'] === 'inline' && $tag['tag_type'] !== 'hidden' && strpos($contents, "\n") !== false)
-        {
+        if ($this->pd['ipass'] === 1 && $tag['html_type'] === 'inline' && $tag['tag_type'] !== 'hidden' && strpos($contents, "\n") !== false) {
             $contents = preg_replace('/\n\s*?\n\s*/', "\1\2".$fmt_close."\1".'$0'."\1\2".str_replace('%a_str%', $attribute, $fmt_open)."\1", $contents);
         }
         // ***********************************************************************************
         // Handle errors. Wrap this tags open and close BBCode tag each in a valid [err] tag.
         // ***********************************************************************************
-        if (isset($new_errors) && $fmt_open)
-        { // check if we detected any errors?
+        if (isset($new_errors) && $fmt_open) { // check if we detected any errors?
             // Yes, we have detected one or more new error conditions.
-            foreach ($new_errors as $errmsg)
-            { // Push all new errors on g errors array.
+            foreach ($new_errors as $errmsg) { // Push all new errors on g errors array.
                 $this->pd['new_errors'][] = htmlspecialchars($errmsg);
             }
 
@@ -701,22 +591,21 @@ class Parser
         // -----------------------------------------------------------------------------
         // All done processing. Substitute $attribute and $contents into format strings:
         // -----------------------------------------------------------------------------
-        if ($contents)
-        {
-            if ($this->pd['ipass'] === 1)
-            { // Add byte markers on first pass.
-                if ($tag['tag_type'] === 'hidden' || $handler['c_type'] == 'url')
+        if ($contents) {
+            if ($this->pd['ipass'] === 1) { // Add byte markers on first pass.
+                if ($tag['tag_type'] === 'hidden' || $handler['c_type'] == 'url') {
                     $text = "\1\2".$fmt_open.'%c_str%'.$fmt_close."\1";
-                else
+                } else {
                     $text = "\1\2".$fmt_open."\1%c_str%\1\2".$fmt_close."\1";
-            }
-            else
-                $text = $fmt_open.'%c_str%'.$fmt_close; // Pass 2, dont bother with byte markers.
+                }
+            } else {
+                $text = $fmt_open.'%c_str%'.$fmt_close;
+            } // Pass 2, dont bother with byte markers.
             $text = str_replace('%a_str%', $attribute, $text);
             $text = str_replace('%c_str%', $contents, $text);
-        }
-        else
+        } else {
             $text = '';
+        }
         array_pop($this->pd['tag_stack']); // Were done. Pop this tag off the stack.
         $tag['depth']--; // Restore pre-call tag specific depth.
         return $text;
@@ -732,54 +621,50 @@ class Parser
      * @param integer $is_signature
      * @return string
      */
-    function preparse_bbcode($text, &$errors, $is_signature = false)
+    public function preparse_bbcode($text, &$errors, $is_signature = false)
     {
         $this->pd['new_errors'] = []; // Reset the parser error message stack.
         $this->pd['in_signature'] = ($is_signature) ? true : false;
         $this->pd['ipass'] = 1;
         $newtext = preg_replace_callback($this->pd['re_bbcode'], [$this, '_preparse_bbcode_callback'], $text);
-        if ($newtext === null)
-        { // On error, preg_replace_callback returns NULL.
+        if ($newtext === null) { // On error, preg_replace_callback returns NULL.
             // Error #1: '(%s) Message is too long or too complex. Please shorten.'
             $errors[] = sprintf(__('BBerr pcre'), preg_error());
             return $text;
         }
         $newtext = str_replace("\3", '[', $newtext); // Fixup CODE sections.
         $parts = explode("\1", $newtext); // Hidden chunks pre-marked like so: "\1\2<code.../code>\1"
-        for ($i = 0, $len = count($parts); $i < $len; ++$i)
-        { // Loop through hidden and non-hidden text chunks.
+        for ($i = 0, $len = count($parts); $i < $len; ++$i) { // Loop through hidden and non-hidden text chunks.
             $part = &$parts[$i]; // Use shortcut alias
-            if (empty($part))
-                continue; // Skip empty string chunks.
-            if ($part[0] !== "\2")
-            { // If not hidden, process this normal text content.
+            if (empty($part)) {
+                continue;
+            } // Skip empty string chunks.
+            if ($part[0] !== "\2") { // If not hidden, process this normal text content.
                 // Mark erroneous orphan tags.
                 $part = preg_replace_callback($this->pd['re_bbtag'], [$this, '_orphan_callback'], $part);
                 // Process do-clickeys if enabled.
-                if (ForumSettings::get('o_make_links'))
+                if (ForumSettings::get('o_make_links')) {
                     $part = $this->linkify($part);
+                }
 
                 // Process textile syntax tag shortcuts.
-                if ($this->pd['config']['textile'])
-                {
+                if ($this->pd['config']['textile']) {
                     // Do phrase replacements.
                     $part = preg_replace_callback($this->pd['re_textile'], [$this, '_textile_phrase_callback'], $part);
                     // Do lists.
                     $part = preg_replace_callback('/^([*#]) .*+(?:\n\1 .*+)++$/Sm', [$this, '_textile_list_callback'], $part);
                 }
                 $part = preg_replace('/^[ \t]++$/m', '', $part); // Clear "white" lines of spaces and tabs.
-            }
-            else
-                $part = substr($part, 1); // For hidden chunks, strip \2 marker byte.
+            } else {
+                $part = substr($part, 1);
+            } // For hidden chunks, strip \2 marker byte.
         }
         $text = implode("", $parts); // Put hidden and non-hidden chunks back together.
         $this->pd['ipass'] = 2; // Run a second pass through parser to clean changed content.
         $text = preg_replace_callback($this->pd['re_bbcode'], [$this, '_preparse_bbcode_callback'], $text);
         $text = str_replace("\3", '[', $text); // Fixup CODE sections.
-        if (!empty($this->pd['new_errors']))
-        {
-            foreach ($this->pd['new_errors'] as $errmsg)
-            {
+        if (!empty($this->pd['new_errors'])) {
+            foreach ($this->pd['new_errors'] as $errmsg) {
                 $errors[] = $errmsg; // Push all new errors on global array.
             }
         }
@@ -794,12 +679,9 @@ class Parser
      */
     private function _orphan_callback($matches)
     {
-        if ($matches[0][1] === '/')
-        { // Error #18: 'Orphan close tag: [/%s] is missing its open tag.'
+        if ($matches[0][1] === '/') { // Error #18: 'Orphan close tag: [/%s] is missing its open tag.'
             $errmsg = sprintf(__('BBerr orphan close'), $matches[1]);
-        }
-        else
-        { // Error #19: 'Orphan open tag: [%s] is missing its close tag.'
+        } else { // Error #19: 'Orphan open tag: [%s] is missing its close tag.'
             $errmsg = sprintf(__('BBerr orphan open'), $matches[1]);
         }
         $this->pd['new_errors'][] = $errmsg; // Append to array of errors so far.
@@ -814,11 +696,11 @@ class Parser
      */
     private function _textile_list_callback($matches)
     {
-        if (!isset($this->pd['bbcd']['list']))
+        if (!isset($this->pd['bbcd']['list'])) {
             return $matches[0];
+        }
         $parts = preg_split('/(?:^|\n)\\'.$matches[1].' /S', $matches[0], -1, PREG_SPLIT_NO_EMPTY);
-        switch ($matches[1])
-        {
+        switch ($matches[1]) {
             case '*':
                 return "[list]\n[*]".implode("[/*]\n[*]", $parts)."[/*]\n[/list]";
             case '#':
@@ -835,8 +717,7 @@ class Parser
     private function _textile_phrase_callback($matches)
     {
         $matches[2] = preg_replace_callback($this->pd['re_textile'], [$this, '_textile_phrase_callback'], $matches[2]);
-        switch ($matches[1])
-        {
+        switch ($matches[1]) {
             case '_':
                 return (isset($this->pd['bbcd']['i'])) ? '[i]'.$matches[2].'[/i]':
                     $matches[0];
@@ -870,8 +751,7 @@ class Parser
     public function preg_error()
     {
         $errmsg = ''; // assume no error has occured. return empty string
-        switch (preg_last_error())
-        { // this returns the last error condition as a number
+        switch (preg_last_error()) { // this returns the last error condition as a number
             case PREG_NO_ERROR:
                 break; // no error? return empty string === FALSE
             case PREG_INTERNAL_ERROR:
@@ -932,46 +812,42 @@ class Parser
             $this->pd['in_signature'] && $tag['in_sig']) ? true : false; // in a sig and sig-enabled, then enabled.
 
         // Recursively parse any nested BBCode tag markup (unless tag type is hidden).
-        if ($tag['tag_type'] !== 'hidden' && strpos($contents, '[') !== false)
-        {
+        if ($tag['tag_type'] !== 'hidden' && strpos($contents, '[') !== false) {
             $contents = preg_replace_callback($this->pd['re_bbcode'], [$this, '_parse_bbcode_callback'], $contents);
         }
         // ------------------------------------------------------------------------------
         // Determine $attribute and format conversion $handler to use based on attribute.
         // ------------------------------------------------------------------------------
-        if (!$matches[2])
-        { // No attribute specified? Use the NO_ATTRIB handler.
+        if (!$matches[2]) { // No attribute specified? Use the NO_ATTRIB handler.
             $attribute = '';
-            if (isset($tag['handlers']['NO_ATTRIB'])) // If we have one, use this tags
+            if (isset($tag['handlers']['NO_ATTRIB'])) { // If we have one, use this tags
 
-                $handler = &$tag['handlers']['NO_ATTRIB']; // no-attribute handler. Otherwise...
-            else
-                $handler = &$this->pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB']; // Missing attribute! Strip tag.
-        }
-        else
-        { // Attribute specified. Assign it from one of the three possible delimitations.
-            if ($matches[3])
-            { // Non-empty single-quoted value.
+                $handler = &$tag['handlers']['NO_ATTRIB'];
+            } // no-attribute handler. Otherwise...
+            else {
+                $handler = &$this->pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
+            } // Missing attribute! Strip tag.
+        } else { // Attribute specified. Assign it from one of the three possible delimitations.
+            if ($matches[3]) { // Non-empty single-quoted value.
                 $attribute = &$matches[3]; // Strip out escape from escapes and single quotes.
                 $attribute = str_replace(['\\\\', '\\\''], ['\\', '\''], $attribute);
-            } elseif ($matches[4])
-            { // Non-empty double-quoted value.
+            } elseif ($matches[4]) { // Non-empty double-quoted value.
                 $attribute = &$matches[4]; // Strip out escape from escapes and double quotes.
                 $attribute = str_replace(['\\\\', '\\"'], ['\\', '"'], $attribute);
-            } elseif ($matches[5])
-                $attribute = &$matches[5]; // Non-empty un-or-any-quoted value.
-            else
-                $attribute = ''; // Otherwise must be empty.
+            } elseif ($matches[5]) {
+                $attribute = &$matches[5];
+            } // Non-empty un-or-any-quoted value.
+            else {
+                $attribute = '';
+            } // Otherwise must be empty.
             // Determine which type of attribute handler: fixed or variable.
-            if (isset($tag['handlers'][$attribute]))
-            { // If attribute matches handler key
+            if (isset($tag['handlers'][$attribute])) { // If attribute matches handler key
                 $handler = &$tag['handlers'][$attribute]; // use the fixed-attribute handler.
-            } elseif (isset($tag['handlers']['ATTRIB']))
-            { // Else if we have one, use this tags
+            } elseif (isset($tag['handlers']['ATTRIB'])) { // Else if we have one, use this tags
                 $handler = &$tag['handlers']['ATTRIB']; // variable attribute handler. Otherwise...
-            }
-            else
-                $handler = &$this->pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB']; // Missing attribute! Strip tag.
+            } else {
+                $handler = &$this->pd['bbcd']['_ROOT_']['handlers']['NO_ATTRIB'];
+            } // Missing attribute! Strip tag.
             // htmlspecialchars() was already called (but not for quotes).
             // Hide any double quotes in attribute now.
             $attribute = str_replace('"', '&quot;', $attribute);
@@ -983,110 +859,100 @@ class Parser
         // -------------------------------------------
         // Perform attribute-type-specific processing:
         // -------------------------------------------
-        switch ($handler['a_type'])
-        {
+        switch ($handler['a_type']) {
             case 'width_height': // This attribute type is used for video BBCodes (YouTube, Vimeo, ...).
-                if ($attribute)
-                {
-                    if (preg_match('/\b(\d++)[Xx](\d++)\b/S', $attribute, $m))
-                    { // Check for a "123x456" WxH spec?
+                if ($attribute) {
+                    if (preg_match('/\b(\d++)[Xx](\d++)\b/S', $attribute, $m)) { // Check for a "123x456" WxH spec?
                         $width = (int)$m[1]; // Yes. Set both dimensions.
                         $height = (int)$m[2];
                     }
-                    if (preg_match('%\bw(?:idth)?+\s*+=\s*+[\'"]?+(\d++)\b%Si', $attribute, $m))
+                    if (preg_match('%\bw(?:idth)?+\s*+=\s*+[\'"]?+(\d++)\b%Si', $attribute, $m)) {
                         $width = (int)$m[1];
-                    if (preg_match('%\bh(?:eight)?+\s*+=\s*+[\'"]?+(\d++)\b%Si', $attribute, $m))
+                    }
+                    if (preg_match('%\bh(?:eight)?+\s*+=\s*+[\'"]?+(\d++)\b%Si', $attribute, $m)) {
                         $height = (int)$m[1];
-                    if (isset($width) && isset($height))
-                    {
+                    }
+                    if (isset($width) && isset($height)) {
                         $ar = (float)$width / (float)$height;
                     }
                     // Clean the attribute of any and all width/height specs.
                     $attribute = preg_replace('/[ ;#]?\b(?:(?:w(?:idth)?+|h(?:eight)?+)\s*+=\s*+([\'"])?+|\d++X)\d++\b(?(1)\1)?+/Si', '', $attribute);
-                    if (isset($width))
-                    { // If set, clip to max allowed. Convert zero to global default.
-                        if ($width > $this->pd['config']['max_width'])
+                    if (isset($width)) { // If set, clip to max allowed. Convert zero to global default.
+                        if ($width > $this->pd['config']['max_width']) {
                             $width = $this->pd['config']['max_width'];
-                        elseif ($width === 0)
-                            $width = $this->pd['config']['def_width']; // If zero, set to default.
+                        } elseif ($width === 0) {
+                            $width = $this->pd['config']['def_width'];
+                        } // If zero, set to default.
                     }
-                    if (isset($height))
-                    { // If set, clip to max allowed. Convert zero to global default.
-                        if ($height > $this->pd['config']['max_height'])
+                    if (isset($height)) { // If set, clip to max allowed. Convert zero to global default.
+                        if ($height > $this->pd['config']['max_height']) {
                             $height = $this->pd['config']['max_height'];
-                        elseif ($height === 0)
-                            $height = $this->pd['config']['def_height']; // If zero, set to default.
+                        } elseif ($height === 0) {
+                            $height = $this->pd['config']['def_height'];
+                        } // If zero, set to default.
                     }
-                    if (!isset($width))
+                    if (!isset($width)) {
                         $format = str_replace('width="%w_str%"', '', $format);
-                    if (!isset($height))
+                    }
+                    if (!isset($height)) {
                         $format = str_replace('height="%h_str%"', '', $format);
-                }
-                else
-                {
+                    }
+                } else {
                     $width = $this->pd['config']['def_width'];
                     $height = $this->pd['config']['def_height'];
                 }
-                if (isset($tag['x_padding']) && $width)
+                if (isset($tag['x_padding']) && $width) {
                     $width += $tag['x_padding'];
-                if (isset($tag['y_padding']) && $height)
+                }
+                if (isset($tag['y_padding']) && $height) {
                     $height += $tag['y_padding'];
+                }
                 break;
             default:
         }
         // ----------------------------------------------------------
         // Perform tag-specific processing of attribute and contents:
         // ----------------------------------------------------------
-        switch ($tagname)
-        {
+        switch ($tagname) {
 
             case 'img': // Handle disabled image, image inside of QUOTE, and width/height dimensions in attribute.
-                if (!$enabled || (!$this->pd['config']['quote_imgs'] && isset($this->pd['bbcd']['quote']) && $this->pd['bbcd']['quote']['depth'] > 0))
-                { // IMG not enabled in this context. Convert to a text URL link if possible and re-enable.
-                    if (isset($this->pd['bbcd']['url']) && $this->pd['bbcd']['url']['depth'] > 0)
+                if (!$enabled || (!$this->pd['config']['quote_imgs'] && isset($this->pd['bbcd']['quote']) && $this->pd['bbcd']['quote']['depth'] > 0)) { // IMG not enabled in this context. Convert to a text URL link if possible and re-enable.
+                    if (isset($this->pd['bbcd']['url']) && $this->pd['bbcd']['url']['depth'] > 0) {
                         $format = "{%c_str%}";
-                    else
-                    {
-                        if ($attribute)
+                    } else {
+                        if ($attribute) {
                             $format = '{<a href="%c_str%" title="%a_str%">'.__('Image link').'</a>}';
-                        else
+                        } else {
                             $format = '{<a href="%c_str%" title="'.__('BBmsg images disabled').'">'.__('Image link').'</a>}';
+                        }
                         $enabled = true; // Re-enable to override default disabled handling (i.e. dont delete.)
                     }
-                }
-                else
-                { // IMG is enabled in this context. Wrap image inside a clickable link if global option is set.
-                    if ($this->pd['config']['click_imgs'] && isset($this->pd['bbcd']['url']) && $this->pd['bbcd']['url']['depth'] === 0)
-                    {
+                } else { // IMG is enabled in this context. Wrap image inside a clickable link if global option is set.
+                    if ($this->pd['config']['click_imgs'] && isset($this->pd['bbcd']['url']) && $this->pd['bbcd']['url']['depth'] === 0) {
                         $format = preg_replace('/^\x01\x02([^\x01]*+)\x01$/', '<a href="%c_str%">$1</a>', $format);
                     }
                 }
                 $format = "\1\2".$format."\1";
                 // If user provided a verbose attribute (in addition to WxH), place this in the title attribute,
                 // otherwise place the URL ($contents) in the ALT attribute and remove the title attribute from format.
-                if (preg_match('/^\s*$/', $attribute))
-                {
+                if (preg_match('/^\s*$/', $attribute)) {
                     $attribute = $contents;
                     $format = str_replace(' title="%a_str%"', '', $format);
                 }
                 break;
 
             case 'quote': // Quotes require language-specific "wrote:" following the posters name.
-                if ($attribute)
-                { // Quote attribute specified. Convert optional #post_id to a post link.
-                    if (preg_match('/#(\d++)$/', $attribute, $m)) // Check for optional embedded post id.
-
-                    { // Attribute has optional '#1234' quoted post ID number. Convert to link back to quoted post.
+                if ($attribute) { // Quote attribute specified. Convert optional #post_id to a post link.
+                    if (preg_match('/#(\d++)$/', $attribute, $m)) { // Check for optional embedded post id. // Attribute has optional '#1234' quoted post ID number. Convert to link back to quoted post.
                         $attribute = preg_replace('/\s*#\d++$/S', '', $attribute); // Strip post id from attribute.
                         $attribute .= ' '.__('wrote'); // Append language-specific "wrote:".
-                        if ($this->pd['config']['quote_links'])
-                        {
+                        if ($this->pd['config']['quote_links']) {
                             // TODO: handle properly topic title and id in url
                             $attribute = ' <a href="'. Router::pathFor('viewPost', ['id'=>1,'name'=>'topic','pid' => $m[1]]).'#p'.$m[1] .'">'. $attribute .'</a>';
                         }
-                    }
-                    else
-                        $attribute .= ' '.__('wrote'); // If no post id, just add "wrote:".
+                    } else {
+                        $attribute .= ' '.__('wrote');
+                    } // If no post id, just add "wrote:".
                 }
                 break;
 
@@ -1102,19 +968,13 @@ class Parser
                 break;
 
             case 'code':
-                if ($attribute)
-                {
-                    if (!isset($tag['handlers'][$attribute])) // Check for no matching attribute handler.
-
-                    { // Yes, the attribute may be more complex. Extract the extra verbage to add to code header.
-                        if (preg_match('/^([\w\-.:]++)\s*+(.*)$/', $attribute, $m))
-                        {
+                if ($attribute) {
+                    if (!isset($tag['handlers'][$attribute])) { // Check for no matching attribute handler. // Yes, the attribute may be more complex. Extract the extra verbage to add to code header.
+                        if (preg_match('/^([\w\-.:]++)\s*+(.*)$/', $attribute, $m)) {
                             $type = strtolower($m[1]);
-                            if (isset($tag['handlers'][$type]))
-                            { // Check if we recognize this first word?
+                            if (isset($tag['handlers'][$type])) { // Check if we recognize this first word?
                                 $handler = &$tag['handlers'][$type]; // Yes. Set new fixed-attribute handler.
-                                if ($m[2])
-                                { // Check if there are extra words.
+                                if ($m[2]) { // Check if there are extra words.
                                     // Yes. Use this extra part of the attribute to augment the code header.
                                     $format = str_replace('</h4>', ' - "'.$m[2].'"</h4>', $handler['format']);
                                 }
@@ -1123,15 +983,15 @@ class Parser
                         }
                     }
                     // Accumulate list of syntax highlighting scripts we need to load.
-                    if (isset($tag['handlers'][$attribute]) && isset($this->pd['syntaxes'][$attribute]))
-                    {
+                    if (isset($tag['handlers'][$attribute]) && isset($this->pd['syntaxes'][$attribute])) {
                         $scripts = &$this->pd['syntaxes'][$attribute];
-                        if (!isset($this->pd['code_scripts']))
+                        if (!isset($this->pd['code_scripts'])) {
                             $this->pd['code_scripts'] = [];
-                        foreach ($scripts as $file)
-                        {
-                            if (!in_array($file, $this->pd['code_scripts']))
+                        }
+                        foreach ($scripts as $file) {
+                            if (!in_array($file, $this->pd['code_scripts'])) {
                                 $this->pd['code_scripts'][] = $file;
+                            }
                         }
                     }
                 }
@@ -1139,14 +999,10 @@ class Parser
 
             case 'color':
             case 'colour':
-                if (preg_match($this->pd['re_color'], $attribute, $m))
-                {
-                    if (isset($m[2]) && $m[2])
-                    {
+                if (preg_match($this->pd['re_color'], $attribute, $m)) {
+                    if (isset($m[2]) && $m[2]) {
                         $attribute = $m[1].'; background-color: '.$m[2];
-                    }
-                    else
-                    {
+                    } else {
                         $attribute = $m[1];
                     }
                 }
@@ -1154,21 +1010,19 @@ class Parser
         }
 
         // The return value depends upon whether this tag is currently enabled.
-        if ($enabled)
-        { // Tag is enabled. Add byte markers to hidden chunks to allow easy explode() later.
-            if (isset($width))
+        if ($enabled) { // Tag is enabled. Add byte markers to hidden chunks to allow easy explode() later.
+            if (isset($width)) {
                 $format = str_replace('%w_str%', $width, $format);
-            if (isset($height))
+            }
+            if (isset($height)) {
                 $format = str_replace('%h_str%', $height, $format);
+            }
             // Subtitute attribute into format string.
             $format = str_replace('%a_str%', $attribute, $format); // Encode attribute value.
             // Finally, subtitute the content into the message.
             $text = str_replace('%c_str%', $contents, $format); // Encode contents.
-        }
-        else
-        { // Tag is not enabled. Strip HTML tags and contents according to tag_type.
-            switch ($tag['tag_type'])
-            {
+        } else { // Tag is not enabled. Strip HTML tags and contents according to tag_type.
+            switch ($tag['tag_type']) {
                 case 'atomic': // Strip everything.
                     $text = '';
                     break;
@@ -1181,8 +1035,9 @@ class Parser
                     $text = &$matches[0]; // $format = '['. $tagname .']%c_str%[/'. $tagname .']';
             }
         }
-        if ($tag['depth'] > $tag['depth_max'])
-            $text = ''; // Silently clip overly-nested tags.
+        if ($tag['depth'] > $tag['depth_max']) {
+            $text = '';
+        } // Silently clip overly-nested tags.
         $tag['depth']--; // restore pre-call tag specific depth
         return $text;
     } // exit _parse_bbcode_callback

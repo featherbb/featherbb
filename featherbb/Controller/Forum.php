@@ -186,7 +186,7 @@ class Forum
             }
 
             // Check if there are enough forums to move the topic
-            if ( !$topicModel->check_move_possible() ) {
+            if (!$topicModel->check_move_possible()) {
                 throw new Error(__('Nowhere to move'), 403);
             }
 

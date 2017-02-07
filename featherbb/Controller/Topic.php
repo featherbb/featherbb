@@ -189,7 +189,7 @@ class Topic
         }
 
         // Check if there are enough forums to move the topic
-        if ( !$this->model->check_move_possible() ) {
+        if (!$this->model->check_move_possible()) {
             throw new Error(__('Nowhere to move'), 403);
         }
 
@@ -219,21 +219,18 @@ class Topic
         // Delete one or more posts
         if (Input::post('delete_posts_comply')) {
             return $this->model->delete_posts($args['id'], $args['fid']);
-        }
-        else if (Input::post('delete_posts')) {
-                $posts = $this->model->delete_posts($args['id'], $args['fid']);
+        } elseif (Input::post('delete_posts')) {
+            $posts = $this->model->delete_posts($args['id'], $args['fid']);
 
-                return View::setPageInfo([
+            return View::setPageInfo([
                         'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
                         'active_page' => 'moderate',
                         'posts' => $posts,
                     ]
                 )->addTemplate('moderate/delete_posts.php')->display();
-        }
-        else if (Input::post('split_posts_comply')) {
+        } elseif (Input::post('split_posts_comply')) {
             return $this->model->split_posts($args['id'], $args['fid'], $p);
-        }
-        else if (Input::post('split_posts')) {
+        } elseif (Input::post('split_posts')) {
             return View::setPageInfo([
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
                     'page' => $p,
@@ -243,8 +240,7 @@ class Topic
                     'list_forums' => $this->model->get_forum_list_split($args['fid']),
                 ]
             )->addTemplate('moderate/split_posts.php')->display();
-        }
-        else {
+        } else {
             // Show the moderate posts view
 
             // Used to disable the Move and Delete buttons if there are no replies to this topic

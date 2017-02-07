@@ -36,6 +36,7 @@ foreach ($display['cur_search'] as $search) {
     </tr>
 
     <?php
+
 }
 
 Container::get('hooks')->fire('view.search.topics.end');

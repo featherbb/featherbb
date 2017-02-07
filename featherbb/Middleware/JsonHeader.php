@@ -18,7 +18,6 @@ namespace FeatherBB\Middleware;
  */
 class JsonHeader
 {
-
     public function __invoke($request, $response, $next)
     {
         $response = $response->withHeader('Content-type', 'application/json');

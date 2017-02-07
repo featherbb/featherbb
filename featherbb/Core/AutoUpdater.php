@@ -182,8 +182,9 @@ class AutoUpdater
     public function setTempDir($dir)
     {
         // Add slash at the end of the path
-        if (substr($dir, -1 != '/'))
+        if (substr($dir, -1 != '/')) {
             $dir = $dir . '/';
+        }
 
         if (!is_dir($dir)) {
             if (!mkdir($dir, 0755, true)) {
@@ -207,8 +208,9 @@ class AutoUpdater
     public function setInstallDir($dir)
     {
         // Add slash at the end of the path
-        if (substr($dir, -1 != '/'))
+        if (substr($dir, -1 != '/')) {
             $dir = $dir . '/';
+        }
 
         if (!is_dir($dir)) {
             if (!mkdir($dir, 0755, true)) {
@@ -364,10 +366,11 @@ class AutoUpdater
 
         $objects = array_diff(scandir($dir), ['.', '..']);
         foreach ($objects as $object) {
-            if (is_dir($dir . '/' . $object))
+            if (is_dir($dir . '/' . $object)) {
                 $this->_removeDir($dir . '/' . $object);
-            else
+            } else {
                 unlink($dir . '/' . $object);
+            }
         }
 
         return rmdir($dir);
@@ -397,18 +400,18 @@ class AutoUpdater
 
             // Read update file from update server
             $update = AdminUtils::get_content($updateFile);
-            if ($update === false) {
-                $this->_errors[] = sprintf(__('Could not check for updates'), $updateFile);
+        if ($update === false) {
+            $this->_errors[] = sprintf(__('Could not check for updates'), $updateFile);
 
-                return false;
-            }
+            return false;
+        }
 
-            $releases = (array)@json_decode($update);
-            if (!is_array($releases)) {
-                $this->_errors[] = __('Unable to parse json update file');
+        $releases = (array)@json_decode($update);
+        if (!is_array($releases)) {
+            $this->_errors[] = __('Unable to parse json update file');
 
-                return false;
-            }
+            return false;
+        }
 
             // $this->_cache->set('update-versions', $releases);
         // }
@@ -424,8 +427,9 @@ class AutoUpdater
             }
 
             if (version::gt($version, $this->_currentVersion)) {
-                if (version::gt($version, $this->_latestVersion))
+                if (version::gt($version, $this->_latestVersion)) {
                     $this->_latestVersion = $version;
+                }
 
                 $this->_updates[] = [
                     'version' => $version,
@@ -526,8 +530,9 @@ class AutoUpdater
             // If we are upgrading core
             array_shift($parts);
 
-            if ($parts[0] == '')
+            if ($parts[0] == '') {
                 continue;
+            }
 
             if ($this->_rootFolder == 'featherbb') {
                 // // Skip if entry is not in targetted files
@@ -562,8 +567,9 @@ class AutoUpdater
             }
 
             // Skip if entry is a directory
-            if (substr($filename, -1, 1) == '/')
+            if (substr($filename, -1, 1) == '/') {
                 continue;
+            }
 
             // Read file contents from archive
             $contents = zip_entry_read($file, zip_entry_filesize($file));
@@ -648,8 +654,9 @@ class AutoUpdater
             $parts = explode('/', $filename);
             array_shift($parts);
 
-            if ($parts[0] == '')
+            if ($parts[0] == '') {
                 continue;
+            }
 
             if ($this->_rootFolder == 'featherbb') {
                 // // Skip if entry is not in targetted files
@@ -670,8 +677,9 @@ class AutoUpdater
             }
 
             // Skip if entry is a directory
-            if (substr($filename, -1, 1) == '/')
+            if (substr($filename, -1, 1) == '/') {
                 continue;
+            }
 
             // Read file contents from archive
             $contents = zip_entry_read($file, zip_entry_filesize($file));
@@ -745,8 +753,9 @@ class AutoUpdater
     public function update($simulateInstall = true, $deleteDownload = true)
     {
         // Check for latest version
-        if ($this->_latestVersion === null || count($this->_updates) === 0)
+        if ($this->_latestVersion === null || count($this->_updates) === 0) {
             $this->checkUpdate();
+        }
 
         if ($this->_latestVersion === null || count($this->_updates) === 0) {
             $this->_errors[] = __('Could not get latest version');
@@ -861,8 +870,8 @@ class AutoUpdater
     // }
 }
 
-class PluginAutoUpdater extends AutoUpdater {
-
+class PluginAutoUpdater extends AutoUpdater
+{
     public function __construct($plugin)
     {
         // Construct parent class
@@ -875,8 +884,8 @@ class PluginAutoUpdater extends AutoUpdater {
     }
 }
 
-class CoreAutoUpdater extends AutoUpdater {
-
+class CoreAutoUpdater extends AutoUpdater
+{
     public function __construct()
     {
         // Construct parent class

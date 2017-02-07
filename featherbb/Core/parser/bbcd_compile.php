@@ -406,7 +406,9 @@ function file2title($file)
     // Space out camelcase words.
     $title = preg_replace('/(?<=[a-z])(?=[A-Z])/', ' ', $title);
     // Make first letter of insignificant words lowercase.
-    $title = preg_replace_callback('/(?!^)\b(And|At|A|In|Is|Of|The|To)\b/i', function ($m) { return strtolower($m); }, $title);
+    $title = preg_replace_callback('/(?!^)\b(And|At|A|In|Is|Of|The|To)\b/i', function ($m) {
+        return strtolower($m);
+    }, $title);
     // Ensure this is HTML-safe (No [&<>""]).
     $title = htmlspecialchars($title);
     return $title;

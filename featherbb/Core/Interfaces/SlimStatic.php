@@ -38,7 +38,7 @@ class SlimStatic
     * @param \Statical\Manager $manager
     * @param object $instance
     */
-    static protected function addInstances($aliases, $manager, $instance)
+    protected static function addInstances($aliases, $manager, $instance)
     {
         foreach ($aliases as $alias) {
             $proxy = __NAMESPACE__.'\\'.$alias;
@@ -52,7 +52,7 @@ class SlimStatic
     * @param \Statical\Manager $manager
     * @param \Slim\Slim $slim
     */
-    static protected function addServices($manager, $slim)
+    protected static function addServices($manager, $slim)
     {
         $services = [
             'Input' => 'request',

@@ -48,8 +48,7 @@ Container::get('hooks')->fire('view.forum.start');
             <?php
             $topic_count = 0;
             foreach ($forum_data as $topic) {
-                ++$topic_count;
-                ?>
+                ++$topic_count; ?>
                     <tr class="<?= $topic['item_status'] ?>">
                         <td class="tcl">
                             <div class="<?= $topic['icon_type'] ?>"><div class="nosize"><?= Utils::forum_number_format($topic_count + $start_from) ?></div></div>
@@ -61,8 +60,7 @@ Container::get('hooks')->fire('view.forum.start');
                         </td>
                         <td class="tc2"><?php echo(is_null($topic['moved_to'])) ? Utils::forum_number_format($topic['num_replies']) : '-' ?></td>
     <?php if (ForumSettings::get('o_topic_views') == '1'): ?>                    <td class="tc3"><?php echo(is_null($topic['moved_to'])) ? Utils::forum_number_format($topic['num_views']) : '-' ?></td>
-    <?php endif;
-                ?>                    <td class="tcr"><?= $topic['last_post_formatted'] ?></td>
+    <?php endif; ?>                    <td class="tcr"><?= $topic['last_post_formatted'] ?></td>
                     </tr>
             <?php
 
@@ -95,13 +93,13 @@ Container::get('hooks')->fire('view.forum.start');
 <?= $post_link ?>
 <?php
 if (isset($active_page) && ($active_page == 'Forum') && $is_admmod) {
-    echo "\t\t\t".'<div id="modcontrols" class="inbox">'."\n";
-    echo "\t\t\t\t".'<dl>'."\n";
-    echo "\t\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
-    echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moderateForum', ['id' => $fid, 'name' => $url_forum, 'page' => $page_number]).'">'.__('Moderate forum').'</a></span></dd>'."\n";
-    echo "\t\t\t\t".'</dl>'."\n";
-    echo "\t\t\t".'</div>'."\n";
-}
+                echo "\t\t\t".'<div id="modcontrols" class="inbox">'."\n";
+                echo "\t\t\t\t".'<dl>'."\n";
+                echo "\t\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
+                echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moderateForum', ['id' => $fid, 'name' => $url_forum, 'page' => $page_number]).'">'.__('Moderate forum').'</a></span></dd>'."\n";
+                echo "\t\t\t\t".'</dl>'."\n";
+                echo "\t\t\t".'</div>'."\n";
+            }
 Container::get('hooks')->fire('view.forum.mod.actions');
 ?>
         </div>

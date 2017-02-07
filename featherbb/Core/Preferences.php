@@ -8,6 +8,7 @@
 */
 
 namespace FeatherBB\Core;
+
 use FeatherBB\Core\Database as DB;
 
 class Preferences
@@ -20,8 +21,7 @@ class Preferences
     {
         if ($gid === null) {
             list($uid, $gid) = $this->getInfosFromUser($user);
-        }
-        else {
+        } else {
             $uid = (int) $user;
         }
 

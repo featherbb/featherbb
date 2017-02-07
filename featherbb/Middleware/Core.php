@@ -26,8 +26,8 @@ use FeatherBB\Core\View;
 
 class Core
 {
-    protected $forum_env,
-              $forum_settings;
+    protected $forum_env;
+    protected $forum_settings;
     protected $headers = [
         'Cache-Control' => 'no-cache, no-store, must-revalidate',
         'Pragma' => 'no-cache',
@@ -112,8 +112,8 @@ class Core
                 DB::configure('mysql:host='.$config['db_host'].';dbname='.$config['db_name']);
                 DB::configure('driver_options', [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
                 break;
-            case 'sqlite';
-            case 'sqlite3';
+            case 'sqlite':
+            case 'sqlite3':
                 if (!extension_loaded('pdo_sqlite')) {
                     throw new Error('Driver pdo_mysql not installed.', 500, false, false, true);
                 }
@@ -213,11 +213,11 @@ class Core
             return new Parser();
         });
         // Set cookies
-        Container::set('cookie', function ($container){
+        Container::set('cookie', function ($container) {
             $request = $container->get('request');
             return new \Slim\Http\Cookies($request->getCookieParams());
         });
-        Container::set('flash', function($c) {
+        Container::set('flash', function ($c) {
             return new \Slim\Flash\Messages;
         });
 

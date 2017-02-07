@@ -41,7 +41,9 @@ Container::get('hooks')->fire('view.admin.plugins.start');
                                 </tfoot>
                                 <tbody>
 <?php foreach ($availablePlugins as $plugin) : ?>
-                                    <tr<?php if (!in_array($plugin->name, $activePlugins)) echo ' class="plugin-deactivated"'; ?>>
+                                    <tr<?php if (!in_array($plugin->name, $activePlugins)) {
+    echo ' class="plugin-deactivated"';
+} ?>>
                                         <td class="plugin-name">
                                             <strong><?= Utils::escape($plugin->title); ?></strong>
                                             <p class="plugin-details"><?= __('Author') ?> <a href="http://marketplace.featherbb.org/plugins/author/<?= Utils::escape($plugin->author->name); ?>" target="_blank"><?= Utils::escape($plugin->author->name); ?></a></p>
@@ -49,18 +51,26 @@ Container::get('hooks')->fire('view.admin.plugins.start');
                                         <td class="plugin-version"><?= Utils::escape($plugin->version); ?></td>
                                         <td class="plugin-description"><?= Utils::escape($plugin->description); ?></td>
                                         <td class="plugin-status">
-<?php if (in_array($plugin->name, $activePlugins)) { ?>
+<?php if (in_array($plugin->name, $activePlugins)) {
+    ?>
                                             <a href="<?= Router::pathFor('deactivatePlugin', ['name' => Utils::escape($plugin->name)]) ?>" title="<?= __('Deactivate') ?>" class="text-success"><img class="pluginIcons" src="<?= Utils::escape(Url::base(true)) ?>/style/themes/FeatherBB/img/active.png" alt="<?= __('Deactivate') ?>"/></a>
-<?php } else { ?>
+<?php 
+} else {
+    ?>
                                             <a href="<?= Router::pathFor('activatePlugin', ['name' => Utils::escape($plugin->name)]) ?>" title="<?= __('Activate') ?>" class="text-error"><img class="pluginIcons" src="<?= Utils::escape(Url::base(true)) ?>/style/themes/FeatherBB/img/inactive.png" alt="<?= __('Activate') ?>"/></a>
-<?php } ?>
+<?php 
+} ?>
                                         </td>
                                         <td class="plugin-actions">
-<?php if (in_array($plugin->name, $activePlugins)) { ?>
+<?php if (in_array($plugin->name, $activePlugins)) {
+    ?>
                                             -
-<?php } else { ?>
+<?php 
+} else {
+    ?>
                                             <a href="<?= Router::pathFor('uninstallPlugin', ['name' => Utils::escape($plugin->name)]) ?>" onclick="return confirm('<?= __('Uninstall warning') ?>')"><?= __('Uninstall') ?></a>
-<?php } ?>
+<?php 
+} ?>
                                         </td>
                                     </tr>
 <?php endforeach; ?>

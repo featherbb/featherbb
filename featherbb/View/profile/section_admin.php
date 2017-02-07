@@ -52,9 +52,7 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
                                 <fieldset>
 <?php
 
-            }
-
-            ?>
+            } ?>
                                     <legend><?= __('Delete ban legend') ?></legend>
                                     <div class="infldset">
                                         <input type="submit" name="delete_user" value="<?= __('Delete user') ?>" /> <input type="submit" name="ban" value="<?= __('Ban user') ?>" />

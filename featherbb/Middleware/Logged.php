@@ -18,7 +18,6 @@ namespace FeatherBB\Middleware;
  */
 class Logged
 {
-
     public function __invoke($request, $response, $next)
     {
         // Redirect user to login page if not logged

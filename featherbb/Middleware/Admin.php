@@ -18,11 +18,10 @@ namespace FeatherBB\Middleware;
  */
 class Admin
 {
-
     public function __invoke($request, $response, $next)
     {
         // Redirect user to home page if not admin
-        if(User::get()->g_id != ForumEnv::get('FEATHER_ADMIN')) {
+        if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN')) {
             return Router::redirect(Router::pathFor('home'), __('No permission'));
         }
 

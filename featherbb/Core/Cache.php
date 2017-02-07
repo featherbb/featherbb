@@ -174,11 +174,11 @@ class Cache
         if (is_array($cache)) {
             $i = 0;
             $cache = array_map(function ($value) {
-                        if (!$this->_isExpired($value['time'], $value['expire'])) {
-                            ++$i;
-                            return $value;
-                        }
-                        });
+                if (!$this->_isExpired($value['time'], $value['expire'])) {
+                    ++$i;
+                    return $value;
+                }
+            });
             if ($i > 0) {
                 $this->_saveCache($cache);
             }
@@ -245,8 +245,9 @@ class Cache
     */
     protected function _loadCache()
     {
-        if (!is_null($this->cache))
-        return $this->cache;
+        if (!is_null($this->cache)) {
+            return $this->cache;
+        }
 
         if (file_exists($this->getCacheFile())) {
             $this->cache = json_decode(file_get_contents($this->getCacheFile()), true);

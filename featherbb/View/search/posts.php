@@ -21,16 +21,17 @@ foreach ($display['cur_search'] as $search) {
     ?>
     <div
         class="blockpost<?= ($search['post_count'] % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($search['pid'] == $search['first_post_id']) {
-            echo ' firstpost';
-        } ?><?php if ($search['post_count'] == 1) {
-            echo ' blockpost1';
-        } ?><?php if ($search['item_status'] != '') {
-            echo ' ' . $search['item_status'];
-        } ?>">
+        echo ' firstpost';
+    } ?><?php if ($search['post_count'] == 1) {
+        echo ' blockpost1';
+    } ?><?php if ($search['item_status'] != '') {
+        echo ' ' . $search['item_status'];
+    } ?>">
         <h2><span><span
                     class="conr">#<?php echo($search['post_count']) ?></span> <span><?php if ($search['pid'] != $search['first_post_id']) {
-                        _e('Re'); echo  ' ';
-                    } ?><?= $search['forum'] ?></span> <span>»&#160;<a
+        _e('Re');
+        echo  ' ';
+    } ?><?= $search['forum'] ?></span> <span>»&#160;<a
                         href="<?= Router::pathFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?= Utils::escape($search['subject']) ?></a></span> <span>»&#160;<a
                         href="<?= Router::pathFor('viewPost', ['id' => $search['tid'], 'name' => $search['url_topic'], 'pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?= Utils::format_time($search['pposted']) ?></a></span></span>
         </h2>
@@ -78,6 +79,7 @@ foreach ($display['cur_search'] as $search) {
         </div>
     </div>
     <?php
+
 }
 
 Container::get('hooks')->fire('view.search.posts.end');

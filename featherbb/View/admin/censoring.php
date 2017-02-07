@@ -26,7 +26,7 @@ Container::get('hooks')->fire('view.admin.censoring.start');
                     <fieldset>
                         <legend><?= __('Add word subhead') ?></legend>
                         <div class="infldset">
-                            <p><?php echo _e('Add word info') . '&nbsp;'; echo (ForumSettings::get('o_censoring') == '1' ? sprintf(__('Censoring enabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Admin options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Admin options').'</a>')) ?></p>
+                            <p><?php echo _e('Add word info') . '&nbsp;'; echo(ForumSettings::get('o_censoring') == '1' ? sprintf(__('Censoring enabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Admin options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Admin options').'</a>')) ?></p>
                             <table>
                             <thead>
                                 <tr>
@@ -66,9 +66,7 @@ if (!empty($word_data)) {
 
     foreach ($word_data as $word) {
         echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$word['id'].']" value="'.Utils::escape($word['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$word['id'].']" value="'.Utils::escape($word['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$word['id'].']" value="'.__('Update').'" />&#160;<input type="submit" name="remove['.$word['id'].']" value="'.__('Remove').'" /></td></tr>'."\n";
-    }
-
-    ?>
+    } ?>
                             </tbody>
                             </table>
 <?php

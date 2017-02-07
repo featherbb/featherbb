@@ -8,13 +8,14 @@
 */
 
 namespace FeatherBB\Core;
+
 use FeatherBB\Core\Database as DB;
 
 class Permissions
 {
-    protected $permissions = [],
-              $parents = [],
-              $regexs = [];
+    protected $permissions = [];
+    protected $parents = [];
+    protected $regexs = [];
 
     public function getParents($gid = null)
     {
@@ -74,7 +75,7 @@ class Permissions
 
         $parents = ($this->getParents($gid)) ? $this->getParents($gid) : [];
 
-        if(($key = array_search($parent, $this->parents[$gid])) !== false) {
+        if (($key = array_search($parent, $this->parents[$gid])) !== false) {
             unset($this->parents[$gid][$key]);
             $result = DB::for_table('groups')
                         ->find_one($gid)

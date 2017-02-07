@@ -7,7 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-use FeatherBB\Core\Url;use FeatherBB\Core\Utils;
+use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
 if (!isset($feather)) {
@@ -25,7 +26,8 @@ Container::get('hooks')->fire('view.footer.start');
                 <div id="brdfooternav" class="inbox">
 <?php
 // Display the "Jump to" drop list
-if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) { ?>
+if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) {
+    ?>
                     <div class="conl">
                         <form id="qjump" method="get" action="">
                             <div>
@@ -38,13 +40,13 @@ if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) { ?>
                         echo "\t\t\t\t\t\t\t\t\t\t".'<option value="'.Router::pathFor('Forum', ['id' => $forum['forum_id'], 'name' => Url::url_friendly($forum['forum_name'])]).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
                     }
                     echo "\t\t\t\t\t\t\t\t\t".'</optgroup>'."\n";
-                }
-?>
+                } ?>
                                 </select>
                             </div>
                         </form>
                     </div>
-<?php } ?>
+<?php 
+} ?>
                     <div class="conr">
                         <p id="poweredby"><?php printf(__('Powered by'), '<a href="http://featherbb.org/">FeatherBB</a>'.((ForumSettings::get('o_show_version') == '1') ? ' '.ForumSettings::get('o_cur_version') : '')) ?></p>
                     </div>
@@ -55,10 +57,13 @@ if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) { ?>
 <?php
 
 // Display debug info (if enabled/defined)
-if (!empty($exec_info)) { ?>
+if (!empty($exec_info)) {
+    ?>
         <p id="debugtime">[ <?= sprintf(__('Querytime'), round($exec_info['exec_time'], 6), $exec_info['nb_queries']).' - '.sprintf(__('Memory usage'), $exec_info['mem_usage']).' '.sprintf(__('Peak usage'), $exec_info['mem_peak_usage'])?> ]</p>
-<?php }
-if (!empty($queries_info)) { ?>
+<?php 
+}
+if (!empty($queries_info)) {
+    ?>
         <div id="debug" class="blocktable">
             <h2><span><?= __('Debug table') ?></span></h2>
             <div class="box">
@@ -72,11 +77,11 @@ if (!empty($queries_info)) { ?>
                         </thead>
                         <tbody>
 <?php foreach ($queries_info['raw'] as $time => $sql) {
-    echo "\t\t\t\t\t\t".'<tr>'."\n";
-    echo "\t\t\t\t\t\t\t".'<td class="tcl">'.Utils::escape(round($time, 8)).'</td>'."\n";
-    echo "\t\t\t\t\t\t\t".'<td class="tcr">'.Utils::escape($sql).'</td>'."\n";
-    echo "\t\t\t\t\t\t".'</tr>'."\n";
-} ?>
+        echo "\t\t\t\t\t\t".'<tr>'."\n";
+        echo "\t\t\t\t\t\t\t".'<td class="tcl">'.Utils::escape(round($time, 8)).'</td>'."\n";
+        echo "\t\t\t\t\t\t\t".'<td class="tcr">'.Utils::escape($sql).'</td>'."\n";
+        echo "\t\t\t\t\t\t".'</tr>'."\n";
+    } ?>
                             <tr>
                                 <td class="tcl" colspan="2"><?= sprintf(__('Total query time'), round($queries_info['total_time'], 7)).' s' ?></td>
                             </tr>
@@ -85,7 +90,8 @@ if (!empty($queries_info)) { ?>
                 </div>
             </div>
         </div>
-<?php } ?>
+<?php 
+} ?>
     </footer>
 <!-- JS -->
 <script type="text/javascript">

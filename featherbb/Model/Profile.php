@@ -18,7 +18,6 @@ use FeatherBB\Model\Auth as AuthModel;
 
 class Profile
 {
-
     public function change_pass($id)
     {
         $id = Container::get('hooks')->fire('model.profile.change_pass_start', $id);
@@ -153,7 +152,7 @@ class Profile
                 if (ForumSettings::get('p_allow_dupe_email') == '0') {
                     throw new Error(__('Dupe email'), 400);
                 } elseif (ForumSettings::get('o_mailing_list') != '') {
-                    foreach($result as $cur_dupe) {
+                    foreach ($result as $cur_dupe) {
                         $dupe_list[] = $cur_dupe['username'];
                     }
 
@@ -361,7 +360,7 @@ class Profile
             // Loop through all forums
             $result = $this->loop_mod_forums();
 
-            foreach($result as $cur_forum) {
+            foreach ($result as $cur_forum) {
                 $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : [];
 
                 if (in_array($id, $cur_moderators)) {
@@ -421,7 +420,7 @@ class Profile
         // Loop through all forums
         $result = $this->loop_mod_forums();
 
-        foreach($result as $cur_forum) {
+        foreach ($result as $cur_forum) {
             $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : [];
             // If the user should have moderator access (and he/she doesn't already have it)
             if (in_array($cur_forum['id'], $moderator_in) && !in_array($id, $cur_moderators)) {
@@ -538,7 +537,7 @@ class Profile
                 // Loop through all forums
                 $result = $this->loop_mod_forums();
 
-                foreach($result as $cur_forum) {
+                foreach ($result as $cur_forum) {
                     $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : [];
 
                     if (in_array($id, $cur_moderators)) {
@@ -597,7 +596,7 @@ class Profile
                 $result = $result->find_many();
 
                 if ($result) {
-                    foreach($result as $cur_post) {
+                    foreach ($result as $cur_post) {
                         // Determine whether this post is the "topic post" or not
                         $result2 = DB::for_table('posts')
                             ->where('topic_id', $cur_post['topic_id'])
@@ -945,7 +944,7 @@ class Profile
                 // Loop through all forums
                 $result = $this->loop_mod_forums();
 
-                foreach($result as $cur_forum) {
+                foreach ($result as $cur_forum) {
                     $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : [];
 
                     if (in_array($id, $cur_moderators)) {
@@ -1190,7 +1189,7 @@ class Profile
         $result = $result->find_many();
 
         $cur_category = 0;
-        foreach($result as $cur_forum) {
+        foreach ($result as $cur_forum) {
             if ($cur_forum['cid'] != $cur_category) {
                 // A new category since last iteration?
                 if ($cur_category) {

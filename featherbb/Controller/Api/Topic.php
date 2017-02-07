@@ -67,8 +67,7 @@ class Topic extends Api
             $this->model->increment_post_count($post, $new['tid']);
 
             return Router::redirect(Router::pathFor('postApi', ['id' => $new['pid']]));
-        }
-        else {
+        } else {
             return json_encode($errors, JSON_PRETTY_PRINT);
         }
     }
@@ -124,8 +123,7 @@ class Topic extends Api
             $this->model->increment_post_count($post, $new['id']);
 
             return Router::redirect(Router::pathFor('postApi', ['id' => $new['pid']]));
-        }
-        else {
+        } else {
             return json_encode($errors, JSON_PRETTY_PRINT);
         }
     }

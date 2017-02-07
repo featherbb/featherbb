@@ -57,5 +57,4 @@ class StringReader extends Reader
             $this->strlen($this->_str)
         );
     }
-
 }

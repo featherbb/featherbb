@@ -29,8 +29,7 @@ if (!empty($errors)) {
 
     foreach ($errors as $cur_error) {
         echo "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
-    }
-    ?>
+    } ?>
             </ul>
         </div>
     </div>
@@ -107,9 +106,7 @@ if (!empty($errors)) {
                 } else {
                     echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
                 }
-            }
-
-            ?>
+            } ?>
                             </select>
                             <br /></label>
                     </div>

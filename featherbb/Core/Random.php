@@ -95,8 +95,7 @@ class Random
         $SSLstr = '4'; // http://xkcd.com/221/
         if (function_exists('openssl_random_pseudo_bytes') &&
             (version_compare(PHP_VERSION, '5.3.4') >= 0 ||
-                substr(PHP_OS, 0, 3) !== 'WIN'))
-        {
+                substr(PHP_OS, 0, 3) !== 'WIN')) {
             $SSLstr = openssl_random_pseudo_bytes($len, $strong);
             if ($strong) {
                 return $SSLstr;
@@ -139,14 +138,13 @@ class Random
             @stream_set_read_buffer($handle, 0);
         }
 
-        do
-        {
+        do {
             $bytes = ($total > $hash_len)? $hash_len : $total;
             $total -= $bytes;
 
             //collect any entropy available from the PHP system and filesystem
             $entropy = rand() . uniqid(mt_rand(), true) . $SSLstr;
-            $entropy .= implode('', @fstat(@fopen( __FILE__, 'r')));
+            $entropy .= implode('', @fstat(@fopen(__FILE__, 'r')));
             $entropy .= memory_get_usage() . getmypid();
             $entropy .= serialize($_ENV) . serialize($_SERVER);
             if (function_exists('posix_times')) {
@@ -157,10 +155,9 @@ class Random
             }
             if ($handle) {
                 $entropy .= @fread($handle, $bytes);
-            } else  {
+            } else {
                 // Measure the time that the operations will take on average
-                for ($i = 0; $i < 3; $i++)
-                {
+                for ($i = 0; $i < 3; $i++) {
                     $c1 = microtime(true);
                     $var = sha1(mt_rand());
                     for ($j = 0; $j < 50; $j++) {
@@ -186,7 +183,6 @@ class Random
                     $c2 = microtime();
                     $entropy .= $c1 . $c2;
                 }
-
             }
             // We assume sha1 is a deterministic extractor for the $entropy variable.
             $str .= sha1($entropy, true);

@@ -250,7 +250,6 @@ class Search
             $subject_match = ($match_in == 'subject') ? 1 : 0;
 
             if (!empty($wordlist)) {
-
                 $sql = [];
                 foreach ($wordlist as $word) {
                     $sql[] = $cur_words[$match_in][$word];

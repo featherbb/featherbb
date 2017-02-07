@@ -41,9 +41,9 @@ Container::get('hooks')->fire('view.admin.forums.permissions.start');
                                     <td>
                                         <select name="cat_id" tabindex="3">
                                             <?php  foreach ($forum_data as $cat_id => $cat_data) {
-                                                $selected = ($cat_id == $cur_forum['cat_id']) ? 'selected="selected"' : '';
-                                                echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat_id.'" '.$selected.'>'.Utils::escape($cat_data['cat_name']).'</option>'."\n";
-                                            } ?>
+    $selected = ($cat_id == $cur_forum['cat_id']) ? 'selected="selected"' : '';
+    echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat_id.'" '.$selected.'>'.Utils::escape($cat_data['cat_name']).'</option>'."\n";
+} ?>
                                         </select>
                                     </td>
                                 </tr>
@@ -51,9 +51,15 @@ Container::get('hooks')->fire('view.admin.forums.permissions.start');
                                     <th scope="row"><?= __('Sort by label') ?></th>
                                     <td>
                                         <select name="sort_by" tabindex="4">
-                                            <option value="0"<?php if ($cur_forum['sort_by'] == '0') {echo ' selected="selected"';} ?>><?= __('Last post') ?></option>
-                                            <option value="1"<?php if ($cur_forum['sort_by'] == '1') {echo ' selected="selected"';} ?>><?= __('Topic start') ?></option>
-                                            <option value="2"<?php if ($cur_forum['sort_by'] == '2') {echo ' selected="selected"';} ?>><?= __('Subject') ?></option>
+                                            <option value="0"<?php if ($cur_forum['sort_by'] == '0') {
+    echo ' selected="selected"';
+} ?>><?= __('Last post') ?></option>
+                                            <option value="1"<?php if ($cur_forum['sort_by'] == '1') {
+    echo ' selected="selected"';
+} ?>><?= __('Topic start') ?></option>
+                                            <option value="2"<?php if ($cur_forum['sort_by'] == '2') {
+    echo ' selected="selected"';
+} ?>><?= __('Subject') ?></option>
                                         </select>
                                     </td>
                                 </tr>
@@ -85,17 +91,23 @@ Container::get('hooks')->fire('view.admin.forums.permissions.start');
         ?>
                                 <tr>
                                     <th class="atcl"><?= Utils::escape($perm['g_title']) ?></th>
-                                    <td<?php if (!$perm['read_forum_def']) {echo ' class="nodefault"';}?>>
-                                        <input type="hidden" name="read_forum_old[<?= $perm['g_id'] ?>]" value="<?= ($perm['read_forum']) ? '1' : '0';?>" />
-                                        <input type="checkbox" name="read_forum_new[<?= $perm['g_id'] ?>]" value="1"<?= ($perm['read_forum']) ? ' checked="checked"' : '';?><?= ($perm['board.read'] == '0') ? ' disabled="disabled"' : '';?> tabindex="<?= $cur_index++ ?>" />
+                                    <td<?php if (!$perm['read_forum_def']) {
+            echo ' class="nodefault"';
+        } ?>>
+                                        <input type="hidden" name="read_forum_old[<?= $perm['g_id'] ?>]" value="<?= ($perm['read_forum']) ? '1' : '0'; ?>" />
+                                        <input type="checkbox" name="read_forum_new[<?= $perm['g_id'] ?>]" value="1"<?= ($perm['read_forum']) ? ' checked="checked"' : ''; ?><?= ($perm['board.read'] == '0') ? ' disabled="disabled"' : ''; ?> tabindex="<?= $cur_index++ ?>" />
                                     </td>
-                                    <td<?php if (!$perm['post_replies_def'] && $cur_forum['redirect_url'] == '') {echo ' class="nodefault"';}?>>
-                                        <input type="hidden" name="post_replies_old[<?= $perm['g_id'] ?>]" value="<?= ($perm['post_replies']) ? '1' : '0';?>" />
-                                        <input type="checkbox" name="post_replies_new[<?= $perm['g_id'] ?>]" value="1"<?= ($perm['post_replies']) ? ' checked="checked"' : '';?><?= ($cur_forum['redirect_url'] != '') ? ' disabled="disabled"' : '';?> tabindex="<?= $cur_index++ ?>" />
+                                    <td<?php if (!$perm['post_replies_def'] && $cur_forum['redirect_url'] == '') {
+            echo ' class="nodefault"';
+        } ?>>
+                                        <input type="hidden" name="post_replies_old[<?= $perm['g_id'] ?>]" value="<?= ($perm['post_replies']) ? '1' : '0'; ?>" />
+                                        <input type="checkbox" name="post_replies_new[<?= $perm['g_id'] ?>]" value="1"<?= ($perm['post_replies']) ? ' checked="checked"' : ''; ?><?= ($cur_forum['redirect_url'] != '') ? ' disabled="disabled"' : ''; ?> tabindex="<?= $cur_index++ ?>" />
                                     </td>
-                                    <td<?php if (!$perm['post_topics_def'] && $cur_forum['redirect_url'] == '') {echo ' class="nodefault"';}?>>
-                                        <input type="hidden" name="post_topics_old[<?= $perm['g_id'] ?>]" value="<?= ($perm['post_topics']) ? '1' : '0';?>" />
-                                        <input type="checkbox" name="post_topics_new[<?= $perm['g_id'] ?>]" value="1"<?= ($perm['post_topics']) ? ' checked="checked"' : '';?><?= ($cur_forum['redirect_url'] != '') ? ' disabled="disabled"' : '';?> tabindex="<?= $cur_index++ ?>" />
+                                    <td<?php if (!$perm['post_topics_def'] && $cur_forum['redirect_url'] == '') {
+            echo ' class="nodefault"';
+        } ?>>
+                                        <input type="hidden" name="post_topics_old[<?= $perm['g_id'] ?>]" value="<?= ($perm['post_topics']) ? '1' : '0'; ?>" />
+                                        <input type="checkbox" name="post_topics_new[<?= $perm['g_id'] ?>]" value="1"<?= ($perm['post_topics']) ? ' checked="checked"' : ''; ?><?= ($cur_forum['redirect_url'] != '') ? ' disabled="disabled"' : ''; ?> tabindex="<?= $cur_index++ ?>" />
                                     </td>
                                 </tr>
 <?php

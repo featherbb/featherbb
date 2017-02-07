@@ -64,7 +64,6 @@ class Categories
         Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
         return Router::redirect(Router::pathFor('adminCategories'), __('Categories updated redirect'));
-
     }
 
     public function delete($req, $res, $args)

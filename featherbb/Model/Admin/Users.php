@@ -97,7 +97,7 @@ class Users
 
         if ($result) {
             $poster_ids = [];
-            foreach($result as $cur_poster) {
+            foreach ($result as $cur_poster) {
                 $info['posters'][] = $cur_poster;
                 $poster_ids[] = $cur_poster['poster_id'];
             }
@@ -164,7 +164,7 @@ class Users
         }
 
         if (Input::post('move_users_comply')) {
-            if ( Input::post('new_group') && isset($move['all_groups'][Input::post('new_group')]) ) {
+            if (Input::post('new_group') && isset($move['all_groups'][Input::post('new_group')])) {
                 $new_group = Input::post('new_group');
             } else {
                 throw new Error(__('Invalid group message'), 400);
@@ -182,7 +182,7 @@ class Users
             $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.move_users.user_groups_query', $result);
             $result = $result->find_many();
 
-            foreach($result as $cur_user) {
+            foreach ($result as $cur_user) {
                 if (!isset($user_groups[$cur_user['group_id']])) {
                     $user_groups[$cur_user['group_id']] = [];
                 }
@@ -192,7 +192,7 @@ class Users
 
             // Are any users moderators?
             $group_ids = array_keys($user_groups);
-            foreach($group_ids as $group_id) {
+            foreach ($group_ids as $group_id) {
                 if (!Container::get('perms')->getGroupPermissions($group_id, 'mod.is_mod')) {
                     unset($user_groups[$group_id]);
                 }
@@ -207,7 +207,7 @@ class Users
                             ->select_many($select_mods)
                             ->find_many();
 
-                foreach($result as $cur_forum) {
+                foreach ($result as $cur_forum) {
                     $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : [];
 
                     foreach ($user_groups as $group_users) {
@@ -275,8 +275,7 @@ class Users
             $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.delete_users.user_groups_query', $result);
             $result = $result->find_many();
 
-            foreach($result as $cur_user) {
-
+            foreach ($result as $cur_user) {
                 if (!isset($user_groups[$cur_user['group_id']])) {
                     $user_groups[$cur_user['group_id']] = [];
                 }
@@ -286,7 +285,7 @@ class Users
 
             // Are any users moderators?
             $group_ids = array_keys($user_groups);
-            foreach($group_ids as $group_id) {
+            foreach ($group_ids as $group_id) {
                 if (!Container::get('perms')->getGroupPermissions($group_id, 'mod.is_mod')) {
                     unset($user_groups[$group_id]);
                 }
@@ -300,7 +299,7 @@ class Users
                 ->select_many($select_mods)
                 ->find_many();
 
-            foreach($result as $cur_forum) {
+            foreach ($result as $cur_forum) {
                 $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : [];
 
                 foreach ($user_groups as $group_users) {
@@ -351,7 +350,7 @@ class Users
                 $result = $result->find_many();
 
                 if ($result) {
-                    foreach($result as $cur_post) {
+                    foreach ($result as $cur_post) {
                         // Determine whether this post is the "topic post" or not
                         $result2 = DB::for_table('posts')
                                         ->where('topic_id', $cur_post['topic_id'])
@@ -616,7 +615,7 @@ class Users
         $like_command = (ForumSettings::get('db_type') == 'pgsql') ? 'ILIKE' : 'LIKE';
         foreach ($form as $key => $input) {
             if ($input != '' && in_array($key, ['username', 'email', 'title', 'realname', 'url', 'location', 'signature', 'admin_note'])) {
-                $search['conditions'][] = 'u.'.str_replace("'","''",$key).' '.$like_command.' \''.str_replace("'","''",str_replace('*', '%', $input)).'\'';
+                $search['conditions'][] = 'u.'.str_replace("'", "''", $key).' '.$like_command.' \''.str_replace("'", "''", str_replace('*', '%', $input)).'\'';
                 $search['query_str'][] = 'form%5B'.$key.'%5D='.urlencode($input);
             }
         }

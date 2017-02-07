@@ -50,15 +50,15 @@ class Forums
     {
         Container::get('hooks')->fire('controller.admin.forums.edit');
 
-        if(Request::isPost()) {
+        if (Request::isPost()) {
             if (Input::post('save') && Input::post('read_forum_old')) {
 
                 // Forums parameters / TODO : better handling of wrong parameters
                 $forum_data = ['forum_name' => Utils::escape(Input::post('forum_name')),
-                                    'forum_desc' => Input::post('forum_desc') ? Utils::linebreaks(Utils::trim(Input::post('forum_desc'))) : NULL,
+                                    'forum_desc' => Input::post('forum_desc') ? Utils::linebreaks(Utils::trim(Input::post('forum_desc'))) : null,
                                     'cat_id' => (int) Input::post('cat_id'),
                                     'sort_by' => (int) Input::post('sort_by'),
-                                    'redirect_url' => Url::is_valid(Input::post('redirect_url')) ? Utils::escape(Input::post('redirect_url')) : NULL];
+                                    'redirect_url' => Url::is_valid(Input::post('redirect_url')) ? Utils::escape(Input::post('redirect_url')) : null];
 
                 if ($forum_data['forum_name'] == '') {
                     return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Must enter name message'));
@@ -71,13 +71,12 @@ class Forums
 
                 // Permissions
                 $permissions = $this->model->get_default_group_permissions(false);
-                foreach($permissions as $perm_group) {
+                foreach ($permissions as $perm_group) {
                     $permissions_data = ['group_id' => $perm_group['g_id'],
                                                 'forum_id' => $args['id']];
                     if ($perm_group['board.read'] == '1' && isset(Input::post('read_forum_new')[$perm_group['g_id']]) && Input::post('read_forum_new')[$perm_group['g_id']] == '1') {
                         $permissions_data['read_forum'] = '1';
-                    }
-                    else {
+                    } else {
                         $permissions_data['read_forum'] = '0';
                     }
 
@@ -87,11 +86,11 @@ class Forums
                     if ($permissions_data['read_forum'] != Input::post('read_forum_old')[$perm_group['g_id']] ||
                         $permissions_data['post_replies'] != Input::post('post_replies_old')[$perm_group['g_id']] ||
                         $permissions_data['post_topics'] != Input::post('post_topics_old')[$perm_group['g_id']]) {
-                            // If there is no group permissions override for this forum
+                        // If there is no group permissions override for this forum
                             if ($permissions_data['read_forum'] == '1' && $permissions_data['post_replies'] == $perm_group['topic.reply'] && $permissions_data['post_topics'] == $perm_group['topic.post']) {
                                 $this->model->delete_permissions($args['id'], $perm_group['g_id']);
                             } else {
-                            // Run an UPDATE and see if it affected a row, if not, INSERT
+                                // Run an UPDATE and see if it affected a row, if not, INSERT
                                 $this->model->update_permissions($permissions_data);
                             }
                     }
@@ -101,7 +100,6 @@ class Forums
                 Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
                 return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Forum updated redirect'));
-
             } elseif (Input::post('revert_perms')) {
                 $this->model->delete_permissions($args['id']);
 
@@ -110,7 +108,6 @@ class Forums
 
                 return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Perms reverted redirect'));
             }
-
         } else {
             AdminUtils::generateAdminMenu('forums');
 
@@ -136,13 +133,12 @@ class Forums
             return $notFoundHandler($req, $res);
         }
 
-        if(Request::isPost()) {
+        if (Request::isPost()) {
             $this->model->delete_forum($args['id']);
             // Regenerate the quick jump cache
             Container::get('cache')->store('quickjump', Cache::get_quickjump());
 
             return Router::redirect(Router::pathFor('adminForums'), __('Forum deleted redirect'));
-
         } else { // If the user hasn't confirmed
 
             AdminUtils::generateAdminMenu('forums');
