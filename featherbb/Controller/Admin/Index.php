@@ -18,7 +18,7 @@ class Index
 {
     public function __construct()
     {
-        translate('admin/index');
+        Lang::load('admin/index');
     }
 
     public function display($req, $res, $args)

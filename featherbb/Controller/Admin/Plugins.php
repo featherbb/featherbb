@@ -21,7 +21,7 @@ class Plugins
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Plugins();
-        translate('admin/plugins');
+        Lang::load('admin/plugins');
         if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
         }

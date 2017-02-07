@@ -18,7 +18,7 @@ class Options
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Options();
-        translate('admin/options');
+        Lang::load('admin/options');
         if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
         }

@@ -19,7 +19,7 @@ class Parser
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Parser();
-        translate('admin/parser');
+        Lang::load('admin/parser');
         if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
         }

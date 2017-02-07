@@ -20,9 +20,9 @@ class Topic
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Topic();
-        translate('topic');
-        translate('misc'); // To be removed
-        translate('post');
+        Lang::load('topic');
+        Lang::load('misc'); // To be removed
+        Lang::load('post');
     }
 
     public function display($req, $res, $args)

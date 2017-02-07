@@ -19,8 +19,8 @@ class Bans
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Bans();
-        translate('admin/bans');
-        translate('admin/common');
+        Lang::load('admin/bans');
+        Lang::load('admin/common');
 
         if (!User::can('mod.ban_users')) {
             throw new Error(__('No permission'), '403');

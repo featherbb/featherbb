@@ -16,7 +16,7 @@ class AdminUtils
 {
     public static function generateAdminMenu($page = '')
     {
-        translate('admin/common');
+        Lang::load('admin/common');
 
         \View::setPageInfo([
             'page'        =>    $page,

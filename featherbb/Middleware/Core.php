@@ -23,6 +23,7 @@ use FeatherBB\Core\Plugin as PluginManager;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\View;
+use FeatherBB\Core\Interfaces\Lang;
 
 class Core
 {
@@ -52,7 +53,6 @@ class Core
 
         // Load files
         require $this->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/utf8.php';
-        require $this->forum_env['FEATHER_ROOT'].'featherbb/Core/gettext/l10n.php';
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
@@ -261,6 +261,8 @@ class Core
         // Finalize forum_settings array
         $this->forum_settings = array_merge(Container::get('cache')->retrieve('config'), $this->forum_settings);
         Container::set('forum_settings', $this->forum_settings);
+
+        Lang::construct();
 
         // Run activated plugins
         self::loadPlugins();

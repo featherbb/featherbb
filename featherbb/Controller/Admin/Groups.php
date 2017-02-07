@@ -18,7 +18,7 @@ class Groups
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Groups();
-        translate('admin/groups');
+        Lang::load('admin/groups');
         if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
         }

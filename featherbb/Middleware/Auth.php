@@ -306,7 +306,7 @@ class Auth
             Container::set('user', $user);
         }
 
-        translate('common');
+        Lang::load('common');
         // Load bans from cache
         if (!Container::get('cache')->isCached('bans')) {
             Container::get('cache')->store('bans', Cache::get_bans());

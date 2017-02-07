@@ -52,7 +52,7 @@ class Install
         $csrf = new \FeatherBB\Middleware\Csrf();
         $csrf->generateNewToken(Container::get('request'));
 
-        translate('install', 'featherbb', $this->install_lang);
+        Lang::load('install', 'featherbb', $this->install_lang);
 
         // Second form has been submitted to start install
         if (Request::isPost() && !Input::post('choose_lang')) {
@@ -191,7 +191,7 @@ class Install
         // Init DB
         Core::init_db($data);
         // Load appropriate language
-        translate('install', 'featherbb', $data['language']);
+        Lang::load('install', 'featherbb', $data['language']);
 
         // Create tables
         foreach ($this->model->get_database_scheme() as $table => $sql) {

@@ -18,7 +18,7 @@ class Statistics
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Statistics();
-        translate('admin/index');
+        Lang::load('admin/index');
     }
 
     public function display($req, $res, $args)

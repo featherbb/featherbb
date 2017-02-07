@@ -20,7 +20,7 @@ class Forums
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Forums();
-        translate('admin/forums');
+        Lang::load('admin/forums');
         if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
         }

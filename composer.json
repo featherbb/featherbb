@@ -16,7 +16,6 @@
         "role": "Contributor"
     }],
     "autoload": {
-        "classmap": ["featherbb/Core/gettext/MO.php"],
         "psr-4": {
             "FeatherBB\\Plugins\\": "plugins/",
             "FeatherBB\\": "featherbb/"
@@ -28,7 +27,8 @@
         "statical/statical": "^1.1",
         "firebase/php-jwt": "^3.0",
         "vierbergenlars/php-semver": "^3.0",
-        "slim/flash": "^0.1.0"
+        "slim/flash": "^0.1.0",
+        "gettext/gettext": "^4.2"
     },
     "support": {
         "email": "admin@featherbb.org",

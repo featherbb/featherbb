@@ -15,7 +15,7 @@ class Help
 {
     public function __construct()
     {
-        translate('help');
+        Lang::load('help');
     }
 
     public function display($req, $res, $args)

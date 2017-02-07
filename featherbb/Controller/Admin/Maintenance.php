@@ -18,7 +18,7 @@ class Maintenance
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Maintenance();
-        translate('admin/maintenance');
+        Lang::load('admin/maintenance');
         if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
         }

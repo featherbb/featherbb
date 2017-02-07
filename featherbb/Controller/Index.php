@@ -19,8 +19,8 @@ class Index
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Index();
-        translate('index');
-        translate('misc');
+        Lang::load('index');
+        Lang::load('misc');
     }
 
     public function display($req, $res, $args)

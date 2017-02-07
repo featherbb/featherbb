@@ -22,8 +22,8 @@ class Auth
 {
     public function __construct()
     {
-        translate('profile');
-        translate('login');
+        Lang::load('profile');
+        Lang::load('login');
     }
 
     public function login($req, $res, $args)

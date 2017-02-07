@@ -20,10 +20,10 @@ class Profile
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Profile();
-        translate('profile');
-        translate('register');
-        translate('prof_reg');
-        translate('misc');
+        Lang::load('profile');
+        Lang::load('register');
+        Lang::load('prof_reg');
+        Lang::load('misc');
     }
 
     public function display($req, $res, $args)

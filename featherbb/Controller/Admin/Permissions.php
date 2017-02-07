@@ -18,7 +18,7 @@ class Permissions
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Permissions();
-        translate('admin/permissions');
+        Lang::load('admin/permissions');
         if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
         }

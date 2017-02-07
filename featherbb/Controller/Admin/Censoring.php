@@ -18,7 +18,7 @@ class Censoring
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Censoring();
-        translate('admin/censoring');
+        Lang::load('admin/censoring');
         if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
         }

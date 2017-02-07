@@ -18,9 +18,9 @@ class Register
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Register();
-        translate('register');
-        translate('prof_reg');
-        translate('antispam');
+        Lang::load('register');
+        Lang::load('prof_reg');
+        Lang::load('antispam');
     }
 
     public function display($req, $res, $args)

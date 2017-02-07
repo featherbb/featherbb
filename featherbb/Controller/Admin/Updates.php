@@ -23,9 +23,9 @@ class Updates
 {
     public function __construct()
     {
-        translate('admin/index');
-        translate('admin/updates');
-        translate('admin/plugins');
+        Lang::load('admin/index');
+        Lang::load('admin/updates');
+        Lang::load('admin/plugins');
         if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
         }
