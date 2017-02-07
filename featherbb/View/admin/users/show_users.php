@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.admin.users.show_users.start');
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
-            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?= __('Admin'); echo ' '; _e('Index') ?></a></li>
+            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?= __('Admin'); echo ' '; __('Index') ?></a></li>
             <li><span>»&#160;</span><a href="<?= Router::pathFor('adminUsers') ?>"><?= __('Users') ?></a></li>
             <li><span>»&#160;</span><strong><?= __('Results head') ?></strong></li>
         </ul>
@@ -95,7 +95,7 @@ Container::get('hooks')->fire('view.admin.users.show_users.start');
             <p class="pagelink"><?= $paging_links ?></p>
         </div>
         <ul class="crumbs">
-            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?= __('Admin'); echo ' '; _e('Index') ?></a></li>
+            <li><a href="<?= Router::pathFor('adminIndex') ?>"><?= __('Admin'); echo ' '; __('Index') ?></a></li>
             <li><span>»&#160;</span><a href="<?= Router::pathFor('adminUsers') ?>"><?= __('Users') ?></a></li>
             <li><span>»&#160;</span><strong><?= __('Results head') ?></strong></li>
         </ul>

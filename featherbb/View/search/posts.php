@@ -29,7 +29,7 @@ foreach ($display['cur_search'] as $search) {
     } ?>">
         <h2><span><span
                     class="conr">#<?php echo($search['post_count']) ?></span> <span><?php if ($search['pid'] != $search['first_post_id']) {
-        _e('Re');
+        __('Re');
         echo  ' ';
     } ?><?= $search['forum'] ?></span> <span>»&#160;<a
                         href="<?= Router::pathFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?= Utils::escape($search['subject']) ?></a></span> <span>»&#160;<a

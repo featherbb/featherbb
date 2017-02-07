@@ -26,7 +26,7 @@ Container::get('hooks')->fire('view.admin.censoring.start');
                     <fieldset>
                         <legend><?= __('Add word subhead') ?></legend>
                         <div class="infldset">
-                            <p><?php echo _e('Add word info') . '&nbsp;'; echo(ForumSettings::get('o_censoring') == '1' ? sprintf(__('Censoring enabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Admin options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Admin options').'</a>')) ?></p>
+                            <p><?php echo __('Add word info') . '&nbsp;'; echo(ForumSettings::get('o_censoring') == '1' ? sprintf(__('Censoring enabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Admin options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Admin options').'</a>')) ?></p>
                             <table>
                             <thead>
                                 <tr>

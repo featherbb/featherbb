@@ -63,7 +63,7 @@ foreach ($post_data as $post) {
                 </div>
                 <div class="postright">
                     <h3><?php if ($post['id'] != $cur_topic['first_post_id']) {
-        _e('Re');
+        echo __('Re');
         echo ' ';
     } ?><?= Utils::escape($cur_topic['subject']) ?></h3>
                     <div class="postmsg">
