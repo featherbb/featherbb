@@ -45,7 +45,7 @@ class Statistics
 
     public function numOnline()
     {
-        $numOnline = DB::forTable('online')->where('idle', 0)
+        $numOnline = DB::table('online')->where('idle', 0)
                             ->count('user_id');
 
         $numOnline = Container::get('hooks')->fire('model.admin.model.statistics.get_num_online.num_online', $numOnline);
@@ -58,7 +58,7 @@ class Statistics
 
         if (ForumSettings::get('db_type') == 'mysql' || ForumSettings::get('db_type') == 'mysqli' || ForumSettings::get('db_type') == 'mysql_innodb' || ForumSettings::get('db_type') == 'mysqli_innodb') {
             // Calculate total db size/row count
-            $result = DB::forTable('users')->rawQuery('SHOW TABLE STATUS LIKE \''.ForumSettings::get('db_prefix').'%\'')->findMany();
+            $result = DB::table('users')->rawQuery('SHOW TABLE STATUS LIKE \''.ForumSettings::get('db_prefix').'%\'')->findMany();
             $result = Container::get('hooks')->fire('model.admin.model.statistics.get_total_size.raw_data', $result);
 
             $total['size'] = $total['records'] = 0;

@@ -248,7 +248,7 @@ use Serializable;
          * @param string $connectionName Which connection to use
          * @return Database
          */
-        public static function forTable($tableName, $connectionName = self::DEFAULT_CONNECTION)
+        public static function table($tableName, $connectionName = self::DEFAULT_CONNECTION)
         {
             if (!empty(self::$_config[$connectionName]['prefix'])) {
                 $tableName = self::$_config[$connectionName]['prefix'] . $tableName;
@@ -634,7 +634,7 @@ use Serializable;
         protected function _createInstanceFromRow($row)
         {
             $table = str_replace(self::getConfig('prefix', $this->_connectionName), '', $this->_tableName);
-            $instance = self::forTable($table, $this->_connectionName);
+            $instance = self::table($table, $this->_connectionName);
             $instance->useIdColumn($this->_instanceIdColumn);
             $instance->hydrate($row);
             return $instance;

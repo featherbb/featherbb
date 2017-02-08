@@ -21,7 +21,7 @@ class Users
 {
     public function getNumIp($ipStats)
     {
-        $numIps = DB::forTable('posts')->where('poster_id', $ipStats)->groupBy('poster_ip');
+        $numIps = DB::table('posts')->where('poster_id', $ipStats)->groupBy('poster_ip');
         $numIps = Container::get('hooks')->fireDB('model.admin.model.admin.users.get_num_ip', $numIps);
         $numIps = $numIps->count('poster_ip');
 
@@ -32,7 +32,7 @@ class Users
     {
         $ipData = [];
 
-        $result = DB::forTable('posts')->where('poster_id', $ipStats)
+        $result = DB::table('posts')->where('poster_id', $ipStats)
                     ->select('poster_ip')
                     ->selectExpr('MAX(posted)', 'last_used')
                     ->selectExpr('COUNT(id)', 'used_times')
@@ -56,7 +56,7 @@ class Users
 
     public function getNumUsersIp($ip)
     {
-        $numUsers = DB::forTable('posts')->where('poster_ip', $ip)->distinct();
+        $numUsers = DB::table('posts')->where('poster_ip', $ip)->distinct();
         $numUsers = Container::get('hooks')->fireDB('model.admin.model.admin.users.get_num_users_ip.query', $numUsers);
         $numUsers = $numUsers->count('poster_id');
 
@@ -67,7 +67,7 @@ class Users
     {
         $conditions = Container::get('hooks')->fire('model.admin.model.users.get_num_users_search.conditions', $conditions);
 
-        $numUsers = DB::forTable('users')->tableAlias('u')
+        $numUsers = DB::table('users')->tableAlias('u')
                         ->leftOuterJoin('groups', ['g.g_id', '=', 'u.group_id'], 'g')
                         ->whereRaw('u.id>1'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : ''));
         $numUsers = Container::get('hooks')->fireDB('model.admin.model.admin.users.get_num_users_search.query', $numUsers);
@@ -84,7 +84,7 @@ class Users
 
         $selectInfoGetInfoPoster = ['poster_id', 'poster'];
 
-        $result = DB::forTable('posts')->selectMany($selectInfoGetInfoPoster)
+        $result = DB::table('posts')->selectMany($selectInfoGetInfoPoster)
                         ->distinct()
                         ->where('poster_ip', $ip)
                         ->orderByAsc('poster')
@@ -104,7 +104,7 @@ class Users
 
             $selectGetInfoPoster = ['u.id', 'u.username', 'u.email', 'u.title', 'u.num_posts', 'u.admin_note', 'g.g_id', 'g.g_user_title'];
 
-            $result = DB::forTable('users')->tableAlias('u')
+            $result = DB::table('users')->tableAlias('u')
                 ->selectMany($selectGetInfoPoster)
                 ->innerJoin('groups', ['g.g_id', '=', 'u.group_id'], 'g')
                 ->whereGt('u.id', 1)
@@ -142,7 +142,7 @@ class Users
         }
 
         // Are we trying to batch move any admins?
-        $isAdmin = DB::forTable('users')->whereIn('id', $move['user_ids'])
+        $isAdmin = DB::table('users')->whereIn('id', $move['user_ids'])
                         ->where('group_id', ForumEnv::get('FEATHER_ADMIN'))
                         ->findOne();
         if ($isAdmin) {
@@ -153,7 +153,7 @@ class Users
         $selectUserGroups = ['g_id', 'g_title'];
         $whereNotIn = [ForumEnv::get('FEATHER_GUEST'), ForumEnv::get('FEATHER_ADMIN')];
 
-        $result = DB::forTable('groups')->selectMany($selectUserGroups)
+        $result = DB::table('groups')->selectMany($selectUserGroups)
             ->whereNotIn('g_id', $whereNotIn)
             ->orderByAsc('g_title');
         $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.move_users.all_user_groups_query', $result);
@@ -177,7 +177,7 @@ class Users
             // Fetch user groups
             $userGroups = [];
             $selectFetchUserGroups = ['id', 'group_id'];
-            $result = DB::forTable('users')->selectMany($selectFetchUserGroups)
+            $result = DB::table('users')->selectMany($selectFetchUserGroups)
                 ->whereIn('id', $move['user_ids']);
             $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.move_users.user_groups_query', $result);
             $result = $result->findMany();
@@ -203,7 +203,7 @@ class Users
             if (!empty($userGroups) && $newGroup != ForumEnv::get('FEATHER_ADMIN') && !$newGroupMod) {
                 // Fetch forum list and clean up their moderator list
                 $selectMods = ['id', 'moderators'];
-                $result = DB::forTable('forums')
+                $result = DB::table('forums')
                             ->selectMany($selectMods)
                             ->findMany();
 
@@ -215,12 +215,12 @@ class Users
                     }
 
                     if (!empty($curModerators)) {
-                        DB::forTable('forums')->where('id', $curForum['id'])
+                        DB::table('forums')->where('id', $curForum['id'])
                             ->findOne()
                             ->set('moderators', serialize($curModerators))
                             ->save();
                     } else {
-                        DB::forTable('forums')->where('id', $curForum['id'])
+                        DB::table('forums')->where('id', $curForum['id'])
                             ->findOne()
                             ->setExpr('moderators', 'NULL')
                             ->save();
@@ -229,7 +229,7 @@ class Users
             }
 
             // Change user group
-            DB::forTable('users')->whereIn('id', $move['user_ids'])
+            DB::table('users')->whereIn('id', $move['user_ids'])
                                                       ->updateMany('group_id', $newGroup);
 
             return Router::redirect(Router::pathFor('adminUsers'), __('Users move redirect'));
@@ -258,7 +258,7 @@ class Users
         }
 
         // Are we trying to delete any admins?
-        $isAdmin = DB::forTable('users')->whereIn('id', $userIds)
+        $isAdmin = DB::table('users')->whereIn('id', $userIds)
             ->where('group_id', ForumEnv::get('FEATHER_ADMIN'))
             ->findOne();
         if ($isAdmin) {
@@ -269,7 +269,7 @@ class Users
             // Fetch user groups
             $userGroups = [];
             $result['select'] = ['id', 'group_id'];
-            $result = DB::forTable('users')
+            $result = DB::table('users')
                         ->selectMany($result['select'])
                         ->whereIn('id', $userIds);
             $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.delete_users.user_groups_query', $result);
@@ -295,7 +295,7 @@ class Users
 
             // Fetch forum list and clean up their moderator list
             $selectMods = ['id', 'moderators'];
-            $result = DB::forTable('forums')
+            $result = DB::table('forums')
                 ->selectMany($selectMods)
                 ->findMany();
 
@@ -307,12 +307,12 @@ class Users
                 }
 
                 if (!empty($curModerators)) {
-                    DB::forTable('forums')->where('id', $curForum['id'])
+                    DB::table('forums')->where('id', $curForum['id'])
                         ->findOne()
                         ->set('moderators', serialize($curModerators))
                         ->save();
                 } else {
-                    DB::forTable('forums')->where('id', $curForum['id'])
+                    DB::table('forums')->where('id', $curForum['id'])
                         ->findOne()
                         ->setExpr('moderators', 'NULL')
                         ->save();
@@ -321,15 +321,15 @@ class Users
 
 
             // Delete any subscriptions
-            DB::forTable('topic_subscriptions')
+            DB::table('topic_subscriptions')
                     ->whereIn('user_id', $userIds)
                     ->deleteMany();
-            DB::forTable('forum_subscriptions')
+            DB::table('forum_subscriptions')
                     ->whereIn('user_id', $userIds)
                     ->deleteMany();
 
             // Remove them from the online list (if they happen to be logged in)
-            DB::forTable('online')
+            DB::table('online')
                     ->whereIn('user_id', $userIds)
                     ->deleteMany();
 
@@ -340,7 +340,7 @@ class Users
                 // Find all posts made by this user
                 $selectUserPosts = ['p.id', 'p.topic_id', 't.forum_id'];
 
-                $result = DB::forTable('posts')
+                $result = DB::table('posts')
                     ->tableAlias('p')
                     ->selectMany($selectUserPosts)
                     ->innerJoin('topics', ['t.id', '=', 'p.topic_id'], 't')
@@ -352,7 +352,7 @@ class Users
                 if ($result) {
                     foreach ($result as $curPost) {
                         // Determine whether this post is the "topic post" or not
-                        $result2 = DB::forTable('posts')
+                        $result2 = DB::table('posts')
                                         ->where('topic_id', $curPost['topic_id'])
                                         ->orderBy('posted')
                                         ->findOneCol('id');
@@ -368,13 +368,13 @@ class Users
                 }
             } else {
                 // Set all their posts to guest
-                DB::forTable('posts')
+                DB::table('posts')
                         ->whereIn('poster_id', $userIds)
                         ->updateMany('poster_id', '1');
             }
 
             // Delete the users
-            DB::forTable('users')
+            DB::table('users')
                     ->whereIn('id', $userIds)
                     ->deleteMany();
 
@@ -417,7 +417,7 @@ class Users
         }
 
         // Are we trying to ban any admins?
-        $isAdmin = DB::forTable('users')->whereIn('id', $userIds)
+        $isAdmin = DB::table('users')->whereIn('id', $userIds)
             ->where('group_id', ForumEnv::get('FEATHER_ADMIN'))
             ->findOne();
         if ($isAdmin) {
@@ -425,7 +425,7 @@ class Users
         }
 
         // Also, we cannot ban moderators
-        $isMod = DB::forTable('users')->tableAlias('u')
+        $isMod = DB::table('users')->tableAlias('u')
             ->innerJoin('permissions', ['u.group_id', '=', 'p.group'], 'p')
             ->where('p.allow', 1)
             ->where('p.permission_name', 'mod.is_mod')
@@ -464,7 +464,7 @@ class Users
             // Fetch user information
             $userInfo = [];
             $selectFetchUserInformation = ['id', 'username', 'email', 'registration_ip'];
-            $result = DB::forTable('users')->selectMany($selectFetchUserInformation)
+            $result = DB::table('users')->selectMany($selectFetchUserInformation)
                 ->whereIn('id', $userIds);
             $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.ban_users.user_info_query', $result);
             $result = $result->findMany();
@@ -475,7 +475,7 @@ class Users
 
             // Overwrite the registration IP with one from the last post (if it exists)
             if ($banTheIp != 0) {
-                $result = DB::forTable('posts')->rawQuery('SELECT p.poster_id, p.poster_ip FROM ' . ForumSettings::get('db_prefix') . 'posts AS p INNER JOIN (SELECT MAX(id) AS id FROM ' . ForumSettings::get('db_prefix') . 'posts WHERE poster_id IN (' . implode(',', $userIds) . ') GROUP BY poster_id) AS i ON p.id=i.id')->findMany();
+                $result = DB::table('posts')->rawQuery('SELECT p.poster_id, p.poster_ip FROM ' . ForumSettings::get('db_prefix') . 'posts AS p INNER JOIN (SELECT MAX(id) AS id FROM ' . ForumSettings::get('db_prefix') . 'posts WHERE poster_id IN (' . implode(',', $userIds) . ') GROUP BY poster_id) AS i ON p.id=i.id')->findMany();
                 foreach ($result as $curAddress) {
                     $userInfo[$curAddress['poster_id']]['ip'] = $curAddress['poster_ip'];
                 }
@@ -503,7 +503,7 @@ class Users
                 if (Input::post('mode') == 'add') {
                     $insertUpdateBan['ban_creator'] = User::get()->id;
 
-                    DB::forTable('bans')
+                    DB::table('bans')
                         ->create()
                         ->set($insertUpdateBan)
                         ->save();
@@ -642,7 +642,7 @@ class Users
         $userData = [];
 
         $selectPrintUsers = ['u.id', 'u.username', 'u.email', 'u.title', 'u.num_posts', 'u.admin_note', 'g.g_id', 'g.g_user_title'];
-        $result = DB::forTable('users')->tableAlias('u')
+        $result = DB::table('users')->tableAlias('u')
             ->selectMany($selectPrintUsers)
             ->leftOuterJoin('groups', ['g.g_id', '=', 'u.group_id'], 'g')
             ->whereRaw('u.id>1'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : ''))
@@ -674,7 +674,7 @@ class Users
         $output = '';
 
         $selectGetGroupList = ['g_id', 'g_title'];
-        $result = DB::forTable('groups')->selectMany($selectGetGroupList)
+        $result = DB::table('groups')->selectMany($selectGetGroupList)
                         ->whereNotEqual('g_id', ForumEnv::get('FEATHER_GUEST'))
                         ->orderBy('g_title');
 

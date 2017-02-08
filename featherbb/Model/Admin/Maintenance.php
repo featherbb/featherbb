@@ -35,8 +35,8 @@ class Maintenance
 
         // If this is the first cycle of posts we empty the search index before we proceed
         if (Input::query('i_empty_index')) {
-            DB::forTable('search_words')->rawExecute('TRUNCATE '.ForumSettings::get('db_prefix').'search_words');
-            DB::forTable('search_matches')->rawExecute('TRUNCATE '.ForumSettings::get('db_prefix').'search_matches');
+            DB::table('search_words')->rawExecute('TRUNCATE '.ForumSettings::get('db_prefix').'search_words');
+            DB::table('search_matches')->rawExecute('TRUNCATE '.ForumSettings::get('db_prefix').'search_matches');
 
             // Reset the sequence for the search words (not needed for SQLite)
             switch (ForumSettings::get('db_type')) {
@@ -44,11 +44,11 @@ class Maintenance
                 case 'mysqli':
                 case 'mysql_innodb':
                 case 'mysqli_innodb':
-                    DB::forTable('search_words')->rawExecute('ALTER TABLE '.ForumSettings::get('db_prefix').'search_words auto_increment=1');
+                    DB::table('search_words')->rawExecute('ALTER TABLE '.ForumSettings::get('db_prefix').'search_words auto_increment=1');
                     break;
 
                 case 'pgsql':
-                    DB::forTable('search_words')->rawExecute('SELECT setval(\''.ForumSettings::get('db_prefix').'search_words_id_seq\', 1, false)');
+                    DB::table('search_words')->rawExecute('SELECT setval(\''.ForumSettings::get('db_prefix').'search_words_id_seq\', 1, false)');
             }
         }
     }
@@ -65,7 +65,7 @@ class Maintenance
         // Fetch posts to process this cycle
         $result['select'] = ['p.id', 'p.message', 't.subject', 't.first_post_id'];
 
-        $result = DB::forTable('posts')->tableAlias('p')
+        $result = DB::table('posts')->tableAlias('p')
                         ->selectMany($result['select'])
                         ->innerJoin('topics', ['t.id', '=', 'p.topic_id'], 't')
                         ->whereGte('p.id', $startAt)
@@ -89,7 +89,7 @@ class Maintenance
 
         // Check if there is more work to do
         if ($endAt > 0) {
-            $id = DB::forTable('posts')->whereGt('id', $endAt)
+            $id = DB::table('posts')->whereGt('id', $endAt)
                         ->orderByAsc('id')
                         ->findOneCol('id');
 
@@ -111,7 +111,7 @@ class Maintenance
     public function prune($forumId, $pruneSticky, $pruneDate)
     {
         // Fetch topics to prune
-        $topicsId = DB::forTable('topics')->select('id')
+        $topicsId = DB::table('topics')->select('id')
                     ->where('forum_id', $forumId);
 
         if ($pruneDate != -1) {
@@ -132,7 +132,7 @@ class Maintenance
 
         if (!empty($topicIds)) {
             // Fetch posts to prune
-            $postsId = DB::forTable('posts')->select('id')
+            $postsId = DB::table('posts')->select('id')
                             ->whereIn('topic_id', $topicIds)
                             ->findMany();
 
@@ -144,15 +144,15 @@ class Maintenance
 
             if ($postIds != '') {
                 // Delete topics
-                DB::forTable('topics')
+                DB::table('topics')
                         ->whereIn('id', $topicIds)
                         ->deleteMany();
                 // Delete subscriptions
-                DB::forTable('topic_subscriptions')
+                DB::table('topic_subscriptions')
                         ->whereIn('topic_id', $topicIds)
                         ->deleteMany();
                 // Delete posts
-                DB::forTable('posts')
+                DB::table('posts')
                         ->whereIn('id', $postIds)
                         ->deleteMany();
 
@@ -171,7 +171,7 @@ class Maintenance
         @set_time_limit(0);
 
         if ($pruneFrom == 'all') {
-            $result = DB::forTable('forums')->select('id');
+            $result = DB::table('forums')->select('id');
             $result = Container::get('hooks')->fireDB('model.admin.maintenance.prune_comply.query', $result);
             $result = $result->findArray();
 
@@ -188,7 +188,7 @@ class Maintenance
         }
 
         // Locate any "orphaned redirect topics" and delete them
-        $result = DB::forTable('topics')->tableAlias('t1')
+        $result = DB::table('topics')->tableAlias('t1')
                         ->select('t1.id')
                         ->leftOuterJoin('topics', ['t1.moved_to', '=', 't2.id'], 't2')
                         ->whereNull('t2.id')
@@ -203,7 +203,7 @@ class Maintenance
             }
             $orphans = Container::get('hooks')->fire('model.admin.maintenance.prune_comply.orphans', $orphans);
 
-            DB::forTable('topics')
+            DB::table('topics')
                     ->whereIn('id', $orphans)
                     ->deleteMany();
         }
@@ -225,7 +225,7 @@ class Maintenance
         $prune = Container::get('hooks')->fire('model.admin.maintenance.get_info_prune.prune_dates', $prune);
 
         // Concatenate together the query for counting number of topics to prune
-        $query = DB::forTable('topics')->whereLt('last_post', $prune['date'])
+        $query = DB::table('topics')->whereLt('last_post', $prune['date'])
                         ->whereNull('moved_to');
 
         if ($pruneSticky == '0') {
@@ -236,7 +236,7 @@ class Maintenance
             $query = $query->where('forum_id', intval($pruneFrom));
 
             // Fetch the forum name (just for cosmetic reasons)
-            $forum = DB::forTable('forums')->where('id', $pruneFrom);
+            $forum = DB::table('forums')->where('id', $pruneFrom);
             $forum = Container::get('hooks')->fireDB('model.admin.maintenance.get_info_prune.forum_query', $forum);
             $forum = $forum->findOneCol('forum_name');
 
@@ -262,7 +262,7 @@ class Maintenance
         $selectGetCategories = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name'];
         $orderByGetCategories = ['c.disp_position', 'c.id', 'f.disp_position'];
 
-        $result = DB::forTable('categories')
+        $result = DB::table('categories')
                     ->tableAlias('c')
                     ->selectMany($selectGetCategories)
                     ->innerJoin('forums', ['c.id', '=', 'f.cat_id'], 'f')
@@ -294,7 +294,7 @@ class Maintenance
     public function getFirstId()
     {
         $firstId = '';
-        $firstIdSql = DB::forTable('posts')->orderByAsc('id')
+        $firstIdSql = DB::table('posts')->orderByAsc('id')
                             ->findOneCol('id');
         if ($firstIdSql) {
             $firstId = $firstIdSql;

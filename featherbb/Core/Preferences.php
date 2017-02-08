@@ -32,7 +32,7 @@ class Preferences
             if ((int) $prefName > 0) {
                 throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = DB::forTable('preferences')
+            $result = DB::table('preferences')
                         ->where('preference_name', $prefName)
                         ->where('user', $uid)
                         ->findOne();
@@ -43,12 +43,12 @@ class Preferences
                 }
             } else {
                 if ($result) {
-                    DB::forTable('preferences')
+                    DB::table('preferences')
                         ->findOne($result->id())
                         ->set(['preference_value' => $prefValue])
                         ->save();
                 } else {
-                    DB::forTable('preferences')
+                    DB::table('preferences')
                         ->create()
                         ->set([
                             'preference_name' => $prefName,
@@ -73,7 +73,7 @@ class Preferences
             if ((int) $prefName > 0) {
                 throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = DB::forTable('preferences')
+            $result = DB::table('preferences')
                         ->where('preference_name', (string) $prefName)
                         ->where('group', $gid)
                         ->findOne();
@@ -83,12 +83,12 @@ class Preferences
                 }
             } else {
                 if ($result) {
-                    DB::forTable('preferences')
+                    DB::table('preferences')
                         ->findOne($result->id())
                         ->set(['preference_value' => (string) $prefValue])
                         ->save();
                 } else {
-                    DB::forTable('preferences')
+                    DB::table('preferences')
                         ->create()
                         ->set([
                             'preference_name' => (string) $prefName,
@@ -109,17 +109,17 @@ class Preferences
             if ((int) $prefName > 0) {
                 throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = DB::forTable('preferences')
+            $result = DB::table('preferences')
                         ->where('preference_name', (string) $prefName)
                         ->where('default', 1)
                         ->findOne();
             if ($result) {
-                DB::forTable('preferences')
+                DB::table('preferences')
                     ->findOne($result->id())
                     ->set(['preference_value' => (string) $prefValue])
                     ->save();
             } else {
-                DB::forTable('preferences')
+                DB::table('preferences')
                     ->create()
                     ->set([
                         'preference_name' => (string) $prefName,
@@ -145,7 +145,7 @@ class Preferences
             if ((int) $prefName > 0) {
                 throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = DB::forTable('preferences')
+            $result = DB::table('preferences')
                         ->where('preference_name', $prefName)
                         ->where('user', $uid)
                         ->findOne();
@@ -173,7 +173,7 @@ class Preferences
             if ((int) $prefName > 0) {
                 throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = DB::forTable('preferences')
+            $result = DB::table('preferences')
                         ->where('preference_name', $prefName)
                         ->where('group', $gid)
                         ->findOne();
@@ -194,7 +194,7 @@ class Preferences
             if ((int) $prefName > 0) {
                 throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = DB::forTable('preferences')
+            $result = DB::table('preferences')
                         ->where('preference_name', (string) $prefName)
                         ->where('default', 1)
                         ->findOne();
@@ -229,7 +229,7 @@ class Preferences
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
 
-        $result = DB::forTable('preferences')
+        $result = DB::table('preferences')
                     ->tableAlias('p')
                     ->whereAnyIs([
                         ['p.user' => $uid],

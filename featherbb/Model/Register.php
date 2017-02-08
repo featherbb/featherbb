@@ -26,7 +26,7 @@ class Register
         $user = Container::get('hooks')->fire('model.register.check_for_errors_start', $user);
 
         // Check that someone from this IP didn't register a user within the last hour (DoS prevention)
-        $alreadyRegistered = DB::forTable('users')
+        $alreadyRegistered = DB::table('users')
                                   ->where('registration_ip', Utils::getIp())
                                   ->whereGt('registered', time() - 3600);
         $alreadyRegistered = Container::get('hooks')->fireDB('model.register.check_for_errors_ip_query', $alreadyRegistered);
@@ -91,7 +91,7 @@ class Register
         // Check if someone else already has registered with that email address
         $dupeList = [];
 
-        $dupeMail = DB::forTable('users')
+        $dupeMail = DB::table('users')
                         ->select('username')
                         ->where('email', $user['email1']);
         $dupeMail = Container::get('hooks')->fireDB('model.register.check_for_errors_dupe', $dupeMail);
@@ -143,7 +143,7 @@ class Register
             'last_visit'      => $now,
         ];
 
-        $insertUser = DB::forTable('users')
+        $insertUser = DB::table('users')
                     ->create()
                     ->set($userData);
         $insertUser = Container::get('hooks')->fireDB('model.register.insert_user_query', $insertUser);

@@ -74,11 +74,11 @@ class Auth
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                        DB::forTable('online')->rawExecute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', [':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged]);
+                        DB::table('online')->rawExecute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', [':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged]);
                         break;
 
                     default:
-                        DB::forTable('online')->rawExecute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE user_id=:user_id)', [':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged]);
+                        DB::table('online')->rawExecute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE user_id=:user_id)', [':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged]);
                         break;
                 }
 
@@ -87,7 +87,7 @@ class Auth
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
                 if (User::get()->logged < (Container::get('now')-ForumSettings::get('o_timeout_visit'))) {
-                    DB::forTable('users')->where('id', User::get()->id)
+                    DB::table('users')->where('id', User::get()->id)
                         ->findOne()
                         ->set('last_visit', User::get()->logged)
                         ->save();
@@ -96,7 +96,7 @@ class Auth
 
                 $idle_sql = (User::get()->idle == '1') ? ', idle=0' : '';
 
-                DB::forTable('online')->rawExecute('UPDATE '.ForumSettings::get('db_prefix').'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', [':user_id' => User::get()->id]);
+                DB::table('online')->rawExecute('UPDATE '.ForumSettings::get('db_prefix').'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', [':user_id' => User::get()->id]);
 
                 // Update tracked topics with the current expire time
                 $cookie_tracked_topics = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
@@ -116,7 +116,7 @@ class Auth
         // Fetch all online list entries that are older than "o_timeout_online"
         $select_update_users_online = ['user_id', 'ident', 'logged', 'idle'];
 
-        $result = DB::forTable('online')
+        $result = DB::table('online')
                     ->selectMany($select_update_users_online)
                     ->whereLt('logged', Container::get('now')-ForumSettings::get('o_timeout_online'))
                     ->findMany();
@@ -124,19 +124,19 @@ class Auth
         foreach ($result as $cur_user) {
             // If the entry is a guest, delete it
             if ($cur_user['user_id'] == '1') {
-                DB::forTable('online')->where('ident', $cur_user['ident'])
+                DB::table('online')->where('ident', $cur_user['ident'])
                     ->deleteMany();
             } else {
                 // If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
                 if ($cur_user['logged'] < (Container::get('now')-ForumSettings::get('o_timeout_visit'))) {
-                    DB::forTable('users')->where('id', $cur_user['user_id'])
+                    DB::table('users')->where('id', $cur_user['user_id'])
                         ->findOne()
                         ->set('last_visit', $cur_user['logged'])
                         ->save();
-                    DB::forTable('online')->where('user_id', $cur_user['user_id'])
+                    DB::table('online')->where('user_id', $cur_user['user_id'])
                         ->deleteMany();
                 } elseif ($cur_user['idle'] == '0') {
-                    DB::forTable('online')->where('user_id', $cur_user['user_id'])
+                    DB::table('online')->where('user_id', $cur_user['user_id'])
                         ->updateMany('idle', 1);
                 }
             }
@@ -161,7 +161,7 @@ class Auth
         foreach (Container::get('bans') as $cur_ban) {
             // Has this ban expired?
             if ($cur_ban['expire'] != '' && $cur_ban['expire'] <= time()) {
-                DB::forTable('bans')->where('id', $cur_ban['id'])
+                DB::table('bans')->where('id', $cur_ban['id'])
                     ->deleteMany();
                 $bans_altered = true;
                 continue;
@@ -191,7 +191,7 @@ class Auth
             }
 
             if ($is_banned) {
-                DB::forTable('online')
+                DB::table('online')
                     ->where('ident', User::get()->username)
                     ->deleteMany();
                 throw new Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower(Utils::formatTime($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 403, false, true);
@@ -286,15 +286,15 @@ class Auth
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                    DB::forTable('online')->rawExecute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', [':ident' => Utils::getIp(), ':logged' => $user->logged]);
+                    DB::table('online')->rawExecute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', [':ident' => Utils::getIp(), ':logged' => $user->logged]);
                         break;
 
                     default:
-                        DB::forTable('online')->rawExecute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE ident=:ident)', [':ident' => Utils::getIp(), ':logged' => $user->logged]);
+                        DB::table('online')->rawExecute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE ident=:ident)', [':ident' => Utils::getIp(), ':logged' => $user->logged]);
                         break;
                 }
             } else {
-                DB::forTable('online')->where('ident', Utils::getIp())
+                DB::table('online')->where('ident', Utils::getIp())
                      ->updateMany('logged', time());
             }
 

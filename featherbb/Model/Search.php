@@ -99,7 +99,7 @@ class Search
         if (isset($searchId)) {
             $ident = (User::get()->is_guest) ? Utils::getIp() : User::get()->username;
 
-            $searchData = DB::forTable('search_cache')
+            $searchData = DB::table('search_cache')
                                 ->where('id', $searchId)
                                 ->where('ident', $ident);
             $searchData = Container::get('hooks')->fireDB('model.search.get_search_results_search_data_query', $searchData);
@@ -133,10 +133,10 @@ class Search
                 }
 
                 if (!User::get()->is_guest) {
-                    $updateLastSearch = DB::forTable('users')
+                    $updateLastSearch = DB::table('users')
                                             ->where('id', User::get()->id);
                 } else {
-                    $updateLastSearch = DB::forTable('online')
+                    $updateLastSearch = DB::table('online')
                                             ->where('ident', Utils::getIp());
                 }
                 $updateLastSearch = Container::get('hooks')->fireDB('model.search.get_search_results_update_last_search', $updateLastSearch);
@@ -203,9 +203,9 @@ class Search
                                     $whereCond = str_replace('*', '%', $curWord);
                                     $whereCondCjk = ($searchIn ? (($searchIn > 0) ? 'p.message LIKE %:where_cond%' : 't.subject LIKE %:where_cond%') : 'p.message LIKE %:where_cond% OR t.subject LIKE %:where_cond%');
 
-                                    $result = DB::forTable('posts')->rawQuery('SELECT p.id AS post_id, p.topic_id, '.$sortBySql.' AS sort_by FROM '.ForumSettings::get('db_prefix').'posts AS p INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE ('.$whereCondCjk.') AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forumSql, [':where_cond' => $whereCond]);
+                                    $result = DB::table('posts')->rawQuery('SELECT p.id AS post_id, p.topic_id, '.$sortBySql.' AS sort_by FROM '.ForumSettings::get('db_prefix').'posts AS p INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE ('.$whereCondCjk.') AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forumSql, [':where_cond' => $whereCond]);
                                 } else {
-                                    $result = DB::forTable('posts')->rawQuery('SELECT m.post_id, p.topic_id, '.$sortBySql.' AS sort_by FROM '.ForumSettings::get('db_prefix').'search_words AS w INNER JOIN '.ForumSettings::get('db_prefix').'search_matches AS m ON m.word_id = w.id INNER JOIN '.ForumSettings::get('db_prefix').'posts AS p ON p.id=m.post_id INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE w.word LIKE :where_cond'.$searchInCond.' AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forumSql, [':where_cond' => str_replace('*', '%', $curWord)]);
+                                    $result = DB::table('posts')->rawQuery('SELECT m.post_id, p.topic_id, '.$sortBySql.' AS sort_by FROM '.ForumSettings::get('db_prefix').'search_words AS w INNER JOIN '.ForumSettings::get('db_prefix').'search_matches AS m ON m.word_id = w.id INNER JOIN '.ForumSettings::get('db_prefix').'posts AS p ON p.id=m.post_id INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE w.word LIKE :where_cond'.$searchInCond.' AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forumSql, [':where_cond' => str_replace('*', '%', $curWord)]);
                                 }
 
                                 $result = Container::get('hooks')->fireDB('model.search.get_search_results_search_first_query', $result);
@@ -260,7 +260,7 @@ class Search
 
                 // If it's a search for author name (and that author name isn't Guest)
                 if ($author && $author != 'guest' && $author != utf8_strtolower(__('Guest'))) {
-                    $usernameExists = DB::forTable('users')
+                    $usernameExists = DB::table('users')
                                         ->select('id')
                                         ->whereLike('username', $author);
                     $usernameExists = Container::get('hooks')->fireDB('model.search.get_search_results_username_exists', $usernameExists);
@@ -272,7 +272,7 @@ class Search
                             $userIds[] = $row['id'];
                         }
 
-                        $result = DB::forTable('posts')->rawQuery('SELECT p.id AS post_id, p.topic_id FROM '.ForumSettings::get('db_prefix').'posts AS p INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id IN('.implode(',', $userIds).')'.$forumSql.' ORDER BY '.$sortBySql.' '.$sortDir);
+                        $result = DB::table('posts')->rawQuery('SELECT p.id AS post_id, p.topic_id FROM '.ForumSettings::get('db_prefix').'posts AS p INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id IN('.implode(',', $userIds).')'.$forumSql.' ORDER BY '.$sortBySql.' '.$sortDir);
                         $result = Container::get('hooks')->fireDB('model.search.get_search_results_search_second_query', $result);
                         $result = $result->findMany();
 
@@ -335,7 +335,7 @@ class Search
                         throw new Error(__('No permission'), 403);
                     }
 
-                    $result = DB::forTable('topics')
+                    $result = DB::table('topics')
                                 ->tableAlias('t')
                                 ->select('t.id')
                                 ->leftOuterJoin('forum_perms', 'fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id, 'fp')
@@ -360,7 +360,7 @@ class Search
                 }
                 // If it's a search for recent posts (in a certain time interval)
                 elseif ($action == 'show_recent') {
-                    $result = DB::forTable('topics')
+                    $result = DB::table('topics')
                                 ->tableAlias('t')
                                 ->select('t.id')
                                 ->leftOuterJoin('forum_perms', 'fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id, 'fp')
@@ -384,7 +384,7 @@ class Search
                 }
                 // If it's a search for topics in which the user has posted
                 elseif ($action == 'show_replies') {
-                    $result = DB::forTable('topics')
+                    $result = DB::table('topics')
                                 ->tableAlias('t')
                                 ->select('t.id')
                                 ->innerJoin('posts', ['t.id', '=', 'p.topic_id'], 'p')
@@ -410,7 +410,7 @@ class Search
                 elseif ($action == 'show_user_posts') {
                     $showAs = 'posts';
 
-                    $result = DB::forTable('posts')
+                    $result = DB::table('posts')
                                 ->tableAlias('p')
                                 ->select('p.id')
                                 ->innerJoin('topics', ['p.topic_id', '=', 't.id'], 't')
@@ -433,7 +433,7 @@ class Search
                 }
                 // If it's a search for topics by a specific user ID
                 elseif ($action == 'show_user_topics') {
-                    $result = DB::forTable('topics')
+                    $result = DB::table('topics')
                                 ->tableAlias('t')
                                 ->select('t.id')
                                 ->innerJoin('posts', ['t.first_post_id', '=', 'p.id'], 'p')
@@ -460,7 +460,7 @@ class Search
                         throw new Error(__('Bad request'), 404);
                     }
 
-                    $result = DB::forTable('topics')
+                    $result = DB::table('topics')
                                 ->tableAlias('t')
                                 ->distinct()
                                 ->select('t.id')
@@ -483,7 +483,7 @@ class Search
                 }
                 // If it's a search for unanswered posts
                 else {
-                    $result = DB::forTable('topics')
+                    $result = DB::table('topics')
                                 ->tableAlias('t')
                                 ->select('t.id')
                                 ->leftOuterJoin('forum_perms', 'fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id, 'fp')
@@ -516,7 +516,7 @@ class Search
 
             // Prune "old" search results
             $oldSearches = [];
-            $result = DB::forTable('online')
+            $result = DB::table('online')
                         ->select('ident');
             $result = Container::get('hooks')->fireDB('model.search.get_search_results_prune_search', $result);
             $result = $result->findMany();
@@ -526,7 +526,7 @@ class Search
                     $oldSearches[] = $row['ident'];
                 }
 
-                $deleteCache = DB::forTable('search_cache')
+                $deleteCache = DB::table('search_cache')
                                     ->whereNotIn('ident', $oldSearches);
                 $deleteCache = Container::get('hooks')->fireDB('model.search.get_search_results_delete_cache', $deleteCache);
                 $deleteCache = $deleteCache->deleteMany();
@@ -551,7 +551,7 @@ class Search
                 'search_data'  =>  $temp,
             ];
 
-            $cache = DB::forTable('search_cache')
+            $cache = DB::table('search_cache')
                         ->create()
                         ->set($cache['insert']);
             $cache = Container::get('hooks')->fireDB('model.search.get_search_results_update_cache', $cache);
@@ -607,7 +607,7 @@ class Search
             if ($showAs == 'posts') {
                 $result['select'] = ['pid' => 'p.id', 'pposter' => 'p.poster', 'pposted' => 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies', 'tid' => 't.id', 't.poster', 't.subject', 't.first_post_id', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_replies', 't.forum_id', 'f.forum_name'];
 
-                $result = DB::forTable('posts')
+                $result = DB::table('posts')
                                 ->tableAlias('p')
                                 ->selectMany($result['select'])
                                 ->innerJoin('topics', ['t.id', '=', 'p.topic_id'], 't')
@@ -618,7 +618,7 @@ class Search
             } else {
                 $result['select'] = ['tid' => 't.id', 't.poster', 't.subject', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_replies', 't.closed', 't.sticky', 't.forum_id', 'f.forum_name'];
 
-                $result = DB::forTable('topics')
+                $result = DB::table('topics')
                                 ->tableAlias('t')
                                 ->selectMany($result['select'])
                                 ->innerJoin('forums', ['f.id', '=', 't.forum_id'], 'f')
@@ -642,7 +642,7 @@ class Search
                 } elseif ($searchType[1] == 'show_subscriptions') {
                     // Fetch username of subscriber
                     $subscriberId = $searchType[2];
-                    $subscriberName = DB::forTable('users')
+                    $subscriberName = DB::table('users')
                                             ->where('id', $subscriberId);
                     $subscriberName = Container::get('hooks')->fireDB('model.search.get_search_results_subscriber_name', $subscriberName);
                     $subscriberName = $subscriberName->findOneCol('username');
@@ -810,7 +810,7 @@ class Search
         ];
         $result['order_by'] = ['c.disp_position', 'c.id', 'f.disp_position'];
 
-        $result = DB::forTable('categories')
+        $result = DB::table('categories')
                     ->tableAlias('c')
                     ->selectMany($result['select'])
                     ->innerJoin('forums', ['c.id', '=', 'f.cat_id'], 'f')

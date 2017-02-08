@@ -82,7 +82,7 @@ class Post extends Api
             ['fp.read_forum' => '1']
         ];
 
-        $curPost = DB::forTable('posts')
+        $curPost = DB::table('posts')
             ->tableAlias('p')
             ->selectMany($curPost['select'])
             ->innerJoin('topics', ['t.id', '=', 'p.topic_id'], 't')
@@ -110,7 +110,7 @@ class Post extends Api
             ['fp.read_forum' => '1']
         ];
 
-        $query = DB::forTable('posts')
+        $query = DB::table('posts')
             ->tableAlias('p')
             ->selectMany($query['select'])
             ->innerJoin('topics', ['t.id', '=', 'p.topic_id'], 't')

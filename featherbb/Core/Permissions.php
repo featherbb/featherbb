@@ -25,7 +25,7 @@ class Permissions
         if ($gid > 0) {
             if (!isset($this->parents[$gid])) {
                 $this->parents[$gid] = [];
-                $group = DB::forTable('groups')->findOne($gid);
+                $group = DB::table('groups')->findOne($gid);
 
                 if (!$group) {
                     throw new \ErrorException('Internal error : Unknown group ID', 500);
@@ -57,7 +57,7 @@ class Permissions
             }
         }
 
-        $result = DB::forTable('groups')
+        $result = DB::table('groups')
                     ->findOne($gid)
                     ->set('inherit', serialize($this->parents[$gid]))
                     ->save();
@@ -77,7 +77,7 @@ class Permissions
 
         if (($key = array_search($parent, $this->parents[$gid])) !== false) {
             unset($this->parents[$gid][$key]);
-            $result = DB::forTable('groups')
+            $result = DB::table('groups')
                         ->findOne($gid)
                         ->set('inherit', serialize($this->parents[$gid]))
                         ->save();
@@ -104,7 +104,7 @@ class Permissions
         }
 
         if (!isset($this->permissions[$gid][$uid][$permission])) {
-            $result = DB::forTable('permissions')
+            $result = DB::table('permissions')
                         ->where('permission_name', $permission)
                         ->where('user', $uid)
                         ->where('deny', 1)
@@ -113,7 +113,7 @@ class Permissions
             if ($result) {
                 $result->delete();
             }
-            $result = DB::forTable('permissions')
+            $result = DB::table('permissions')
                         ->create()
                         ->set([
                             'permission_name' => $permission,
@@ -149,7 +149,7 @@ class Permissions
         }
 
         if (!isset($this->permissions[$gid][$uid][$permission])) {
-            $result = DB::forTable('permissions')
+            $result = DB::table('permissions')
                         ->where('permission_name', $permission)
                         ->where('user', $uid)
                         ->where('allow', 1)
@@ -160,7 +160,7 @@ class Permissions
                 $this->buildRegex($uid, $gid);
             }
 
-            $result = DB::forTable('permissions')
+            $result = DB::table('permissions')
                         ->create()
                         ->set([
                             'permission_name' => $permission,
@@ -185,13 +185,13 @@ class Permissions
         }
 
         if ($gid > 0) {
-            $group = DB::forTable('groups')->findOne($gid);
+            $group = DB::table('groups')->findOne($gid);
             if (!$group) {
                 throw new \ErrorException('Internal error : Unknown group ID', 500);
             }
         }
 
-        $result = DB::forTable('permissions')
+        $result = DB::table('permissions')
                     ->where('permission_name', $permission)
                     ->where('group', $gid)
                     ->where('deny', 1)
@@ -202,7 +202,7 @@ class Permissions
 
         // If group or one of his parents have not the permission, add it
         if (!$this->getGroupPermissions($gid, $permission)) {
-            DB::forTable('permissions')
+            DB::table('permissions')
                 ->create()
                 ->set([
                     'permission_name' => $permission,
@@ -227,14 +227,14 @@ class Permissions
         }
 
         if ($gid > 0) {
-            $group = DB::forTable('groups')->findOne($gid);
+            $group = DB::table('groups')->findOne($gid);
             if (!$group) {
                 throw new \ErrorException('Internal error : Unknown user ID', 500);
             }
         }
 
         // Remove group permission from DB if exists
-        $result = DB::forTable('permissions')
+        $result = DB::table('permissions')
                     ->where('permission_name', $permission)
                     ->where('group', $gid)
                     ->where('allow', 1)
@@ -245,7 +245,7 @@ class Permissions
 
         // Check if one of his parents have the permission, and force denied permission if needed
         if ($this->getGroupPermissions($gid, $permission)) {
-            DB::forTable('permissions')
+            DB::table('permissions')
                 ->create()
                 ->set([
                     'permission_name' => $permission,

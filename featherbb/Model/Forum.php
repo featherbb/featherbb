@@ -30,7 +30,7 @@ class Forum
         if (!User::get()->is_guest) {
             $curForum['select'] = ['f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics', 'is_subscribed' => 's.user_id'];
 
-            $curForum = DB::forTable('forums')->tableAlias('f')
+            $curForum = DB::table('forums')->tableAlias('f')
                             ->selectMany($curForum['select'])
                             ->leftOuterJoin('forum_subscriptions', 'f.id=s.forum_id AND s.user_id='.User::get()->g_id, 's')
                             ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
@@ -39,7 +39,7 @@ class Forum
         } else {
             $curForum['select'] = ['f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics'];
 
-            $curForum = DB::forTable('forums')->tableAlias('f')
+            $curForum = DB::table('forums')->tableAlias('f')
                             ->selectMany($curForum['select'])
                             ->selectExpr(0, 'is_subscribed')
                             ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
@@ -62,7 +62,7 @@ class Forum
 
     public static function getModerators($fid)
     {
-        $moderators = DB::forTable('forums')
+        $moderators = DB::table('forums')
                         ->where('id', $fid);
         $moderators = Container::get('hooks')->fireDB('model.forum.get_moderators', $moderators);
         $moderators = $moderators->findOneCol('moderators');
@@ -72,7 +72,7 @@ class Forum
 
     public static function getId($tid)
     {
-        $fid = DB::forTable('topics')
+        $fid = DB::table('topics')
             ->where('id', $tid);
         $fid = Container::get('hooks')->fireDB('model.forum.get_moderators', $fid);
         $fid = $fid->findOneCol('forum_id');
@@ -140,7 +140,7 @@ class Forum
         }
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = DB::forTable('topics')
+        $result = DB::table('topics')
                         ->select('id')
                         ->where('forum_id', $forumId)
                         ->orderByDesc('sticky')
@@ -165,7 +165,7 @@ class Forum
                 // Without "the dot"
                 $result['select'] = ['id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to'];
 
-                $result = DB::forTable('topics')
+                $result = DB::table('topics')
                             ->selectMany($result['select'])
                             ->whereIn('id', $topicIds)
                             ->orderByDesc('sticky')
@@ -175,7 +175,7 @@ class Forum
                 // With "the dot"
                 $result['select'] = ['has_posted' => 'p.poster_id', 't.id', 't.subject', 't.poster', 't.posted', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_views', 't.num_replies', 't.closed', 't.sticky', 't.moved_to'];
 
-                $result = DB::forTable('topics')
+                $result = DB::table('topics')
                             ->tableAlias('t')
                             ->selectMany($result['select'])
                             ->leftOuterJoin('posts', ['t.id', '=', 'p.topic_id'], 'p')
@@ -287,7 +287,7 @@ class Forum
         }
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = DB::forTable('topics')->select('id')
+        $result = DB::table('topics')->select('id')
                     ->where('forum_id', $fid)
                     ->orderByExpr('sticky DESC, '.$sortBy)
                     ->limit(User::getPref('disp.topics'))
@@ -304,7 +304,7 @@ class Forum
             unset($result);
             // Select topics
             $result['select'] = ['id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to'];
-            $result = DB::forTable('topics')->selectMany($result['select'])
+            $result = DB::table('topics')->selectMany($result['select'])
                         ->whereIn('id', $topicIds)
                         ->orderByDesc('sticky')
                         ->orderByExpr($sortBy)
@@ -396,7 +396,7 @@ class Forum
     //
     public static function update($forumId)
     {
-        $statsQuery = DB::forTable('topics')
+        $statsQuery = DB::table('topics')
                             ->where('forum_id', $forumId)
                             ->selectExpr('COUNT(id)', 'total_topics')
                             ->selectExpr('SUM(num_replies)', 'total_replies')
@@ -409,7 +409,7 @@ class Forum
 
         $selectUpdateForum = ['last_post', 'last_post_id', 'last_poster'];
 
-        $result = DB::forTable('topics')->selectMany($selectUpdateForum)
+        $result = DB::table('topics')->selectMany($selectUpdateForum)
                     ->where('forum_id', $forumId)
                     ->whereNull('moved_to')
                     ->orderByDesc('last_post')
@@ -434,7 +434,7 @@ class Forum
                 'last_poster'  => 'NULL',
             ];
         }
-        DB::forTable('forums')
+        DB::table('forums')
             ->where('id', $forumId)
             ->findOne()
             ->set($insertUpdateForum)
@@ -449,7 +449,7 @@ class Forum
             throw new Error(__('No permission'), 403);
         }
 
-        $isSubscribed = DB::forTable('forum_subscriptions')
+        $isSubscribed = DB::table('forum_subscriptions')
             ->where('user_id', User::get()->id)
             ->where('forum_id', $forumId);
         $isSubscribed = Container::get('hooks')->fireDB('model.forum.unsubscribe_forum_subscribed_query', $isSubscribed);
@@ -460,7 +460,7 @@ class Forum
         }
 
         // Delete the subscription
-        $delete = DB::forTable('forum_subscriptions')
+        $delete = DB::table('forum_subscriptions')
             ->where('user_id', User::get()->id)
             ->where('forum_id', $forumId);
         $delete = Container::get('hooks')->fireDB('model.forum.unsubscribe_forum_query', $delete);
@@ -481,7 +481,7 @@ class Forum
             ['fp.read_forum' => '1']
         ];
 
-        $authorized = DB::forTable('forums')
+        $authorized = DB::table('forums')
                         ->tableAlias('f')
                         ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                         ->whereAnyIs($authorized['where'])
@@ -493,7 +493,7 @@ class Forum
             throw new Error(__('Bad request'), 404);
         }
 
-        $isSubscribed = DB::forTable('forum_subscriptions')
+        $isSubscribed = DB::table('forum_subscriptions')
             ->where('user_id', User::get()->id)
             ->where('forum_id', $forumId);
         $isSubscribed = Container::get('hooks')->fireDB('model.forum.subscribe_forum_subscribed_query', $isSubscribed);
@@ -508,7 +508,7 @@ class Forum
             'user_id' => User::get()->id,
             'forum_id'  => $forumId
         ];
-        $subscription = DB::forTable('forum_subscriptions')
+        $subscription = DB::table('forum_subscriptions')
                             ->create()
                             ->set($subscription['insert']);
         $subscription = Container::get('hooks')->fireDB('model.forum.subscribe_forum_query', $subscription);
@@ -517,7 +517,7 @@ class Forum
 
     public function closeMultiple($action, $topics)
     {
-        $closeMultipleTopics = DB::forTable('topics')
+        $closeMultipleTopics = DB::table('topics')
                                     ->whereIn('id', $topics);
         $closeMultipleTopics = Container::get('hooks')->fireDB('model.forum.open_topic', $closeMultipleTopics);
         $closeMultipleTopics = $closeMultipleTopics->updateMany('closed', $action);
@@ -525,7 +525,7 @@ class Forum
 
     public function stickMultiple($action, $topics)
     {
-        $stickMultipleTopics = DB::forTable('topics')
+        $stickMultipleTopics = DB::table('topics')
                                     ->whereIn('id', $topics);
         $stickMultipleTopics = Container::get('hooks')->fireDB('model.forum.stick_topic', $stickMultipleTopics);
         $stickMultipleTopics = $stickMultipleTopics->updateMany('sticky', $action);
@@ -542,7 +542,7 @@ class Forum
         $topicsSql = explode(',', $topics);
 
         // Verify that the topic IDs are valid
-        $result = DB::forTable('topics')
+        $result = DB::table('topics')
                     ->whereIn('id', $topicsSql)
                     ->where('forum_id', $fid);
         $result = Container::get('hooks')->fireDB('model.forum.delete_topics_verify_id', $result);
@@ -554,7 +554,7 @@ class Forum
 
         // Verify that the posts are not by admins
         if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN')) {
-            $authorized = DB::forTable('posts')
+            $authorized = DB::table('posts')
                             ->whereIn('topic_id', $topicsSql)
                             ->where('poster_id', Utils::getAdminIds());
             $authorized = Container::get('hooks')->fireDB('model.forum.delete_topics_authorized', $authorized);
@@ -565,25 +565,25 @@ class Forum
         }
 
         // Delete the topics
-        $deleteTopics = DB::forTable('topics')
+        $deleteTopics = DB::table('topics')
                             ->whereIn('id', $topicsSql);
         $deleteTopics = Container::get('hooks')->fireDB('model.forum.delete_topics_query', $deleteTopics);
         $deleteTopics = $deleteTopics->deleteMany();
 
         // Delete any redirect topics
-        $deleteRedirectTopics = DB::forTable('topics')
+        $deleteRedirectTopics = DB::table('topics')
                                     ->whereIn('moved_to', $topicsSql);
         $deleteRedirectTopics = Container::get('hooks')->fireDB('model.forum.delete_topics_redirect', $deleteRedirectTopics);
         $deleteRedirectTopics = $deleteRedirectTopics->deleteMany();
 
         // Delete any subscriptions
-        $deleteSubscriptions = DB::forTable('topic_subscriptions')
+        $deleteSubscriptions = DB::table('topic_subscriptions')
                                     ->whereIn('topic_id', $topicsSql);
         $deleteSubscriptions = Container::get('hooks')->fireDB('model.forum.delete_topics_subscriptions', $deleteSubscriptions);
         $deleteSubscriptions = $deleteSubscriptions->deleteMany();
 
         // Create a list of the post IDs in this topic and then strip the search index
-        $findIds = DB::forTable('posts')
+        $findIds = DB::table('posts')
                         ->select('id')
                         ->whereIn('topic_id', $topicsSql);
         $findIds = Container::get('hooks')->fireDB('model.forum.delete_topics_find_ids', $findIds);
@@ -604,7 +604,7 @@ class Forum
         }
 
         // Delete posts
-        $deletePosts = DB::forTable('posts')
+        $deletePosts = DB::table('posts')
                             ->whereIn('topic_id', $topicsSql);
         $deletePosts = Container::get('hooks')->fireDB('model.forum.delete_topics_delete_posts', $deletePosts);
         $deletePosts = $deletePosts->deleteMany();
@@ -626,7 +626,7 @@ class Forum
         }
 
         // Verify that the topic IDs are valid (redirect links will point to the merged topic after the merge)
-        $result = DB::forTable('topics')
+        $result = DB::table('topics')
                     ->whereIn('id', $topics)
                     ->where('forum_id', $fid);
         $result = Container::get('hooks')->fireDB('model.forum.merge_topics_topic_ids', $result);
@@ -637,7 +637,7 @@ class Forum
         }
 
         // The topic that we are merging into is the one with the smallest ID
-        $mergeToTid = DB::forTable('topics')
+        $mergeToTid = DB::table('topics')
                             ->whereIn('id', $topics)
                             ->where('forum_id', $fid)
                             ->orderByAsc('id')
@@ -653,16 +653,16 @@ class Forum
         }
 
         // TODO ?
-        DB::forTable('topics')->rawExecute($query);
+        DB::table('topics')->rawExecute($query);
 
         // Merge the posts into the topic
-        $mergePosts = DB::forTable('posts')
+        $mergePosts = DB::table('posts')
                         ->whereIn('topic_id', $topics);
         $mergePosts = Container::get('hooks')->fireDB('model.forum.merge_topics_merge_posts', $mergePosts);
         $mergePosts = $mergePosts->updateMany('topic_id', $mergeToTid);
 
         // Update any subscriptions
-        $findIds = DB::forTable('topic_subscriptions')->select('user_id')
+        $findIds = DB::table('topic_subscriptions')->select('user_id')
                         ->distinct()
                         ->whereIn('topic_id', $topics);
         $findIds = Container::get('hooks')->fireDB('model.forum.merge_topics_find_ids', $findIds);
@@ -674,7 +674,7 @@ class Forum
         }
 
         // Delete the subscriptions
-        $deleteSubscriptions = DB::forTable('topic_subscriptions')
+        $deleteSubscriptions = DB::table('topic_subscriptions')
                                     ->whereIn('topic_id', $topics);
         $deleteSubscriptions = Container::get('hooks')->fireDB('model.forum.merge_topics_delete_subscriptions', $deleteSubscriptions);
         $deleteSubscriptions = $deleteSubscriptions->deleteMany();
@@ -686,7 +686,7 @@ class Forum
                 'user_id'   =>  $curUserId,
             ];
             // Insert the subscription
-            $subscriptions = DB::forTable('topic_subscriptions')
+            $subscriptions = DB::table('topic_subscriptions')
                                 ->create()
                                 ->set($subscriptions['insert']);
             $subscriptions = Container::get('hooks')->fireDB('model.forum.merge_topics_insert_subscriptions', $subscriptions);
@@ -695,7 +695,7 @@ class Forum
 
         // Without redirection the old topics are removed
         if (Input::post('with_redirect') == 0) {
-            $deleteTopics = DB::forTable('topics')
+            $deleteTopics = DB::table('topics')
                                 ->whereIn('id', $topics)
                                 ->whereNotEqual('id', $mergeToTid);
             $deleteTopics = Container::get('hooks')->fireDB('model.forum.merge_topics_delete_topics', $deleteTopics);
@@ -703,13 +703,13 @@ class Forum
         }
 
         // Count number of replies in the topic
-        $numReplies = DB::forTable('posts')->where('topic_id', $mergeToTid)->count('id') - 1;
+        $numReplies = DB::table('posts')->where('topic_id', $mergeToTid)->count('id') - 1;
         $numReplies = Container::get('hooks')->fire('model.forum.merge_topics_num_replies', $numReplies);
 
         // Get last_post, last_post_id and last_poster
         $lastPost['select'] = ['posted', 'id', 'poster'];
 
-        $lastPost = DB::forTable('posts')
+        $lastPost = DB::table('posts')
                         ->selectMany($lastPost['select'])
                         ->where('topic_id', $mergeToTid)
                         ->orderByDesc('id');
@@ -724,7 +724,7 @@ class Forum
             'last_poster'  => $lastPost['poster'],
         ];
 
-        $topic = DB::forTable('topics')
+        $topic = DB::table('topics')
                     ->where('id', $mergeToTid)
                     ->findOne()
                     ->set($updateTopic['insert']);

@@ -17,7 +17,7 @@ class Reports
     {
         $zapId = Container::get('hooks')->fire('model.admin.reports.zap_report.zap_id', $zapId);
 
-        $result = DB::forTable('reports')->where('id', $zapId);
+        $result = DB::table('reports')->where('id', $zapId);
         $result = Container::get('hooks')->fireDB('model.admin.reports.zap_report.query', $result);
         $result = $result->findOneCol('zapped');
 
@@ -26,7 +26,7 @@ class Reports
 
         // Update report to indicate it has been zapped
         if (!$result) {
-            DB::forTable('reports')
+            DB::table('reports')
                 ->where('id', $zapId)
                 ->findOne()
                 ->set($setZapReport)
@@ -34,7 +34,7 @@ class Reports
         }
 
         // Remove zapped reports to keep only last 10
-        $threshold = DB::forTable('reports')
+        $threshold = DB::table('reports')
             ->whereNotNull('zapped')
             ->orderByDesc('zapped')
             ->offset(10)
@@ -42,7 +42,7 @@ class Reports
             ->findOneCol('zapped');
 
         if ($threshold) {
-            DB::forTable('reports')
+            DB::table('reports')
                 ->whereLte('zapped', $threshold)
                 ->deleteMany();
         }
@@ -54,7 +54,7 @@ class Reports
     {
         Container::get('hooks')->fire('get_reports_start');
 
-        $resultHeader = DB::forTable('reports')->whereNull('zapped');
+        $resultHeader = DB::table('reports')->whereNull('zapped');
         $resultHeader = Container::get('hooks')->fireDB('get_reports_query', $resultHeader);
 
         return (bool) $resultHeader->findOne();
@@ -64,7 +64,7 @@ class Reports
     {
         $reports = [];
         $selectReports = ['r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.created', 'r.message', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username'];
-        $reports = DB::forTable('reports')
+        $reports = DB::table('reports')
             ->tableAlias('r')
             ->selectMany($selectReports)
             ->leftOuterJoin('posts', ['r.post_id', '=', 'p.id'], 'p')
@@ -84,7 +84,7 @@ class Reports
     {
         $zappedReports = [];
         $selectZappedReports = ['r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.message', 'r.zapped', 'zapped_by_id' => 'r.zapped_by', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username', 'zapped_by' => 'u2.username'];
-        $zappedReports = DB::forTable('reports')
+        $zappedReports = DB::table('reports')
             ->tableAlias('r')
             ->selectMany($selectZappedReports)
             ->leftOuterJoin('posts', ['r.post_id', '=', 'p.id'], 'p')

@@ -18,7 +18,7 @@ class Userlist
     public function userCount($username, $showGroup)
     {
         // Fetch user count
-        $numUsers = DB::forTable('users')->tableAlias('u')
+        $numUsers = DB::table('users')->tableAlias('u')
                         ->whereGt('u.id', 1)
                         ->whereNotEqual('u.group_id', ForumEnv::get('FEATHER_UNVERIFIED'));
 
@@ -45,7 +45,7 @@ class Userlist
 
         $result['select'] = ['g_id', 'g_title'];
 
-        $result = DB::forTable('groups')
+        $result = DB::table('groups')
                         ->selectMany($result['select'])
                         ->whereNotEqual('g_id', ForumEnv::get('FEATHER_GUEST'))
                         ->orderBy('g_id');
@@ -73,7 +73,7 @@ class Userlist
         $username = Container::get('hooks')->fire('model.userlist.print_users_start', $username, $startFrom, $sortBy, $sortDir, $showGroup);
 
         // Retrieve a list of user IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = DB::forTable('users')
+        $result = DB::table('users')
                     ->select('u.id')
                     ->tableAlias('u')
                     ->whereGt('u.id', 1)
@@ -103,7 +103,7 @@ class Userlist
             // Grab the users
             $result['select'] = ['u.id', 'u.username', 'u.title', 'u.num_posts', 'u.registered', 'g.g_id', 'g.g_user_title'];
 
-            $result = DB::forTable('users')
+            $result = DB::table('users')
                           ->tableAlias('u')
                           ->selectMany($result['select'])
                           ->leftOuterJoin('groups', ['g.g_id', '=', 'u.group_id'], 'g')

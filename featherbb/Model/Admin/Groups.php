@@ -19,7 +19,7 @@ class Groups
 {
     public function groups()
     {
-        $result = DB::forTable('groups')->orderBy('g_id')->findMany();
+        $result = DB::table('groups')->orderBy('g_id')->findMany();
         Container::get('hooks')->fireDB('model.admin.groups.fetch_groups_query', $result);
         $groups = [];
         foreach ($result as $curGroup) {
@@ -82,7 +82,7 @@ class Groups
         $groupId = Container::get('hooks')->fire('model.admin.groups.get_group_list_delete_start', $groupId);
 
         $selectGetGroupListDelete = ['g_id', 'g_title'];
-        $result = DB::forTable('groups')->selectMany($selectGetGroupListDelete)
+        $result = DB::table('groups')->selectMany($selectGetGroupListDelete)
                         ->whereNotEqual('g_id', ForumEnv::get('FEATHER_GUEST'))
                         ->whereNotEqual('g_id', $groupId)
                         ->orderBy('g_title');
@@ -202,12 +202,12 @@ class Groups
 
         if (Input::post('mode') == 'add') {
             // Creating a new group
-            $titleExists = DB::forTable('groups')->where('g_title', $title)->findOne();
+            $titleExists = DB::table('groups')->where('g_title', $title)->findOne();
             if ($titleExists) {
                 throw new Error(sprintf(__('Title already exists message'), Utils::escape($title)), 400);
             }
 
-            $add = DB::forTable('groups')
+            $add = DB::table('groups')
                         ->create();
             $add->set($insertUpdateGroup)->save();
             $newGroupId = Container::get('hooks')->fire('model.admin.groups.add_edit_group.new_group_id', (int) $add->id());
@@ -217,7 +217,7 @@ class Groups
 
             // Now lets copy the forum specific permissions from the group which this group is based on
             $selectForumPerms = ['forum_id', 'read_forum', 'post_replies', 'post_topics'];
-            $result = DB::forTable('forum_perms')->selectMany($selectForumPerms)
+            $result = DB::table('forum_perms')->selectMany($selectForumPerms)
                             ->where('group_id', Input::post('base_group'));
             $result = Container::get('hooks')->fireDB('model.admin.groups.add_edit_group.select_forum_perms_query', $result);
             $result = $result->findMany();
@@ -231,18 +231,18 @@ class Groups
                     'post_topics'    =>  $curForumPerm['post_topics'],
                 ];
 
-                DB::forTable('forum_perms')
+                DB::table('forum_perms')
                         ->create()
                         ->set($insertPerms)
                         ->save();
             }
         } else {
             // We are editing an existing group
-            $titleExists = DB::forTable('groups')->where('g_title', $title)->whereNotEqual('g_id', Input::post('group_id'))->findOne();
+            $titleExists = DB::table('groups')->where('g_title', $title)->whereNotEqual('g_id', Input::post('group_id'))->findOne();
             if ($titleExists) {
                 throw new Error(sprintf(__('Title already exists message'), Utils::escape($title)), 400);
             }
-            DB::forTable('groups')
+            DB::table('groups')
                     ->findOne(Input::post('group_id'))
                     ->set($insertUpdateGroup)
                     ->save();
@@ -252,7 +252,7 @@ class Groups
 
             // Promote all users who would be promoted to this group on their next post
             if ($promoteNextGroup) {
-                DB::forTable('users')->where('group_id', Input::post('group_id'))
+                DB::table('users')->where('group_id', Input::post('group_id'))
                         ->whereGte('num_posts', $promoteMinPosts)
                         ->updateMany('group_id', $promoteNextGroup);
             }
@@ -295,7 +295,7 @@ class Groups
             throw new Error(__('Bad request'), 404);
         }
 
-        DB::forTable('config')->where('conf_name', 'o_default_user_group')
+        DB::table('config')->where('conf_name', 'o_default_user_group')
                                                    ->updateMany('conf_value', $groupId);
 
         // Regenerate the config cache
@@ -309,7 +309,7 @@ class Groups
     {
         $groupId = Container::get('hooks')->fire('model.admin.groups.check_members_start', $groupId);
 
-        $isMember = DB::forTable('groups')->tableAlias('g')
+        $isMember = DB::table('groups')->tableAlias('g')
             ->select('g.g_title')
             ->selectExpr('COUNT(u.id)', 'members')
             ->innerJoin('users', ['g.g_id', '=', 'u.group_id'], 'u')
@@ -329,26 +329,26 @@ class Groups
         if (Input::post('del_group')) {
             $moveToGroup = intval(Input::post('move_to_group'));
             $moveToGroup = Container::get('hooks')->fire('model.admin.groups.delete_group.move_to_group', $moveToGroup);
-            DB::forTable('users')->where('group_id', $groupId)
+            DB::table('users')->where('group_id', $groupId)
                                                       ->updateMany('group_id', $moveToGroup);
         }
 
         // Delete the group and any forum specific permissions
-        DB::forTable('groups')
+        DB::table('groups')
             ->where('g_id', $groupId)
             ->deleteMany();
-        DB::forTable('forum_perms')
+        DB::table('forum_perms')
             ->where('group_id', $groupId)
             ->deleteMany();
-        DB::forTable('permissions')
+        DB::table('permissions')
             ->where('group', $groupId)
             ->deleteMany();
-        DB::forTable('preferences')
+        DB::table('preferences')
             ->where('group', $groupId)
             ->deleteMany();
 
         // Don't let users be promoted to this group
-        DB::forTable('preferences')->where('promote.next_group', $groupId)->deleteMany();
+        DB::table('preferences')->where('promote.next_group', $groupId)->deleteMany();
 
         return Router::redirect(Router::pathFor('adminGroups'), __('Group removed redirect'));
     }
@@ -357,7 +357,7 @@ class Groups
     {
         $groupId = Container::get('hooks')->fireDB('model.admin.groups.get_group_title.group_id', $groupId);
 
-        $groupTitle = DB::forTable('groups')->where('g_id', $groupId);
+        $groupTitle = DB::table('groups')->where('g_id', $groupId);
         $groupTitle = Container::get('hooks')->fireDB('model.admin.groups.get_group_title.query', $groupTitle);
         $groupTitle = $groupTitle->findOneCol('g_title');
 
@@ -368,7 +368,7 @@ class Groups
     {
         $groupId = Container::get('hooks')->fire('model.admin.groups.get_title_members.group_id', $groupId);
 
-        $group = DB::forTable('groups')->tableAlias('g')
+        $group = DB::table('groups')->tableAlias('g')
                     ->select('g.g_title')
                     ->selectExpr('COUNT(u.id)', 'members')
                     ->innerJoin('users', ['g.g_id', '=', 'u.group_id'], 'u')

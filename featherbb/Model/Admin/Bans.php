@@ -31,7 +31,7 @@ class Bans
             }
 
             $selectAddBanInfo = ['group_id', 'username', 'email'];
-            $result = DB::forTable('users')->selectMany($selectAddBanInfo)
+            $result = DB::table('users')->selectMany($selectAddBanInfo)
                         ->where('id', $ban['user_id']);
 
             $result = Container::get('hooks')->fireDB('model.admin.bans.add_ban_info_query', $result);
@@ -51,7 +51,7 @@ class Bans
 
             if ($ban['ban_user'] != '') {
                 $selectAddBanInfo = ['id', 'group_id', 'username', 'email'];
-                $result = DB::forTable('users')->selectMany($selectAddBanInfo)
+                $result = DB::table('users')->selectMany($selectAddBanInfo)
                     ->where('username', $ban['ban_user'])
                     ->whereGt('id', 1);
 
@@ -84,12 +84,12 @@ class Bans
 
         // If we have a $ban['user_id'], we can try to find the last known IP of that user
         if (isset($ban['user_id'])) {
-            $ban['ip'] = DB::forTable('posts')->where('poster_id', $ban['user_id'])
+            $ban['ip'] = DB::table('posts')->where('poster_id', $ban['user_id'])
                             ->orderByDesc('posted')
                             ->findOneCol('poster_ip');
 
             if (!$ban['ip']) {
-                $ban['ip'] = DB::forTable('users')->where('id', $ban['user_id'])
+                $ban['ip'] = DB::table('users')->where('id', $ban['user_id'])
                                  ->findOneCol('registration_ip');
             }
         }
@@ -110,7 +110,7 @@ class Bans
         $ban['id'] = $id;
 
         $selectEditBanInfo = ['username', 'ip', 'email', 'message', 'expire'];
-        $result = DB::forTable('bans')->selectMany($selectEditBanInfo)
+        $result = DB::table('bans')->selectMany($selectEditBanInfo)
             ->where('id', $ban['id']);
 
         $result = Container::get('hooks')->fireDB('model.admin.bans.edit_ban_info_query', $result);
@@ -154,7 +154,7 @@ class Bans
 
         // Make sure we're not banning an admin or moderator
         if (!empty($banUser)) {
-            $groupId = DB::forTable('users')->where('username', $banUser)
+            $groupId = DB::table('users')->where('username', $banUser)
                             ->whereGt('id', 1)
                             ->findOneCol('group_id');
 
@@ -251,12 +251,12 @@ class Bans
         if (Input::post('mode') == 'add') {
             $insertUpdateBan['ban_creator'] = User::get()->id;
 
-            $result = DB::forTable('bans')
+            $result = DB::table('bans')
                 ->create()
                 ->set($insertUpdateBan)
                 ->save();
         } else {
-            $result = DB::forTable('bans')
+            $result = DB::table('bans')
                 ->where('id', Input::post('ban_id'))
                 ->findOne()
                 ->set($insertUpdateBan)
@@ -273,7 +273,7 @@ class Bans
     {
         $banId = Container::get('hooks')->fire('model.admin.bans.remove_ban', $banId);
 
-        $result = DB::forTable('bans')->where('id', $banId)
+        $result = DB::table('bans')->where('id', $banId)
                     ->findOne();
         $result = Container::get('hooks')->fireDB('model.admin.bans.remove_ban_query', $result);
         $result = $result->delete();
@@ -302,7 +302,7 @@ class Bans
         $banInfo['query_str'][] = 'direction='.$banInfo['direction'];
 
         // Build the query
-        $result = DB::forTable('bans')->tableAlias('b')
+        $result = DB::table('bans')->tableAlias('b')
                         ->whereGt('b.id', 0);
 
         // Try to convert date/time to timestamps

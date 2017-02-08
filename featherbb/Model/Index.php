@@ -44,7 +44,7 @@ class Index
             ['fp.read_forum' => '1']
         ];
 
-        $query = DB::forTable('forums')
+        $query = DB::table('forums')
             ->tableAlias('f')
             ->selectMany($query['select'])
             ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
@@ -70,7 +70,7 @@ class Index
             } else {
                 $query['select'] = ['forum_id', 'id', 'last_post'];
 
-                $query = DB::forTable('topics')
+                $query = DB::table('topics')
                     ->selectMany($query['select'])
                     ->whereIn('forum_id', array_keys($forums))
                     ->whereGt('last_post', User::get()->last_visit)
@@ -110,7 +110,7 @@ class Index
         ];
         $query['order_by'] = ['c.disp_position', 'c.id', 'f.disp_position'];
 
-        $query = DB::forTable('categories')
+        $query = DB::table('categories')
             ->tableAlias('c')
             ->selectMany($query['select'])
             ->innerJoin('forums', ['c.id', '=', 'f.cat_id'], 'f')
@@ -221,7 +221,7 @@ class Index
 
         $stats = Container::get('cache')->retrieve('users_info');
 
-        $query = DB::forTable('forums')
+        $query = DB::table('forums')
             ->selectExpr('SUM(num_topics)', 'total_topics')
             ->selectExpr('SUM(num_posts)', 'total_posts');
 
@@ -256,7 +256,7 @@ class Index
         $query['where'] = ['idle' => '0'];
         $query['order_by'] = ['ident'];
 
-        $query = DB::forTable('online')
+        $query = DB::table('online')
             ->selectMany($query['select'])
             ->where($query['where'])
             ->orderByMany($query['order_by']);

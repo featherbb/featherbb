@@ -167,7 +167,7 @@ class Auth
             $id = Input::query('user_id');
             $id = Container::get('hooks')->fire('controller.auth.password_forgotten_user_id', $id);
 
-            $curUser = DB::forTable('users')
+            $curUser = DB::table('users')
                 ->where('id', $id);
             $curUser = Container::get('hooks')->fireDB('controller.auth.password_forgotten_user_query', $curUser);
             $curUser = $curUser->findOne();
@@ -175,7 +175,7 @@ class Auth
             if ($key == '' || $key != $curUser['activate_key']) {
                 throw new Error(__('Pass key bad').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400, true, true);
             } else {
-                $query = DB::forTable('users')
+                $query = DB::table('users')
                     ->where('id', $id)
                     ->findOne()
                     ->set('password', $curUser['activate_string'])

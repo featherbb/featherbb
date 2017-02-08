@@ -236,7 +236,7 @@ class Profile
         }
 
         // Make sure user exists
-        if (!DB::forTable('users')->findOne($args['id']) || $args['id'] < 2) {
+        if (!DB::table('users')->findOne($args['id']) || $args['id'] < 2) {
             throw new Error(__('Bad request'), 404);
         }
 

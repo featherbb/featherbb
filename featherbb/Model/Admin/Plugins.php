@@ -36,9 +36,9 @@ class Plugins
             // Check if plugin is not yet activated...
             if (!in_array($name, $activePlugins)) {
                 // Find or create plugin in DB...
-                $plugin = DB::forTable('plugins')->where('name', $name)->findOne();
+                $plugin = DB::table('plugins')->where('name', $name)->findOne();
                 if (!$plugin) {
-                    $plugin = DB::forTable('plugins')->create()->set('name', $name);
+                    $plugin = DB::table('plugins')->create()->set('name', $name);
                 }
 
                 // ... Install it if needed ...
@@ -77,9 +77,9 @@ class Plugins
 
             // Check if plugin is actually activated
             if (($k = array_search($name, $activePlugins)) !== false) {
-                $plugin = DB::forTable('plugins')->where('name', $name)->findOne();
+                $plugin = DB::table('plugins')->where('name', $name)->findOne();
                 if (!$plugin) {
-                    $plugin = DB::forTable('plugins')->create()->set('name', $name);
+                    $plugin = DB::table('plugins')->create()->set('name', $name);
                 }
 
                 // Do we need to run extra code for deactivation ?
@@ -114,7 +114,7 @@ class Plugins
 
             // Check if plugin is disabled, for security
             if (!in_array($name, $activePlugins)) {
-                $plugin = DB::forTable('plugins')->where('name', $name)->findOne();
+                $plugin = DB::table('plugins')->where('name', $name)->findOne();
 
                 if ($plugin) {
                     $plugin->delete();

@@ -15,7 +15,7 @@ class Cache
 {
     public static function getConfig()
     {
-        $result = DB::forTable('config')
+        $result = DB::table('config')
                     ->findArray();
         $config = [];
         foreach ($result as $item) {
@@ -26,7 +26,7 @@ class Cache
 
     public static function getPreferences()
     {
-        $result = DB::forTable('preferences')
+        $result = DB::table('preferences')
                     ->where('default', 1)
                     ->findArray();
         $preferences = [];
@@ -38,13 +38,13 @@ class Cache
 
     public static function getBans()
     {
-        return DB::forTable('bans')
+        return DB::table('bans')
                 ->findArray();
     }
 
     public static function getCensoring($selectCensoring = 'search_for')
     {
-        $result = DB::forTable('censoring')
+        $result = DB::table('censoring')
                     ->selectMany($selectCensoring)
                     ->findArray();
         $output = [];
@@ -59,11 +59,11 @@ class Cache
     {
         $stats = [];
         $selectGetUsersInfo = ['id', 'username'];
-        $stats['total_users'] = DB::forTable('users')
+        $stats['total_users'] = DB::table('users')
                                     ->whereNotEqual('group_id', ForumEnv::get('FEATHER_UNVERIFIED'))
                                     ->whereNotEqual('id', 1)
                                     ->count();
-        $stats['last_user'] = DB::forTable('users')->selectMany($selectGetUsersInfo)
+        $stats['last_user'] = DB::table('users')->selectMany($selectGetUsersInfo)
                             ->whereNotEqual('group_id', ForumEnv::get('FEATHER_UNVERIFIED'))
                             ->orderByDesc('registered')
                             ->limit(1)
@@ -73,7 +73,7 @@ class Cache
 
     public static function getAdminIds()
     {
-        return DB::forTable('users')
+        return DB::table('users')
                 ->select('id')
                 ->where('group_id', ForumEnv::get('FEATHER_ADMIN'))
                 ->findArray();
@@ -81,7 +81,7 @@ class Cache
 
     public static function quickjump()
     {
-        $readPerms = DB::forTable('permissions')
+        $readPerms = DB::table('permissions')
             ->select('group', 'g_id')
             ->whereAnyIs([
                 ['permission_name' => 'board.read'],
@@ -99,7 +99,7 @@ class Cache
             ];
             $orderByQuickjump = ['c.disp_position', 'c.id', 'f.disp_position'];
 
-            $result = DB::forTable('categories')
+            $result = DB::table('categories')
                         ->tableAlias('c')
                         ->selectMany($selectQuickjump)
                         ->innerJoin('forums', ['c.id', '=', 'f.cat_id'], 'f')
@@ -146,7 +146,7 @@ class Cache
         $result = [];
 
         // First, get default group permissions
-        $groupsPerms = DB::forTable('permissions')->whereNull('user')->orderByDesc('group')->findArray();
+        $groupsPerms = DB::table('permissions')->whereNull('user')->orderByDesc('group')->findArray();
         foreach ($groupsPerms as $perm) {
             if ((bool) $perm['allow']) {
                 $result[$perm['group']][0][$perm['permission_name']] = true;
@@ -155,7 +155,7 @@ class Cache
 
         // Then get optionnal user permissions to override their group defaults
         // TODO: Add a page in profile Administration section to display custom permissions
-        $usersPerms = DB::forTable('permissions')
+        $usersPerms = DB::table('permissions')
             ->tableAlias('p')
             ->selectMany('p.permission_name', 'p.allow', 'p.deny', 'p.user', 'u.group_id')
             ->innerJoin('users', ['u.id', '=', 'p.user'], 'u')
@@ -172,10 +172,10 @@ class Cache
     {
         $groupsPreferences = [];
 
-        $groups = DB::forTable('groups')->select('g_id')->findArray();
+        $groups = DB::table('groups')->select('g_id')->findArray();
 
         foreach ($groups as $group) {
-            $result = DB::forTable('preferences')
+            $result = DB::table('preferences')
                 ->tableAlias('p')
                 ->whereAnyIs([
                     ['p.group' => $group['g_id']],

@@ -228,7 +228,7 @@ class Install
 
     public function addData($tableName, array $data)
     {
-        return (bool) DB::forTable($tableName)
+        return (bool) DB::table($tableName)
                         ->create()
                         ->set($data)
                         ->save();

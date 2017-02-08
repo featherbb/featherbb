@@ -50,7 +50,7 @@ class Topic extends Api
         if ($tid) {
             $curPosting['select'] = ['f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics', 't.subject', 't.closed', 'is_subscribed' => 's.user_id'];
 
-            $curPosting = DB::forTable('topics')
+            $curPosting = DB::table('topics')
                 ->tableAlias('t')
                 ->selectMany($curPosting['select'])
                 ->innerJoin('forums', ['f.id', '=', 't.forum_id'], 'f')
@@ -61,7 +61,7 @@ class Topic extends Api
         } else {
             $curPosting['select'] = ['f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics'];
 
-            $curPosting = DB::forTable('forums')
+            $curPosting = DB::table('forums')
                 ->tableAlias('f')
                 ->selectMany($curPosting['select'])
                 ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.$this->user->g_id, 'fp')
@@ -231,7 +231,7 @@ class Topic extends Api
             'forum_id'  => $fid,
         ];
 
-        $topic = DB::forTable('topics')
+        $topic = DB::table('topics')
             ->create()
             ->set($topic['insert']);
         $topic = $topic->save();
@@ -246,7 +246,7 @@ class Topic extends Api
                     'topic_id'  =>  $new['tid']
                 ];
 
-                $subscription = DB::forTable('topic_subscriptions')
+                $subscription = DB::table('topic_subscriptions')
                     ->create()
                     ->set($subscription['insert']);
                 $subscription = $subscription->save();
@@ -263,7 +263,7 @@ class Topic extends Api
                 'topic_id'  => $new['tid'],
             ];
 
-            $query = DB::forTable('posts')
+            $query = DB::table('posts')
                 ->create()
                 ->set($query['insert']);
             $query = $query->save();
@@ -283,7 +283,7 @@ class Topic extends Api
                 $query['poster_email'] = $post['email'];
             }
 
-            $query = DB::forTable('posts')
+            $query = DB::table('posts')
                 ->create()
                 ->set($query['insert']);
             $query = $query->save();
@@ -297,7 +297,7 @@ class Topic extends Api
             'first_post_id' =>  $new['pid'],
         ];
 
-        $topic = DB::forTable('topics')
+        $topic = DB::table('topics')
             ->where('id', $new['tid'])
             ->findOne()
             ->set($topic['update']);
@@ -322,7 +322,7 @@ class Topic extends Api
         ];
         $result['select'] = ['u.id', 'u.email', 'u.notify_with_post', 'u.language'];
 
-        $result = DB::forTable('users')
+        $result = DB::table('users')
             ->tableAlias('u')
             ->selectMany($result['select'])
             ->innerJoin('forum_subscriptions', ['u.id', '=', 's.user_id'], 's')
@@ -410,7 +410,7 @@ class Topic extends Api
     public function incrementPostCount($post, $newTid)
     {
         if (!$this->user->is_guest) {
-            $increment = DB::forTable('users')
+            $increment = DB::table('users')
                 ->where('id', $this->user->id)
                 ->findOne()
                 ->set('last_post', $post['time'])
@@ -420,7 +420,7 @@ class Topic extends Api
             // Promote this user to a new group if enabled
             if (User::getPref('promote.next_group', $this->user) && $this->user->num_posts + 1 >= User::getPref('promote.min_posts', $this->user)) {
                 $newGroupId = User::getPref('promote.next_group', $this->user);
-                $promote = DB::forTable('users')
+                $promote = DB::table('users')
                     ->where('id', $this->user->id)
                     ->findOne()
                     ->set('group_id', $newGroupId);
@@ -433,7 +433,7 @@ class Topic extends Api
             Track::setTrackedTopics($trackedTopics);
         } else {
             // Update the last_post field for guests
-            $lastPost = DB::forTable('online')
+            $lastPost = DB::table('online')
                 ->where('ident', Utils::getIp())
                 ->findOne()
                 ->set('last_post', $post['time']);
@@ -462,7 +462,7 @@ class Topic extends Api
                 'topic_id'  => $tid,
             ];
 
-            $query = DB::forTable('posts')
+            $query = DB::table('posts')
                 ->create()
                 ->set($query['insert']);
             $query = Container::get('hooks')->fireDB('model.post.insert_reply_guest_query', $query);
@@ -480,7 +480,7 @@ class Topic extends Api
                         'topic_id'  =>  $tid
                     ];
 
-                    $subscription = DB::forTable('topic_subscriptions')
+                    $subscription = DB::table('topic_subscriptions')
                         ->create()
                         ->set($subscription['insert']);
                     $subscription = Container::get('hooks')->fireDB('model.post.insert_reply_subscription', $subscription);
@@ -488,7 +488,7 @@ class Topic extends Api
 
                     // We reply and we don't want to be subscribed anymore
                 } elseif ($post['subscribe'] == '0' && $isSubscribed) {
-                    $unsubscription = DB::forTable('topic_subscriptions')
+                    $unsubscription = DB::table('topic_subscriptions')
                         ->where('user_id', $this->user->id)
                         ->where('topic_id', $tid);
                     $unsubscription = Container::get('hooks')->fireDB('model.post.insert_reply_unsubscription', $unsubscription);
@@ -510,7 +510,7 @@ class Topic extends Api
                 $query['insert']['poster_email'] = $post['email'];
             }
 
-            $query = DB::forTable('posts')
+            $query = DB::table('posts')
                 ->create()
                 ->set($query['insert']);
             $query = Container::get('hooks')->fireDB('model.post.insert_reply_member_query', $query);
@@ -526,7 +526,7 @@ class Topic extends Api
             'last_poster'  => $post['username'],
         ];
 
-        $topic = DB::forTable('topics')
+        $topic = DB::table('topics')
             ->where('id', $tid)
             ->findOne()
             ->set($topic['update'])

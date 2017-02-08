@@ -25,7 +25,7 @@ class Auth
         $result['join'] = ($userId == 1) ? Utils::getIp() : 'u.id';
         $escape = ($userId == 1) ? true : false;
 
-        $result = DB::forTable('users')
+        $result = DB::table('users')
                     ->tableAlias('u')
                     ->selectMany($result['select'])
                     ->innerJoin('groups', ['u.group_id', '=', 'g.g_id'], 'g')
@@ -38,7 +38,7 @@ class Auth
 
     public static function deleteOnlineByIP($ip)
     {
-        $deleteOnline = DB::forTable('online')->where('ident', $ip);
+        $deleteOnline = DB::table('online')->where('ident', $ip);
         $deleteOnline = Container::get('hooks')->fireDB('delete_online_login', $deleteOnline);
         return $deleteOnline->deleteMany();
     }
@@ -46,14 +46,14 @@ class Auth
     public static function deleteOnlineById($userId)
     {
         // Remove user from "users online" list
-        $deleteOnline = DB::forTable('online')->where('user_id', $userId);
+        $deleteOnline = DB::table('online')->where('user_id', $userId);
         $deleteOnline = Container::get('hooks')->fireDB('delete_online_logout', $deleteOnline);
         return $deleteOnline->deleteMany();
     }
 
     public static function getUserFromName($username)
     {
-        $user = DB::forTable('users')->where('username', $username);
+        $user = DB::table('users')->where('username', $username);
         $user = Container::get('hooks')->fireDB('find_user_login', $user);
         return $user->findOne();
     }
@@ -61,7 +61,7 @@ class Auth
     public static function getUserFromEmail($email)
     {
         $result['select'] = ['id', 'username', 'last_email_sent'];
-        $result = DB::forTable('users')
+        $result = DB::table('users')
             ->selectMany($result['select'])
             ->where('email', $email);
         $result = Container::get('hooks')->fireDB('password_forgotten_query', $result);
@@ -70,7 +70,7 @@ class Auth
 
     public static function updateGroup($userId, $groupId)
     {
-        $updateUsergroup = DB::forTable('users')->where('id', $userId)
+        $updateUsergroup = DB::table('users')->where('id', $userId)
             ->findOne()
             ->set('group_id', $groupId);
         $updateUsergroup = Container::get('hooks')->fireDB('update_usergroup_login', $updateUsergroup);
@@ -79,7 +79,7 @@ class Auth
 
     public static function setLastVisit($userId, $lastVisit)
     {
-        $updateLastVisit = DB::forTable('users')->where('id', (int) $userId)
+        $updateLastVisit = DB::table('users')->where('id', (int) $userId)
             ->findOne()
             ->set('last_visit', (int) $lastVisit);
         $updateLastVisit = Container::get('hooks')->fireDB('update_online_logout', $updateLastVisit);
@@ -94,7 +94,7 @@ class Auth
             'last_email_sent' => time(),
         ];
 
-        $query = DB::forTable('users')
+        $query = DB::table('users')
                     ->where('id', $userId)
                     ->findOne()
                     ->set($query['update']);
@@ -104,7 +104,7 @@ class Auth
 
     public static function updatePassword($userId, $clearPassword)
     {
-        $query = DB::forTable('users')
+        $query = DB::table('users')
             ->where('id', $userId)
             ->findOne()
             ->set('password', Utils::passwordHash($clearPassword));

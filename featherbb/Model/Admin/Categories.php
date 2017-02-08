@@ -19,7 +19,7 @@ class Categories
 
         $setAddCategory = ['cat_name' => $catName];
 
-        return DB::forTable('categories')
+        return DB::table('categories')
                 ->create()
                 ->set($setAddCategory)
                 ->save();
@@ -32,7 +32,7 @@ class Categories
         $setUpdateCategory = ['cat_name' => $category['name'],
                                     'disp_position' => $category['order']];
 
-        return DB::forTable('categories')
+        return DB::table('categories')
                 ->findOne($category['id'])
                 ->set($setUpdateCategory)
                 ->save();
@@ -42,7 +42,7 @@ class Categories
     {
         $catToDelete = Container::get('hooks')->fire('model.admin.categories.delete_category_start', $catToDelete);
 
-        $forumsInCat = DB::forTable('forums')
+        $forumsInCat = DB::table('forums')
                             ->select('id')
                             ->where('cat_id', $catToDelete);
         $forumsInCat = Container::get('hooks')->fireDB('model.admin.categories.delete_forums_in_cat_query', $forumsInCat);
@@ -54,13 +54,13 @@ class Categories
             $this->maintenance->prune($forum->id, 1, -1);
 
             // Delete forum
-            DB::forTable('forums')
+            DB::table('forums')
                 ->findOne($forum->id)
                 ->delete();
         }
 
         // Delete orphan redirect forums
-        $orphans = DB::forTable('topics')
+        $orphans = DB::table('topics')
                     ->tableAlias('t1')
                     ->leftOuterJoin('topics', ['t1.moved_to', '=', 't2.id'], 't2')
                     ->whereNull('t2.id')
@@ -73,7 +73,7 @@ class Categories
         }
 
         // Delete category
-        $result = DB::forTable('categories');
+        $result = DB::table('categories');
         $result = Container::get('hooks')->fireDB('model.admin.categories.find_forums_in_cat', $result);
         $result = $result->findOne($catToDelete)->delete();
 
@@ -85,7 +85,7 @@ class Categories
         $catList = [];
         $selectGetCatList = ['id', 'cat_name', 'disp_position'];
 
-        $catList = DB::forTable('categories')
+        $catList = DB::table('categories')
             ->select($selectGetCatList)
             ->orderByAsc('disp_position');
         $catList = Container::get('hooks')->fireDB('model.admin.categories.get_cat_list', $catList);

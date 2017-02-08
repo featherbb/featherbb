@@ -214,10 +214,10 @@ class Options
             // Only update values that have changed
             if (array_key_exists('o_'.$key, Container::get('forum_settings')) && ForumSettings::get('o_'.$key) != $input) {
                 if ($input != '' || is_int($input)) {
-                    DB::forTable('config')->where('conf_name', 'o_'.$key)
+                    DB::table('config')->where('conf_name', 'o_'.$key)
                                                                ->updateMany('conf_value', $input);
                 } else {
-                    DB::forTable('config')->where('conf_name', 'o_'.$key)
+                    DB::table('config')->where('conf_name', 'o_'.$key)
                                                                ->updateManyExpr('conf_value', 'NULL');
                 }
             }

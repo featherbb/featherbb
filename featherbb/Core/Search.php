@@ -165,7 +165,7 @@ class Search
 
         if ($mode == 'edit') {
             $selectUpdateSearchIndex = ['w.id', 'w.word', 'm.subject_match'];
-            $result = DB::forTable('search_words')->tableAlias('w')
+            $result = DB::table('search_words')->tableAlias('w')
                 ->selectMany($selectUpdateSearchIndex)
                 ->innerJoin('search_matches', ['w.id', '=', 'm.word_id'], 'm')
                 ->where('m.post_id', $postId)
@@ -202,7 +202,7 @@ class Search
 
         if (!empty($uniqueWords)) {
             $selectUniqueWords = ['id', 'word'];
-            $result = DB::forTable('search_words')->selectMany($selectUniqueWords)
+            $result = DB::table('search_words')->selectMany($selectUniqueWords)
                 ->whereIn('word', $uniqueWords)
                 ->findMany();
 
@@ -226,14 +226,14 @@ class Search
                     case 'mysqli_innodb':
                         // Quite dirty, right? :-)
                         $placeholders = rtrim(str_repeat('(?), ', count($newWords)), ', ');
-                        DB::forTable('search_words')
+                        DB::table('search_words')
                             ->rawExecute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_words (word) VALUES ' . $placeholders, $newWords);
                         break;
 
                     default:
                         foreach ($newWords as $word) {
                             $wordInsert['word'] = $word;
-                            DB::forTable('search_words')
+                            DB::table('search_words')
                                 ->create()
                                 ->set($wordInsert)
                                 ->save();
@@ -255,7 +255,7 @@ class Search
                     $sql[] = $curWords[$matchIn][$word];
                 }
 
-                DB::forTable('search_matches')
+                DB::table('search_matches')
                     ->whereIn('word_id', $sql)
                     ->where('post_id', $postId)
                     ->where('subject_match', $subjectMatch)
@@ -270,7 +270,7 @@ class Search
             if (!empty($wordlist)) {
                 $wordlist = array_values($wordlist);
                 $placeholders = rtrim(str_repeat('?, ', count($wordlist)), ', ');
-                DB::forTable('search_words')
+                DB::table('search_words')
                     ->rawExecute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_matches (post_id, word_id, subject_match) SELECT ' . $postId . ', id, ' . $subjectMatch . ' FROM ' . ForumSettings::get('db_prefix') . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
             }
         }
@@ -295,7 +295,7 @@ class Search
             case 'mysqli':
             case 'mysql_innodb':
             case 'mysqli_innodb': {
-                $result = DB::forTable('search_matches')->select('word_id')
+                $result = DB::table('search_matches')->select('word_id')
                     ->whereIn('post_id', $postIdsSql)
                     ->groupBy('word_id')
                     ->findMany();
@@ -306,7 +306,7 @@ class Search
                         $wordIds[] = $row['word_id'];
                     }
 
-                    $result = DB::forTable('search_matches')->select('word_id')
+                    $result = DB::table('search_matches')->select('word_id')
                         ->whereIn('word_id', $wordIds)
                         ->groupBy('word_id')
                         ->havingRaw('COUNT(word_id)=1')
@@ -318,7 +318,7 @@ class Search
                             $wordIds[] = $row['word_id'];
                         }
 
-                        DB::forTable('search_words')
+                        DB::table('search_words')
                             ->whereIn('id', $wordIds)
                             ->deleteMany();
                     }
@@ -327,13 +327,13 @@ class Search
             }
 
             default:
-                DB::forTable('search_matches')
+                DB::table('search_matches')
                     ->whereRaw('id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE post_id IN(' . $postIds . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
                     ->deleteMany();
                 break;
         }
 
-        DB::forTable('search_matches')
+        DB::table('search_matches')
             ->whereIn('post_id', $postIdsSql)
             ->deleteMany();
     }

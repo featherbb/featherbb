@@ -41,7 +41,7 @@ class Api
     {
         // Get the user ID from its name
         if (Input::query('username')) {
-            $userId = DB::forTable('users')
+            $userId = DB::table('users')
                 ->whereLike('username', Input::query('username'))
                 ->findOneCol('id');
             if ($userId) {
