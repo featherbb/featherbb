@@ -2659,7 +2659,7 @@ use Serializable;
               )                         # End $1: Quoted chunk.
             | ([^\'"\\\\]+)             # or $2: an unquoted chunk (no escapes).
             /sx';
-            return preg_replace_callback($reParse, [$this, '_str_replace_outside_quotes_cb'], $this->subject);
+            return preg_replace_callback($reParse, [$this, '_strReplaceOutsideQuotesCb'], $this->subject);
         }
 
         /**
