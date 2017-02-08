@@ -959,7 +959,7 @@ use Serializable;
          * @example selectMany('column', 'column2', 'column3');
          * @example selectMany(array('column', 'column2', 'column3'), 'column4', 'column5');
          *
-         * @return \DB
+         * @return Database
          */
         public function selectMany()
         {
