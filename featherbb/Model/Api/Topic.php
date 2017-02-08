@@ -103,8 +103,8 @@ class Topic extends Api
     public function checkErrorsBeforePost($fid, $errors)
     {
         // Flood protection
-        if (Input::post('preview') != '' && $this->user->lastPost != '' && (time() - $this->user->lastPost) < Container::get('prefs')->get($this->user, 'post.min_interval')) {
-            $errors[] = sprintf(__('Flood start'), User::getPref('post.min_interval', $this->user), User::getPref('post.min_interval', $this->user) - (time() - $this->user->lastPost));
+        if (Input::post('preview') != '' && $this->user->last_post != '' && (time() - $this->user->last_post) < Container::get('prefs')->get($this->user, 'post.min_interval')) {
+            $errors[] = sprintf(__('Flood start'), User::getPref('post.min_interval', $this->user), User::getPref('post.min_interval', $this->user) - (time() - $this->user->last_post));
         }
 
         // If it's a new topic
@@ -418,7 +418,7 @@ class Topic extends Api
             $increment = $increment->save();
 
             // Promote this user to a new group if enabled
-            if (User::getPref('promote.next_group', $this->user) && $this->user->numPosts + 1 >= User::getPref('promote.min_posts', $this->user)) {
+            if (User::getPref('promote.next_group', $this->user) && $this->user->num_posts + 1 >= User::getPref('promote.min_posts', $this->user)) {
                 $newGroupId = User::getPref('promote.next_group', $this->user);
                 $promote = DB::forTable('users')
                     ->where('id', $this->user->id)

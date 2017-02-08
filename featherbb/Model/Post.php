@@ -121,8 +121,8 @@ class Post
         }
 
         // Flood protection
-        if (Input::post('preview') != '' && User::get()->lastPost != '' && (time() - User::get()->lastPost) < User::getPref('post.min_interval')) {
-            $errors[] = sprintf(__('Flood start'), User::getPref('post.min_interval'), User::getPref('post.min_interval') - (time() - User::get()->lastPost));
+        if (Input::post('preview') != '' && User::get()->last_post != '' && (time() - User::get()->last_post) < User::getPref('post.min_interval')) {
+            $errors[] = sprintf(__('Flood start'), User::getPref('post.min_interval'), User::getPref('post.min_interval') - (time() - User::get()->last_post));
         }
 
         // If it's a new topic
@@ -540,8 +540,8 @@ class Post
             throw new Error(__('Reason too long'), 400);
         }
 
-        if (User::get()->lastReportSent != '' && (time() - User::get()->lastReportSent) < User::getPref('report.min_interval') && (time() - User::get()->lastReportSent) >= 0) {
-            throw new Error(sprintf(__('Report flood'), User::getPref('report.min_interval'), User::getPref('report.min_interval') - (time() - User::get()->lastReportSent)), 429);
+        if (User::get()->last_report_sent != '' && (time() - User::get()->last_report_sent) < User::getPref('report.min_interval') && (time() - User::get()->last_report_sent) >= 0) {
+            throw new Error(sprintf(__('Report flood'), User::getPref('report.min_interval'), User::getPref('report.min_interval') - (time() - User::get()->last_report_sent)), 429);
         }
 
         // Get the topic ID
@@ -1115,7 +1115,7 @@ class Post
             $increment = $increment->save();
 
             // Promote this user to a new group if enabled
-            if (User::getPref('promote.next_group') && User::get()->numPosts + 1 >= User::getPref('promote.min_posts')) {
+            if (User::getPref('promote.next_group') && User::get()->num_posts + 1 >= User::getPref('promote.min_posts')) {
                 $newGroupId = User::getPref('promote.next_group');
                 $promote = DB::forTable('users')
                             ->where('id', User::get()->id)

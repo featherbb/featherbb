@@ -136,8 +136,8 @@ class Auth
 
                 $mailMessage = Container::get('hooks')->fire('controller.mail_message_password_forgotten', $mailMessage);
 
-                if ($user->lastEmailSent != '' && (time() - $user->lastEmailSent) < 3600 && (time() - $user->lastEmailSent) >= 0) {
-                    throw new Error(sprintf(__('Email flood'), intval((3600 - (time() - $user->lastEmailSent)) / 60)), 429);
+                if ($user->last_email_sent != '' && (time() - $user->last_email_sent) < 3600 && (time() - $user->last_email_sent) >= 0) {
+                    throw new Error(sprintf(__('Email flood'), intval((3600 - (time() - $user->last_email_sent)) / 60)), 429);
                 }
 
                 // Generate a new password and a new password activation code

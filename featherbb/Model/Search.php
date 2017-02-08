@@ -128,8 +128,8 @@ class Search
 
             if (!empty($author) || !empty($keywords)) {
                 // Flood protection
-                if (User::get()->lastSearch && (time() - User::get()->lastSearch) < User::getPref('search.min_interval') && (time() - User::get()->lastSearch) >= 0) {
-                    throw new Error(sprintf(__('Search flood'), User::getPref('search.min_interval'), User::getPref('search.min_interval') - (time() - User::get()->lastSearch)), 429);
+                if (User::get()->last_search && (time() - User::get()->last_search) < User::getPref('search.min_interval') && (time() - User::get()->last_search) >= 0) {
+                    throw new Error(sprintf(__('Search flood'), User::getPref('search.min_interval'), User::getPref('search.min_interval') - (time() - User::get()->last_search)), 429);
                 }
 
                 if (!User::get()->is_guest) {
