@@ -195,9 +195,9 @@ class Index
                     }
                 }
 
-                $curForum->moderatorsFormatted = "\t\t\t\t\t\t\t\t".'<p class="modlist">(<em>'.__('Moderated by').'</em> '.implode(', ', $moderators).')</p>'."\n";
+                $curForum->moderators_formatted = "\t\t\t\t\t\t\t\t".'<p class="modlist">(<em>'.__('Moderated by').'</em> '.implode(', ', $moderators).')</p>'."\n";
             } else {
-                $curForum->moderatorsFormatted = '';
+                $curForum->moderators_formatted = '';
             }
 
             $indexData[] = $curForum;
