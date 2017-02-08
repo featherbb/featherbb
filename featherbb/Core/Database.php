@@ -45,7 +45,6 @@ use Countable;
 use InvalidArgumentException;
 use IteratorAggregate;
 use PDO;
-use PDOException;
 use Serializable;
 
 {
@@ -2814,7 +2813,7 @@ use Serializable;
          * @example self::forTable('Widget')->findMany()->set('field', 'value')->save();
          * @param string $method
          * @param array $params
-         * @return \IdiormResultSet
+         * @return IdiormResultSet
          */
         public function __call($method, $params = [])
         {
