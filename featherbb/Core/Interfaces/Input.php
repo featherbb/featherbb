@@ -7,7 +7,7 @@ class Input extends \Statical\BaseProxy
 {
     public static function file($name)
     {
-        return isset($_FILES[$name]) && $_FILES[$name]['size'] ? $_FILES[$name] : null;
+        return isset($_fILES[$name]) && $_fILES[$name]['size'] ? $_fILES[$name] : null;
     }
     public static function getParam($key, $default = null, $sanitize = true)
     {

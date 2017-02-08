@@ -61,10 +61,10 @@ class Groups
         }
 
         // Check if this group has any members
-        $is_member = $this->model->checkMembers($args['id']);
+        $isMember = $this->model->checkMembers($args['id']);
 
         // If the group doesn't have any members or if we've already selected a group to move the members to
-        if (!$is_member || Input::post('del_group')) {
+        if (!$isMember || Input::post('del_group')) {
             if (Input::post('del_group_comply') || Input::post('del_group')) {
                 return $this->model->deleteGroup($args['id']);
             } else {

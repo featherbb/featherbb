@@ -28,15 +28,15 @@ class Permissions
 
             // Only update values that have changed
             if (array_key_exists('p_'.$key, Container::get('forum_settings')) && ForumSettings::get('p_'.$key) != $input) {
-                DB::for_table('config')->where('conf_name', 'p_'.$key)
-                                                           ->update_many('conf_value', $input);
+                DB::forTable('config')->where('conf_name', 'p_'.$key)
+                                                           ->updateMany('conf_value', $input);
             }
         }
 
         // Regenerate the config cache
         $config = array_merge(Cache::getConfig(), Cache::getPreferences());
         Container::get('cache')->store('config', $config);
-        // $this->clear_feed_cache();
+        // $this->clearFeedCache();
 
         return Router::redirect(Router::pathFor('adminPermissions'), __('Perms updated redirect'));
     }

@@ -30,17 +30,17 @@ class Parser
         Container::get('hooks')->fire('controller.admin.parser.display');
 
         // This is where the parser data lives and breathes.
-        $cache_file = ForumEnv::get('FEATHER_ROOT').'cache/cache_parser_data.php';
+        $cacheFile = ForumEnv::get('FEATHER_ROOT').'cache/cache_parser_data.php';
 
         // If RESET button pushed, or no cache file, re-compile master bbcode source file.
-        if (Input::post('reset') || !file_exists($cache_file)) {
+        if (Input::post('reset') || !file_exists($cacheFile)) {
             require_once(ForumEnv::get('FEATHER_ROOT').'featherbb/Core/parser/bbcd_source.php');
             require_once(ForumEnv::get('FEATHER_ROOT').'featherbb/Core/parser/bbcd_compile.php');
             return Router::redirect(Router::pathFor('adminParser'), __('reset_success'));
         }
 
         // Load the current BBCode $pd array from featherbb/Core/parser/parser_data.inc.php.
-        require_once($cache_file);            // Fetch $pd compiled global regex data.
+        require_once($cacheFile);            // Fetch $pd compiled global regex data.
         $bbcd = $pd['bbcd'];                // Local scratch copy of $bbcd.
         $smilies = $pd['smilies'];            // Local scratch copy of $smilies.
         $config = $pd['config'];            // Local scratch copy of $config.
@@ -49,8 +49,8 @@ class Parser
         if (Input::post('form_sent')) {
 
             // Upload new smiley image to style/img/smilies
-            if (Input::post('upload') && isset($_FILES['new_smiley']) && isset($_FILES['new_smiley']['error'])) {
-                $f = $_FILES['new_smiley'];
+            if (Input::post('upload') && isset($_fILES['new_smiley']) && isset($_fILES['new_smiley']['error'])) {
+                $f = $_fILES['new_smiley'];
                 switch ($f['error']) {
                     case 0: // 0: Successful upload.
                         $name = str_replace(' ', '_', $f['name']);            // Convert spaces to underscoree.
@@ -203,7 +203,7 @@ class Parser
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'tag_summary' => $this->model->tagSummary(),
-                'smiley_files' => $this->model->get_smiley_files(),
+                'smiley_files' => $this->model->getSmileyFiles(),
                 'bbcd' =>   $bbcd,
                 'config' => $config,
                 'smilies' =>    $smilies,

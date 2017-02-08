@@ -32,11 +32,11 @@ class Register
         }
 
         // Antispam feature
-        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
-        $index_questions = rand(0, count($lang_antispam_questions)-1);
+        $langAntispamQuestions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
+        $indexQuestions = rand(0, count($langAntispamQuestions)-1);
 
         // Display an error message if new registrations are disabled
-        // If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
+        // If $_rEQUEST['username'] or $_rEQUEST['password'] are filled, we are facing a bot
         if (ForumSettings::get('o_regs_allow') == '0' || Input::post('username') || Input::post('password')) {
             throw new Error(__('No new regs'), 403);
         }
@@ -57,10 +57,10 @@ class Register
                     'active_page' => 'register',
                     'is_indexed' => true,
                     'errors' => $user['errors'],
-                    'index_questions'    =>    $index_questions,
+                    'index_questions'    =>    $indexQuestions,
                     'languages' => \FeatherBB\Core\Lister::getLangs(),
-                    'question' => array_keys($lang_antispam_questions),
-                    'qencoded' => md5(array_keys($lang_antispam_questions)[$index_questions]),
+                    'question' => array_keys($langAntispamQuestions),
+                    'qencoded' => md5(array_keys($langAntispamQuestions)[$indexQuestions]),
             ]
         )->addTemplate('register/form.php')->display();
     }

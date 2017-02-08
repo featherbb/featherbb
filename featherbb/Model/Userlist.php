@@ -15,111 +15,111 @@ use FeatherBB\Core\Utils;
 class Userlist
 {
     // Counts the number of user for a specific query
-    public function userCount($username, $show_group)
+    public function userCount($username, $showGroup)
     {
         // Fetch user count
-        $num_users = DB::for_table('users')->table_alias('u')
-                        ->where_gt('u.id', 1)
-                        ->where_not_equal('u.group_id', ForumEnv::get('FEATHER_UNVERIFIED'));
+        $numUsers = DB::forTable('users')->tableAlias('u')
+                        ->whereGt('u.id', 1)
+                        ->whereNotEqual('u.group_id', ForumEnv::get('FEATHER_UNVERIFIED'));
 
         if ($username != '') {
-            $num_users = $num_users->where_like('u.username', str_replace('*', '%', $username));
+            $numUsers = $numUsers->whereLike('u.username', str_replace('*', '%', $username));
         }
-        if ($show_group > -1) {
-            $num_users = $num_users->where('u.group_id', $show_group);
+        if ($showGroup > -1) {
+            $numUsers = $numUsers->where('u.group_id', $showGroup);
         }
 
-        $num_users = $num_users->count('id');
+        $numUsers = $numUsers->count('id');
 
-        $num_users = Container::get('hooks')->fire('model.userlist.fetch_user_count', $num_users);
+        $numUsers = Container::get('hooks')->fire('model.userlist.fetch_user_count', $numUsers);
 
-        return $num_users;
+        return $numUsers;
     }
 
     // Generates the dropdown menu containing groups
-    public function dropdownMenu($show_group)
+    public function dropdownMenu($showGroup)
     {
-        $show_group = Container::get('hooks')->fire('model.userlist.generate_dropdown_menu_start', $show_group);
+        $showGroup = Container::get('hooks')->fire('model.userlist.generate_dropdown_menu_start', $showGroup);
 
-        $dropdown_menu = '';
+        $dropdownMenu = '';
 
         $result['select'] = ['g_id', 'g_title'];
 
-        $result = DB::for_table('groups')
-                        ->select_many($result['select'])
-                        ->where_not_equal('g_id', ForumEnv::get('FEATHER_GUEST'))
-                        ->order_by('g_id');
+        $result = DB::forTable('groups')
+                        ->selectMany($result['select'])
+                        ->whereNotEqual('g_id', ForumEnv::get('FEATHER_GUEST'))
+                        ->orderBy('g_id');
         $result = Container::get('hooks')->fireDB('model.userlist.generate_dropdown_menu_query', $result);
-        $result = $result->find_many();
+        $result = $result->findMany();
 
-        foreach ($result as $cur_group) {
-            if ($cur_group['g_id'] == $show_group) {
-                $dropdown_menu .= "\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
+        foreach ($result as $curGroup) {
+            if ($curGroup['g_id'] == $showGroup) {
+                $dropdownMenu .= "\t\t\t\t\t\t\t".'<option value="'.$curGroup['g_id'].'" selected="selected">'.Utils::escape($curGroup['g_title']).'</option>'."\n";
             } else {
-                $dropdown_menu .= "\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
+                $dropdownMenu .= "\t\t\t\t\t\t\t".'<option value="'.$curGroup['g_id'].'">'.Utils::escape($curGroup['g_title']).'</option>'."\n";
             }
         }
 
-        $dropdown_menu = Container::get('hooks')->fire('model.userlist.generate_dropdown_menu', $dropdown_menu);
+        $dropdownMenu = Container::get('hooks')->fire('model.userlist.generate_dropdown_menu', $dropdownMenu);
 
-        return $dropdown_menu;
+        return $dropdownMenu;
     }
 
     // Prints the users
-    public function printUsers($username, $start_from, $sort_by, $sort_dir, $show_group)
+    public function printUsers($username, $startFrom, $sortBy, $sortDir, $showGroup)
     {
-        $userlist_data = [];
+        $userlistData = [];
 
-        $username = Container::get('hooks')->fire('model.userlist.print_users_start', $username, $start_from, $sort_by, $sort_dir, $show_group);
+        $username = Container::get('hooks')->fire('model.userlist.print_users_start', $username, $startFrom, $sortBy, $sortDir, $showGroup);
 
         // Retrieve a list of user IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
-        $result = DB::for_table('users')
+        $result = DB::forTable('users')
                     ->select('u.id')
-                    ->table_alias('u')
-                    ->where_gt('u.id', 1)
-                    ->where_not_equal('u.group_id', ForumEnv::get('FEATHER_UNVERIFIED'));
+                    ->tableAlias('u')
+                    ->whereGt('u.id', 1)
+                    ->whereNotEqual('u.group_id', ForumEnv::get('FEATHER_UNVERIFIED'));
 
         if ($username != '') {
-            $result = $result->where_like('u.username', str_replace('*', '%', $username));
+            $result = $result->whereLike('u.username', str_replace('*', '%', $username));
         }
-        if ($show_group > -1) {
-            $result = $result->where('u.group_id', $show_group);
+        if ($showGroup > -1) {
+            $result = $result->where('u.group_id', $showGroup);
         }
 
-        $result = $result->order_by($sort_by, $sort_dir)
-                         ->order_by_asc('u.id')
+        $result = $result->orderBy($sortBy, $sortDir)
+                         ->orderByAsc('u.id')
                          ->limit(50)
-                         ->offset($start_from);
+                         ->offset($startFrom);
 
         $result = Container::get('hooks')->fireDB('model.userlist.print_users_query', $result);
-        $result = $result->find_many();
+        $result = $result->findMany();
 
         if ($result) {
-            $user_ids = [];
-            foreach ($result as $cur_user_id) {
-                $user_ids[] = $cur_user_id['id'];
+            $userIds = [];
+            foreach ($result as $curUserId) {
+                $userIds[] = $curUserId['id'];
             }
 
             // Grab the users
             $result['select'] = ['u.id', 'u.username', 'u.title', 'u.num_posts', 'u.registered', 'g.g_id', 'g.g_user_title'];
 
-            $result = DB::for_table('users')
-                          ->table_alias('u')
-                          ->select_many($result['select'])
-                          ->left_outer_join('groups', ['g.g_id', '=', 'u.group_id'], 'g')
-                          ->where_in('u.id', $user_ids)
-                          ->order_by($sort_by, $sort_dir)
-                          ->order_by_asc('u.id');
+            $result = DB::forTable('users')
+                          ->tableAlias('u')
+                          ->selectMany($result['select'])
+                          ->leftOuterJoin('groups', ['g.g_id', '=', 'u.group_id'], 'g')
+                          ->whereIn('u.id', $userIds)
+                          ->orderBy($sortBy, $sortDir)
+                          ->orderByAsc('u.id');
             $result = Container::get('hooks')->fireDB('model.userlist.print_users_grab_query', $result);
-            $result = $result->find_many();
+            $result = $result->findMany();
 
-            foreach ($result as $user_data) {
-                $userlist_data[] = $user_data;
+            foreach ($result as $userData) {
+                $userlistData[] = $userData;
             }
         }
 
-        $userlist_data = Container::get('hooks')->fire('model.userlist.print_users', $userlist_data);
+        $userlistData = Container::get('hooks')->fire('model.userlist.print_users', $userlistData);
 
-        return $userlist_data;
+        return $userlistData;
     }
 }

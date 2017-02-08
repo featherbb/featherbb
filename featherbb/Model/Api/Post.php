@@ -26,78 +26,78 @@ class Post extends Api
             return $this->errorMessage;
         }
 
-        $data = $data->as_array();
+        $data = $data->asArray();
 
         $data['moderators'] = unserialize($data['moderators']);
 
         return $data;
     }
 
-    public function getDeletePermissions($cur_post, $args)
+    public function getDeletePermissions($curPost, $args)
     {
-        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : [];
-        $is_admmod = (User::isAdmin($this->user) || (User::isAdminMod($this->user) && array_key_exists($this->user->username, $mods_array))) ? true : false;
+        $modsArray = ($curPost['moderators'] != '') ? unserialize($curPost['moderators']) : [];
+        $isAdmmod = (User::isAdmin($this->user) || (User::isAdminMod($this->user) && array_key_exists($this->user->username, $modsArray))) ? true : false;
 
-        $is_topic_post = ($args['id'] == $cur_post['first_post_id']) ? true : false;
+        $isTopicPost = ($args['id'] == $curPost['first_post_id']) ? true : false;
 
         // Do we have permission to edit this post?
         if ((!User::can('post.delete', $this->user) ||
-                (!User::can('post.delete', $this->user) && $is_topic_post) ||
-                $cur_post['poster_id'] != $this->user->id ||
-                $cur_post['closed'] == '1') &&
-            !$is_admmod) {
+                (!User::can('post.delete', $this->user) && $isTopicPost) ||
+                $curPost['poster_id'] != $this->user->id ||
+                $curPost['closed'] == '1') &&
+            !$isAdmmod) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
-        if ($is_admmod && !User::isAdmin($this->user) && in_array($cur_post['poster_id'], Utils::getAdminIds())) {
+        if ($isAdmmod && !User::isAdmin($this->user) && in_array($curPost['poster_id'], Utils::getAdminIds())) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
-        return $is_topic_post;
+        return $isTopicPost;
     }
     
-    public function getEditPermissions($cur_post)
+    public function getEditPermissions($curPost)
     {
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
-        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : [];
-        $is_admmod = (User::isAdmin($this->user) || (User::isAdminMod($this->user) && array_key_exists($this->user->username, $mods_array))) ? true : false;
+        $modsArray = ($curPost['moderators'] != '') ? unserialize($curPost['moderators']) : [];
+        $isAdmmod = (User::isAdmin($this->user) || (User::isAdminMod($this->user) && array_key_exists($this->user->username, $modsArray))) ? true : false;
 
         // Do we have permission to edit this post?
-        if ((!User::can('post.edit', $this->user) || $cur_post['poster_id'] != $this->user->id || $cur_post['closed'] == '1') && !$is_admmod) {
+        if ((!User::can('post.edit', $this->user) || $curPost['poster_id'] != $this->user->id || $curPost['closed'] == '1') && !$isAdmmod) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
-        if ($is_admmod && !User::isAdmin($this->user) && in_array($cur_post['poster_id'], Utils::getAdminIds())) {
+        if ($isAdmmod && !User::isAdmin($this->user) && in_array($curPost['poster_id'], Utils::getAdminIds())) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
-        return $is_admmod;
+        return $isAdmmod;
     }
 
     public function getInfoEdit($id)
     {
-        $cur_post['select'] = ['fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies'];
-        $cur_post['where'] = [
+        $curPost['select'] = ['fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies'];
+        $curPost['where'] = [
             ['fp.read_forum' => 'IS NULL'],
             ['fp.read_forum' => '1']
         ];
 
-        $cur_post = DB::for_table('posts')
-            ->table_alias('p')
-            ->select_many($cur_post['select'])
-            ->inner_join('topics', ['t.id', '=', 'p.topic_id'], 't')
-            ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
-            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.$this->user->g_id, 'fp')
-            ->where_any_is($cur_post['where'])
+        $curPost = DB::forTable('posts')
+            ->tableAlias('p')
+            ->selectMany($curPost['select'])
+            ->innerJoin('topics', ['t.id', '=', 'p.topic_id'], 't')
+            ->innerJoin('forums', ['f.id', '=', 't.forum_id'], 'f')
+            ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.$this->user->g_id, 'fp')
+            ->whereAnyIs($curPost['where'])
             ->where('p.id', $id);
 
-        $cur_post = $cur_post->find_one();
+        $curPost = $curPost->findOne();
 
-        if (!$cur_post) {
+        if (!$curPost) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
-        return $cur_post;
+        return $curPost;
     }
 
     public function getInfoDelete($id)
@@ -110,18 +110,18 @@ class Post extends Api
             ['fp.read_forum' => '1']
         ];
 
-        $query = DB::for_table('posts')
-            ->table_alias('p')
-            ->select_many($query['select'])
-            ->inner_join('topics', ['t.id', '=', 'p.topic_id'], 't')
-            ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
-            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.$this->user->g_id, 'fp')
-            ->where_any_is($query['where'])
+        $query = DB::forTable('posts')
+            ->tableAlias('p')
+            ->selectMany($query['select'])
+            ->innerJoin('topics', ['t.id', '=', 'p.topic_id'], 't')
+            ->innerJoin('forums', ['f.id', '=', 't.forum_id'], 'f')
+            ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.$this->user->g_id, 'fp')
+            ->whereAnyIs($query['where'])
             ->where('p.id', $id);
 
         $query = Container::get('hooks')->fireDB('model.post.get_info_delete_query', $query);
 
-        $query = $query->find_one();
+        $query = $query->findOne();
 
         if (!$query) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
@@ -130,8 +130,8 @@ class Post extends Api
         return $query;
     }
 
-    public function update($args, $can_edit_subject, $post, $cur_post, $is_admmod)
+    public function update($args, $canEditSubject, $post, $curPost, $isAdmmod)
     {
-        \FeatherBB\Model\Post::editPost($args['id'], $can_edit_subject, $post, $cur_post, $is_admmod, $this->user->username);
+        \FeatherBB\Model\Post::editPost($args['id'], $canEditSubject, $post, $curPost, $isAdmmod, $this->user->username);
     }
 }

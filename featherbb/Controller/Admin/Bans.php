@@ -33,22 +33,22 @@ class Bans
 
         // Display bans
         if (Input::query('find_ban')) {
-            $ban_info = $this->model->findBan();
+            $banInfo = $this->model->findBan();
 
-            // Determine the ban offset (based on $_GET['p'])
-            $num_pages = ceil($ban_info['num_bans'] / 50);
+            // Determine the ban offset (based on $_gET['p'])
+            $numPages = ceil($banInfo['num_bans'] / 50);
 
-            $p = (!Input::query('p') || Input::query('p') <= 1 || Input::query('p') > $num_pages) ? 1 : intval(Input::query('p'));
-            $start_from = 50 * ($p - 1);
+            $p = (!Input::query('p') || Input::query('p') <= 1 || Input::query('p') > $numPages) ? 1 : intval(Input::query('p'));
+            $startFrom = 50 * ($p - 1);
 
-            $ban_data = $this->model->findBan($start_from);
+            $banData = $this->model->findBan($startFrom);
 
             View::setPageInfo([
                     'admin_console' => true,
                     'page' => $p,
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans'), __('Results head')],
-                    'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginateOld($num_pages, $p, '?find_ban=&amp;' . implode('&amp;', $ban_info['query_str'])),
-                    'ban_data' => $ban_data['data'],
+                    'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginateOld($numPages, $p, '?find_ban=&amp;' . implode('&amp;', $banInfo['query_str'])),
+                    'ban_data' => $banData['data'],
                 ]
             )->addTemplate('admin/bans/search_ban.php')->display();
         } else {
@@ -75,7 +75,7 @@ class Bans
         View::setPageInfo([
                 'admin_console' => true,
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')],
-                'ban' => $this->model->add_ban_info($args['id']),
+                'ban' => $this->model->addBanInfo($args['id']),
             ]
         )->addTemplate('admin/bans/add_ban.php')->display();
     }

@@ -84,12 +84,12 @@ class Parser
      * Parse post or signature message text.
      *
      * @param string &$text
-     * @param integer $hide_smilies
+     * @param integer $hideSmilies
      * @return string
      */
-    public function parse_bbcode(&$text, $hide_smilies = 0)
+    public function parseBbcode(&$text, $hideSmilies = 0)
     {
-        if ($hide_smilies) {
+        if ($hideSmilies) {
             $this->parser->disablePlugin('Emoticons');
         }
 
@@ -109,15 +109,15 @@ class Parser
 //        {
 //            $text = preg_replace_callback($this->pd['re_bbcode'], array($this, '_parse_bbcode_callback'), $text);
 //        }
-//        // Set $smile_on flag depending on global flags and whether or not this is a signature.
+//        // Set $smileOn flag depending on global flags and whether or not this is a signature.
 //        if ($this->pd['in_signature'])
 //        {
-//            $smile_on = (ForumSettings::get('o_smilies_sig') &&
-// User::get()['show_smilies'] && !$hide_smilies) ? 1 : 0;
+//            $smileOn = (ForumSettings::get('o_smilies_sig') &&
+// User::get()['show_smilies'] && !$hideSmilies) ? 1 : 0;
 //        }
 //        else
 //        {
-//            $smile_on = (ForumSettings::get('o_smilies') && User::get()['show_smilies'] && !$hide_smilies) ? 1 : 0;
+//            $smileOn = (ForumSettings::get('o_smilies') && User::get()['show_smilies'] && !$hideSmilies) ? 1 : 0;
 //        }
     }
 
@@ -125,12 +125,12 @@ class Parser
      * Parse message text
      *
      * @param string $text
-     * @param integer $hide_smilies
+     * @param integer $hideSmilies
      * @return string
      */
-    public function parseMessage($text, $hide_smilies)
+    public function parseMessage($text, $hideSmilies)
     {
-        if ($hide_smilies) {
+        if ($hideSmilies) {
             $this->parser->disablePlugin('Emoticons');
         }
         if (ForumSettings::get('p_message_img_tag') !== '1' || User::get()['show_img'] !== '1')
@@ -142,11 +142,11 @@ class Parser
         $xml  = $this->parser->parse($text);
         $html = $this->renderer->render($xml);
 
-        if (User::getPref('show.smilies') == '1' && ForumSettings::get('o_smilies') == '1' && $hide_smilies == 0) {
-            return $this->do_smilies($html);
+        if (User::getPref('show.smilies') == '1' && ForumSettings::get('o_smilies') == '1' && $hideSmilies == 0) {
+            return $this->doSmilies($html);
         }
 
-        return $this->do_smilies($html);
+        return $this->doSmilies($html);
         // FIXME
 
 //        $this->pd['in_signature'] = false;
@@ -154,7 +154,7 @@ class Parser
 //        if (ForumSettings::get('p_message_img_tag') !== '1' || User::get()['show_img'] !== '1')
 //            if (isset($this->pd['bbcd']['img']))
 //                $this->pd['bbcd']['img']['in_post'] = false;
-//        return $this->parse_bbcode($text, $hide_smilies);
+//        return $this->parseBbcode($text, $hideSmilies);
     }
 
     /**
@@ -182,7 +182,7 @@ class Parser
 //        if (ForumSettings::get('p_sig_img_tag') !== '1' || User::get()['show_img_sig'] !== '1')
 //            if (isset($this->pd['bbcd']['img']))
 //                $this->pd['bbcd']['img']['in_sig'] = false;
-//        return $this->parse_bbcode($text);
+//        return $this->parseBbcode($text);
     }
 
     public function parseForSave($text, &$errors)
@@ -204,14 +204,14 @@ class Parser
      *
      * @param string $text
      * @param array &$errors
-     * @param integer $is_signature
+     * @param integer $isSignature
      * @return string
      */
-    public function preparse_bbcode($text, &$errors, $is_signature = false)
+    public function preparseBbcode($text, &$errors, $isSignature = false)
     {
         // FIXME some as parseForSave ???
 
-        // TODO check $is_signature limits
+        // TODO check $isSignature limits
         $xml  = $this->parser->parse($text);
         $html = $this->renderer->render($xml);
         // TODO check nestingLimit
@@ -222,13 +222,13 @@ class Parser
         return \s9e\TextFormatter\Unparser::unparse($xml);
         /*
                 $this->pd['new_errors'] = []; // Reset the parser error message stack.
-                $this->pd['in_signature'] = ($is_signature) ? true : false;
+                $this->pd['in_signature'] = ($isSignature) ? true : false;
                 $this->pd['ipass'] = 1;
                 $newtext = preg_replace_callback($this->pd['re_bbcode'], array($this, '_preparse_bbcode_callback'), $text);
                 if ($newtext === null)
                 { // On error, preg_replace_callback returns NULL.
                     // Error #1: '(%s) Message is too long or too complex. Please shorten.'
-                    $errors[] = sprintf(__('BBerr pcre'), $this->preg_error());
+                    $errors[] = sprintf(__('BBerr pcre'), $this->pregError());
                     return $text;
                 }
                 $newtext = str_replace("\3", '[', $newtext); // Fixup CODE sections.
@@ -282,13 +282,13 @@ class Parser
      * @param $text string containing smilies to parse
      * @return string text "smilied" :-)
      */
-    function do_smilies($text)
+    function doSmilies($text)
     {
         $text = ' '.$text.' ';
-        foreach ($this->smilies as $smiley_text => $smiley_img)
+        foreach ($this->smilies as $smileyText => $smileyImg)
         {
-            if (strpos($text, $smiley_text) !== false)
-                $text = Utils::ucpPregReplace('%(?<=[>\s])'.preg_quote($smiley_text, '%').'(?=[^\p{L}\p{N}])%um', '<img src="'.Utils::escape(URL::base().'/style/img/smilies/'.$smiley_img).'" alt="'.substr($smiley_img, 0, strrpos($smiley_img, '.')).'" />', $text);
+            if (strpos($text, $smileyText) !== false)
+                $text = Utils::ucpPregReplace('%(?<=[>\s])'.preg_quote($smileyText, '%').'(?=[^\p{L}\p{N}])%um', '<img src="'.Utils::escape(URL::base().'/style/img/smilies/'.$smileyImg).'" alt="'.substr($smileyImg, 0, strrpos($smileyImg, '.')).'" />', $text);
         }
         return substr($text, 1, -1);
     }

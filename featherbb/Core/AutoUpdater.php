@@ -418,8 +418,8 @@ class AutoUpdater
 
         // Check for latest version
         foreach ($releases as $releaseContent) {
-            $versionRaw = $releaseContent->tag_name;
-            $updateUrl = $releaseContent->zipball_url;
+            $versionRaw = $releaseContent->tagName;
+            $updateUrl = $releaseContent->zipballUrl;
             $version = new version($versionRaw);
             if ($version->valid() === null) {
                 $this->_errors[] = sprintf(__('Could not parse version'), $versionRaw, $updateFile);
@@ -727,7 +727,7 @@ class AutoUpdater
 
             //If file is a update script, include
             if ($filename == $this->updateScriptName) {
-                $upgrade_script = true;
+                $upgradeScript = true;
                 require($absoluteFilename);
 
                 if (!unlink($absoluteFilename)) {
@@ -880,7 +880,7 @@ class PluginAutoUpdater extends AutoUpdater
         // Set plugin informations
         $this->setRootFolder($plugin->name);
         $this->setCurrentVersion($plugin->version);
-        $this->setUpdateUrl(isset($plugin->update_url) ? $plugin->update_url : 'https://api.github.com/repos/featherbb/'.$plugin->name.'/releases');
+        $this->setUpdateUrl(isset($plugin->updateUrl) ? $plugin->updateUrl : 'https://api.github.com/repos/featherbb/'.$plugin->name.'/releases');
     }
 }
 

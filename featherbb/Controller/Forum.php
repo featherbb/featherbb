@@ -27,63 +27,63 @@ class Forum
     {
         Container::get('hooks')->fire('controller.forum.display');
         // Fetch some information about the forum
-        $cur_forum = $this->model->getForumInfo($args['id']);
+        $curForum = $this->model->getForumInfo($args['id']);
 
         // Is this a redirect forum? In that case, redirect!
-        if ($cur_forum['redirect_url'] != '') {
-            return Router::redirect(Router::pathFor('Forum', ['id' => $cur_forum['redirect_url'], 'name' => $cur_forum['forum_url']]));
+        if ($curForum['redirect_url'] != '') {
+            return Router::redirect(Router::pathFor('Forum', ['id' => $curForum['redirect_url'], 'name' => $curForum['forum_url']]));
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
-        $mods_array = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : [];
-        $is_admmod = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $modsArray = ($curForum['moderators'] != '') ? unserialize($curForum['moderators']) : [];
+        $isAdmmod = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $modsArray))) ? true : false;
 
-        $sort_by = $this->model->sortForumBy($cur_forum['sort_by']);
+        $sortBy = $this->model->sortForumBy($curForum['sort_by']);
 
         // Can we or can we not post new topics?
-        if (($cur_forum['post_topics'] == '' && User::can('topic.post')) || $cur_forum['post_topics'] == '1' || $is_admmod) {
-            $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.Router::pathFor('newTopic', ['fid' => $args['id']]).'">'.__('Post topic').'</a></p>'."\n";
+        if (($curForum['post_topics'] == '' && User::can('topic.post')) || $curForum['post_topics'] == '1' || $isAdmmod) {
+            $postLink = "\t\t\t".'<p class="postlink conr"><a href="'.Router::pathFor('newTopic', ['fid' => $args['id']]).'">'.__('Post topic').'</a></p>'."\n";
         } else {
-            $post_link = '';
+            $postLink = '';
         }
 
         // Determine the topic offset (based on $args['page'])
-        $num_pages = ceil($cur_forum['num_topics'] / User::getPref('disp.topics'));
+        $numPages = ceil($curForum['num_topics'] / User::getPref('disp.topics'));
 
-        $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
-        $start_from = User::getPref('disp.topics') * ($p - 1);
-        $url_forum = Url::slug($cur_forum['forum_name']);
+        $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $numPages) ? 1 : intval($args['page']);
+        $startFrom = User::getPref('disp.topics') * ($p - 1);
+        $urlForum = Url::slug($curForum['forum_name']);
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'forum/'.$args['id'].'/'.$url_forum.'/#');
+        $pagingLinks = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($numPages, $p, 'forum/'.$args['id'].'/'.$urlForum.'/#');
 
-        $forum_actions = $this->model->getForumActions($args['id'], $url_forum, ($cur_forum['is_subscribed'] == User::get()->id));
+        $forumActions = $this->model->getForumActions($args['id'], $urlForum, ($curForum['is_subscribed'] == User::get()->id));
 
         View::addAsset('canonical', Router::pathFor('Forum', ['id' => $args['id'], 'name' => $args['name']]));
-        if ($num_pages > 1) {
+        if ($numPages > 1) {
             if ($p > 1) {
                 View::addAsset('prev', Router::pathFor('Forum', ['id' => $args['id'], 'name' => $args['name'], 'page' => intval($p-1)]));
             }
-            if ($p < $num_pages) {
+            if ($p < $numPages) {
                 View::addAsset('next', Router::pathFor('Forum', ['id' => $args['id'], 'name' => $args['name'], 'page' => intval($p+1)]));
             }
         }
 
         View::setPageInfo([
-            'title' => [Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_forum['forum_name'])],
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($curForum['forum_name'])],
             'active_page' => 'Forum',
             'page_number'  =>  $p,
-            'paging_links'  =>  $paging_links,
+            'paging_links'  =>  $pagingLinks,
             'is_indexed' => true,
             'id' => $args['id'],
             'fid' => $args['id'],
-            'forum_data' => $this->model->printTopics($args['id'], $sort_by, $start_from),
-            'cur_forum' => $cur_forum,
-            'post_link' => $post_link,
-            'start_from' => $start_from,
-            'url_forum' => $url_forum,
-            'forum_actions' => $forum_actions,
-            'is_admmod' => $is_admmod,
+            'forum_data' => $this->model->printTopics($args['id'], $sortBy, $startFrom),
+            'cur_forum' => $curForum,
+            'post_link' => $postLink,
+            'start_from' => $startFrom,
+            'url_forum' => $urlForum,
+            'forum_actions' => $forumActions,
+            'is_admmod' => $isAdmmod,
         ])->addTemplate('forum.php')->display();
     }
 
@@ -93,40 +93,40 @@ class Forum
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->getModerators($args['id']);
-        $mods_array = ($moderators != '') ? unserialize($moderators) : [];
+        $modsArray = ($moderators != '') ? unserialize($moderators) : [];
 
-        if (!User::isAdmin() && (!User::isAdminMod() || !array_key_exists(User::get()->username, $mods_array))) {
+        if (!User::isAdmin() && (!User::isAdminMod() || !array_key_exists(User::get()->username, $modsArray))) {
             throw new Error(__('No permission'), 403);
         }
 
         // Fetch some info about the forum
-        $cur_forum = $this->model->getForumInfo($args['id']);
+        $curForum = $this->model->getForumInfo($args['id']);
 
         // Is this a redirect forum? In that case, abort!
-        if ($cur_forum['redirect_url'] != '') {
+        if ($curForum['redirect_url'] != '') {
             throw new Error(__('Bad request'), '404');
         }
 
-        $sort_by = $this->model->sortForumBy($cur_forum['sort_by']);
+        $sortBy = $this->model->sortForumBy($curForum['sort_by']);
 
-        // Determine the topic offset (based on $_GET['p'])
-        $num_pages = ceil($cur_forum['num_topics'] / User::getPref('disp.topics'));
+        // Determine the topic offset (based on $_gET['p'])
+        $numPages = ceil($curForum['num_topics'] / User::getPref('disp.topics'));
 
-        $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
-        $start_from = User::getPref('disp.topics') * ($p - 1);
-        $url_forum = Url::slug($cur_forum['forum_name']);
+        $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $numPages) ? 1 : intval($args['page']);
+        $startFrom = User::getPref('disp.topics') * ($p - 1);
+        $urlForum = Url::slug($curForum['forum_name']);
 
         View::setPageInfo([
-            'title' => [Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_forum['forum_name'])],
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($curForum['forum_name'])],
             'active_page' => 'moderate',
             'page' => $p,
             'id' => $args['id'],
             'p' => $p,
-            'url_forum' => $url_forum,
-            'cur_forum' => $cur_forum,
-            'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'forum/'.$args['id'].'/'.$url_forum.'/moderate/#'),
-            'topic_data' => $this->model->displayTopicsModerate($args['id'], $sort_by, $start_from),
-            'start_from' => $start_from,
+            'url_forum' => $urlForum,
+            'cur_forum' => $curForum,
+            'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($numPages, $p, 'forum/'.$args['id'].'/'.$urlForum.'/moderate/#'),
+            'topic_data' => $this->model->displayTopicsModerate($args['id'], $sortBy, $startFrom),
+            'start_from' => $startFrom,
             ]
         )->addTemplate('moderate/moderator_forum.php')->display();
     }
@@ -135,9 +135,9 @@ class Forum
     {
         Container::get('hooks')->fire('controller.forum.markread');
 
-        $tracked_topics = Track::getTrackedTopics();
-        $tracked_topics['forums'][$args['id']] = time();
-        Track::setTrackedTopics($tracked_topics);
+        $trackedTopics = Track::getTrackedTopics();
+        $trackedTopics['forums'][$args['id']] = time();
+        Track::setTrackedTopics($trackedTopics);
 
         return Router::redirect(Router::pathFor('Forum', ['id' => $args['id'], 'name' => $args['name']]), __('Mark forum read redirect'));
     }
@@ -164,9 +164,9 @@ class Forum
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->getModerators($args['id']);
-        $mods_array = ($moderators != '') ? unserialize($moderators) : [];
+        $modsArray = ($moderators != '') ? unserialize($moderators) : [];
 
-        if (!User::isAdmin() && (!User::isAdminMod() || !array_key_exists(User::get()->username, $mods_array))) {
+        if (!User::isAdmin() && (!User::isAdminMod() || !array_key_exists(User::get()->username, $modsArray))) {
             throw new Error(__('No permission'), 403);
         }
 
@@ -179,10 +179,10 @@ class Forum
                 throw new Error(__('No topics selected'), 400);
             }
 
-            if ($new_fid = Input::post('move_to_forum')) {
+            if ($newFid = Input::post('move_to_forum')) {
                 $topics = explode(',', $topics);
-                $topicModel->moveTo($args['id'], $new_fid, $topics);
-                return Router::redirect(Router::pathFor('Forum', ['id' => $new_fid, 'name' => $args['name']]), __('Move topics redirect'));
+                $topicModel->moveTo($args['id'], $newFid, $topics);
+                return Router::redirect(Router::pathFor('Forum', ['id' => $newFid, 'name' => $args['name']]), __('Move topics redirect'));
             }
 
             // Check if there are enough forums to move the topic
@@ -247,7 +247,7 @@ class Forum
         elseif (Input::post('open') || Input::post('close')) {
             $action = (Input::post('open')) ? 0 : 1;
 
-            // There could be an array of topic IDs in $_POST
+            // There could be an array of topic IDs in $_pOST
             if (Input::post('open') || Input::post('close')) {
                 $topics = Input::post('topics') ? @array_map('intval', @array_keys(Input::post('topics'))) : [];
                 if (empty($topics)) {
@@ -256,8 +256,8 @@ class Forum
 
                 $this->model->closeMultiple($action, $topics);
 
-                $redirect_msg = ($action) ? __('Close topics redirect') : __('Open topics redirect');
-                return Router::redirect(Router::pathFor('moderateForum', ['id' => $args['id'], 'name' => $args['name'], 'page' => $args['page']]), $redirect_msg);
+                $redirectMsg = ($action) ? __('Close topics redirect') : __('Open topics redirect');
+                return Router::redirect(Router::pathFor('moderateForum', ['id' => $args['id'], 'name' => $args['name'], 'page' => $args['page']]), $redirectMsg);
             }
         }
 
@@ -265,7 +265,7 @@ class Forum
         elseif (Input::post('stick') || Input::post('unstick')) {
             $action = (Input::post('stick')) ? 1 : 0;
 
-            // There could be an array of topic IDs in $_POST
+            // There could be an array of topic IDs in $_pOST
             if (Input::post('stick') || Input::post('unstick')) {
                 $topics = Input::post('topics') ? @array_map('intval', @array_keys(Input::post('topics'))) : [];
                 if (empty($topics)) {
@@ -274,8 +274,8 @@ class Forum
 
                 $this->model->stickMultiple($action, $topics);
 
-                $redirect_msg = ($action) ? __('Stick topics redirect') : __('Unstick topics redirect');
-                return Router::redirect(Router::pathFor('moderateForum', ['id' => $args['id'], 'name' => $args['name'], 'page' => $args['page']]), $redirect_msg);
+                $redirectMsg = ($action) ? __('Stick topics redirect') : __('Unstick topics redirect');
+                return Router::redirect(Router::pathFor('moderateForum', ['id' => $args['id'], 'name' => $args['name'], 'page' => $args['page']]), $redirectMsg);
             }
         }
     }

@@ -18,8 +18,8 @@ class Lister
     {
         $plugins = [];
 
-        foreach (glob(ForumEnv::get('FEATHER_ROOT').'plugins/*/featherbb.json') as $plugin_file) {
-            $plugins[] =  json_decode(file_get_contents($plugin_file));
+        foreach (glob(ForumEnv::get('FEATHER_ROOT').'plugins/*/featherbb.json') as $pluginFile) {
+            $plugins[] =  json_decode(file_get_contents($pluginFile));
         }
 
         return $plugins;

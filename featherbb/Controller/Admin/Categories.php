@@ -30,12 +30,12 @@ class Categories
     {
         Container::get('hooks')->fire('controller.admin.categories.add');
 
-        $cat_name = Utils::trim(Input::post('cat_name'));
-        if ($cat_name == '') {
+        $catName = Utils::trim(Input::post('cat_name'));
+        if ($catName == '') {
             return Router::redirect(Router::pathFor('adminCategories'), __('Must enter name message'));
         }
 
-        if ($this->model->addCategory($cat_name)) {
+        if ($this->model->addCategory($catName)) {
             return Router::redirect(Router::pathFor('adminCategories'), __('Category added redirect'));
         } else { //TODO, add error message
             return Router::redirect(Router::pathFor('adminCategories'), __('Category added redirect'));
@@ -50,14 +50,14 @@ class Categories
             throw new Error(__('Bad request'), '400');
         }
 
-        foreach (Input::post('cat') as $cat_id => $properties) {
-            $category = ['id' => (int) $cat_id,
+        foreach (Input::post('cat') as $catId => $properties) {
+            $category = ['id' => (int) $catId,
                               'name' => Utils::escape($properties['name']),
                               'order' => (int) $properties['order'],];
             if ($category['name'] == '') {
                 return Router::redirect(Router::pathFor('adminCategories'), __('Must enter name message'));
             }
-            $this->model->update_category($category);
+            $this->model->updateCategory($category);
         }
 
         // Regenerate the quick jump cache
@@ -70,9 +70,9 @@ class Categories
     {
         Container::get('hooks')->fire('controller.admin.categories.delete');
 
-        $cat_to_delete = (int) Input::post('cat_to_delete');
+        $catToDelete = (int) Input::post('cat_to_delete');
 
-        if ($cat_to_delete < 1) {
+        if ($catToDelete < 1) {
             throw new Error(__('Bad request'), '400');
         }
 
@@ -80,7 +80,7 @@ class Categories
             return Router::redirect(Router::pathFor('adminCategories'), __('Delete category not validated'));
         }
 
-        if ($this->model->deleteCategory($cat_to_delete)) {
+        if ($this->model->deleteCategory($catToDelete)) {
             return Router::redirect(Router::pathFor('adminCategories'), __('Category deleted redirect'));
         } else {
             return Router::redirect(Router::pathFor('adminCategories'), __('Unable to delete category'));

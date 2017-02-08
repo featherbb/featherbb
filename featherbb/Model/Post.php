@@ -21,43 +21,43 @@ class Post
     {
         Container::get('hooks')->fire('model.post.get_info_post_start', $tid, $fid);
 
-        $cur_posting['where'] = [
+        $curPosting['where'] = [
             ['fp.read_forum' => 'IS NULL'],
             ['fp.read_forum' => '1']
         ];
 
         if ($tid) {
-            $cur_posting['select'] = ['f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics', 't.subject', 't.closed', 'is_subscribed' => 's.user_id'];
+            $curPosting['select'] = ['f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics', 't.subject', 't.closed', 'is_subscribed' => 's.user_id'];
 
-            $cur_posting = DB::for_table('topics')
-                            ->table_alias('t')
-                            ->select_many($cur_posting['select'])
-                            ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
-                            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
-                            ->left_outer_join('topic_subscriptions', 't.id=s.topic_id AND s.user_id='.User::get()->g_id, 's')
-                            ->where_any_is($cur_posting['where'])
+            $curPosting = DB::forTable('topics')
+                            ->tableAlias('t')
+                            ->selectMany($curPosting['select'])
+                            ->innerJoin('forums', ['f.id', '=', 't.forum_id'], 'f')
+                            ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
+                            ->leftOuterJoin('topic_subscriptions', 't.id=s.topic_id AND s.user_id='.User::get()->g_id, 's')
+                            ->whereAnyIs($curPosting['where'])
                             ->where('t.id', $tid);
         } else {
-            $cur_posting['select'] = ['f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics'];
+            $curPosting['select'] = ['f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics'];
 
-            $cur_posting = DB::for_table('forums')
-                            ->table_alias('f')
-                            ->select_many($cur_posting['select'])
-                            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
-                            ->where_any_is($cur_posting['where'])
+            $curPosting = DB::forTable('forums')
+                            ->tableAlias('f')
+                            ->selectMany($curPosting['select'])
+                            ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
+                            ->whereAnyIs($curPosting['where'])
                             ->where('f.id', $fid);
         }
 
-        $cur_posting = Container::get('hooks')->fireDB('model.post.get_info_post_query', $cur_posting);
-        $cur_posting = $cur_posting->find_one();
+        $curPosting = Container::get('hooks')->fireDB('model.post.get_info_post_query', $curPosting);
+        $curPosting = $curPosting->findOne();
 
-        if (!$cur_posting) {
+        if (!$curPosting) {
             throw new Error(__('Bad request'), 404);
         }
 
-        $cur_posting = Container::get('hooks')->fire('model.post.get_info_post', $cur_posting);
+        $curPosting = Container::get('hooks')->fire('model.post.get_info_post', $curPosting);
 
-        return $cur_posting;
+        return $curPosting;
     }
 
     // Fetch some info about the post, the topic and the forum
@@ -65,36 +65,36 @@ class Post
     {
         $id = Container::get('hooks')->fire('model.post.get_info_edit_start', $id);
 
-        $cur_post['select'] = ['fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies'];
-        $cur_post['where'] = [
+        $curPost['select'] = ['fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies'];
+        $curPost['where'] = [
             ['fp.read_forum' => 'IS NULL'],
             ['fp.read_forum' => '1']
         ];
 
-        $cur_post = DB::for_table('posts')
-                    ->table_alias('p')
-                    ->select_many($cur_post['select'])
-                    ->inner_join('topics', ['t.id', '=', 'p.topic_id'], 't')
-                    ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
-                    ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
-                    ->where_any_is($cur_post['where'])
+        $curPost = DB::forTable('posts')
+                    ->tableAlias('p')
+                    ->selectMany($curPost['select'])
+                    ->innerJoin('topics', ['t.id', '=', 'p.topic_id'], 't')
+                    ->innerJoin('forums', ['f.id', '=', 't.forum_id'], 'f')
+                    ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
+                    ->whereAnyIs($curPost['where'])
                     ->where('p.id', $id);
 
-        $cur_post = Container::get('hooks')->fireDB('model.post.get_info_edit_query', $cur_post);
+        $curPost = Container::get('hooks')->fireDB('model.post.get_info_edit_query', $curPost);
 
-        $cur_post = $cur_post->find_one();
+        $curPost = $curPost->findOne();
 
-        if (!$cur_post) {
+        if (!$curPost) {
             throw new Error(__('Bad request'), 400);
         }
 
-        return $cur_post;
+        return $curPost;
     }
 
     // Checks the post for errors before posting
     public function checkErrorsPost($fid, $errors)
     {
-        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
+        $langAntispamQuestions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
 
         $fid = Container::get('hooks')->fire('model.post.check_errors_before_post_start', $fid);
 
@@ -109,20 +109,20 @@ class Post
 
             $question = Input::post('captcha_q') ? trim(Input::post('captcha_q')) : '';
             $answer = Input::post('captcha') ? strtoupper(trim(Input::post('captcha'))) : '';
-            $lang_antispam_questions_array = [];
+            $langAntispamQuestionsArray = [];
 
-            foreach ($lang_antispam_questions as $k => $v) {
-                $lang_antispam_questions_array[md5($k)] = strtoupper($v);
+            foreach ($langAntispamQuestions as $k => $v) {
+                $langAntispamQuestionsArray[md5($k)] = strtoupper($v);
             }
 
-            if (empty($lang_antispam_questions_array[$question]) || $lang_antispam_questions_array[$question] != $answer) {
+            if (empty($langAntispamQuestionsArray[$question]) || $langAntispamQuestionsArray[$question] != $answer) {
                 $errors[] = __('Robot test fail');
             }
         }
 
         // Flood protection
-        if (Input::post('preview') != '' && User::get()->last_post != '' && (time() - User::get()->last_post) < User::getPref('post.min_interval')) {
-            $errors[] = sprintf(__('Flood start'), User::getPref('post.min_interval'), User::getPref('post.min_interval') - (time() - User::get()->last_post));
+        if (Input::post('preview') != '' && User::get()->lastPost != '' && (time() - User::get()->lastPost) < User::getPref('post.min_interval')) {
+            $errors[] = sprintf(__('Flood start'), User::getPref('post.min_interval'), User::getPref('post.min_interval') - (time() - User::get()->lastPost));
         }
 
         // If it's a new topic
@@ -131,13 +131,13 @@ class Post
             $subject = Container::get('hooks')->fire('model.post.check_errors_before_new_topic_subject', $subject);
 
             if (ForumSettings::get('o_censoring') == '1') {
-                $censored_subject = Utils::trim(Utils::censor($subject));
-                $censored_subject = Container::get('hooks')->fire('model.post.check_errors_before_censored', $censored_subject);
+                $censoredSubject = Utils::trim(Utils::censor($subject));
+                $censoredSubject = Container::get('hooks')->fire('model.post.check_errors_before_censored', $censoredSubject);
             }
 
             if ($subject == '') {
                 $errors[] = __('No subject');
-            } elseif (ForumSettings::get('o_censoring') == '1' && $censored_subject == '') {
+            } elseif (ForumSettings::get('o_censoring') == '1' && $censoredSubject == '') {
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
@@ -160,7 +160,7 @@ class Post
 
                 // Check if it's a banned email address
                 // we should only check guests because members' addresses are already verified
-                if (User::get()->is_guest && Container::get('email')->is_banned_email($email)) {
+                if (User::get()->is_guest && Container::get('email')->isBannedEmail($email)) {
                     if (ForumSettings::get('p_allow_banned_email') == '0') {
                         $errors[] = __('Banned email');
                     }
@@ -183,7 +183,7 @@ class Post
 
         // Validate BBCode syntax
         if (ForumSettings::get('p_message_bbcode') == '1') {
-            $message = Container::get('parser')->preparse_bbcode($message, $errors);
+            $message = Container::get('parser')->preparseBbcode($message, $errors);
             $message = Container::get('hooks')->fire('model.post.check_errors_before_post_bbcode', $message);
         }
 
@@ -193,9 +193,9 @@ class Post
                 $errors[] = __('No message');
             } elseif (ForumSettings::get('o_censoring') == '1') {
                 // Censor message to see if that causes problems
-                $censored_message = Utils::trim(Utils::censor($message));
+                $censoredMessage = Utils::trim(Utils::censor($message));
 
-                if ($censored_message == '') {
+                if ($censoredMessage == '') {
                     $errors[] = __('No message after censoring');
                 }
             }
@@ -206,25 +206,25 @@ class Post
         return $errors;
     }
 
-    public static function checkErrorsEdit($can_edit_subject, $errors, $is_admmod)
+    public static function checkErrorsEdit($canEditSubject, $errors, $isAdmmod)
     {
         $errors = Container::get('hooks')->fire('model.post.check_errors_before_edit_start', $errors);
 
         // If it's a topic it must contain a subject
-        if ($can_edit_subject) {
+        if ($canEditSubject) {
             $subject = Utils::trim(Input::post('req_subject'));
 
             if (ForumSettings::get('o_censoring') == '1') {
-                $censored_subject = Utils::trim(Utils::censor($subject));
+                $censoredSubject = Utils::trim(Utils::censor($subject));
             }
 
             if ($subject == '') {
                 $errors[] = __('No subject');
-            } elseif (ForumSettings::get('o_censoring') == '1' && $censored_subject == '') {
+            } elseif (ForumSettings::get('o_censoring') == '1' && $censoredSubject == '') {
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::isAllUppercase($subject) && !$is_admmod) {
+            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::isAllUppercase($subject) && !$isAdmmod) {
                 $errors[] = __('All caps subject');
             }
         }
@@ -235,13 +235,13 @@ class Post
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > ForumEnv::get('FEATHER_MAX_POSTSIZE')) {
             $errors[] = sprintf(__('Too long message'), Utils::forumNumberFormat(ForumEnv::get('FEATHER_MAX_POSTSIZE')));
-        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::isAllUppercase($message) && !$is_admmod) {
+        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::isAllUppercase($message) && !$isAdmmod) {
             $errors[] = __('All caps message');
         }
 
         // Validate BBCode syntax
         if (ForumSettings::get('p_message_bbcode') == '1') {
-            $message = Container::get('parser')->preparse_bbcode($message, $errors);
+            $message = Container::get('parser')->preparseBbcode($message, $errors);
         }
 
         if (empty($errors)) {
@@ -249,9 +249,9 @@ class Post
                 $errors[] = __('No message');
             } elseif (ForumSettings::get('o_censoring') == '1') {
                 // Censor message to see if that causes problems
-                $censored_message = Utils::trim(Utils::censor($message));
+                $censoredMessage = Utils::trim(Utils::censor($message));
 
-                if ($censored_message == '') {
+                if ($censoredMessage == '') {
                     $errors[] = __('No message after censoring');
                 }
             }
@@ -263,17 +263,17 @@ class Post
     }
 
     // If the previous check went OK, setup some variables used later
-    public function setupVariables($errors, $is_admmod)
+    public function setupVariables($errors, $isAdmmod)
     {
         $post = [];
 
-        $post = Container::get('hooks')->fire('model.post.setup_variables_start', $post, $errors, $is_admmod);
+        $post = Container::get('hooks')->fire('model.post.setup_variables_start', $post, $errors, $isAdmmod);
 
         if (!User::get()->is_guest) {
             $post['username'] = User::get()->username;
             $post['email'] = User::get()->email;
         }
-        // Otherwise it should be in $feather ($_POST)
+        // Otherwise it should be in $feather ($_pOST)
         else {
             $post['username'] = Utils::trim(Input::post('req_username'));
             $post['email'] = strtolower(Utils::trim((ForumSettings::get('p_force_guest_email') == '1') ? Input::post('req_email') : Input::post('email')));
@@ -285,13 +285,13 @@ class Post
 
         $post['hide_smilies'] = Input::post('hide_smilies') ? '1' : '0';
         $post['subscribe'] = Input::post('subscribe') ? '1' : '0';
-        $post['stick_topic'] = Input::post('stick_topic') && $is_admmod ? '1' : '0';
+        $post['stick_topic'] = Input::post('stick_topic') && $isAdmmod ? '1' : '0';
 
         $post['message']  = Utils::linebreaks(Utils::trim(Input::post('req_message')));
 
         // Validate BBCode syntax
         if (ForumSettings::get('p_message_bbcode') == '1') {
-            $post['message']  = Container::get('parser')->preparse_bbcode($post['message'], $errors);
+            $post['message']  = Container::get('parser')->preparseBbcode($post['message'], $errors);
         }
 
         // Replace four-byte characters (MySQL cannot handle them)
@@ -305,7 +305,7 @@ class Post
     }
 
     // If the previous check went OK, setup some variables used later
-    public static function setupEditVariables($cur_post, $is_admmod, $can_edit_subject, $errors)
+    public static function setupEditVariables($curPost, $isAdmmod, $canEditSubject, $errors)
     {
         Container::get('hooks')->fire('model.post.setup_edit_variables_start');
 
@@ -313,8 +313,8 @@ class Post
 
         $post['hide_smilies'] = Input::post('hide_smilies') ? '1' : '0';
         $post['stick_topic'] = Input::post('stick_topic') ? '1' : '0';
-        if (!$is_admmod) {
-            $post['stick_topic'] = $cur_post['sticky'];
+        if (!$isAdmmod) {
+            $post['stick_topic'] = $curPost['sticky'];
         }
 
         // Clean up message from POST
@@ -322,14 +322,14 @@ class Post
 
         // Validate BBCode syntax
         if (ForumSettings::get('p_message_bbcode') == '1') {
-            $post['message'] = Container::get('parser')->preparse_bbcode($post['message'], $errors);
+            $post['message'] = Container::get('parser')->preparseBbcode($post['message'], $errors);
         }
 
         // Replace four-byte characters (MySQL cannot handle them)
         $post['message'] = Utils::stripBadMultibyteChars($post['message']);
 
         // Get the subject
-        if ($can_edit_subject) {
+        if ($canEditSubject) {
             $post['subject'] = Utils::trim(Input::post('req_subject'));
         }
 
@@ -348,18 +348,18 @@ class Post
             ['fp.read_forum' => '1']
         ];
 
-        $query = DB::for_table('posts')
-            ->table_alias('p')
-            ->select_many($query['select'])
-            ->inner_join('topics', ['t.id', '=', 'p.topic_id'], 't')
-            ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
-            ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
-            ->where_any_is($query['where'])
+        $query = DB::forTable('posts')
+            ->tableAlias('p')
+            ->selectMany($query['select'])
+            ->innerJoin('topics', ['t.id', '=', 'p.topic_id'], 't')
+            ->innerJoin('forums', ['f.id', '=', 't.forum_id'], 'f')
+            ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
+            ->whereAnyIs($query['where'])
             ->where('p.id', $id);
 
         $query = Container::get('hooks')->fireDB('model.post.get_info_delete_query', $query);
 
-        $query = $query->find_one();
+        $query = $query->findOne();
 
         if (!$query) {
             throw new Error(__('Bad request'), 404);
@@ -368,126 +368,126 @@ class Post
         return $query;
     }
 
-    public static function handleDeletion($is_topic_post, $id, $cur_post)
+    public static function handleDeletion($isTopicPost, $id, $curPost)
     {
-        Container::get('hooks')->fire('model.post.handle_deletion_start', $is_topic_post, $id, $cur_post);
+        Container::get('hooks')->fire('model.post.handle_deletion_start', $isTopicPost, $id, $curPost);
 
-        $tid = $cur_post['tid'];
-        $fid = $cur_post['fid'];
-        $topic_subject = Url::slug($cur_post['subject']);
-        $forum_url = Url::slug($cur_post['forum_name']);
+        $tid = $curPost['tid'];
+        $fid = $curPost['fid'];
+        $topicSubject = Url::slug($curPost['subject']);
+        $forumUrl = Url::slug($curPost['forum_name']);
 
-        if ($is_topic_post) {
-            Container::get('hooks')->fire('model.post.model.topic.delete', $is_topic_post, $id, $cur_post);
+        if ($isTopicPost) {
+            Container::get('hooks')->fire('model.post.model.topic.delete', $isTopicPost, $id, $curPost);
 
             // Delete the topic and all of its posts
             Topic::delete($tid);
             Forum::update($fid);
 
-            return Router::redirect(Router::pathFor('Forum', ['id' => $fid, 'name' => $forum_url]), __('Topic del redirect'));
+            return Router::redirect(Router::pathFor('Forum', ['id' => $fid, 'name' => $forumUrl]), __('Topic del redirect'));
         } else {
-            Container::get('hooks')->fire('model.post.handle_deletion', $is_topic_post, $id, $cur_post);
+            Container::get('hooks')->fire('model.post.handle_deletion', $isTopicPost, $id, $curPost);
 
             // Delete just this one post
             self::delete($id, $tid);
             Forum::update($fid);
 
             // Redirect towards the previous post
-            $post = DB::for_table('posts')
+            $post = DB::forTable('posts')
                 ->select('id')
                 ->where('topic_id', $tid)
-                ->where_lt('id', $id)
-                ->order_by_desc('id');
+                ->whereLt('id', $id)
+                ->orderByDesc('id');
 
             $post = Container::get('hooks')->fireDB('model.post.handle_deletion_query', $post);
 
-            $post = $post->find_one();
+            $post = $post->findOne();
 
-            return Router::redirect(Router::pathFor('viewPost', ['id' => $tid, 'name' => $topic_subject, 'pid' => $post['id']]).'#p'.$post['id'], __('Post del redirect'));
+            return Router::redirect(Router::pathFor('viewPost', ['id' => $tid, 'name' => $topicSubject, 'pid' => $post['id']]).'#p'.$post['id'], __('Post del redirect'));
         }
     }
 
     //
     // Delete a single post
     //
-    public static function delete($post_id, $topic_id)
+    public static function delete($postId, $topicId)
     {
-        $result = DB::for_table('posts')
-            ->select_many('id', 'poster', 'posted')
-            ->where('topic_id', $topic_id)
-            ->order_by_desc('id')
+        $result = DB::forTable('posts')
+            ->selectMany('id', 'poster', 'posted')
+            ->where('topic_id', $topicId)
+            ->orderByDesc('id')
             ->limit(2)
-            ->find_many();
+            ->findMany();
 
         $i = 0;
-        foreach ($result as $cur_result) {
+        foreach ($result as $curResult) {
             if ($i == 0) {
-                $last_id = $cur_result['id'];
+                $lastId = $curResult['id'];
             } else {
-                $second_last_id = $cur_result['id'];
-                $second_poster = $cur_result['poster'];
-                $second_posted = $cur_result['posted'];
+                $secondLastId = $curResult['id'];
+                $secondPoster = $curResult['poster'];
+                $secondPosted = $curResult['posted'];
             }
             ++$i;
         }
 
         // Delete the post
-        DB::for_table('posts')
-            ->where('id', $post_id)
-            ->find_one()
+        DB::forTable('posts')
+            ->where('id', $postId)
+            ->findOne()
             ->delete();
 
         $search = new \FeatherBB\Core\Search();
-        $search->stripSearchIndex($post_id);
+        $search->stripSearchIndex($postId);
 
         // Count number of replies in the topic
-        $num_replies = DB::for_table('posts')->where('topic_id', $topic_id)->count() - 1;
+        $numReplies = DB::forTable('posts')->where('topic_id', $topicId)->count() - 1;
 
         // If the message we deleted is the most recent in the topic (at the end of the topic)
-        if ($last_id == $post_id) {
-            // If there is a $second_last_id there is more than 1 reply to the topic
-            if (isset($second_last_id)) {
-                $update_topic = [
-                    'last_post'  => $second_posted,
-                    'last_post_id'  => $second_last_id,
-                    'last_poster'  => $second_poster,
-                    'num_replies'  => $num_replies,
+        if ($lastId == $postId) {
+            // If there is a $secondLastId there is more than 1 reply to the topic
+            if (isset($secondLastId)) {
+                $updateTopic = [
+                    'last_post'  => $secondPosted,
+                    'last_post_id'  => $secondLastId,
+                    'last_poster'  => $secondPoster,
+                    'num_replies'  => $numReplies,
                 ];
-                DB::for_table('topics')
-                    ->where('id', $topic_id)
-                    ->find_one()
-                    ->set($update_topic)
+                DB::forTable('topics')
+                    ->where('id', $topicId)
+                    ->findOne()
+                    ->set($updateTopic)
                     ->save();
             } else {
                 // We deleted the only reply, so now last_post/last_post_id/last_poster is posted/id/poster from the topic itself
-                DB::for_table('topics')
-                    ->where('id', $topic_id)
-                    ->find_one()
-                    ->set_expr('last_post', 'posted')
-                    ->set_expr('last_post_id', 'id')
-                    ->set_expr('last_poster', 'poster')
-                    ->set('num_replies', $num_replies)
+                DB::forTable('topics')
+                    ->where('id', $topicId)
+                    ->findOne()
+                    ->setExpr('last_post', 'posted')
+                    ->setExpr('last_post_id', 'id')
+                    ->setExpr('last_poster', 'poster')
+                    ->set('num_replies', $numReplies)
                     ->save();
             }
         } else {
             // Otherwise we just decrement the reply counter
-            DB::for_table('topics')
-                ->where('id', $topic_id)
-                ->find_one()
-                ->set('num_replies', $num_replies)
+            DB::forTable('topics')
+                ->where('id', $topicId)
+                ->findOne()
+                ->set('num_replies', $numReplies)
                 ->save();
         }
     }
 
-    public static function editPost($id, $can_edit_subject, $post, $cur_post, $is_admmod, $username = null)
+    public static function editPost($id, $canEditSubject, $post, $curPost, $isAdmmod, $username = null)
     {
         Container::get('hooks')->fire('model.post.edit_post_start');
 
-        if ($can_edit_subject) {
+        if ($canEditSubject) {
             // Update the topic and any redirect topics
-            $where_topic = [
-                ['id' => $cur_post['tid']],
-                ['moved_to' => $cur_post['tid']]
+            $whereTopic = [
+                ['id' => $curPost['tid']],
+                ['moved_to' => $curPost['tid']]
             ];
 
             $query['update_topic'] = [
@@ -495,8 +495,8 @@ class Post
                 'sticky'  => $post['stick_topic']
             ];
 
-            $query = DB::for_table('topics')->where_any_is($where_topic)
-                                            ->find_one()
+            $query = DB::forTable('topics')->whereAnyIs($whereTopic)
+                                            ->findOne()
                                             ->set($query['update_topic']);
 
             $query = Container::get('hooks')->fireDB('model.post.edit_post_can_edit_subject', $query);
@@ -516,21 +516,21 @@ class Post
             'hide_smilies'  => $post['hide_smilies']
         ];
 
-        if (!Input::post('silent') || !$is_admmod) {
+        if (!Input::post('silent') || !$isAdmmod) {
             $query['update_post']['edited'] = time();
             $query['update_post']['edited_by'] = (is_null($username) ? User::get()->username : $username);
         }
 
-        $query = DB::for_table('posts')->where('id', $id)
-                                       ->find_one()
+        $query = DB::forTable('posts')->where('id', $id)
+                                       ->findOne()
                                        ->set($query['update_post']);
         $query = Container::get('hooks')->fireDB('model.post.edit_post_query', $query);
         $query = $query->save();
     }
 
-    public function report($post_id)
+    public function report($postId)
     {
-        $post_id = Container::get('hooks')->fire('model.post.insert_report_start', $post_id);
+        $postId = Container::get('hooks')->fire('model.post.insert_report_start', $postId);
 
         // Clean up reason from POST
         $reason = Utils::linebreaks(Utils::trim(Input::post('req_reason')));
@@ -540,15 +540,15 @@ class Post
             throw new Error(__('Reason too long'), 400);
         }
 
-        if (User::get()->last_report_sent != '' && (time() - User::get()->last_report_sent) < User::getPref('report.min_interval') && (time() - User::get()->last_report_sent) >= 0) {
-            throw new Error(sprintf(__('Report flood'), User::getPref('report.min_interval'), User::getPref('report.min_interval') - (time() - User::get()->last_report_sent)), 429);
+        if (User::get()->lastReportSent != '' && (time() - User::get()->lastReportSent) < User::getPref('report.min_interval') && (time() - User::get()->lastReportSent) >= 0) {
+            throw new Error(sprintf(__('Report flood'), User::getPref('report.min_interval'), User::getPref('report.min_interval') - (time() - User::get()->lastReportSent)), 429);
         }
 
         // Get the topic ID
-        $topic = DB::for_table('posts')->select('topic_id')
-                                      ->where('id', $post_id);
+        $topic = DB::forTable('posts')->select('topic_id')
+                                      ->where('id', $postId);
         $topic = Container::get('hooks')->fireDB('model.post.insert_report_topic_id', $topic);
-        $topic = $topic->find_one();
+        $topic = $topic->findOne();
 
         if (!$topic) {
             throw new Error(__('Bad request'), 404);
@@ -556,10 +556,10 @@ class Post
 
         // Get the subject and forum ID
         $report['select'] = ['subject', 'forum_id'];
-        $report = DB::for_table('topics')->select_many($report['select'])
+        $report = DB::forTable('topics')->selectMany($report['select'])
                                         ->where('id', $topic['topic_id']);
         $report = Container::get('hooks')->fireDB('model.post.insert_report_get_subject', $report);
-        $report = $report->find_one();
+        $report = $report->findOne();
 
         if (!$report) {
             throw new Error(__('Bad request'), 404);
@@ -570,14 +570,14 @@ class Post
 
             // Insert the report
             $query['insert'] = [
-                'post_id' => $post_id,
+                'post_id' => $postId,
                 'topic_id'  => $topic['topic_id'],
                 'forum_id'  => $report['forum_id'],
                 'reported_by'  => User::get()->id,
                 'created'  => time(),
                 'message'  => $reason,
             ];
-            $query = DB::for_table('reports')
+            $query = DB::forTable('reports')
                 ->create()
                 ->set($query['insert']);
             $query = Container::get('hooks')->fireDB('model.post.insert_report_query', $query);
@@ -589,72 +589,72 @@ class Post
             // We send it to the complete mailing-list in one swoop
             if (ForumSettings::get('o_mailing_list') != '') {
                 // Load the "new report" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/mail_templates/new_report.tpl'));
-                $mail_tpl = Container::get('hooks')->fire('model.post.insert_report_mail_tpl', $mail_tpl);
+                $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/mail_templates/new_report.tpl'));
+                $mailTpl = Container::get('hooks')->fire('model.post.insert_report_mail_tpl', $mailTpl);
 
                 // The first row contains the subject
-                $first_crlf = strpos($mail_tpl, "\n");
-                $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-                $mail_message = trim(substr($mail_tpl, $first_crlf));
+                $firstCrlf = strpos($mailTpl, "\n");
+                $mailSubject = trim(substr($mailTpl, 8, $firstCrlf-8));
+                $mailMessage = trim(substr($mailTpl, $firstCrlf));
 
-                $mail_subject = str_replace('<forum_id>', $report['forum_id'], $mail_subject);
-                $mail_subject = str_replace('<topic_subject>', $report['subject'], $mail_subject);
-                $mail_message = str_replace('<username>', User::get()->username, $mail_message);
-                $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $topic['topic_id'], 'name' => Url::slug($report['subject']), 'pid' => $post_id]).'#p'.$post_id, $mail_message);
-                $mail_message = str_replace('<reason>', $reason, $mail_message);
-                $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
+                $mailSubject = str_replace('<forum_id>', $report['forum_id'], $mailSubject);
+                $mailSubject = str_replace('<topic_subject>', $report['subject'], $mailSubject);
+                $mailMessage = str_replace('<username>', User::get()->username, $mailMessage);
+                $mailMessage = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $topic['topic_id'], 'name' => Url::slug($report['subject']), 'pid' => $postId]).'#p'.$postId, $mailMessage);
+                $mailMessage = str_replace('<reason>', $reason, $mailMessage);
+                $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
 
-                $mail_message = Container::get('hooks')->fire('model.post.insert_report_mail_message', $mail_message);
+                $mailMessage = Container::get('hooks')->fire('model.post.insert_report_mail_message', $mailMessage);
 
-                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
             }
         }
 
-        $last_report_sent = DB::for_table('users')->where('id', User::get()->id)
-            ->find_one()
+        $lastReportSent = DB::forTable('users')->where('id', User::get()->id)
+            ->findOne()
             ->set('last_report_sent', time());
-        $last_report_sent = Container::get('hooks')->fireDB('model.post.insert_last_report_sent', $last_report_sent);
-        $last_report_sent = $last_report_sent->save();
+        $lastReportSent = Container::get('hooks')->fireDB('model.post.insert_last_report_sent', $lastReportSent);
+        $lastReportSent = $lastReportSent->save();
 
-        return Router::redirect(Router::pathFor('viewPost', ['id' => $topic['topic_id'], 'name' => Url::slug($report['subject']), 'pid' => $post_id]).'#p'.$post_id, __('Report redirect'));
+        return Router::redirect(Router::pathFor('viewPost', ['id' => $topic['topic_id'], 'name' => Url::slug($report['subject']), 'pid' => $postId]).'#p'.$postId, __('Report redirect'));
     }
 
-    public function getInfoReport($post_id)
+    public function getInfoReport($postId)
     {
-        $post_id = Container::get('hooks')->fire('model.post.get_info_report_start', $post_id);
+        $postId = Container::get('hooks')->fire('model.post.get_info_report_start', $postId);
 
-        $cur_post['select'] = ['fid' => 'f.id', 'f.forum_name', 'tid' => 't.id', 't.subject'];
-        $cur_post['where'] = [
+        $curPost['select'] = ['fid' => 'f.id', 'f.forum_name', 'tid' => 't.id', 't.subject'];
+        $curPost['where'] = [
             ['fp.read_forum' => 'IS NULL'],
             ['fp.read_forum' => '1']
         ];
 
-        $cur_post = DB::for_table('posts')
-                        ->table_alias('p')
-                        ->select_many($cur_post['select'])
-                        ->inner_join('topics', ['t.id', '=', 'p.topic_id'], 't')
-                        ->inner_join('forums', ['f.id', '=', 't.forum_id'], 'f')
-                        ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
-                        ->where_any_is($cur_post['where'])
-                        ->where('p.id', $post_id);
-        $cur_post = Container::get('hooks')->fireDB('model.post.get_info_report_query', $cur_post);
-        $cur_post = $cur_post->find_one();
+        $curPost = DB::forTable('posts')
+                        ->tableAlias('p')
+                        ->selectMany($curPost['select'])
+                        ->innerJoin('topics', ['t.id', '=', 'p.topic_id'], 't')
+                        ->innerJoin('forums', ['f.id', '=', 't.forum_id'], 'f')
+                        ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
+                        ->whereAnyIs($curPost['where'])
+                        ->where('p.id', $postId);
+        $curPost = Container::get('hooks')->fireDB('model.post.get_info_report_query', $curPost);
+        $curPost = $curPost->findOne();
 
-        if (!$cur_post) {
+        if (!$curPost) {
             throw new Error(__('Bad request'), 404);
         }
 
-        $cur_post = Container::get('hooks')->fire('model.post.get_info_report', $cur_post);
+        $curPost = Container::get('hooks')->fire('model.post.get_info_report', $curPost);
 
-        return $cur_post;
+        return $curPost;
     }
 
     // Insert a reply
-    public function reply($post, $tid, $cur_posting, $is_subscribed)
+    public function reply($post, $tid, $curPosting, $isSubscribed)
     {
         $new = [];
 
-        $new = Container::get('hooks')->fireDB('model.post.insert_reply_start', $new, $post, $tid, $cur_posting, $is_subscribed);
+        $new = Container::get('hooks')->fireDB('model.post.insert_reply_start', $new, $post, $tid, $curPosting, $isSubscribed);
 
         if (!User::get()->is_guest) {
             $new['tid'] = $tid;
@@ -670,37 +670,37 @@ class Post
                 'topic_id'  => $tid,
             ];
 
-            $query = DB::for_table('posts')
+            $query = DB::forTable('posts')
                         ->create()
                         ->set($query['insert']);
             $query = Container::get('hooks')->fireDB('model.post.insert_reply_guest_query', $query);
             $query = $query->save();
 
-            $new['pid'] = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'posts');
+            $new['pid'] = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'posts');
 
             // To subscribe or not to subscribe, that ...
             if (ForumSettings::get('o_topic_subscriptions') == '1') {
                 // ... is the question
                 // Let's do it
-                if (isset($post['subscribe']) && $post['subscribe'] && !$is_subscribed) {
+                if (isset($post['subscribe']) && $post['subscribe'] && !$isSubscribed) {
                     $subscription['insert'] = [
                         'user_id'   =>  User::get()->id,
                         'topic_id'  =>  $tid
                     ];
 
-                    $subscription = DB::for_table('topic_subscriptions')
+                    $subscription = DB::forTable('topic_subscriptions')
                                         ->create()
                                         ->set($subscription['insert']);
                     $subscription = Container::get('hooks')->fireDB('model.post.insert_reply_subscription', $subscription);
                     $subscription = $subscription->save();
 
                 // We reply and we don't want to be subscribed anymore
-                } elseif ($post['subscribe'] == '0' && $is_subscribed) {
-                    $unsubscription = DB::for_table('topic_subscriptions')
+                } elseif ($post['subscribe'] == '0' && $isSubscribed) {
+                    $unsubscription = DB::forTable('topic_subscriptions')
                                         ->where('user_id', User::get()->id)
                                         ->where('topic_id', $tid);
                     $unsubscription = Container::get('hooks')->fireDB('model.post.insert_reply_unsubscription', $unsubscription);
-                    $unsubscription = $unsubscription->delete_many();
+                    $unsubscription = $unsubscription->deleteMany();
                 }
             }
         } else {
@@ -718,13 +718,13 @@ class Post
                 $query['insert']['poster_email'] = $post['email'];
             }
 
-            $query = DB::for_table('posts')
+            $query = DB::forTable('posts')
                         ->create()
                         ->set($query['insert']);
             $query = Container::get('hooks')->fireDB('model.post.insert_reply_member_query', $query);
             $query = $query->save();
 
-            $new['pid'] = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'posts');
+            $new['pid'] = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'posts');
         }
 
         // Update topic
@@ -734,11 +734,11 @@ class Post
             'last_poster'  => $post['username'],
         ];
 
-        $topic = DB::for_table('topics')
+        $topic = DB::forTable('topics')
                     ->where('id', $tid)
-                    ->find_one()
+                    ->findOne()
                     ->set($topic['update'])
-                    ->set_expr('num_replies', 'num_replies+1');
+                    ->setExpr('num_replies', 'num_replies+1');
         $topic = Container::get('hooks')->fireDB('model.post.insert_reply_update_query', $topic);
 
         // Get topic subject to redirect
@@ -748,7 +748,7 @@ class Post
 
         \FeatherBB\Core\Search::updateSearchIndex('post', $new['pid'], $post['message']);
 
-        Forum::update($cur_posting['id']);
+        Forum::update($curPosting['id']);
 
         $new = Container::get('hooks')->fireDB('model.post.insert_reply', $new);
 
@@ -756,19 +756,19 @@ class Post
     }
 
     // Send notifications for replies
-    public static function sendNotificationsReply($tid, $cur_posting, $new_pid, $post)
+    public static function sendNotificationsReply($tid, $curPosting, $newPid, $post)
     {
-        Container::get('hooks')->fire('model.post.send_notifications_reply_start', $tid, $cur_posting, $new_pid, $post);
+        Container::get('hooks')->fire('model.post.send_notifications_reply_start', $tid, $curPosting, $newPid, $post);
 
         // Get the post time for the previous post in this topic
-        $previous_post_time = DB::for_table('posts')
+        $previousPostTime = DB::forTable('posts')
                                 ->select('posted')
                                 ->where('topic_id', $tid)
-                                ->order_by_desc('id')
+                                ->orderByDesc('id')
                                 ->limit(1)
                                 ->offset(1);
-        $previous_post_time = Container::get('hooks')->fireDB('model.post.send_notifications_reply_previous', $previous_post_time);
-        $previous_post_time = $previous_post_time->find_one();
+        $previousPostTime = Container::get('hooks')->fireDB('model.post.send_notifications_reply_previous', $previousPostTime);
+        $previousPostTime = $previousPostTime->findOne();
 
         // Get any subscribed users that should be notified (banned users are excluded)
         $result['where'] = [
@@ -777,95 +777,95 @@ class Post
         ];
         $result['select'] = ['u.id', 'u.email', 'u.group_id'];
 
-        $result = DB::for_table('users')
-                    ->table_alias('u')
-                    ->select_many($result['select'])
-                    ->inner_join('topic_subscriptions', ['u.id', '=', 's.user_id'], 's')
-                    ->left_outer_join('forum_perms', 'fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id', 'fp')
-                    ->left_outer_join('online', ['u.id', '=', 'o.user_id'], 'o')
-                    ->left_outer_join('bans', ['u.username', '=', 'b.username'], 'b')
-                    ->where_raw('COALESCE(o.logged, u.last_visit)>'.$previous_post_time['posted'])
-                    ->where_null('b.username')
-                    ->where_any_is($result['where'])
+        $result = DB::forTable('users')
+                    ->tableAlias('u')
+                    ->selectMany($result['select'])
+                    ->innerJoin('topic_subscriptions', ['u.id', '=', 's.user_id'], 's')
+                    ->leftOuterJoin('forum_perms', 'fp.forum_id='.$curPosting['id'].' AND fp.group_id=u.group_id', 'fp')
+                    ->leftOuterJoin('online', ['u.id', '=', 'o.user_id'], 'o')
+                    ->leftOuterJoin('bans', ['u.username', '=', 'b.username'], 'b')
+                    ->whereRaw('COALESCE(o.logged, u.last_visit)>'.$previousPostTime['posted'])
+                    ->whereNull('b.username')
+                    ->whereAnyIs($result['where'])
                     ->where('s.topic_id', $tid)
-                    ->where_not_equal('u.id', User::get()->id);
+                    ->whereNotEqual('u.id', User::get()->id);
         $result = Container::get('hooks')->fireDB('model.post.send_notifications_reply_query', $result);
-        $result = $result->find_many();
+        $result = $result->findMany();
 
         if ($result) {
-            $notification_emails = [];
+            $notificationEmails = [];
 
-            $censored_message = Utils::trim(Utils::censor($post['message']));
+            $censoredMessage = Utils::trim(Utils::censor($post['message']));
 
             if (ForumSettings::get('o_censoring') == '1') {
-                $cleaned_message = Container::get('email')->bbcode2email($censored_message, -1);
+                $cleanedMessage = Container::get('email')->bbcode2email($censoredMessage, -1);
             } else {
-                $cleaned_message = Container::get('email')->bbcode2email($post['message'], -1);
+                $cleanedMessage = Container::get('email')->bbcode2email($post['message'], -1);
             }
 
             // Loop through subscribed users and send emails
-            foreach ($result as $cur_subscriber) {
-                $cur_subscriber['prefs'] = Container::get('prefs')->loadPrefs($cur_subscriber);
-                // Is the subscription email for User::getPref('language', $cur_subscriber['id']) cached or not?
-                if (!isset($notification_emails[$cur_subscriber['prefs']['language']])) {
-                    if (file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['prefs']['language'].'/mail_templates/new_reply.tpl')) {
+            foreach ($result as $curSubscriber) {
+                $curSubscriber['prefs'] = Container::get('prefs')->loadPrefs($curSubscriber);
+                // Is the subscription email for User::getPref('language', $curSubscriber['id']) cached or not?
+                if (!isset($notificationEmails[$curSubscriber['prefs']['language']])) {
+                    if (file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$curSubscriber['prefs']['language'].'/mail_templates/new_reply.tpl')) {
                         // Load the "new reply" template
-                        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['prefs']['language'].'/mail_templates/new_reply.tpl'));
-                        $mail_tpl = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_tpl', $mail_tpl);
+                        $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$curSubscriber['prefs']['language'].'/mail_templates/new_reply.tpl'));
+                        $mailTpl = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_tpl', $mailTpl);
 
                         // Load the "new reply full" template (with post included)
-                        $mail_tpl_full = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['prefs']['language'].'/mail_templates/new_reply_full.tpl'));
-                        $mail_tpl_full = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_tpl_full', $mail_tpl_full);
+                        $mailTplFull = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$curSubscriber['prefs']['language'].'/mail_templates/new_reply_full.tpl'));
+                        $mailTplFull = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_tpl_full', $mailTplFull);
 
                         // The first row contains the subject (it also starts with "Subject:")
-                        $first_crlf = strpos($mail_tpl, "\n");
-                        $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-                        $mail_subject = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_subject', $mail_subject);
-                        $mail_message = trim(substr($mail_tpl, $first_crlf));
+                        $firstCrlf = strpos($mailTpl, "\n");
+                        $mailSubject = trim(substr($mailTpl, 8, $firstCrlf-8));
+                        $mailSubject = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_subject', $mailSubject);
+                        $mailMessage = trim(substr($mailTpl, $firstCrlf));
 
-                        $first_crlf = strpos($mail_tpl_full, "\n");
-                        $mail_subject_full = trim(substr($mail_tpl_full, 8, $first_crlf-8));
-                        $mail_message_full = trim(substr($mail_tpl_full, $first_crlf));
+                        $firstCrlf = strpos($mailTplFull, "\n");
+                        $mailSubjectFull = trim(substr($mailTplFull, 8, $firstCrlf-8));
+                        $mailMessageFull = trim(substr($mailTplFull, $firstCrlf));
 
-                        $mail_subject = str_replace('<topic_subject>', $cur_posting['subject'], $mail_subject);
-                        $mail_message = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message);
-                        $mail_message = str_replace('<replier>', $post['username'], $mail_message);
-                        $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $tid, 'name' => Url::slug($cur_posting['subject']), 'pid' => $new_pid]).'#p'.$new_pid, $mail_message);
-                        $mail_message = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid, 'name' => Url::slug($cur_posting['subject'])]), $mail_message);
-                        $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
-                        $mail_message = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_message', $mail_message);
+                        $mailSubject = str_replace('<topic_subject>', $curPosting['subject'], $mailSubject);
+                        $mailMessage = str_replace('<topic_subject>', $curPosting['subject'], $mailMessage);
+                        $mailMessage = str_replace('<replier>', $post['username'], $mailMessage);
+                        $mailMessage = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $tid, 'name' => Url::slug($curPosting['subject']), 'pid' => $newPid]).'#p'.$newPid, $mailMessage);
+                        $mailMessage = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid, 'name' => Url::slug($curPosting['subject'])]), $mailMessage);
+                        $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
+                        $mailMessage = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_message', $mailMessage);
 
-                        $mail_subject_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_subject_full);
-                        $mail_message_full = str_replace('<topic_subject>', $cur_posting['subject'], $mail_message_full);
-                        $mail_message_full = str_replace('<replier>', $post['username'], $mail_message_full);
-                        $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
-                        $mail_message_full = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $tid, 'name' => Url::slug($cur_posting['subject']), 'pid' => $new_pid]).'#p'.$new_pid, $mail_message_full);
-                        $mail_message_full = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid, 'name' => Url::slug($cur_posting['subject'])]), $mail_message_full);
-                        $mail_message_full = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message_full);
-                        $mail_message_full = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_message_full', $mail_message_full);
+                        $mailSubjectFull = str_replace('<topic_subject>', $curPosting['subject'], $mailSubjectFull);
+                        $mailMessageFull = str_replace('<topic_subject>', $curPosting['subject'], $mailMessageFull);
+                        $mailMessageFull = str_replace('<replier>', $post['username'], $mailMessageFull);
+                        $mailMessageFull = str_replace('<message>', $cleanedMessage, $mailMessageFull);
+                        $mailMessageFull = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $tid, 'name' => Url::slug($curPosting['subject']), 'pid' => $newPid]).'#p'.$newPid, $mailMessageFull);
+                        $mailMessageFull = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid, 'name' => Url::slug($curPosting['subject'])]), $mailMessageFull);
+                        $mailMessageFull = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessageFull);
+                        $mailMessageFull = Container::get('hooks')->fire('model.post.send_notifications_reply_mail_message_full', $mailMessageFull);
 
-                        $notification_emails[$cur_subscriber['prefs']['language']][0] = $mail_subject;
-                        $notification_emails[$cur_subscriber['prefs']['language']][1] = $mail_message;
-                        $notification_emails[$cur_subscriber['prefs']['language']][2] = $mail_subject_full;
-                        $notification_emails[$cur_subscriber['prefs']['language']][3] = $mail_message_full;
+                        $notificationEmails[$curSubscriber['prefs']['language']][0] = $mailSubject;
+                        $notificationEmails[$curSubscriber['prefs']['language']][1] = $mailMessage;
+                        $notificationEmails[$curSubscriber['prefs']['language']][2] = $mailSubjectFull;
+                        $notificationEmails[$curSubscriber['prefs']['language']][3] = $mailMessageFull;
 
-                        $mail_subject = $mail_message = $mail_subject_full = $mail_message_full = null;
+                        $mailSubject = $mailMessage = $mailSubjectFull = $mailMessageFull = null;
                     }
                 }
 
                 // We have to double check here because the templates could be missing
-                if (isset($notification_emails[$cur_subscriber['prefs']['language']])) {
-                    if ($cur_subscriber['prefs']['notify_with_post'] == '0') {
-                        Container::get('email')->send($cur_subscriber['email'], $notification_emails[$cur_subscriber['prefs']['language']][0], $notification_emails[$cur_subscriber['prefs']['language']][1]);
+                if (isset($notificationEmails[$curSubscriber['prefs']['language']])) {
+                    if ($curSubscriber['prefs']['notify_with_post'] == '0') {
+                        Container::get('email')->send($curSubscriber['email'], $notificationEmails[$curSubscriber['prefs']['language']][0], $notificationEmails[$curSubscriber['prefs']['language']][1]);
                     } else {
-                        Container::get('email')->send($cur_subscriber['email'], $notification_emails[$cur_subscriber['prefs']['language']][2], $notification_emails[$cur_subscriber['prefs']['language']][3]);
+                        Container::get('email')->send($curSubscriber['email'], $notificationEmails[$curSubscriber['prefs']['language']][2], $notificationEmails[$curSubscriber['prefs']['language']][3]);
                     }
                 }
             }
 
             Container::get('hooks')->fire('model.post.send_notifications_reply');
 
-            unset($cleaned_message);
+            unset($cleanedMessage);
         }
     }
 
@@ -887,13 +887,13 @@ class Post
             'forum_id'  => $fid,
         ];
 
-        $topic = DB::for_table('topics')
+        $topic = DB::forTable('topics')
                     ->create()
                     ->set($topic['insert']);
         $topic = Container::get('hooks')->fireDB('model.post.insert_topic_create', $topic);
         $topic = $topic->save();
 
-        $new['tid'] = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'topics');
+        $new['tid'] = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'topics');
 
         if (!User::get()->is_guest) {
             // To subscribe or not to subscribe, that ...
@@ -903,7 +903,7 @@ class Post
                     'topic_id'  =>  $new['tid']
                 ];
 
-                $subscription = DB::for_table('topic_subscriptions')
+                $subscription = DB::forTable('topic_subscriptions')
                                     ->create()
                                     ->set($subscription['insert']);
                 $subscription = Container::get('hooks')->fireDB('model.post.insert_topic_subscription_member', $subscription);
@@ -921,7 +921,7 @@ class Post
                 'topic_id'  => $new['tid'],
             ];
 
-            $query = DB::for_table('posts')
+            $query = DB::forTable('posts')
                         ->create()
                         ->set($query['insert']);
             $query = Container::get('hooks')->fireDB('model.post.insert_topic_post_member', $query);
@@ -942,13 +942,13 @@ class Post
                 $query['poster_email'] = $post['email'];
             }
 
-            $query = DB::for_table('posts')
+            $query = DB::forTable('posts')
                 ->create()
                 ->set($query['insert']);
             $query = Container::get('hooks')->fireDB('model.post.insert_topic_post_member', $query);
             $query = $query->save();
         }
-        $new['pid'] = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'topics');
+        $new['pid'] = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'topics');
         $new['topic_subject'] = Url::slug($post['subject']);
 
         // Update the topic with last_post_id
@@ -958,9 +958,9 @@ class Post
             'first_post_id' =>  $new['pid'],
         ];
 
-        $topic = DB::for_table('topics')
+        $topic = DB::forTable('topics')
                     ->where('id', $new['tid'])
-                    ->find_one()
+                    ->findOne()
                     ->set($topic['update']);
         $topic = Container::get('hooks')->fireDB('model.post.insert_topic_post_topic', $topic);
         $topic = $topic->save();
@@ -975,9 +975,9 @@ class Post
     }
 
     // Send notifications for new topics
-    public function sendNotificationsNewTopic($post, $cur_posting, $new_tid)
+    public function sendNotificationsNewTopic($post, $curPosting, $newTid)
     {
-        Container::get('hooks')->fire('model.post.send_notifications_new_topic_start', $post, $cur_posting, $new_tid);
+        Container::get('hooks')->fire('model.post.send_notifications_new_topic_start', $post, $curPosting, $newTid);
 
         // Get any subscribed users that should be notified (banned users are excluded)
         $result['where'] = [
@@ -986,157 +986,157 @@ class Post
         ];
         $result['select'] = ['u.id', 'u.group_id', 'u.email'];
 
-        $result = DB::for_table('users')
-                    ->table_alias('u')
-                    ->select_many($result['select'])
-                    ->inner_join('forum_subscriptions', ['u.id', '=', 's.user_id'], 's')
-                    ->left_outer_join('forum_perms', 'fp.forum_id='.$cur_posting['id'].' AND fp.group_id=u.group_id', 'fp')
-                    ->left_outer_join('bans', ['u.username', '=', 'b.username'], 'b')
-                    ->where_null('b.username')
-                    ->where_any_is($result['where'])
-                    ->where('s.forum_id', $cur_posting['id'])
-                    ->where_not_equal('u.id', User::get()->id);
+        $result = DB::forTable('users')
+                    ->tableAlias('u')
+                    ->selectMany($result['select'])
+                    ->innerJoin('forum_subscriptions', ['u.id', '=', 's.user_id'], 's')
+                    ->leftOuterJoin('forum_perms', 'fp.forum_id='.$curPosting['id'].' AND fp.group_id=u.group_id', 'fp')
+                    ->leftOuterJoin('bans', ['u.username', '=', 'b.username'], 'b')
+                    ->whereNull('b.username')
+                    ->whereAnyIs($result['where'])
+                    ->where('s.forum_id', $curPosting['id'])
+                    ->whereNotEqual('u.id', User::get()->id);
         $result = Container::get('hooks')->fireDB('model.post.send_notifications_new_topic_query', $result);
-        $result = $result->find_many();
+        $result = $result->findMany();
 
         if ($result) {
-            $notification_emails = [];
+            $notificationEmails = [];
 
-            $censored_message = Utils::trim(Utils::censor($post['message']));
-            $censored_subject = Utils::trim(Utils::censor($post['subject']));
+            $censoredMessage = Utils::trim(Utils::censor($post['message']));
+            $censoredSubject = Utils::trim(Utils::censor($post['subject']));
 
             if (ForumSettings::get('o_censoring') == '1') {
-                $cleaned_message = Container::get('email')->bbcode2email($censored_message, -1);
+                $cleanedMessage = Container::get('email')->bbcode2email($censoredMessage, -1);
             } else {
-                $cleaned_message = Container::get('email')->bbcode2email($post['message'], -1);
+                $cleanedMessage = Container::get('email')->bbcode2email($post['message'], -1);
             }
 
-            $cleaned_subject = ForumSettings::get('o_censoring') == '1' ? $censored_subject : $post['subject'];
+            $cleanedSubject = ForumSettings::get('o_censoring') == '1' ? $censoredSubject : $post['subject'];
 
             // Loop through subscribed users and send emails
-            foreach ($result as $cur_subscriber) {
-                $cur_subscriber['prefs'] = Container::get('prefs')->loadPrefs($cur_subscriber);
-                // Is the subscription email for User::getPref('language', $cur_subscriber['id']) cached or not?
-                if (!isset($notification_emails[$cur_subscriber['prefs']['language']])) {
-                    if (file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['prefs']['language'].'/mail_templates/new_topic.tpl')) {
+            foreach ($result as $curSubscriber) {
+                $curSubscriber['prefs'] = Container::get('prefs')->loadPrefs($curSubscriber);
+                // Is the subscription email for User::getPref('language', $curSubscriber['id']) cached or not?
+                if (!isset($notificationEmails[$curSubscriber['prefs']['language']])) {
+                    if (file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$curSubscriber['prefs']['language'].'/mail_templates/new_topic.tpl')) {
                         // Load the "new topic" template
-                        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['prefs']['language'].'/mail_templates/new_topic.tpl'));
-                        $mail_tpl = Container::get('hooks')->fire('model.post.send_notifications_new_topic_mail_tpl', $mail_tpl);
+                        $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$curSubscriber['prefs']['language'].'/mail_templates/new_topic.tpl'));
+                        $mailTpl = Container::get('hooks')->fire('model.post.send_notifications_new_topic_mail_tpl', $mailTpl);
 
                         // Load the "new topic full" template (with post included)
-                        $mail_tpl_full = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$cur_subscriber['prefs']['language'].'/mail_templates/new_topic_full.tpl'));
+                        $mailTplFull = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$curSubscriber['prefs']['language'].'/mail_templates/new_topic_full.tpl'));
 
                         // The first row contains the subject (it also starts with "Subject:")
-                        $first_crlf = strpos($mail_tpl, "\n");
-                        $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-                        $mail_message = trim(substr($mail_tpl, $first_crlf));
+                        $firstCrlf = strpos($mailTpl, "\n");
+                        $mailSubject = trim(substr($mailTpl, 8, $firstCrlf-8));
+                        $mailMessage = trim(substr($mailTpl, $firstCrlf));
 
-                        $first_crlf = strpos($mail_tpl_full, "\n");
-                        $mail_subject_full = trim(substr($mail_tpl_full, 8, $first_crlf-8));
-                        $mail_message_full = trim(substr($mail_tpl_full, $first_crlf));
+                        $firstCrlf = strpos($mailTplFull, "\n");
+                        $mailSubjectFull = trim(substr($mailTplFull, 8, $firstCrlf-8));
+                        $mailMessageFull = trim(substr($mailTplFull, $firstCrlf));
 
-                        $mail_subject = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_subject);
-                        $mail_message = str_replace('<topic_subject>', $cleaned_subject, $mail_message);
-                        $mail_message = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message);
-                        $mail_message = str_replace('<poster>', $post['username'], $mail_message);
-                        $mail_message = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $new_tid, 'name' => Url::slug($post['subject'])]), $mail_message);
-                        $mail_message = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $cur_posting['id'], 'name' => Url::slug($post['subject'])]), $mail_message);
-                        $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
-                        $mail_message = Container::get('hooks')->fire('model.post.send_notifications_new_topic_mail_message', $mail_message);
+                        $mailSubject = str_replace('<forum_name>', $curPosting['forum_name'], $mailSubject);
+                        $mailMessage = str_replace('<topic_subject>', $cleanedSubject, $mailMessage);
+                        $mailMessage = str_replace('<forum_name>', $curPosting['forum_name'], $mailMessage);
+                        $mailMessage = str_replace('<poster>', $post['username'], $mailMessage);
+                        $mailMessage = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $newTid, 'name' => Url::slug($post['subject'])]), $mailMessage);
+                        $mailMessage = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $curPosting['id'], 'name' => Url::slug($post['subject'])]), $mailMessage);
+                        $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
+                        $mailMessage = Container::get('hooks')->fire('model.post.send_notifications_new_topic_mail_message', $mailMessage);
 
-                        $mail_subject_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_subject_full);
-                        $mail_message_full = str_replace('<topic_subject>', $cleaned_subject, $mail_message_full);
-                        $mail_message_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message_full);
-                        $mail_message_full = str_replace('<poster>', $post['username'], $mail_message_full);
-                        $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
-                        $mail_message_full = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $new_tid, 'name' => Url::slug($post['subject'])]), $mail_message_full);
-                        $mail_message_full = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $new_tid, 'name' => Url::slug($post['subject'])]), $mail_message_full);
-                        $mail_message_full = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message_full);
-                        $mail_message_full = Container::get('hooks')->fire('model.post.send_notifications_new_topic_mail_message_full', $mail_message_full);
+                        $mailSubjectFull = str_replace('<forum_name>', $curPosting['forum_name'], $mailSubjectFull);
+                        $mailMessageFull = str_replace('<topic_subject>', $cleanedSubject, $mailMessageFull);
+                        $mailMessageFull = str_replace('<forum_name>', $curPosting['forum_name'], $mailMessageFull);
+                        $mailMessageFull = str_replace('<poster>', $post['username'], $mailMessageFull);
+                        $mailMessageFull = str_replace('<message>', $cleanedMessage, $mailMessageFull);
+                        $mailMessageFull = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $newTid, 'name' => Url::slug($post['subject'])]), $mailMessageFull);
+                        $mailMessageFull = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $newTid, 'name' => Url::slug($post['subject'])]), $mailMessageFull);
+                        $mailMessageFull = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessageFull);
+                        $mailMessageFull = Container::get('hooks')->fire('model.post.send_notifications_new_topic_mail_message_full', $mailMessageFull);
 
-                        $notification_emails[$cur_subscriber['prefs']['language']][0] = $mail_subject;
-                        $notification_emails[$cur_subscriber['prefs']['language']][1] = $mail_message;
-                        $notification_emails[$cur_subscriber['prefs']['language']][2] = $mail_subject_full;
-                        $notification_emails[$cur_subscriber['prefs']['language']][3] = $mail_message_full;
+                        $notificationEmails[$curSubscriber['prefs']['language']][0] = $mailSubject;
+                        $notificationEmails[$curSubscriber['prefs']['language']][1] = $mailMessage;
+                        $notificationEmails[$curSubscriber['prefs']['language']][2] = $mailSubjectFull;
+                        $notificationEmails[$curSubscriber['prefs']['language']][3] = $mailMessageFull;
                     }
                 }
 
                 // We have to double check here because the templates could be missing
-                if (isset($notification_emails[$cur_subscriber['prefs']['language']])) {
-                    if ($cur_subscriber['prefs']['notify_with_post'] == '0') {
-                        Container::get('email')->send($cur_subscriber['email'], $notification_emails[$cur_subscriber['prefs']['language']][0], $notification_emails[$cur_subscriber['prefs']['language']][1]);
+                if (isset($notificationEmails[$curSubscriber['prefs']['language']])) {
+                    if ($curSubscriber['prefs']['notify_with_post'] == '0') {
+                        Container::get('email')->send($curSubscriber['email'], $notificationEmails[$curSubscriber['prefs']['language']][0], $notificationEmails[$curSubscriber['prefs']['language']][1]);
                     } else {
-                        Container::get('email')->send($cur_subscriber['email'], $notification_emails[$cur_subscriber['prefs']['language']][2], $notification_emails[$cur_subscriber['prefs']['language']][3]);
+                        Container::get('email')->send($curSubscriber['email'], $notificationEmails[$curSubscriber['prefs']['language']][2], $notificationEmails[$curSubscriber['prefs']['language']][3]);
                     }
                 }
             }
 
             Container::get('hooks')->fire('model.post.send_notifications_new_topic');
 
-            unset($cleaned_message);
+            unset($cleanedMessage);
         }
     }
 
     // Warn the admin if a banned user posts
-    public static function warnBannedUser($post, $new_post)
+    public static function warnBannedUser($post, $newPost)
     {
-        Container::get('hooks')->fire('model.post.warn_banned_user_start', $post, $new_post);
+        Container::get('hooks')->fire('model.post.warn_banned_user_start', $post, $newPost);
 
         // Load the "banned email post" template
-        $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/mail_templates/banned_email_post.tpl'));
-        $mail_tpl = Container::get('hooks')->fire('model.post.warn_banned_user_mail_tpl', $mail_tpl);
+        $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/mail_templates/banned_email_post.tpl'));
+        $mailTpl = Container::get('hooks')->fire('model.post.warn_banned_user_mail_tpl', $mailTpl);
 
         // The first row contains the subject
-        $first_crlf = strpos($mail_tpl, "\n");
-        $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-        $mail_message = trim(substr($mail_tpl, $first_crlf));
+        $firstCrlf = strpos($mailTpl, "\n");
+        $mailSubject = trim(substr($mailTpl, 8, $firstCrlf-8));
+        $mailMessage = trim(substr($mailTpl, $firstCrlf));
 
-        $mail_message = str_replace('<username>', $post['username'], $mail_message);
-        $mail_message = str_replace('<email>', $post['email'], $mail_message);
-        $mail_message = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $new_post['tid'], 'name' => $new_post['topic_subject'], 'pid' => $new_post['pid']]).'#p'.$new_post['pid'], $mail_message);
-        $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
-        $mail_message = Container::get('hooks')->fire('model.post.warn_banned_user_mail_message', $mail_message);
+        $mailMessage = str_replace('<username>', $post['username'], $mailMessage);
+        $mailMessage = str_replace('<email>', $post['email'], $mailMessage);
+        $mailMessage = str_replace('<post_url>', Router::pathFor('viewPost', ['id' => $newPost['tid'], 'name' => $newPost['topic_subject'], 'pid' => $newPost['pid']]).'#p'.$newPost['pid'], $mailMessage);
+        $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
+        $mailMessage = Container::get('hooks')->fire('model.post.warn_banned_user_mail_message', $mailMessage);
 
-        Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+        Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
     }
 
     // Increment post count, change group if needed
-    public function incrementPostCount($post, $new_tid)
+    public function incrementPostCount($post, $newTid)
     {
-        Container::get('hooks')->fire('model.post.increment_post_count_start', $post, $new_tid);
+        Container::get('hooks')->fire('model.post.increment_post_count_start', $post, $newTid);
 
         if (!User::get()->is_guest) {
-            $increment = DB::for_table('users')
+            $increment = DB::forTable('users')
                             ->where('id', User::get()->id)
-                            ->find_one()
+                            ->findOne()
                             ->set('last_post', $post['time'])
-                            ->set_expr('num_posts', 'num_posts+1');
+                            ->setExpr('num_posts', 'num_posts+1');
             $increment = Container::get('hooks')->fireDB('model.post.increment_post_count_query', $increment);
             $increment = $increment->save();
 
             // Promote this user to a new group if enabled
-            if (User::getPref('promote.next_group') && User::get()->num_posts + 1 >= User::getPref('promote.min_posts')) {
-                $new_group_id = User::getPref('promote.next_group');
-                $promote = DB::for_table('users')
+            if (User::getPref('promote.next_group') && User::get()->numPosts + 1 >= User::getPref('promote.min_posts')) {
+                $newGroupId = User::getPref('promote.next_group');
+                $promote = DB::forTable('users')
                             ->where('id', User::get()->id)
-                            ->find_one()
-                            ->set('group_id', $new_group_id);
+                            ->findOne()
+                            ->set('group_id', $newGroupId);
                 $promote = Container::get('hooks')->fireDB('model.post.increment_post_count_query', $promote);
                 $promote = $promote->save();
             }
 
             // Topic tracking stuff...
-            $tracked_topics = Track::getTrackedTopics();
-            $tracked_topics['topics'][$new_tid] = time();
-            Track::setTrackedTopics($tracked_topics);
+            $trackedTopics = Track::getTrackedTopics();
+            $trackedTopics['topics'][$newTid] = time();
+            Track::setTrackedTopics($trackedTopics);
         } else {
             // Update the last_post field for guests
-            $last_post = DB::for_table('online')
+            $lastPost = DB::forTable('online')
                             ->where('ident', Utils::getIp())
-                            ->find_one()
+                            ->findOne()
                             ->set('last_post', $post['time']);
-            $last_post = Container::get('hooks')->fireDB('model.post.increment_post_count_last_post', $last_post);
-            $last_post = $last_post->save();
+            $lastPost = Container::get('hooks')->fireDB('model.post.increment_post_count_last_post', $lastPost);
+            $lastPost = $lastPost->save();
         }
 
         Container::get('hooks')->fire('model.post.increment_post_count');
@@ -1145,7 +1145,7 @@ class Post
     //
     // Split text into chunks ($inside contains all text inside $start and $end, and $outside contains all text outside)
     //
-    public function split_text($text, $start, $end, $retab = true)
+    public function splitText($text, $start, $end, $retab = true)
     {
         $result = [0 => [], 1 => []]; // 0 = inside, 1 = outside
 
@@ -1153,10 +1153,10 @@ class Post
 
         // split the text into parts
         $parts = preg_split('%'.preg_quote($start, '%').'(.*)'.preg_quote($end, '%').'%Us', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
-        $num_parts = count($parts);
+        $numParts = count($parts);
 
         // preg_split results in outside parts having even indices, inside parts having odd
-        for ($i = 0;$i < $num_parts;$i++) {
+        for ($i = 0;$i < $numParts;$i++) {
             $result[1 - ($i % 2)][] = $parts[$i];
         }
 
@@ -1179,11 +1179,11 @@ class Post
 
         $quote['select'] = ['poster', 'message'];
 
-        $quote = DB::for_table('posts')->select_many($quote['select'])
+        $quote = DB::forTable('posts')->selectMany($quote['select'])
                      ->where('id', $qid)
                      ->where('topic_id', $tid);
         $quote = Container::get('hooks')->fireDB('model.post.get_quote_message_query', $quote);
-        $quote = $quote->find_one();
+        $quote = $quote->findOne();
 
         if (!$quote) {
             throw new Error(__('Bad request'), 404);
@@ -1204,8 +1204,8 @@ class Post
             $outside = explode("\1", $quote['message']);
             $quote['message'] = '';
 
-            $num_tokens = count($outside);
-            for ($i = 0; $i < $num_tokens; ++$i) {
+            $numTokens = count($outside);
+            for ($i = 0; $i < $numTokens; ++$i) {
                 $quote['message'] .= $outside[$i];
                 if (isset($inside[$i])) {
                     $quote['message'] .= '[code]'.$inside[$i].'[/code]';
@@ -1248,42 +1248,42 @@ class Post
     }
 
     // Get the current state of checkboxes
-    public function getCheckboxes($fid, $is_admmod, $is_subscribed)
+    public function getCheckboxes($fid, $isAdmmod, $isSubscribed)
     {
-        Container::get('hooks')->fire('model.post.get_checkboxes_start', $fid, $is_admmod, $is_subscribed);
+        Container::get('hooks')->fire('model.post.get_checkboxes_start', $fid, $isAdmmod, $isSubscribed);
 
-        $cur_index = 1;
+        $curIndex = 1;
 
         $checkboxes = [];
-        if ($fid && $is_admmod) {
-            $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'"'.(Input::post('stick_topic') ? ' checked="checked"' : '').' />'.__('Stick topic').'<br /></label>';
+        if ($fid && $isAdmmod) {
+            $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($curIndex++).'"'.(Input::post('stick_topic') ? ' checked="checked"' : '').' />'.__('Stick topic').'<br /></label>';
         }
 
         if (!User::get()->is_guest) {
             if (ForumSettings::get('show.smilies') == '1') {
-                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(Input::post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($curIndex++).'"'.(Input::post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
             }
 
             if (ForumSettings::get('o_topic_subscriptions') == '1') {
-                $subscr_checked = false;
+                $subscrChecked = false;
 
                 // If it's a preview
                 if (Input::post('preview')) {
-                    $subscr_checked = (Input::post('subscribe')) ? true : false;
+                    $subscrChecked = (Input::post('subscribe')) ? true : false;
                 }
                 // If auto subscribed
                 elseif (User::getPref('auto_notify')) {
-                    $subscr_checked = true;
+                    $subscrChecked = true;
                 }
                 // If already subscribed to the topic
-                elseif ($is_subscribed) {
-                    $subscr_checked = true;
+                elseif ($isSubscribed) {
+                    $subscrChecked = true;
                 }
 
-                $checkboxes[] = '<label><input type="checkbox" name="subscribe" value="1" tabindex="'.($cur_index++).'"'.($subscr_checked ? ' checked="checked"' : '').' />'.($is_subscribed ? __('Stay subscribed') : __('Subscribe')).'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="subscribe" value="1" tabindex="'.($curIndex++).'"'.($subscrChecked ? ' checked="checked"' : '').' />'.($isSubscribed ? __('Stay subscribed') : __('Subscribe')).'<br /></label>';
             }
         } elseif (ForumSettings::get('show.smilies') == '1') {
-            $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'"'.(Input::post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
+            $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($curIndex++).'"'.(Input::post('hide_smilies') ? ' checked="checked"' : '').' />'.__('Hide smilies').'<br /></label>';
         }
 
         $checkboxes = Container::get('hooks')->fire('model.post.get_checkboxes', $checkboxes);
@@ -1291,33 +1291,33 @@ class Post
         return $checkboxes;
     }
 
-    public function getEditCheckboxes($can_edit_subject, $is_admmod, $cur_post, $cur_index)
+    public function getEditCheckboxes($canEditSubject, $isAdmmod, $curPost, $curIndex)
     {
-        Container::get('hooks')->fire('model.post.get_checkboxes_start', $can_edit_subject, $is_admmod, $cur_post, $cur_index);
+        Container::get('hooks')->fire('model.post.get_checkboxes_start', $canEditSubject, $isAdmmod, $curPost, $curIndex);
 
         $checkboxes = [];
 
-        if ($can_edit_subject && $is_admmod) {
-            if (Input::post('stick_topic') || $cur_post['sticky'] == '1') {
-                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.__('Stick topic').'<br /></label>';
+        if ($canEditSubject && $isAdmmod) {
+            if (Input::post('stick_topic') || $curPost['sticky'] == '1') {
+                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" checked="checked" tabindex="'.($curIndex++).'" />'.__('Stick topic').'<br /></label>';
             } else {
-                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'" />'.__('Stick topic').'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($curIndex++).'" />'.__('Stick topic').'<br /></label>';
             }
         }
 
         if (ForumSettings::get('show.smilies') == '1') {
-            if (Input::post('hide_smilies') || $cur_post['hide_smilies'] == '1') {
-                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" checked="checked" tabindex="'.($cur_index++).'" />'.__('Hide smilies').'<br /></label>';
+            if (Input::post('hide_smilies') || $curPost['hide_smilies'] == '1') {
+                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" checked="checked" tabindex="'.($curIndex++).'" />'.__('Hide smilies').'<br /></label>';
             } else {
-                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($cur_index++).'" />'.__('Hide smilies').'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.($curIndex++).'" />'.__('Hide smilies').'<br /></label>';
             }
         }
 
-        if ($is_admmod) {
+        if ($isAdmmod) {
             if (Request::isPost() && Input::post('silent') || Request::isPost() == '') {
-                $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" checked="checked" />'.__('Silent edit').'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($curIndex++).'" checked="checked" />'.__('Silent edit').'<br /></label>';
             } else {
-                $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($cur_index++).'" />'.__('Silent edit').'<br /></label>';
+                $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.($curIndex++).'" />'.__('Silent edit').'<br /></label>';
             }
         }
 
@@ -1329,36 +1329,36 @@ class Post
     // Display the topic review if needed
     public function review($tid)
     {
-        $post_data = [];
+        $postData = [];
 
-        $post_data = Container::get('hooks')->fire('model.post.topic_review_start', $post_data, $tid);
+        $postData = Container::get('hooks')->fire('model.post.topic_review_start', $postData, $tid);
 
-        $select_topic_review = ['poster', 'message', 'hide_smilies', 'posted'];
+        $selectTopicReview = ['poster', 'message', 'hide_smilies', 'posted'];
 
-        $result = DB::for_table('posts')->select_many($select_topic_review)
+        $result = DB::forTable('posts')->selectMany($selectTopicReview)
                     ->where('topic_id', $tid)
-                    ->order_by_desc('id');
+                    ->orderByDesc('id');
         $result = Container::get('hooks')->fire('model.post.topic_review_query', $result);
-        $result = $result->find_many();
+        $result = $result->findMany();
 
-        foreach ($result as $cur_post) {
-            $cur_post['message'] = Container::get('parser')->parseMessage($cur_post['message'], $cur_post['hide_smilies']);
-            $post_data[] = $cur_post;
+        foreach ($result as $curPost) {
+            $curPost['message'] = Container::get('parser')->parseMessage($curPost['message'], $curPost['hide_smilies']);
+            $postData[] = $curPost;
         }
 
-        $post_data = Container::get('hooks')->fire('model.post.topic_review', $post_data);
+        $postData = Container::get('hooks')->fire('model.post.topic_review', $postData);
 
-        return $post_data;
+        return $postData;
     }
 
     public function displayIpAddress($pid)
     {
         $pid = Container::get('hooks')->fire('model.post.display_ip_address_post_start', $pid);
 
-        $ip = DB::for_table('posts')
+        $ip = DB::forTable('posts')
             ->where('id', $pid);
         $ip = Container::get('hooks')->fireDB('model.post.display_ip_address_post_query', $ip);
-        $ip = $ip->find_one_col('poster_ip');
+        $ip = $ip->findOneCol('poster_ip');
 
         if (!$ip) {
             throw new Error(__('Bad request'), 404);

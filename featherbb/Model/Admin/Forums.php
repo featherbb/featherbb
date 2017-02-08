@@ -13,211 +13,211 @@ use FeatherBB\Core\Database as DB;
 
 class Forums
 {
-    public function addForum($cat_id, $forum_name)
+    public function addForum($catId, $forumName)
     {
-        $set_add_forum = ['forum_name' => $forum_name,
-                                'cat_id' => $cat_id];
+        $setAddForum = ['forum_name' => $forumName,
+                                'cat_id' => $catId];
 
-        $set_add_forum = Container::get('hooks')->fire('model.admin.forums.add_forum', $set_add_forum);
+        $setAddForum = Container::get('hooks')->fire('model.admin.forums.add_forum', $setAddForum);
 
-        $forum = DB::for_table('forums')
+        $forum = DB::forTable('forums')
                     ->create()
-                    ->set($set_add_forum);
+                    ->set($setAddForum);
         $forum->save();
 
         return $forum->id();
     }
 
-    public function updateForum($forum_id, array $forum_data)
+    public function updateForum($forumId, array $forumData)
     {
-        $update_forum = DB::for_table('forums')
-                    ->find_one($forum_id)
-                    ->set($forum_data);
-        $update_forum = Container::get('hooks')->fireDB('model.admin.forums.update_forum_query', $update_forum);
-        $update_forum = $update_forum->save();
+        $updateForum = DB::forTable('forums')
+                    ->findOne($forumId)
+                    ->set($forumData);
+        $updateForum = Container::get('hooks')->fireDB('model.admin.forums.update_forum_query', $updateForum);
+        $updateForum = $updateForum->save();
 
-        return $update_forum;
+        return $updateForum;
     }
 
-    public function delete_forum($forum_id)
+    public function deleteForum($forumId)
     {
-        $forum_id = Container::get('hooks')->fire('model.admin.forums.delete_forum_start', $forum_id);
+        $forumId = Container::get('hooks')->fire('model.admin.forums.delete_forum_start', $forumId);
 
         // Prune all posts and topics
         $this->maintenance = new \FeatherBB\Model\Admin\Maintenance();
-        $this->maintenance->prune($forum_id, 1, -1);
+        $this->maintenance->prune($forumId, 1, -1);
 
         // Delete the forum
-        $delete_forum = DB::for_table('forums')->find_one($forum_id);
-        $delete_forum = Container::get('hooks')->fireDB('model.admin.forums.delete_forum_query', $delete_forum);
-        $delete_forum->delete();
+        $deleteForum = DB::forTable('forums')->findOne($forumId);
+        $deleteForum = Container::get('hooks')->fireDB('model.admin.forums.delete_forum_query', $deleteForum);
+        $deleteForum->delete();
 
         // Delete forum specific group permissions and subscriptions
-        $delete_forum_perms = DB::for_table('forum_perms')->where('forum_id', $forum_id);
-        $delete_forum_perms = Container::get('hooks')->fireDB('model.admin.forums.delete_forum_perms_query', $delete_forum_perms);
-        $delete_forum_perms->delete_many();
+        $deleteForumPerms = DB::forTable('forum_perms')->where('forum_id', $forumId);
+        $deleteForumPerms = Container::get('hooks')->fireDB('model.admin.forums.delete_forum_perms_query', $deleteForumPerms);
+        $deleteForumPerms->deleteMany();
 
-        $delete_forum_subs = DB::for_table('forum_subscriptions')->where('forum_id', $forum_id);
-        $delete_forum_subs = Container::get('hooks')->fireDB('model.admin.forums.delete_forum_subs_query', $delete_forum_subs);
-        $delete_forum_subs->delete_many();
+        $deleteForumSubs = DB::forTable('forum_subscriptions')->where('forum_id', $forumId);
+        $deleteForumSubs = Container::get('hooks')->fireDB('model.admin.forums.delete_forum_subs_query', $deleteForumSubs);
+        $deleteForumSubs->deleteMany();
 
         // Delete orphaned redirect topics
-        $orphans = DB::for_table('topics')
-                    ->table_alias('t1')
-                    ->left_outer_join('topics', ['t1.moved_to', '=', 't2.id'], 't2')
-                    ->where_null('t2.id')
-                    ->where_not_null('t1.moved_to');
+        $orphans = DB::forTable('topics')
+                    ->tableAlias('t1')
+                    ->leftOuterJoin('topics', ['t1.moved_to', '=', 't2.id'], 't2')
+                    ->whereNull('t2.id')
+                    ->whereNotNull('t1.moved_to');
         $orphans = Container::get('hooks')->fireDB('model.admin.forums.delete_orphan_redirect_topics_query', $orphans);
-        $orphans = $orphans->find_many();
+        $orphans = $orphans->findMany();
 
         if (count($orphans) > 0) {
-            $orphans->delete_many();
+            $orphans->deleteMany();
         }
 
         return true; // TODO, better error handling
     }
 
-    public function getForumInfo($forum_id)
+    public function getForumInfo($forumId)
     {
-        $result = DB::for_table('forums')
-                    ->where('id', $forum_id);
+        $result = DB::forTable('forums')
+                    ->where('id', $forumId);
         $result = Container::get('hooks')->fireDB('model.admin.forums.get_forum_infos', $result);
-        $result = $result->find_one();
+        $result = $result->findOne();
 
         return $result;
     }
 
     public function getForums()
     {
-        $forum_data = [];
-        $forum_data = Container::get('hooks')->fire('model.admin.forums.get_forums_start', $forum_data);
+        $forumData = [];
+        $forumData = Container::get('hooks')->fire('model.admin.forums.get_forums_start', $forumData);
 
-        $select_get_forums = ['cid' => 'c.id', 'c.cat_name', 'cat_position' => 'c.disp_position', 'fid' => 'f.id', 'f.forum_name', 'forum_position' => 'f.disp_position'];
+        $selectGetForums = ['cid' => 'c.id', 'c.cat_name', 'cat_position' => 'c.disp_position', 'fid' => 'f.id', 'f.forum_name', 'forum_position' => 'f.disp_position'];
 
-        $result = DB::for_table('categories')
-                    ->table_alias('c')
-                    ->select_many($select_get_forums)
-                    ->inner_join('forums', ['c.id', '=', 'f.cat_id'], 'f')
-                    ->order_by_asc('f.disp_position')
-                    ->order_by_asc('c.disp_position');
+        $result = DB::forTable('categories')
+                    ->tableAlias('c')
+                    ->selectMany($selectGetForums)
+                    ->innerJoin('forums', ['c.id', '=', 'f.cat_id'], 'f')
+                    ->orderByAsc('f.disp_position')
+                    ->orderByAsc('c.disp_position');
         $result = Container::get('hooks')->fireDB('model.admin.forums.get_forums_query', $result);
-        $result = $result->find_array();
+        $result = $result->findArray();
 
         foreach ($result as $forum) {
-            if (!isset($forum_data[$forum['cid']])) {
-                $forum_data[$forum['cid']] = ['cat_name' => $forum['cat_name'],
+            if (!isset($forumData[$forum['cid']])) {
+                $forumData[$forum['cid']] = ['cat_name' => $forum['cat_name'],
                                                    'cat_position' => $forum['cat_position'],
                                                    'cat_forums' => []];
             }
-            $forum_data[$forum['cid']]['cat_forums'][] = ['forum_id' => $forum['fid'],
+            $forumData[$forum['cid']]['cat_forums'][] = ['forum_id' => $forum['fid'],
                                                                'forum_name' => $forum['forum_name'],
                                                                'position' => $forum['forum_position']];
         }
 
-        $forum_data = Container::get('hooks')->fire('model.admin.forums.get_forums', $forum_data);
-        return $forum_data;
+        $forumData = Container::get('hooks')->fire('model.admin.forums.get_forums', $forumData);
+        return $forumData;
     }
 
-    public function updatePositions($forum_id, $position)
+    public function updatePositions($forumId, $position)
     {
-        Container::get('hooks')->fire('model.admin.forums.update_positions_start', $forum_id, $position);
+        Container::get('hooks')->fire('model.admin.forums.update_positions_start', $forumId, $position);
 
-        return DB::for_table('forums')
-                ->find_one($forum_id)
+        return DB::forTable('forums')
+                ->findOne($forumId)
                 ->set('disp_position', $position)
                 ->save();
     }
 
-    public function getPermissions($forum_id)
+    public function getPermissions($forumId)
     {
-        $perm_data = [];
-        $forum_id = Container::get('hooks')->fire('model.admin.forums.get_permissions_start', $forum_id);
+        $permData = [];
+        $forumId = Container::get('hooks')->fire('model.admin.forums.get_permissions_start', $forumId);
 
-        $select_permissions = ['g.g_id', 'g.g_title', 'fp.read_forum', 'fp.post_replies', 'fp.post_topics'];
+        $selectPermissions = ['g.g_id', 'g.g_title', 'fp.read_forum', 'fp.post_replies', 'fp.post_topics'];
 
-        $permissions = DB::for_table('groups')
-                        ->table_alias('g')
-                        ->select_many($select_permissions)
-                        ->left_outer_join('forum_perms', 'g.g_id=fp.group_id AND fp.forum_id='.$forum_id, 'fp')
-                        ->where_not_equal('g.g_id', ForumEnv::get('FEATHER_ADMIN'))
-                        ->order_by_asc('g.g_id');
+        $permissions = DB::forTable('groups')
+                        ->tableAlias('g')
+                        ->selectMany($selectPermissions)
+                        ->leftOuterJoin('forum_perms', 'g.g_id=fp.group_id AND fp.forum_id='.$forumId, 'fp')
+                        ->whereNotEqual('g.g_id', ForumEnv::get('FEATHER_ADMIN'))
+                        ->orderByAsc('g.g_id');
         $permissions = Container::get('hooks')->fireDB('model.admin.forums.get_permissions_query', $permissions);
-        $permissions = $permissions->find_many();
+        $permissions = $permissions->findMany();
 
-        foreach ($permissions as $cur_perm) {
-            $group_permissions = Container::get('perms')->getGroupPermissions($cur_perm['g_id']);
+        foreach ($permissions as $curPerm) {
+            $groupPermissions = Container::get('perms')->getGroupPermissions($curPerm['g_id']);
 
-            $cur_perm['board.read'] = isset($group_permissions['board.read']);
-            $cur_perm['read_forum'] = ($cur_perm['read_forum'] != '0') ? true : false;
-            $cur_perm['post_replies'] = ((!isset($group_permissions['topic.reply']) && $cur_perm['post_replies'] == '1') || (isset($group_permissions['topic.reply']) && $cur_perm['post_replies'] != '0')) ? true : false;
-            $cur_perm['post_topics'] = ((!isset($group_permissions['topic.post']) && $cur_perm['post_topics'] == '1') || (isset($group_permissions['topic.post']) && $cur_perm['post_topics'] != '0')) ? true : false;
+            $curPerm['board.read'] = isset($groupPermissions['board.read']);
+            $curPerm['read_forum'] = ($curPerm['read_forum'] != '0') ? true : false;
+            $curPerm['post_replies'] = ((!isset($groupPermissions['topic.reply']) && $curPerm['post_replies'] == '1') || (isset($groupPermissions['topic.reply']) && $curPerm['post_replies'] != '0')) ? true : false;
+            $curPerm['post_topics'] = ((!isset($groupPermissions['topic.post']) && $curPerm['post_topics'] == '1') || (isset($groupPermissions['topic.post']) && $curPerm['post_topics'] != '0')) ? true : false;
 
             // Determine if the current settings differ from the default or not
-            $cur_perm['read_forum_def'] = ($cur_perm['read_forum'] == '0') ? false : true;
-            $cur_perm['post_replies_def'] = (($cur_perm['post_replies'] && !isset($group_permissions['topic.reply'])) || (!$cur_perm['post_replies'] && isset($group_permissions['topic.reply']))) ? false : true;
-            $cur_perm['post_topics_def'] = (($cur_perm['post_topics'] && !isset($group_permissions['topic.post'])) || (!$cur_perm['post_topics'] && isset($group_permissions['topic.post']))) ? false : true;
+            $curPerm['read_forum_def'] = ($curPerm['read_forum'] == '0') ? false : true;
+            $curPerm['post_replies_def'] = (($curPerm['post_replies'] && !isset($groupPermissions['topic.reply'])) || (!$curPerm['post_replies'] && isset($groupPermissions['topic.reply']))) ? false : true;
+            $curPerm['post_topics_def'] = (($curPerm['post_topics'] && !isset($groupPermissions['topic.post'])) || (!$curPerm['post_topics'] && isset($groupPermissions['topic.post']))) ? false : true;
 
-            $perm_data[] = $cur_perm;
+            $permData[] = $curPerm;
         }
 
-        $perm_data = Container::get('hooks')->fire('model.admin.forums.get_permissions', $perm_data);
-        return $perm_data;
+        $permData = Container::get('hooks')->fire('model.admin.forums.get_permissions', $permData);
+        return $permData;
     }
 
-    public function getDefaultGroupPermissions($fetch_admin = true)
+    public function getDefaultGroupPermissions($fetchAdmin = true)
     {
-        $perm_data = [];
+        $permData = [];
 
-        $result = DB::for_table('groups')->select('g_id');
+        $result = DB::forTable('groups')->select('g_id');
 
-        if (!$fetch_admin) {
-            $result->where_not_equal('g_id', ForumEnv::get('FEATHER_ADMIN'));
+        if (!$fetchAdmin) {
+            $result->whereNotEqual('g_id', ForumEnv::get('FEATHER_ADMIN'));
         }
 
-        $result = $result->order_by_asc('g_id');
+        $result = $result->orderByAsc('g_id');
         $result = Container::get('hooks')->fireDB('model.admin.forums.get_default_group_permissions_query', $result);
-        $result = $result->find_array();
+        $result = $result->findArray();
 
-        foreach ($result as $cur_perm) {
-            $group_permissions = Container::get('perms')->getGroupPermissions($cur_perm['g_id']);
-            $cur_perm['board.read'] = $group_permissions['board.read'];
-            $cur_perm['topic.reply'] = $group_permissions['topic.reply'];
-            $cur_perm['topic.post'] = $group_permissions['topic.post'];
+        foreach ($result as $curPerm) {
+            $groupPermissions = Container::get('perms')->getGroupPermissions($curPerm['g_id']);
+            $curPerm['board.read'] = $groupPermissions['board.read'];
+            $curPerm['topic.reply'] = $groupPermissions['topic.reply'];
+            $curPerm['topic.post'] = $groupPermissions['topic.post'];
 
-            $perm_data[] = $cur_perm;
+            $permData[] = $curPerm;
         }
 
-        return $perm_data;
+        return $permData;
     }
 
-    public function updatePermissions(array $permissions_data)
+    public function updatePermissions(array $permissionsData)
     {
-        $permissions_data = Container::get('hooks')->fire('model.admin.forums.update_permissions_start', $permissions_data);
+        $permissionsData = Container::get('hooks')->fire('model.admin.forums.update_permissions_start', $permissionsData);
 
-        $permissions = DB::for_table('forum_perms')
-                            ->where('forum_id', $permissions_data['forum_id'])
-                            ->where('group_id', $permissions_data['group_id'])
-                            ->delete_many();
+        $permissions = DB::forTable('forum_perms')
+                            ->where('forum_id', $permissionsData['forum_id'])
+                            ->where('group_id', $permissionsData['group_id'])
+                            ->deleteMany();
 
         if ($permissions) {
-            return DB::for_table('forum_perms')
+            return DB::forTable('forum_perms')
                     ->create()
-                    ->set($permissions_data)
+                    ->set($permissionsData)
                     ->save();
         }
     }
 
-    public function deletePermissions($forum_id, $group_id = null)
+    public function deletePermissions($forumId, $groupId = null)
     {
-        $result = DB::for_table('forum_perms')
-                    ->where('forum_id', $forum_id);
+        $result = DB::forTable('forum_perms')
+                    ->where('forum_id', $forumId);
 
-        if ($group_id) {
-            $result->where('group_id', $group_id);
+        if ($groupId) {
+            $result->where('group_id', $groupId);
         }
 
         $result = Container::get('hooks')->fireDB('model.admin.forums.delete_permissions_query', $result);
 
-        return $result->delete_many();
+        return $result->deleteMany();
     }
 }

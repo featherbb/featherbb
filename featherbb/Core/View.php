@@ -107,9 +107,9 @@ class View
     public function addTemplatesDirectory($data, $priority = 10)
     {
         $directories = (array) $data;
-        foreach ($directories as $key => $tpl_dir) {
-            if (is_dir($tpl_dir)) {
-                $this->directories[(int) $priority][] = rtrim((string) $tpl_dir, DIRECTORY_SEPARATOR);
+        foreach ($directories as $key => $tplDir) {
+            if (is_dir($tplDir)) {
+                $this->directories[(int) $priority][] = rtrim((string) $tplDir, DIRECTORY_SEPARATOR);
             }
         }
         return $this;
@@ -131,8 +131,8 @@ class View
         }
         foreach ($this->directories as $priority) {
             if (!empty($priority)) {
-                foreach ($priority as $tpl_dir) {
-                    $output[] = $tpl_dir;
+                foreach ($priority as $tplDir) {
+                    $output[] = $tplDir;
                 }
             }
         }
@@ -146,8 +146,8 @@ class View
     */
     public function getTemplatePathname($file)
     {
-        foreach ($this->getTemplatesDirectory() as $tpl_dir) {
-            $pathname = realpath($tpl_dir . DIRECTORY_SEPARATOR . ltrim($file, DIRECTORY_SEPARATOR));
+        foreach ($this->getTemplatesDirectory() as $tplDir) {
+            $pathname = realpath($tplDir . DIRECTORY_SEPARATOR . ltrim($file, DIRECTORY_SEPARATOR));
             if (is_file($pathname)) {
                 return (string) $pathname;
             }
@@ -278,8 +278,8 @@ class View
     public function addTemplate($tpl, $priority = 10)
     {
         $tpl = (array) $tpl;
-        foreach ($tpl as $key => $tpl_file) {
-            $this->templates[(int) $priority][] = $this->getTemplatePathname((string) $tpl_file);
+        foreach ($tpl as $key => $tplFile) {
+            $this->templates[(int) $priority][] = $this->getTemplatePathname((string) $tplFile);
         }
         return $this;
     }
@@ -346,7 +346,7 @@ class View
         ];
 
         if (is_object(User::get()) && User::isAdminMod()) {
-            $data['has_reports'] = \FeatherBB\Model\Admin\Reports::has_reports();
+            $data['has_reports'] = \FeatherBB\Model\Admin\Reports::hasReports();
         }
 
         if (ForumEnv::get('FEATHER_SHOW_INFO')) {

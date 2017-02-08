@@ -92,7 +92,7 @@ class Profile
         $user = $this->model->getUserInfo($args['id']);
 
         if ($user['signature'] != '') {
-            $parsed_signature = Container::get('parser')->parseSignature($user['signature']);
+            $parsedSignature = Container::get('parser')->parseSignature($user['signature']);
         }
 
         // View or edit?
@@ -103,19 +103,19 @@ class Profile
                 User::isAdmin($user) ||                     // or the user is an admin
                 User::isAdminMod($user))))                  // or the user is another mod
             ) {
-            $user_info = $this->model->parseUserInfo($user);
+            $userInfo = $this->model->parseUserInfo($user);
 
             View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), sprintf(__('Users profile'), Utils::escape($user['username']))],
                 'active_page' => 'profile',
-                'user_info' => $user_info,
+                'user_info' => $userInfo,
                 'id' => $args['id']
             ]);
 
             View::addTemplate('profile/view_profile.php')->display();
         } else {
             if (!isset($args['section']) || $args['section'] == 'essentials') {
-                $user_disp = $this->model->editEssentials($args['id'], $user);
+                $userDisp = $this->model->editEssentials($args['id'], $user);
 
                 View::setPageInfo([
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section essentials')],
@@ -123,7 +123,7 @@ class Profile
                     'id' => $args['id'],
                     'page' => 'essentials',
                     'user' => $user,
-                    'user_disp' => $user_disp,
+                    'user_disp' => $userDisp,
                     'forum_time_formats' => Container::get('forum_time_formats'),
                     'forum_date_formats' => Container::get('forum_date_formats')
                 ]);
@@ -131,7 +131,7 @@ class Profile
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_essentials.php')->display();
             } elseif ($args['section'] == 'personal') {
                 if (User::can('user.set_title')) {
-                    $title_field = '<label>'.__('Title').' <em>('.__('Leave blank').')</em><br /><input type="text" name="title" value="'.Utils::escape($user['title']).'" size="30" maxlength="50" /><br /></label>'."\n";
+                    $titleField = '<label>'.__('Title').' <em>('.__('Leave blank').')</em><br /><input type="text" name="title" value="'.Utils::escape($user['title']).'" size="30" maxlength="50" /><br /></label>'."\n";
                 }
 
                 View::setPageInfo([
@@ -140,7 +140,7 @@ class Profile
                     'id' => $args['id'],
                     'page' => 'personal',
                     'user' => $user,
-                    'title_field' => $title_field,
+                    'title_field' => $titleField,
                 ]);
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_personal.php')->display();
@@ -149,27 +149,27 @@ class Profile
                     throw new Error(__('Bad request'), 404);
                 }
 
-                $avatar_field = '<span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'], 'action' => 'upload_avatar']).'">'.__('Change avatar').'</a></span>';
+                $avatarField = '<span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'], 'action' => 'upload_avatar']).'">'.__('Change avatar').'</a></span>';
 
-                $user_avatar = Utils::generateAvatarMarkup($args['id']);
-                if ($user_avatar) {
-                    $avatar_field .= ' <span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'], 'action' => 'delete_avatar']).'">'.__('Delete avatar').'</a></span>';
+                $userAvatar = Utils::generateAvatarMarkup($args['id']);
+                if ($userAvatar) {
+                    $avatarField .= ' <span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'], 'action' => 'delete_avatar']).'">'.__('Delete avatar').'</a></span>';
                 } else {
-                    $avatar_field = '<span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'], 'action' => 'upload_avatar']).'">'.__('Upload avatar').'</a></span>';
+                    $avatarField = '<span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'], 'action' => 'upload_avatar']).'">'.__('Upload avatar').'</a></span>';
                 }
 
                 if ($user['signature'] != '') {
-                    $signature_preview = '<p>'.__('Sig preview').'</p>'."\n\t\t\t\t\t\t\t".'<div class="postsignature postmsg">'."\n\t\t\t\t\t\t\t\t".'<hr />'."\n\t\t\t\t\t\t\t\t".$parsed_signature."\n\t\t\t\t\t\t\t".'</div>'."\n";
+                    $signaturePreview = '<p>'.__('Sig preview').'</p>'."\n\t\t\t\t\t\t\t".'<div class="postsignature postmsg">'."\n\t\t\t\t\t\t\t\t".'<hr />'."\n\t\t\t\t\t\t\t\t".$parsedSignature."\n\t\t\t\t\t\t\t".'</div>'."\n";
                 } else {
-                    $signature_preview = '<p>'.__('No sig').'</p>'."\n";
+                    $signaturePreview = '<p>'.__('No sig').'</p>'."\n";
                 }
 
                 View::setPageInfo([
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section personality')],
                     'active_page' => 'profile',
-                    'user_avatar' => $user_avatar,
-                    'avatar_field' => $avatar_field,
-                    'signature_preview' => $signature_preview,
+                    'user_avatar' => $userAvatar,
+                    'avatar_field' => $avatarField,
+                    'signature_preview' => $signaturePreview,
                     'page' => 'personality',
                     'user' => $user,
                     'id' => $args['id'],
@@ -236,7 +236,7 @@ class Profile
         }
 
         // Make sure user exists
-        if (!DB::for_table('users')->find_one($args['id']) || $args['id'] < 2) {
+        if (!DB::forTable('users')->findOne($args['id']) || $args['id'] < 2) {
             throw new Error(__('Bad request'), 404);
         }
 
@@ -302,7 +302,7 @@ class Profile
             }
 
             if (Request::isPost()) {
-                return $this->model->uploadAvatar($args['id'], $_FILES);
+                return $this->model->uploadAvatar($args['id'], $_fILES);
             }
 
             return View::setPageInfo([

@@ -19,37 +19,37 @@ class Statistics
         if (@file_exists('/proc/loadavg') && is_readable('/proc/loadavg')) {
             // We use @ just in case
             $fh = @fopen('/proc/loadavg', 'r');
-            $load_averages = @fread($fh, 64);
+            $loadAverages = @fread($fh, 64);
             @fclose($fh);
 
             if (($fh = @fopen('/proc/loadavg', 'r'))) {
-                $load_averages = fread($fh, 64);
+                $loadAverages = fread($fh, 64);
                 fclose($fh);
             } else {
-                $load_averages = '';
+                $loadAverages = '';
             }
 
-            $load_averages = @explode(' ', $load_averages);
-            $load_averages = Container::get('hooks')->fire('model.admin.model.statistics.get_server_load.load_averages', $load_averages);
+            $loadAverages = @explode(' ', $loadAverages);
+            $loadAverages = Container::get('hooks')->fire('model.admin.model.statistics.get_server_load.load_averages', $loadAverages);
 
-            $server_load = isset($load_averages[2]) ? $load_averages[0].' '.$load_averages[1].' '.$load_averages[2] : __('Not available');
-        } elseif (!in_array(PHP_OS, ['WINNT', 'WIN32']) && preg_match('%averages?: ([0-9\.]+),?\s+([0-9\.]+),?\s+([0-9\.]+)%i', @exec('uptime'), $load_averages)) {
-            $server_load = $load_averages[1].' '.$load_averages[2].' '.$load_averages[3];
+            $serverLoad = isset($loadAverages[2]) ? $loadAverages[0].' '.$loadAverages[1].' '.$loadAverages[2] : __('Not available');
+        } elseif (!in_array(PHP_OS, ['WINNT', 'WIN32']) && preg_match('%averages?: ([0-9\.]+),?\s+([0-9\.]+),?\s+([0-9\.]+)%i', @exec('uptime'), $loadAverages)) {
+            $serverLoad = $loadAverages[1].' '.$loadAverages[2].' '.$loadAverages[3];
         } else {
-            $server_load = __('Not available');
+            $serverLoad = __('Not available');
         }
 
-        $server_load = Container::get('hooks')->fire('model.admin.model.statistics.get_server_load.server_load', $server_load);
-        return $server_load;
+        $serverLoad = Container::get('hooks')->fire('model.admin.model.statistics.get_server_load.server_load', $serverLoad);
+        return $serverLoad;
     }
 
     public function numOnline()
     {
-        $num_online = DB::for_table('online')->where('idle', 0)
+        $numOnline = DB::forTable('online')->where('idle', 0)
                             ->count('user_id');
 
-        $num_online = Container::get('hooks')->fire('model.admin.model.statistics.get_num_online.num_online', $num_online);
-        return $num_online;
+        $numOnline = Container::get('hooks')->fire('model.admin.model.statistics.get_num_online.num_online', $numOnline);
+        return $numOnline;
     }
 
     public function totalSize()
@@ -58,7 +58,7 @@ class Statistics
 
         if (ForumSettings::get('db_type') == 'mysql' || ForumSettings::get('db_type') == 'mysqli' || ForumSettings::get('db_type') == 'mysql_innodb' || ForumSettings::get('db_type') == 'mysqli_innodb') {
             // Calculate total db size/row count
-            $result = DB::for_table('users')->raw_query('SHOW TABLE STATUS LIKE \''.ForumSettings::get('db_prefix').'%\'')->find_many();
+            $result = DB::forTable('users')->rawQuery('SHOW TABLE STATUS LIKE \''.ForumSettings::get('db_prefix').'%\'')->findMany();
             $result = Container::get('hooks')->fire('model.admin.model.statistics.get_total_size.raw_data', $result);
 
             $total['size'] = $total['records'] = 0;
@@ -77,22 +77,22 @@ class Statistics
     public function phpAccelerator()
     {
         if (function_exists('mmcache')) {
-            $php_accelerator = '<a href="http://'.__('Turck MMCache link').'">'.__('Turck MMCache').'</a>';
-        } elseif (isset($_PHPA)) {
-            $php_accelerator = '<a href="http://'.__('ionCube PHP Accelerator link').'">'.__('ionCube PHP Accelerator').'</a>';
+            $phpAccelerator = '<a href="http://'.__('Turck MMCache link').'">'.__('Turck MMCache').'</a>';
+        } elseif (isset($_pHPA)) {
+            $phpAccelerator = '<a href="http://'.__('ionCube PHP Accelerator link').'">'.__('ionCube PHP Accelerator').'</a>';
         } elseif (ini_get('apc.enabled')) {
-            $php_accelerator ='<a href="http://'.__('Alternative PHP Cache (APC) link').'">'.__('Alternative PHP Cache (APC)').'</a>';
+            $phpAccelerator ='<a href="http://'.__('Alternative PHP Cache (APC) link').'">'.__('Alternative PHP Cache (APC)').'</a>';
         } elseif (ini_get('zend_optimizer.optimization_level')) {
-            $php_accelerator = '<a href="http://'.__('Zend Optimizer link').'">'.__('Zend Optimizer').'</a>';
+            $phpAccelerator = '<a href="http://'.__('Zend Optimizer link').'">'.__('Zend Optimizer').'</a>';
         } elseif (ini_get('eaccelerator.enable')) {
-            $php_accelerator = '<a href="http://'.__('eAccelerator link').'">'.__('eAccelerator').'</a>';
+            $phpAccelerator = '<a href="http://'.__('eAccelerator link').'">'.__('eAccelerator').'</a>';
         } elseif (ini_get('xcache.cacher')) {
-            $php_accelerator = '<a href="http://'.__('XCache link').'">'.__('XCache').'</a>';
+            $phpAccelerator = '<a href="http://'.__('XCache link').'">'.__('XCache').'</a>';
         } else {
-            $php_accelerator = __('NA');
+            $phpAccelerator = __('NA');
         }
 
-        $php_accelerator = Container::get('hooks')->fire('model.admin.model.statistics.get_php_accelerator', $php_accelerator);
-        return $php_accelerator;
+        $phpAccelerator = Container::get('hooks')->fire('model.admin.model.statistics.get_php_accelerator', $phpAccelerator);
+        return $phpAccelerator;
     }
 }

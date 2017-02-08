@@ -17,9 +17,9 @@ class Forum extends Api
     {
         $forum = new \FeatherBB\Model\Forum();
 
-        Container::get('hooks')->bind('model.forum.get_info_forum_query', function ($cur_forum) {
-            $cur_forum = $cur_forum->select('f.num_posts');
-            return $cur_forum;
+        Container::get('hooks')->bind('model.forum.get_info_forum_query', function ($curForum) {
+            $curForum = $curForum->select('f.num_posts');
+            return $curForum;
         });
 
         try {
@@ -28,7 +28,7 @@ class Forum extends Api
             return $this->errorMessage;
         }
 
-        $data = $data->as_array();
+        $data = $data->asArray();
 
         $data['moderators'] = unserialize($data['moderators']);
 

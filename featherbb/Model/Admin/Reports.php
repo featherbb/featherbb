@@ -13,68 +13,68 @@ use FeatherBB\Core\Database as DB;
 
 class Reports
 {
-    public function zap($zap_id)
+    public function zap($zapId)
     {
-        $zap_id = Container::get('hooks')->fire('model.admin.reports.zap_report.zap_id', $zap_id);
+        $zapId = Container::get('hooks')->fire('model.admin.reports.zap_report.zap_id', $zapId);
 
-        $result = DB::for_table('reports')->where('id', $zap_id);
+        $result = DB::forTable('reports')->where('id', $zapId);
         $result = Container::get('hooks')->fireDB('model.admin.reports.zap_report.query', $result);
-        $result = $result->find_one_col('zapped');
+        $result = $result->findOneCol('zapped');
 
-        $set_zap_report = ['zapped' => time(), 'zapped_by' => User::get()->id];
-        $set_zap_report = Container::get('hooks')->fire('model.admin.reports.set_zap_report', $set_zap_report);
+        $setZapReport = ['zapped' => time(), 'zapped_by' => User::get()->id];
+        $setZapReport = Container::get('hooks')->fire('model.admin.reports.set_zap_report', $setZapReport);
 
         // Update report to indicate it has been zapped
         if (!$result) {
-            DB::for_table('reports')
-                ->where('id', $zap_id)
-                ->find_one()
-                ->set($set_zap_report)
+            DB::forTable('reports')
+                ->where('id', $zapId)
+                ->findOne()
+                ->set($setZapReport)
                 ->save();
         }
 
         // Remove zapped reports to keep only last 10
-        $threshold = DB::for_table('reports')
-            ->where_not_null('zapped')
-            ->order_by_desc('zapped')
+        $threshold = DB::forTable('reports')
+            ->whereNotNull('zapped')
+            ->orderByDesc('zapped')
             ->offset(10)
             ->limit(1)
-            ->find_one_col('zapped');
+            ->findOneCol('zapped');
 
         if ($threshold) {
-            DB::for_table('reports')
-                ->where_lte('zapped', $threshold)
-                ->delete_many();
+            DB::forTable('reports')
+                ->whereLte('zapped', $threshold)
+                ->deleteMany();
         }
 
         return true;
     }
 
-    public static function has_reports()
+    public static function hasReports()
     {
         Container::get('hooks')->fire('get_reports_start');
 
-        $result_header = DB::for_table('reports')->where_null('zapped');
-        $result_header = Container::get('hooks')->fireDB('get_reports_query', $result_header);
+        $resultHeader = DB::forTable('reports')->whereNull('zapped');
+        $resultHeader = Container::get('hooks')->fireDB('get_reports_query', $resultHeader);
 
-        return (bool) $result_header->find_one();
+        return (bool) $resultHeader->findOne();
     }
 
     public function reports()
     {
         $reports = [];
-        $select_reports = ['r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.created', 'r.message', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username'];
-        $reports = DB::for_table('reports')
-            ->table_alias('r')
-            ->select_many($select_reports)
-            ->left_outer_join('posts', ['r.post_id', '=', 'p.id'], 'p')
-            ->left_outer_join('topics', ['r.topic_id', '=', 't.id'], 't')
-            ->left_outer_join('forums', ['r.forum_id', '=', 'f.id'], 'f')
-            ->left_outer_join('users', ['r.reported_by', '=', 'u.id'], 'u')
-            ->where_null('r.zapped')
-            ->order_by_desc('created');
+        $selectReports = ['r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.created', 'r.message', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username'];
+        $reports = DB::forTable('reports')
+            ->tableAlias('r')
+            ->selectMany($selectReports)
+            ->leftOuterJoin('posts', ['r.post_id', '=', 'p.id'], 'p')
+            ->leftOuterJoin('topics', ['r.topic_id', '=', 't.id'], 't')
+            ->leftOuterJoin('forums', ['r.forum_id', '=', 'f.id'], 'f')
+            ->leftOuterJoin('users', ['r.reported_by', '=', 'u.id'], 'u')
+            ->whereNull('r.zapped')
+            ->orderByDesc('created');
         $reports = Container::get('hooks')->fireDB('model.admin.reports.get_reports.query', $reports);
-        $reports = $reports->find_array();
+        $reports = $reports->findArray();
 
         $reports = Container::get('hooks')->fire('model.admin.reports.get_reports', $reports);
         return $reports;
@@ -82,23 +82,23 @@ class Reports
 
     public function zappedReports()
     {
-        $zapped_reports = [];
-        $select_zapped_reports = ['r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.message', 'r.zapped', 'zapped_by_id' => 'r.zapped_by', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username', 'zapped_by' => 'u2.username'];
-        $zapped_reports = DB::for_table('reports')
-            ->table_alias('r')
-            ->select_many($select_zapped_reports)
-            ->left_outer_join('posts', ['r.post_id', '=', 'p.id'], 'p')
-            ->left_outer_join('topics', ['r.topic_id', '=', 't.id'], 't')
-            ->left_outer_join('forums', ['r.forum_id', '=', 'f.id'], 'f')
-            ->left_outer_join('users', ['r.reported_by', '=', 'u.id'], 'u')
-            ->left_outer_join('users', ['r.zapped_by', '=', 'u2.id'], 'u2')
-            ->where_not_null('r.zapped')
-            ->order_by_desc('zapped')
+        $zappedReports = [];
+        $selectZappedReports = ['r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.message', 'r.zapped', 'zapped_by_id' => 'r.zapped_by', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username', 'zapped_by' => 'u2.username'];
+        $zappedReports = DB::forTable('reports')
+            ->tableAlias('r')
+            ->selectMany($selectZappedReports)
+            ->leftOuterJoin('posts', ['r.post_id', '=', 'p.id'], 'p')
+            ->leftOuterJoin('topics', ['r.topic_id', '=', 't.id'], 't')
+            ->leftOuterJoin('forums', ['r.forum_id', '=', 'f.id'], 'f')
+            ->leftOuterJoin('users', ['r.reported_by', '=', 'u.id'], 'u')
+            ->leftOuterJoin('users', ['r.zapped_by', '=', 'u2.id'], 'u2')
+            ->whereNotNull('r.zapped')
+            ->orderByDesc('zapped')
             ->limit(10);
-        $zapped_reports = Container::get('hooks')->fireDB('model.admin.reports.get_zapped_reports.query', $zapped_reports);
-        $zapped_reports = $zapped_reports->find_array();
+        $zappedReports = Container::get('hooks')->fireDB('model.admin.reports.get_zapped_reports.query', $zappedReports);
+        $zappedReports = $zappedReports->findArray();
 
-        $zapped_reports = Container::get('hooks')->fire('model.admin.reports.get_zapped_reports', $zapped_reports);
-        return $zapped_reports;
+        $zappedReports = Container::get('hooks')->fire('model.admin.reports.get_zapped_reports', $zappedReports);
+        return $zappedReports;
     }
 }

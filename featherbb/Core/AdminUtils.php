@@ -100,11 +100,11 @@ class AdminUtils
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
         $content = curl_exec($ch);
-        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         curl_close($ch);
 
-        if ($http_status != 200) {
+        if ($httpStatus != 200) {
             return false;
         }
 

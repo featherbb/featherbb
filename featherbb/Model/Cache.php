@@ -15,8 +15,8 @@ class Cache
 {
     public static function getConfig()
     {
-        $result = DB::for_table('config')
-                    ->find_array();
+        $result = DB::forTable('config')
+                    ->findArray();
         $config = [];
         foreach ($result as $item) {
             $config[$item['conf_name']] = $item['conf_value'];
@@ -26,9 +26,9 @@ class Cache
 
     public static function getPreferences()
     {
-        $result = DB::for_table('preferences')
+        $result = DB::forTable('preferences')
                     ->where('default', 1)
-                    ->find_array();
+                    ->findArray();
         $preferences = [];
         foreach ($result as $item) {
             $preferences[$item['preference_name']] = $item['preference_value'];
@@ -38,19 +38,19 @@ class Cache
 
     public static function getBans()
     {
-        return DB::for_table('bans')
-                ->find_array();
+        return DB::forTable('bans')
+                ->findArray();
     }
 
-    public static function getCensoring($select_censoring = 'search_for')
+    public static function getCensoring($selectCensoring = 'search_for')
     {
-        $result = DB::for_table('censoring')
-                    ->select_many($select_censoring)
-                    ->find_array();
+        $result = DB::forTable('censoring')
+                    ->selectMany($selectCensoring)
+                    ->findArray();
         $output = [];
 
         foreach ($result as $item) {
-            $output[] = ($select_censoring == 'search_for') ? '%(?<=[^\p{L}\p{N}])('.str_replace('\*', '[\p{L}\p{N}]*?', preg_quote($item['search_for'], '%')).')(?=[^\p{L}\p{N}])%iu' : $item['replace_with'];
+            $output[] = ($selectCensoring == 'search_for') ? '%(?<=[^\p{L}\p{N}])('.str_replace('\*', '[\p{L}\p{N}]*?', preg_quote($item['search_for'], '%')).')(?=[^\p{L}\p{N}])%iu' : $item['replace_with'];
         }
         return $output;
     }
@@ -58,79 +58,79 @@ class Cache
     public static function getUsersInfo()
     {
         $stats = [];
-        $select_get_users_info = ['id', 'username'];
-        $stats['total_users'] = DB::for_table('users')
-                                    ->where_not_equal('group_id', ForumEnv::get('FEATHER_UNVERIFIED'))
-                                    ->where_not_equal('id', 1)
+        $selectGetUsersInfo = ['id', 'username'];
+        $stats['total_users'] = DB::forTable('users')
+                                    ->whereNotEqual('group_id', ForumEnv::get('FEATHER_UNVERIFIED'))
+                                    ->whereNotEqual('id', 1)
                                     ->count();
-        $stats['last_user'] = DB::for_table('users')->select_many($select_get_users_info)
-                            ->where_not_equal('group_id', ForumEnv::get('FEATHER_UNVERIFIED'))
-                            ->order_by_desc('registered')
+        $stats['last_user'] = DB::forTable('users')->selectMany($selectGetUsersInfo)
+                            ->whereNotEqual('group_id', ForumEnv::get('FEATHER_UNVERIFIED'))
+                            ->orderByDesc('registered')
                             ->limit(1)
-                            ->find_array()[0];
+                            ->findArray()[0];
         return $stats;
     }
 
     public static function getAdminIds()
     {
-        return DB::for_table('users')
+        return DB::forTable('users')
                 ->select('id')
                 ->where('group_id', ForumEnv::get('FEATHER_ADMIN'))
-                ->find_array();
+                ->findArray();
     }
 
     public static function quickjump()
     {
-        $read_perms = DB::for_table('permissions')
+        $readPerms = DB::forTable('permissions')
             ->select('group', 'g_id')
-            ->where_any_is([
+            ->whereAnyIs([
                 ['permission_name' => 'board.read'],
                 ['permission_name' => '*']
             ])
             ->where('allow', 1)
-            ->find_array();
+            ->findArray();
 
         $output = [];
-        foreach ($read_perms as $item) {
-            $select_quickjump = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.redirect_url'];
-            $where_quickjump = [
+        foreach ($readPerms as $item) {
+            $selectQuickjump = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.redirect_url'];
+            $whereQuickjump = [
                 ['fp.read_forum' => 'IS NULL'],
                 ['fp.read_forum' => '1']
             ];
-            $order_by_quickjump = ['c.disp_position', 'c.id', 'f.disp_position'];
+            $orderByQuickjump = ['c.disp_position', 'c.id', 'f.disp_position'];
 
-            $result = DB::for_table('categories')
-                        ->table_alias('c')
-                        ->select_many($select_quickjump)
-                        ->inner_join('forums', ['c.id', '=', 'f.cat_id'], 'f')
-                        ->left_outer_join('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.$item['g_id'], 'fp')
-                        ->where_any_is($where_quickjump)
-                        ->where_null('f.redirect_url')
-                        ->order_by_many($order_by_quickjump)
-                        ->find_many();
+            $result = DB::forTable('categories')
+                        ->tableAlias('c')
+                        ->selectMany($selectQuickjump)
+                        ->innerJoin('forums', ['c.id', '=', 'f.cat_id'], 'f')
+                        ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.$item['g_id'], 'fp')
+                        ->whereAnyIs($whereQuickjump)
+                        ->whereNull('f.redirect_url')
+                        ->orderByMany($orderByQuickjump)
+                        ->findMany();
 
-            $forum_data = [];
+            $forumData = [];
             foreach ($result as $forum) {
-                if (!isset($forum_data[$forum['cid']])) {
-                    $forum_data[$forum['cid']] = ['cat_name' => $forum['cat_name'],
+                if (!isset($forumData[$forum['cid']])) {
+                    $forumData[$forum['cid']] = ['cat_name' => $forum['cat_name'],
                                                        'cat_position' => $forum['cat_position'],
                                                        'cat_forums' => []];
                 }
-                $forum_data[$forum['cid']]['cat_forums'][] = ['forum_id' => $forum['fid'],
+                $forumData[$forum['cid']]['cat_forums'][] = ['forum_id' => $forum['fid'],
                                                                    'forum_name' => $forum['forum_name'],
                                                                    'position' => $forum['forum_position']];
             }
-            $output[(int) $item['g_id']] = $forum_data;
+            $output[(int) $item['g_id']] = $forumData;
         }
         return $output;
     }
 
-    public static function getStopwords($lang_path = null)
+    public static function getStopwords($langPath = null)
     {
-        if (!$lang_path) {
-            $lang_path = ForumEnv::get('FEATHER_ROOT').'featherbb/lang';
+        if (!$langPath) {
+            $langPath = ForumEnv::get('FEATHER_ROOT').'featherbb/lang';
         }
-        $files = new \DirectoryIterator($lang_path);
+        $files = new \DirectoryIterator($langPath);
         $stopwords = [];
         foreach ($files as $file) {
             if (!$file->isDot() && $file->getBasename() != '.DS_Store' && $file->isDir() && file_exists($file->getPathName().'/stopwords.txt')) {
@@ -146,8 +146,8 @@ class Cache
         $result = [];
 
         // First, get default group permissions
-        $groups_perms = DB::for_table('permissions')->where_null('user')->order_by_desc('group')->find_array();
-        foreach ($groups_perms as $perm) {
+        $groupsPerms = DB::forTable('permissions')->whereNull('user')->orderByDesc('group')->findArray();
+        foreach ($groupsPerms as $perm) {
             if ((bool) $perm['allow']) {
                 $result[$perm['group']][0][$perm['permission_name']] = true;
             }
@@ -155,13 +155,13 @@ class Cache
 
         // Then get optionnal user permissions to override their group defaults
         // TODO: Add a page in profile Administration section to display custom permissions
-        $users_perms = DB::for_table('permissions')
-            ->table_alias('p')
-            ->select_many('p.permission_name', 'p.allow', 'p.deny', 'p.user', 'u.group_id')
-            ->inner_join('users', ['u.id', '=', 'p.user'], 'u')
-            ->where_not_null('p.user')
-            ->find_array();
-        foreach ($users_perms as $perm) {
+        $usersPerms = DB::forTable('permissions')
+            ->tableAlias('p')
+            ->selectMany('p.permission_name', 'p.allow', 'p.deny', 'p.user', 'u.group_id')
+            ->innerJoin('users', ['u.id', '=', 'p.user'], 'u')
+            ->whereNotNull('p.user')
+            ->findArray();
+        foreach ($usersPerms as $perm) {
             $result[$perm['group_id']][$perm['user']][$perm['permission_name']] = (bool) $perm['allow'] || !(bool) $perm['deny'];
         }
 
@@ -170,26 +170,26 @@ class Cache
 
     public static function getGroupPreferences()
     {
-        $groups_preferences = [];
+        $groupsPreferences = [];
 
-        $groups = DB::for_table('groups')->select('g_id')->find_array();
+        $groups = DB::forTable('groups')->select('g_id')->findArray();
 
         foreach ($groups as $group) {
-            $result = DB::for_table('preferences')
-                ->table_alias('p')
-                ->where_any_is([
+            $result = DB::forTable('preferences')
+                ->tableAlias('p')
+                ->whereAnyIs([
                     ['p.group' => $group['g_id']],
                     ['p.default' => 1],
                 ])
-                ->order_by_desc('p.default')
-                ->find_array();
+                ->orderByDesc('p.default')
+                ->findArray();
 
-            $groups_preferences[$group['g_id']] = [];
+            $groupsPreferences[$group['g_id']] = [];
             foreach ($result as $pref) {
-                $groups_preferences[$group['g_id']][(string) $pref['preference_name']] = $pref['preference_value'];
+                $groupsPreferences[$group['g_id']][(string) $pref['preference_name']] = $pref['preference_value'];
             }
         }
 
-        return (array) $groups_preferences;
+        return (array) $groupsPreferences;
     }
 }

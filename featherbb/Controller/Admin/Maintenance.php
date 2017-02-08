@@ -46,22 +46,22 @@ class Maintenance
         }
 
         if ($action == 'prune') {
-            $prune_from = Utils::trim(Input::post('prune_from'));
-            $prune_sticky = intval(Input::post('prune_sticky'));
+            $pruneFrom = Utils::trim(Input::post('prune_from'));
+            $pruneSticky = intval(Input::post('prune_sticky'));
 
             AdminUtils::generateAdminMenu('maintenance');
 
             if (Input::post('prune_comply')) {
-                $this->model->pruneComply($prune_from, $prune_sticky);
+                $this->model->pruneComply($pruneFrom, $pruneSticky);
             }
 
             View::setPageInfo([
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Prune')],
                     'active_page' => 'admin',
                     'admin_console' => true,
-                    'prune_sticky'    =>    $prune_sticky,
-                    'prune_from'    =>    $prune_from,
-                    'prune' => $this->model->getInfoPrune($prune_sticky, $prune_from),
+                    'prune_sticky'    =>    $pruneSticky,
+                    'prune_from'    =>    $pruneFrom,
+                    'prune' => $this->model->getInfoPrune($pruneSticky, $pruneFrom),
                 ]
             )->addTemplate('admin/maintenance/prune.php')->display();
         }

@@ -26,13 +26,13 @@ class Register
         $user = Container::get('hooks')->fire('model.register.check_for_errors_start', $user);
 
         // Check that someone from this IP didn't register a user within the last hour (DoS prevention)
-        $already_registered = DB::for_table('users')
+        $alreadyRegistered = DB::forTable('users')
                                   ->where('registration_ip', Utils::getIp())
-                                  ->where_gt('registered', time() - 3600);
-        $already_registered = Container::get('hooks')->fireDB('model.register.check_for_errors_ip_query', $already_registered);
-        $already_registered = $already_registered->find_one();
+                                  ->whereGt('registered', time() - 3600);
+        $alreadyRegistered = Container::get('hooks')->fireDB('model.register.check_for_errors_ip_query', $alreadyRegistered);
+        $alreadyRegistered = $alreadyRegistered->findOne();
 
-        if ($already_registered) {
+        if ($alreadyRegistered) {
             throw new Error(__('Registration flood'), 429);
         }
 
@@ -61,15 +61,15 @@ class Register
         }
 
         // Antispam feature
-        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
+        $langAntispamQuestions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
         $question = Input::post('captcha_q') ? trim(Input::post('captcha_q')) : '';
         $answer = Input::post('captcha') ? strtoupper(trim(Input::post('captcha'))) : '';
-        $lang_antispam_questions_array = [];
+        $langAntispamQuestionsArray = [];
 
-        foreach ($lang_antispam_questions as $k => $v) {
-            $lang_antispam_questions_array[md5($k)] = strtoupper($v);
+        foreach ($langAntispamQuestions as $k => $v) {
+            $langAntispamQuestionsArray[md5($k)] = strtoupper($v);
         }
-        if (empty($lang_antispam_questions_array[$question]) || $lang_antispam_questions_array[$question] != $answer) {
+        if (empty($langAntispamQuestionsArray[$question]) || $langAntispamQuestionsArray[$question] != $answer) {
             $user['errors'][] = __('Robot test fail');
         }
 
@@ -81,7 +81,7 @@ class Register
         }
 
         // Check if it's a banned email address
-        if (Container::get('email')->is_banned_email($user['email1'])) {
+        if (Container::get('email')->isBannedEmail($user['email1'])) {
             if (ForumSettings::get('p_allow_banned_email') == '0') {
                 $user['errors'][] = __('Banned email');
             }
@@ -89,21 +89,21 @@ class Register
         }
 
         // Check if someone else already has registered with that email address
-        $dupe_list = [];
+        $dupeList = [];
 
-        $dupe_mail = DB::for_table('users')
+        $dupeMail = DB::forTable('users')
                         ->select('username')
                         ->where('email', $user['email1']);
-        $dupe_mail = Container::get('hooks')->fireDB('model.register.check_for_errors_dupe', $dupe_mail);
-        $dupe_mail = $dupe_mail->find_many();
+        $dupeMail = Container::get('hooks')->fireDB('model.register.check_for_errors_dupe', $dupeMail);
+        $dupeMail = $dupeMail->findMany();
 
-        if ($dupe_mail) {
+        if ($dupeMail) {
             if (ForumSettings::get('p_allow_dupe_email') == '0') {
                 $user['errors'][] = __('Dupe email');
             }
 
-            foreach ($dupe_mail as $cur_dupe) {
-                $dupe_list[] = $cur_dupe['username'];
+            foreach ($dupeMail as $curDupe) {
+                $dupeList[] = $curDupe['username'];
             }
         }
 
@@ -129,32 +129,32 @@ class Register
         // Insert the new user into the database. We do this now to get the last inserted ID for later use
         $now = time();
 
-        $intial_group_id = (ForumSettings::get('o_regs_verify') == '0') ? ForumSettings::get('o_default_user_group') : ForumEnv::get('FEATHER_UNVERIFIED');
-        $password_hash = Utils::passwordHash($user['password1']);
+        $intialGroupId = (ForumSettings::get('o_regs_verify') == '0') ? ForumSettings::get('o_default_user_group') : ForumEnv::get('FEATHER_UNVERIFIED');
+        $passwordHash = Utils::passwordHash($user['password1']);
 
         // Add the user
-        $user_data = [
+        $userData = [
             'username'        => $user['username'],
-            'group_id'        => $intial_group_id,
-            'password'        => $password_hash,
+            'group_id'        => $intialGroupId,
+            'password'        => $passwordHash,
             'email'           => $user['email1'],
             'registered'      => $now,
             'registration_ip' => Utils::getIp(),
             'last_visit'      => $now,
         ];
 
-        $insert_user = DB::for_table('users')
+        $insertUser = DB::forTable('users')
                     ->create()
-                    ->set($user_data);
-        $insert_user = Container::get('hooks')->fireDB('model.register.insert_user_query', $insert_user);
-        $insert_user = $insert_user->save();
+                    ->set($userData);
+        $insertUser = Container::get('hooks')->fireDB('model.register.insert_user_query', $insertUser);
+        $insertUser = $insertUser->save();
 
-        $new_uid = DB::get_db()->lastInsertId(ForumSettings::get('db_prefix').'users');
+        $newUid = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'users');
 
         if (ForumSettings::get('o_regs_verify') == '1') {
-            Container::get('prefs')->setUser($new_uid, ['language' => $user['language']], ForumEnv::get('FEATHER_UNVERIFIED'));
+            Container::get('prefs')->setUser($newUid, ['language' => $user['language']], ForumEnv::get('FEATHER_UNVERIFIED'));
         } else {
-            Container::get('prefs')->setUser($new_uid, ['language' => $user['language']]);
+            Container::get('prefs')->setUser($newUid, ['language' => $user['language']]);
         }
 
         // If the mailing list isn't empty, we may need to send out some alerts
@@ -162,98 +162,98 @@ class Register
             // If we previously found out that the email was banned
             if (isset($user['banned_email'])) {
                 // Load the "banned email register" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.ForumSettings::get('language').'/mail_templates/banned_email_register.tpl'));
-                $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_banned_mail_tpl', $mail_tpl);
+                $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.ForumSettings::get('language').'/mail_templates/banned_email_register.tpl'));
+                $mailTpl = Container::get('hooks')->fire('model.register.insert_user_banned_mail_tpl', $mailTpl);
 
                 // The first row contains the subject
-                $first_crlf = strpos($mail_tpl, "\n");
-                $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-                $mail_subject = Container::get('hooks')->fire('model.register.insert_user_banned_mail_subject', $mail_subject);
+                $firstCrlf = strpos($mailTpl, "\n");
+                $mailSubject = trim(substr($mailTpl, 8, $firstCrlf-8));
+                $mailSubject = Container::get('hooks')->fire('model.register.insert_user_banned_mail_subject', $mailSubject);
 
-                $mail_message = trim(substr($mail_tpl, $first_crlf));
-                $mail_message = str_replace('<username>', $user['username'], $mail_message);
-                $mail_message = str_replace('<email>', $user['email1'], $mail_message);
-                $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $new_uid]), $mail_message);
-                $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
-                $mail_message = Container::get('hooks')->fire('model.register.insert_user_banned_mail_message', $mail_message);
+                $mailMessage = trim(substr($mailTpl, $firstCrlf));
+                $mailMessage = str_replace('<username>', $user['username'], $mailMessage);
+                $mailMessage = str_replace('<email>', $user['email1'], $mailMessage);
+                $mailMessage = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $newUid]), $mailMessage);
+                $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
+                $mailMessage = Container::get('hooks')->fire('model.register.insert_user_banned_mail_message', $mailMessage);
 
-                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
             }
 
             // If we previously found out that the email was a dupe
-            if (!empty($dupe_list)) {
+            if (!empty($dupeList)) {
                 // Load the "dupe email register" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.ForumSettings::get('language').'/mail_templates/dupe_email_register.tpl'));
-                $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_dupe_mail_tpl', $mail_tpl);
+                $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.ForumSettings::get('language').'/mail_templates/dupe_email_register.tpl'));
+                $mailTpl = Container::get('hooks')->fire('model.register.insert_user_dupe_mail_tpl', $mailTpl);
 
                 // The first row contains the subject
-                $first_crlf = strpos($mail_tpl, "\n");
-                $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-                $mail_subject = Container::get('hooks')->fire('model.register.insert_user_dupe_mail_subject', $mail_subject);
+                $firstCrlf = strpos($mailTpl, "\n");
+                $mailSubject = trim(substr($mailTpl, 8, $firstCrlf-8));
+                $mailSubject = Container::get('hooks')->fire('model.register.insert_user_dupe_mail_subject', $mailSubject);
 
-                $mail_message = trim(substr($mail_tpl, $first_crlf));
-                $mail_message = str_replace('<username>', $user['username'], $mail_message);
-                $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
-                $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $new_uid]), $mail_message);
-                $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
-                $mail_message = Container::get('hooks')->fire('model.register.insert_user_dupe_mail_message', $mail_message);
+                $mailMessage = trim(substr($mailTpl, $firstCrlf));
+                $mailMessage = str_replace('<username>', $user['username'], $mailMessage);
+                $mailMessage = str_replace('<dupe_list>', implode(', ', $dupeList), $mailMessage);
+                $mailMessage = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $newUid]), $mailMessage);
+                $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
+                $mailMessage = Container::get('hooks')->fire('model.register.insert_user_dupe_mail_message', $mailMessage);
 
-                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
             }
 
             // Should we alert people on the admin mailing list that a new user has registered?
             if (ForumSettings::get('o_regs_report') == '1') {
                 // Load the "new user" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.ForumSettings::get('language').'/mail_templates/new_user.tpl'));
-                $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_new_mail_tpl', $mail_tpl);
+                $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.ForumSettings::get('language').'/mail_templates/new_user.tpl'));
+                $mailTpl = Container::get('hooks')->fire('model.register.insert_user_new_mail_tpl', $mailTpl);
 
                 // The first row contains the subject
-                $first_crlf = strpos($mail_tpl, "\n");
-                $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-                $mail_subject = Container::get('hooks')->fire('model.register.insert_user_new_mail_subject', $mail_subject);
+                $firstCrlf = strpos($mailTpl, "\n");
+                $mailSubject = trim(substr($mailTpl, 8, $firstCrlf-8));
+                $mailSubject = Container::get('hooks')->fire('model.register.insert_user_new_mail_subject', $mailSubject);
 
-                $mail_message = trim(substr($mail_tpl, $first_crlf));
-                $mail_message = str_replace('<username>', $user['username'], $mail_message);
-                $mail_message = str_replace('<base_url>', Router::pathFor('home'), $mail_message);
-                $mail_message = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $new_uid]), $mail_message);
-                $mail_message = str_replace('<admin_url>', Router::pathFor('profileSection', ['id' => $new_uid, 'section' => 'admin']), $mail_message);
-                $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
-                $mail_message = Container::get('hooks')->fire('model.register.insert_user_new_mail_message', $mail_message);
+                $mailMessage = trim(substr($mailTpl, $firstCrlf));
+                $mailMessage = str_replace('<username>', $user['username'], $mailMessage);
+                $mailMessage = str_replace('<base_url>', Router::pathFor('home'), $mailMessage);
+                $mailMessage = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $newUid]), $mailMessage);
+                $mailMessage = str_replace('<admin_url>', Router::pathFor('profileSection', ['id' => $newUid, 'section' => 'admin']), $mailMessage);
+                $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
+                $mailMessage = Container::get('hooks')->fire('model.register.insert_user_new_mail_message', $mailMessage);
 
-                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
             }
         }
 
         // Must the user verify the registration or do we log him/her in right now?
         if (ForumSettings::get('o_regs_verify') == '1') {
             // Load the "welcome" template
-            $mail_tpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user['language'].'/mail_templates/welcome.tpl'));
-            $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_welcome_mail_tpl', $mail_tpl);
+            $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user['language'].'/mail_templates/welcome.tpl'));
+            $mailTpl = Container::get('hooks')->fire('model.register.insert_user_welcome_mail_tpl', $mailTpl);
 
             // The first row contains the subject
-            $first_crlf = strpos($mail_tpl, "\n");
-            $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
-            $mail_subject = Container::get('hooks')->fire('model.register.insert_user_welcome_mail_subject', $mail_subject);
+            $firstCrlf = strpos($mailTpl, "\n");
+            $mailSubject = trim(substr($mailTpl, 8, $firstCrlf-8));
+            $mailSubject = Container::get('hooks')->fire('model.register.insert_user_welcome_mail_subject', $mailSubject);
 
-            $mail_message = trim(substr($mail_tpl, $first_crlf));
-            $mail_subject = str_replace('<board_title>', ForumSettings::get('o_board_title'), $mail_subject);
-            $mail_message = str_replace('<base_url>', Router::pathFor('home'), $mail_message);
-            $mail_message = str_replace('<username>', $user['username'], $mail_message);
-            $mail_message = str_replace('<password>', $user['password1'], $mail_message);
-            $mail_message = str_replace('<login_url>', Router::pathFor('login'), $mail_message);
-            $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
-            $mail_message = Container::get('hooks')->fire('model.register.insert_user_welcome_mail_message', $mail_message);
+            $mailMessage = trim(substr($mailTpl, $firstCrlf));
+            $mailSubject = str_replace('<board_title>', ForumSettings::get('o_board_title'), $mailSubject);
+            $mailMessage = str_replace('<base_url>', Router::pathFor('home'), $mailMessage);
+            $mailMessage = str_replace('<username>', $user['username'], $mailMessage);
+            $mailMessage = str_replace('<password>', $user['password1'], $mailMessage);
+            $mailMessage = str_replace('<login_url>', Router::pathFor('login'), $mailMessage);
+            $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
+            $mailMessage = Container::get('hooks')->fire('model.register.insert_user_welcome_mail_message', $mailMessage);
 
-            Container::get('email')->send($user['email1'], $mail_subject, $mail_message);
+            Container::get('email')->send($user['email1'], $mailSubject, $mailMessage);
 
             return Router::redirect(Router::pathFor('home'), __('Reg email').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.');
         } else {
             // Auto auth only if registrations verify is disabled
-            $user_object = new \stdClass();
-            $user_object->id = $new_uid;
-            $user_object->username = $user['username'];
+            $userObject = new \stdClass();
+            $userObject->id = $newUid;
+            $userObject->username = $user['username'];
             $expire = time() + ForumSettings::get('o_timeout_visit');
-            $jwt = AuthModel::generateJwt($user_object, $expire);
+            $jwt = AuthModel::generateJwt($userObject, $expire);
             AuthModel::setCookie('Bearer '.$jwt, $expire);
         }
 

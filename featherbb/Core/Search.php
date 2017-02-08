@@ -82,8 +82,8 @@ class Search
         $word = str_replace(['%', '*'], '', $word);
 
         // Check the word is within the min/max length
-        $num_chars = Utils::strlen($word);
-        return $num_chars >= ForumEnv::get('FEATHER_SEARCH_MIN_WORD') && $num_chars <= ForumEnv::get('FEATHER_SEARCH_MAX_WORD');
+        $numChars = Utils::strlen($word);
+        return $numChars >= ForumEnv::get('FEATHER_SEARCH_MIN_WORD') && $numChars <= ForumEnv::get('FEATHER_SEARCH_MAX_WORD');
     }
 
 
@@ -149,9 +149,9 @@ class Search
 
 
     //
-    // Updates the search index with the contents of $post_id (and $subject)
+    // Updates the search index with the contents of $postId (and $subject)
     //
-    public static function updateSearchIndex($mode, $post_id, $message, $subject = null)
+    public static function updateSearchIndex($mode, $postId, $message, $subject = null)
     {
         $message = utf8_strtolower($message);
         $subject = utf8_strtolower($subject);
@@ -160,118 +160,118 @@ class Search
         $message = self::stripBbcode($message);
 
         // Split old and new post/subject to obtain array of 'words'
-        $words_message = self::splitWords($message, true);
-        $words_subject = ($subject) ? self::splitWords($subject, true) : [];
+        $wordsMessage = self::splitWords($message, true);
+        $wordsSubject = ($subject) ? self::splitWords($subject, true) : [];
 
         if ($mode == 'edit') {
-            $select_update_search_index = ['w.id', 'w.word', 'm.subject_match'];
-            $result = DB::for_table('search_words')->table_alias('w')
-                ->select_many($select_update_search_index)
-                ->inner_join('search_matches', ['w.id', '=', 'm.word_id'], 'm')
-                ->where('m.post_id', $post_id)
-                ->find_many();
+            $selectUpdateSearchIndex = ['w.id', 'w.word', 'm.subject_match'];
+            $result = DB::forTable('search_words')->tableAlias('w')
+                ->selectMany($selectUpdateSearchIndex)
+                ->innerJoin('search_matches', ['w.id', '=', 'm.word_id'], 'm')
+                ->where('m.post_id', $postId)
+                ->findMany();
 
             // Declare here to stop array_keys() and array_diff() from complaining if not set
-            $cur_words['post'] = [];
-            $cur_words['subject'] = [];
+            $curWords['post'] = [];
+            $curWords['subject'] = [];
 
             foreach ($result as $row) {
-                $match_in = ($row['subject_match']) ? 'subject' : 'post';
-                $cur_words[$match_in][$row['word']] = $row['id'];
+                $matchIn = ($row['subject_match']) ? 'subject' : 'post';
+                $curWords[$matchIn][$row['word']] = $row['id'];
             }
 
-            $pdo = DB::get_db();
+            $pdo = DB::getDb();
             $pdo = null;
 
-            $words['add']['post'] = array_diff($words_message, array_keys($cur_words['post']));
-            $words['add']['subject'] = array_diff($words_subject, array_keys($cur_words['subject']));
-            $words['del']['post'] = array_diff(array_keys($cur_words['post']), $words_message);
-            $words['del']['subject'] = array_diff(array_keys($cur_words['subject']), $words_subject);
+            $words['add']['post'] = array_diff($wordsMessage, array_keys($curWords['post']));
+            $words['add']['subject'] = array_diff($wordsSubject, array_keys($curWords['subject']));
+            $words['del']['post'] = array_diff(array_keys($curWords['post']), $wordsMessage);
+            $words['del']['subject'] = array_diff(array_keys($curWords['subject']), $wordsSubject);
         } else {
-            $words['add']['post'] = $words_message;
-            $words['add']['subject'] = $words_subject;
+            $words['add']['post'] = $wordsMessage;
+            $words['add']['subject'] = $wordsSubject;
             $words['del']['post'] = [];
             $words['del']['subject'] = [];
         }
 
-        unset($words_message);
-        unset($words_subject);
+        unset($wordsMessage);
+        unset($wordsSubject);
 
         // Get unique words from the above arrays
-        $unique_words = array_unique(array_merge($words['add']['post'], $words['add']['subject']));
+        $uniqueWords = array_unique(array_merge($words['add']['post'], $words['add']['subject']));
 
-        if (!empty($unique_words)) {
-            $select_unique_words = ['id', 'word'];
-            $result = DB::for_table('search_words')->select_many($select_unique_words)
-                ->where_in('word', $unique_words)
-                ->find_many();
+        if (!empty($uniqueWords)) {
+            $selectUniqueWords = ['id', 'word'];
+            $result = DB::forTable('search_words')->selectMany($selectUniqueWords)
+                ->whereIn('word', $uniqueWords)
+                ->findMany();
 
-            $word_ids = [];
+            $wordIds = [];
             foreach ($result as $row) {
-                $word_ids[$row['word']] = $row['id'];
+                $wordIds[$row['word']] = $row['id'];
             }
 
-            $pdo = DB::get_db();
+            $pdo = DB::getDb();
             $pdo = null;
 
-            $new_words = array_values(array_diff($unique_words, array_keys($word_ids)));
+            $newWords = array_values(array_diff($uniqueWords, array_keys($wordIds)));
 
-            unset($unique_words);
+            unset($uniqueWords);
 
-            if (!empty($new_words)) {
+            if (!empty($newWords)) {
                 switch (ForumSettings::get('db_type')) {
                     case 'mysql':
                     case 'mysqli':
                     case 'mysql_innodb':
                     case 'mysqli_innodb':
                         // Quite dirty, right? :-)
-                        $placeholders = rtrim(str_repeat('(?), ', count($new_words)), ', ');
-                        DB::for_table('search_words')
-                            ->raw_execute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_words (word) VALUES ' . $placeholders, $new_words);
+                        $placeholders = rtrim(str_repeat('(?), ', count($newWords)), ', ');
+                        DB::forTable('search_words')
+                            ->rawExecute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_words (word) VALUES ' . $placeholders, $newWords);
                         break;
 
                     default:
-                        foreach ($new_words as $word) {
-                            $word_insert['word'] = $word;
-                            DB::for_table('search_words')
+                        foreach ($newWords as $word) {
+                            $wordInsert['word'] = $word;
+                            DB::forTable('search_words')
                                 ->create()
-                                ->set($word_insert)
+                                ->set($wordInsert)
                                 ->save();
                         }
                         break;
                 }
             }
 
-            unset($new_words);
+            unset($newWords);
         }
 
         // Delete matches (only if editing a post)
-        foreach ($words['del'] as $match_in => $wordlist) {
-            $subject_match = ($match_in == 'subject') ? 1 : 0;
+        foreach ($words['del'] as $matchIn => $wordlist) {
+            $subjectMatch = ($matchIn == 'subject') ? 1 : 0;
 
             if (!empty($wordlist)) {
                 $sql = [];
                 foreach ($wordlist as $word) {
-                    $sql[] = $cur_words[$match_in][$word];
+                    $sql[] = $curWords[$matchIn][$word];
                 }
 
-                DB::for_table('search_matches')
-                    ->where_in('word_id', $sql)
-                    ->where('post_id', $post_id)
-                    ->where('subject_match', $subject_match)
-                    ->delete_many();
+                DB::forTable('search_matches')
+                    ->whereIn('word_id', $sql)
+                    ->where('post_id', $postId)
+                    ->where('subject_match', $subjectMatch)
+                    ->deleteMany();
             }
         }
 
         // Add new matches
-        foreach ($words['add'] as $match_in => $wordlist) {
-            $subject_match = ($match_in == 'subject') ? 1 : 0;
+        foreach ($words['add'] as $matchIn => $wordlist) {
+            $subjectMatch = ($matchIn == 'subject') ? 1 : 0;
 
             if (!empty($wordlist)) {
                 $wordlist = array_values($wordlist);
                 $placeholders = rtrim(str_repeat('?, ', count($wordlist)), ', ');
-                DB::for_table('search_words')
-                    ->raw_execute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_matches (post_id, word_id, subject_match) SELECT ' . $post_id . ', id, ' . $subject_match . ' FROM ' . ForumSettings::get('db_prefix') . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
+                DB::forTable('search_words')
+                    ->rawExecute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_matches (post_id, word_id, subject_match) SELECT ' . $postId . ', id, ' . $subjectMatch . ' FROM ' . ForumSettings::get('db_prefix') . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
             }
         }
 
@@ -280,14 +280,14 @@ class Search
 
 
     //
-    // Strip search index of indexed words in $post_ids
+    // Strip search index of indexed words in $postIds
     //
-    public function stripSearchIndex($post_ids)
+    public function stripSearchIndex($postIds)
     {
-        if (!is_array($post_ids)) {
-            $post_ids_sql = explode(',', $post_ids);
+        if (!is_array($postIds)) {
+            $postIdsSql = explode(',', $postIds);
         } else {
-            $post_ids_sql = $post_ids;
+            $postIdsSql = $postIds;
         }
 
         switch (ForumSettings::get('db_type')) {
@@ -295,46 +295,46 @@ class Search
             case 'mysqli':
             case 'mysql_innodb':
             case 'mysqli_innodb': {
-                $result = DB::for_table('search_matches')->select('word_id')
-                    ->where_in('post_id', $post_ids_sql)
-                    ->group_by('word_id')
-                    ->find_many();
+                $result = DB::forTable('search_matches')->select('word_id')
+                    ->whereIn('post_id', $postIdsSql)
+                    ->groupBy('word_id')
+                    ->findMany();
 
                 if ($result) {
-                    $word_ids = '';
+                    $wordIds = '';
                     foreach ($result as $row) {
-                        $word_ids[] = $row['word_id'];
+                        $wordIds[] = $row['word_id'];
                     }
 
-                    $result = DB::for_table('search_matches')->select('word_id')
-                        ->where_in('word_id', $word_ids)
-                        ->group_by('word_id')
-                        ->having_raw('COUNT(word_id)=1')
-                        ->find_many();
+                    $result = DB::forTable('search_matches')->select('word_id')
+                        ->whereIn('word_id', $wordIds)
+                        ->groupBy('word_id')
+                        ->havingRaw('COUNT(word_id)=1')
+                        ->findMany();
 
                     if ($result) {
-                        $word_ids = '';
+                        $wordIds = '';
                         foreach ($result as $row) {
-                            $word_ids[] = $row['word_id'];
+                            $wordIds[] = $row['word_id'];
                         }
 
-                        DB::for_table('search_words')
-                            ->where_in('id', $word_ids)
-                            ->delete_many();
+                        DB::forTable('search_words')
+                            ->whereIn('id', $wordIds)
+                            ->deleteMany();
                     }
                 }
                 break;
             }
 
             default:
-                DB::for_table('search_matches')
-                    ->where_raw('id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
-                    ->delete_many();
+                DB::forTable('search_matches')
+                    ->whereRaw('id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE post_id IN(' . $postIds . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
+                    ->deleteMany();
                 break;
         }
 
-        DB::for_table('search_matches')
-            ->where_in('post_id', $post_ids_sql)
-            ->delete_many();
+        DB::forTable('search_matches')
+            ->whereIn('post_id', $postIdsSql)
+            ->deleteMany();
     }
 }

@@ -23,7 +23,7 @@ class Plugin
     public function setActivePlugins()
     {
         $activePlugins = [];
-        $results = DB::for_table('plugins')->select('name')->where('active', 1)->find_array();
+        $results = DB::forTable('plugins')->select('name')->where('active', 1)->findArray();
         foreach ($results as $plugin) {
             $activePlugins[] = $plugin['name'];
         }

@@ -28,8 +28,8 @@ class Reports
 
         // Zap a report
         if (Request::isPost()) {
-            $zap_id = intval(key(Input::post('zap_id')));
-            $this->model->zap($zap_id);
+            $zapId = intval(key(Input::post('zap_id')));
+            $this->model->zap($zapId);
             return Router::redirect(Router::pathFor('adminReports'), __('Report zapped redirect'));
         }
 

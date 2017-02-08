@@ -26,16 +26,16 @@ class Topic extends Api
     public function newTopic($req, $res, $args)
     {
         // Fetch some info about the topic and/or the forum
-        $cur_posting = $this->model->getInfoPost(false, $args['id']);
+        $curPosting = $this->model->getInfoPost(false, $args['id']);
 
-        if (!is_object($cur_posting)) {
-            return $cur_posting;
+        if (!is_object($curPosting)) {
+            return $curPosting;
         }
 
-        $is_admmod = $this->model->checkPermissions($cur_posting, null, $args['id']);
+        $isAdmmod = $this->model->checkPermissions($curPosting, null, $args['id']);
 
-        if (!is_bool($is_admmod)) {
-            return $is_admmod;
+        if (!is_bool($isAdmmod)) {
+            return $isAdmmod;
         }
 
         // Start with a clean slate
@@ -45,7 +45,7 @@ class Topic extends Api
         $errors = $this->model->checkErrorsBeforePost($args['id'], $errors);
 
         // Setup some variables before post
-        $post = $this->model->setupVariables($errors, $is_admmod);
+        $post = $this->model->setupVariables($errors, $isAdmmod);
 
         // Did everything go according to plan?
         if (empty($errors)) {
@@ -55,7 +55,7 @@ class Topic extends Api
 
             // Should we send out notifications?
             if (ForumSettings::get('o_forum_subscriptions') == '1') {
-                $this->model->sendNotificationsNewTopic($post, $cur_posting, $new['tid']);
+                $this->model->sendNotificationsNewTopic($post, $curPosting, $new['tid']);
             }
 
             // If we previously found out that the email was banned
@@ -75,18 +75,18 @@ class Topic extends Api
     public function newReply($req, $res, $args)
     {
         // Fetch some info about the topic and/or the forum
-        $cur_posting = $this->model->getInfoPost($args['id'], false);
+        $curPosting = $this->model->getInfoPost($args['id'], false);
 
-        if (!is_object($cur_posting)) {
-            return $cur_posting;
+        if (!is_object($curPosting)) {
+            return $curPosting;
         }
 
-        $is_subscribed = $args['id'] && $cur_posting['is_subscribed'];
+        $isSubscribed = $args['id'] && $curPosting['is_subscribed'];
 
-        $is_admmod = $this->model->checkPermissions($cur_posting, null, $args['id']);
+        $isAdmmod = $this->model->checkPermissions($curPosting, null, $args['id']);
 
-        if (!is_bool($is_admmod)) {
-            return $is_admmod;
+        if (!is_bool($isAdmmod)) {
+            return $isAdmmod;
         }
 
         // Start with a clean slate
@@ -96,7 +96,7 @@ class Topic extends Api
         $errors = $this->model->checkErrorsBeforePost($args['id'], $errors);
 
         // Setup some variables before post
-        $post = $this->model->setupVariables($errors, $is_admmod);
+        $post = $this->model->setupVariables($errors, $isAdmmod);
 
         // Append quote if needed
         if (isset($args['qid'])) {
@@ -107,11 +107,11 @@ class Topic extends Api
         if (empty($errors)) {
             // It's a reply
             // Insert the reply, get the new_pid
-            $new = $this->model->insertReply($post, $args['id'], $cur_posting, $is_subscribed);
+            $new = $this->model->insertReply($post, $args['id'], $curPosting, $isSubscribed);
 
             // Should we send out notifications?
             if (ForumSettings::get('o_topic_subscriptions') == '1') {
-                \FeatherBB\Model\Post::sendNotificationsReply($args['id'], $cur_posting, $new['pid'], $post);
+                \FeatherBB\Model\Post::sendNotificationsReply($args['id'], $curPosting, $new['pid'], $post);
             }
 
             // If we previously found out that the email was banned

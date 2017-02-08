@@ -15,7 +15,7 @@ use FeatherBB\Core\Utils;
 
 class Install
 {
-    protected $database_scheme = [
+    protected $databaseScheme = [
         'bans' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `username` varchar(200) DEFAULT NULL,
@@ -219,16 +219,16 @@ class Install
             KEY `users_registered_idx` (`registered`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",];
 
-    public function createTable($table_name, $sql)
+    public function createTable($tableName, $sql)
     {
-        $db = DB::get_db();
-        $req = preg_replace('/%t%/', '`'.$table_name.'`', $sql);
+        $db = DB::getDb();
+        $req = preg_replace('/%t%/', '`'.$tableName.'`', $sql);
         return $db->exec($req);
     }
 
-    public function addData($table_name, array $data)
+    public function addData($tableName, array $data)
     {
-        return (bool) DB::for_table($table_name)
+        return (bool) DB::forTable($tableName)
                         ->create()
                         ->set($data)
                         ->save();
@@ -236,12 +236,12 @@ class Install
 
     public function addMockForum(array $arch)
     {
-        foreach ($arch as $table_name => $data) {
-            $this->addData($table_name, $data);
+        foreach ($arch as $tableName => $data) {
+            $this->addData($tableName, $data);
         }
     }
 
-    public function save_config(array $data)
+    public function saveConfig(array $data)
     {
         foreach ($data as $key => $value) {
             $this->addData('config', ['conf_name' => $key,
@@ -251,7 +251,7 @@ class Install
 
     public function getDatabaseScheme()
     {
-        return $this->database_scheme;
+        return $this->databaseScheme;
     }
 
     public static function loadDefaultGroups()
@@ -306,19 +306,19 @@ class Install
 
     public static function loadMockForumData(array $data)
     {
-        $cat_name = __('Test category');
+        $catName = __('Test category');
         $subject = __('Test post');
         $message = __('Message');
-        $forum_name = __('Test forum');
-        $forum_desc = __('This is just a test forum');
+        $forumName = __('Test forum');
+        $forumDesc = __('This is just a test forum');
         $now = time();
         $ip = Utils::getIp();
 
-        return $mock_data = [
-            'categories' => ['cat_name' => $cat_name,
+        return $mockData = [
+            'categories' => ['cat_name' => $catName,
                                   'disp_position' => 1],
-                'forums' => ['forum_name' => $forum_name,
-                                  'forum_desc' => $forum_desc,
+                'forums' => ['forum_name' => $forumName,
+                                  'forum_desc' => $forumDesc,
                                   'num_topics' => 1,
                                   'num_posts' => 1,
                                   'last_post' => $now,

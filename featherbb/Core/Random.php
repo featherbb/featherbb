@@ -92,13 +92,13 @@ class Random
          * Our primary choice for a cryptographic strong randomness function is
          * openssl_random_pseudo_bytes.
          */
-        $SSLstr = '4'; // http://xkcd.com/221/
+        $sSLstr = '4'; // http://xkcd.com/221/
         if (function_exists('openssl_random_pseudo_bytes') &&
             (version_compare(PHP_VERSION, '5.3.4') >= 0 ||
                 substr(PHP_OS, 0, 3) !== 'WIN')) {
-            $SSLstr = openssl_random_pseudo_bytes($len, $strong);
+            $sSLstr = openssl_random_pseudo_bytes($len, $strong);
             if ($strong) {
-                return $SSLstr;
+                return $sSLstr;
             }
         }
 
@@ -111,9 +111,9 @@ class Random
          * time needed to compute a number of SHA-1 hashes.
          */
         $str = '';
-        $bits_per_round = 2; // bits of entropy collected in each clock drift round
-        $msec_per_round = 400; // expected running time of each round in microseconds
-        $hash_len = 20; // SHA-1 Hash length
+        $bitsPerRound = 2; // bits of entropy collected in each clock drift round
+        $msecPerRound = 400; // expected running time of each round in microseconds
+        $hashLen = 20; // SHA-1 Hash length
         $total = $len; // total bytes of entropy to collect
 
         $handle = @fopen('/dev/urandom', 'rb');
@@ -122,14 +122,14 @@ class Random
         }
 
         do {
-            $bytes = ($total > $hash_len)? $hash_len : $total;
+            $bytes = ($total > $hashLen)? $hashLen : $total;
             $total -= $bytes;
 
             //collect any entropy available from the PHP system and filesystem
-            $entropy = rand() . uniqid(mt_rand(), true) . $SSLstr;
+            $entropy = rand() . uniqid(mt_rand(), true) . $sSLstr;
             $entropy .= implode('', @fstat(@fopen(__FILE__, 'r')));
             $entropy .= memory_get_usage() . getmypid();
-            $entropy .= serialize($_ENV) . serialize($_SERVER);
+            $entropy .= serialize($_eNV) . serialize($_sERVER);
             if (function_exists('posix_times')) {
                 $entropy .= serialize(posix_times());
             }
@@ -152,11 +152,11 @@ class Random
 
                 // Based on the above measurement determine the total rounds
                 // in order to bound the total running time.
-                $rounds = (int) ($msec_per_round * 50 / (int) (($c2 - $c1) * 1000000));
+                $rounds = (int) ($msecPerRound * 50 / (int) (($c2 - $c1) * 1000000));
 
                 // Take the additional measurements. On average we can expect
-                // at least $bits_per_round bits of entropy from each measurement.
-                $iter = $bytes * (int) (ceil(8 / $bits_per_round));
+                // at least $bitsPerRound bits of entropy from each measurement.
+                $iter = $bytes * (int) (ceil(8 / $bitsPerRound));
                 for ($i = 0; $i < $iter; $i++) {
                     $c1 = microtime();
                     $var = sha1(mt_rand());

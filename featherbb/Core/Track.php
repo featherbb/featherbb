@@ -14,17 +14,17 @@ class Track
     //
     // Save array of tracked topics in cookie
     //
-    public static function setTrackedTopics($tracked_topics = null)
+    public static function setTrackedTopics($trackedTopics = null)
     {
-        if (!empty($tracked_topics)) {
+        if (!empty($trackedTopics)) {
             // Sort the arrays (latest read first)
-            arsort($tracked_topics['topics'], SORT_NUMERIC);
-            arsort($tracked_topics['forums'], SORT_NUMERIC);
+            arsort($trackedTopics['topics'], SORT_NUMERIC);
+            arsort($trackedTopics['forums'], SORT_NUMERIC);
         } else {
-            $tracked_topics = ['topics' => [], 'forums' => []];
+            $trackedTopics = ['topics' => [], 'forums' => []];
         }
 
-        return setcookie(ForumSettings::get('cookie_name') . '_track', json_encode($tracked_topics), time() + ForumSettings::get('o_timeout_visit'), '/', '', false, true);
+        return setcookie(ForumSettings::get('cookie_name') . '_track', json_encode($trackedTopics), time() + ForumSettings::get('o_timeout_visit'), '/', '', false, true);
     }
 
 
@@ -33,11 +33,11 @@ class Track
     //
     public static function getTrackedTopics()
     {
-        $cookie_raw = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
+        $cookieRaw = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
 
-        if (isset($cookie_raw)) {
-            $cookie_data = json_decode($cookie_raw, true);
-            return $cookie_data;
+        if (isset($cookieRaw)) {
+            $cookieData = json_decode($cookieRaw, true);
+            return $cookieData;
         }
         return ['topics' => [], 'forums' => []];
     }

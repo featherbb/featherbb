@@ -13,84 +13,84 @@ use FeatherBB\Core\Database as DB;
 
 class Categories
 {
-    public function addCategory($cat_name)
+    public function addCategory($catName)
     {
-        $cat_name = Container::get('hooks')->fire('model.admin.categories.add_category', $cat_name);
+        $catName = Container::get('hooks')->fire('model.admin.categories.add_category', $catName);
 
-        $set_add_category = ['cat_name' => $cat_name];
+        $setAddCategory = ['cat_name' => $catName];
 
-        return DB::for_table('categories')
+        return DB::forTable('categories')
                 ->create()
-                ->set($set_add_category)
+                ->set($setAddCategory)
                 ->save();
     }
 
-    public function update_category(array $category)
+    public function updateCategory(array $category)
     {
         $category = Container::get('hooks')->fire('model.admin.categories.update_category', $category);
 
-        $set_update_category = ['cat_name' => $category['name'],
+        $setUpdateCategory = ['cat_name' => $category['name'],
                                     'disp_position' => $category['order']];
 
-        return DB::for_table('categories')
-                ->find_one($category['id'])
-                ->set($set_update_category)
+        return DB::forTable('categories')
+                ->findOne($category['id'])
+                ->set($setUpdateCategory)
                 ->save();
     }
 
-    public function deleteCategory($cat_to_delete)
+    public function deleteCategory($catToDelete)
     {
-        $cat_to_delete = Container::get('hooks')->fire('model.admin.categories.delete_category_start', $cat_to_delete);
+        $catToDelete = Container::get('hooks')->fire('model.admin.categories.delete_category_start', $catToDelete);
 
-        $forums_in_cat = DB::for_table('forums')
+        $forumsInCat = DB::forTable('forums')
                             ->select('id')
-                            ->where('cat_id', $cat_to_delete);
-        $forums_in_cat = Container::get('hooks')->fireDB('model.admin.categories.delete_forums_in_cat_query', $forums_in_cat);
-        $forums_in_cat = $forums_in_cat->find_many();
+                            ->where('cat_id', $catToDelete);
+        $forumsInCat = Container::get('hooks')->fireDB('model.admin.categories.delete_forums_in_cat_query', $forumsInCat);
+        $forumsInCat = $forumsInCat->findMany();
 
-        foreach ($forums_in_cat as $forum) {
+        foreach ($forumsInCat as $forum) {
             // Prune all posts and topics
             $this->maintenance = new \FeatherBB\Model\Admin\Maintenance();
             $this->maintenance->prune($forum->id, 1, -1);
 
             // Delete forum
-            DB::for_table('forums')
-                ->find_one($forum->id)
+            DB::forTable('forums')
+                ->findOne($forum->id)
                 ->delete();
         }
 
         // Delete orphan redirect forums
-        $orphans = DB::for_table('topics')
-                    ->table_alias('t1')
-                    ->left_outer_join('topics', ['t1.moved_to', '=', 't2.id'], 't2')
-                    ->where_null('t2.id')
-                    ->where_not_null('t1.moved_to');
+        $orphans = DB::forTable('topics')
+                    ->tableAlias('t1')
+                    ->leftOuterJoin('topics', ['t1.moved_to', '=', 't2.id'], 't2')
+                    ->whereNull('t2.id')
+                    ->whereNotNull('t1.moved_to');
         $orphans = Container::get('hooks')->fireDB('model.admin.categories.delete_orphan_forums_query', $orphans);
-        $orphans = $orphans->find_many();
+        $orphans = $orphans->findMany();
 
         if (count($orphans) > 0) {
-            $orphans->delete_many();
+            $orphans->deleteMany();
         }
 
         // Delete category
-        $result = DB::for_table('categories');
+        $result = DB::forTable('categories');
         $result = Container::get('hooks')->fireDB('model.admin.categories.find_forums_in_cat', $result);
-        $result = $result->find_one($cat_to_delete)->delete();
+        $result = $result->findOne($catToDelete)->delete();
 
         return true;
     }
 
     public function categoryList()
     {
-        $cat_list = [];
-        $select_get_cat_list = ['id', 'cat_name', 'disp_position'];
+        $catList = [];
+        $selectGetCatList = ['id', 'cat_name', 'disp_position'];
 
-        $cat_list = DB::for_table('categories')
-            ->select($select_get_cat_list)
-            ->order_by_asc('disp_position');
-        $cat_list = Container::get('hooks')->fireDB('model.admin.categories.get_cat_list', $cat_list);
-        $cat_list = $cat_list->find_array();
+        $catList = DB::forTable('categories')
+            ->select($selectGetCatList)
+            ->orderByAsc('disp_position');
+        $catList = Container::get('hooks')->fireDB('model.admin.categories.get_cat_list', $catList);
+        $catList = $catList->findArray();
 
-        return $cat_list;
+        return $catList;
     }
 }

@@ -42,7 +42,7 @@ class Plugins
         Container::get('hooks')->fire('controller.admin.plugins.index');
 
         if (Request::isPost()) {
-            return $this->model->uploadPlugin($_FILES);
+            return $this->model->uploadPlugin($_fILES);
         }
 
         View::addAsset('js', 'style/imports/common.js', ['type' => 'text/javascript']);

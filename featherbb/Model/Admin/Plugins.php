@@ -36,9 +36,9 @@ class Plugins
             // Check if plugin is not yet activated...
             if (!in_array($name, $activePlugins)) {
                 // Find or create plugin in DB...
-                $plugin = DB::for_table('plugins')->where('name', $name)->find_one();
+                $plugin = DB::forTable('plugins')->where('name', $name)->findOne();
                 if (!$plugin) {
-                    $plugin = DB::for_table('plugins')->create()->set('name', $name);
+                    $plugin = DB::forTable('plugins')->create()->set('name', $name);
                 }
 
                 // ... Install it if needed ...
@@ -77,9 +77,9 @@ class Plugins
 
             // Check if plugin is actually activated
             if (($k = array_search($name, $activePlugins)) !== false) {
-                $plugin = DB::for_table('plugins')->where('name', $name)->find_one();
+                $plugin = DB::forTable('plugins')->where('name', $name)->findOne();
                 if (!$plugin) {
-                    $plugin = DB::for_table('plugins')->create()->set('name', $name);
+                    $plugin = DB::forTable('plugins')->create()->set('name', $name);
                 }
 
                 // Do we need to run extra code for deactivation ?
@@ -114,7 +114,7 @@ class Plugins
 
             // Check if plugin is disabled, for security
             if (!in_array($name, $activePlugins)) {
-                $plugin = DB::for_table('plugins')->where('name', $name)->find_one();
+                $plugin = DB::forTable('plugins')->where('name', $name)->findOne();
 
                 if ($plugin) {
                     $plugin->delete();
@@ -186,17 +186,17 @@ class Plugins
     /**
      * Upload a plugin manually
      */
-    public function uploadPlugin($files_data)
+    public function uploadPlugin($filesData)
     {
-        if (!isset($files_data['req_file'])) {
+        if (!isset($filesData['req_file'])) {
             throw new Error(__('No file'));
         }
 
-        $uploaded_file = $files_data['req_file'];
+        $uploadedFile = $filesData['req_file'];
 
         // Make sure the upload went smooth
-        if (isset($uploaded_file['error'])) {
-            switch ($uploaded_file['error']) {
+        if (isset($uploadedFile['error'])) {
+            switch ($uploadedFile['error']) {
                 case 1: // UPLOAD_ERR_INI_SIZE
                 case 2: // UPLOAD_ERR_FORM_SIZE
                     throw new Error(__('Too large ini'));
@@ -216,24 +216,24 @@ class Plugins
 
                 default:
                     // No error occured, but was something actually uploaded?
-                    if ($uploaded_file['size'] == 0) {
+                    if ($uploadedFile['size'] == 0) {
                         throw new Error(__('No file'));
                     }
                     break;
             }
         }
 
-        $name = $uploaded_file['name'];
+        $name = $uploadedFile['name'];
 
-        if (is_uploaded_file($uploaded_file['tmp_name'])) {
+        if (is_uploaded_file($uploadedFile['tmp_name'])) {
             // Preliminary file check, adequate in most cases
-            $allowed_types = ['application/zip', 'application/x-compressed', 'application/x-zip-compressed', 'application/download'];
-            if (!in_array($uploaded_file['type'], $allowed_types)) {
+            $allowedTypes = ['application/zip', 'application/x-compressed', 'application/x-zip-compressed', 'application/download'];
+            if (!in_array($uploadedFile['type'], $allowedTypes)) {
                 throw new Error(__('Bad type'));
             }
 
             // Move the file to the plugin directory
-            if (!@move_uploaded_file($uploaded_file['tmp_name'], ForumEnv::get('FEATHER_ROOT').'plugins'.'/'.$name)) {
+            if (!@move_uploaded_file($uploadedFile['tmp_name'], ForumEnv::get('FEATHER_ROOT').'plugins'.'/'.$name)) {
                 throw new Error(__('Move failed'));
             }
 
@@ -251,19 +251,19 @@ class Plugins
         $zip->extractTo(ForumEnv::get('FEATHER_ROOT').'plugins');
         $zip->close();
 
-        $cleaned_name = preg_replace('/[0-9]+/', '', $name);
-        $cleaned_name = str_replace('.', '', $cleaned_name);
-        $cleaned_name = str_replace('-zip', '', $cleaned_name);
-        $cleaned_name = str_replace('zip', '', $cleaned_name);
+        $cleanedName = preg_replace('/[0-9]+/', '', $name);
+        $cleanedName = str_replace('.', '', $cleanedName);
+        $cleanedName = str_replace('-zip', '', $cleanedName);
+        $cleanedName = str_replace('zip', '', $cleanedName);
 
-        if (file_exists(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$cleaned_name)) {
+        if (file_exists(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$cleanedName)) {
             AdminUtils::deleteFolder(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$name);
         }
 
-        $name_nozip = str_replace('-zip', '', $name);
-        $name_nozip = str_replace('zip', '', $name_nozip);
+        $nameNozip = str_replace('-zip', '', $name);
+        $nameNozip = str_replace('zip', '', $nameNozip);
 
-        rename(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$name_nozip, ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$cleaned_name);
+        rename(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$nameNozip, ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$cleanedName);
         unlink(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$name);
         return Router::redirect(Router::pathFor('adminPlugins'), __('Plugin downloaded'));
     }

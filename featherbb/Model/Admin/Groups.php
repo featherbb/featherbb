@@ -19,12 +19,12 @@ class Groups
 {
     public function groups()
     {
-        $result = DB::for_table('groups')->order_by('g_id')->find_many();
+        $result = DB::forTable('groups')->orderBy('g_id')->findMany();
         Container::get('hooks')->fireDB('model.admin.groups.fetch_groups_query', $result);
         $groups = [];
-        foreach ($result as $cur_group) {
-            $groups[$cur_group['g_id']] = $cur_group;
-            $groups[$cur_group['g_id']]['is_moderator'] = Container::get('perms')->getGroupPermissions($cur_group['g_id'], 'mod.is_mod');
+        foreach ($result as $curGroup) {
+            $groups[$curGroup['g_id']] = $curGroup;
+            $groups[$curGroup['g_id']]['is_moderator'] = Container::get('perms')->getGroupPermissions($curGroup['g_id'], 'mod.is_mod');
         }
 
         $groups = Container::get('hooks')->fire('model.admin.groups.fetch_groups', $groups);
@@ -63,12 +63,12 @@ class Groups
     {
         $output = '';
 
-        foreach ($groups as $cur_group) {
-            if (($cur_group['g_id'] != $group['info']['g_id'] || $group['mode'] == 'add') && $cur_group['g_id'] != ForumEnv::get('FEATHER_ADMIN') && $cur_group['g_id'] != ForumEnv::get('FEATHER_GUEST')) {
-                if ($cur_group['g_id'] == $group['prefs']['promote.next_group']) {
-                    $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
+        foreach ($groups as $curGroup) {
+            if (($curGroup['g_id'] != $group['info']['g_id'] || $group['mode'] == 'add') && $curGroup['g_id'] != ForumEnv::get('FEATHER_ADMIN') && $curGroup['g_id'] != ForumEnv::get('FEATHER_GUEST')) {
+                if ($curGroup['g_id'] == $group['prefs']['promote.next_group']) {
+                    $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$curGroup['g_id'].'" selected="selected">'.Utils::escape($curGroup['g_title']).'</option>'."\n";
                 } else {
-                    $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
+                    $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$curGroup['g_id'].'">'.Utils::escape($curGroup['g_title']).'</option>'."\n";
                 }
             }
         }
@@ -77,26 +77,26 @@ class Groups
         return $output;
     }
 
-    public function groupListDelete($group_id)
+    public function groupListDelete($groupId)
     {
-        $group_id = Container::get('hooks')->fire('model.admin.groups.get_group_list_delete_start', $group_id);
+        $groupId = Container::get('hooks')->fire('model.admin.groups.get_group_list_delete_start', $groupId);
 
-        $select_get_group_list_delete = ['g_id', 'g_title'];
-        $result = DB::for_table('groups')->select_many($select_get_group_list_delete)
-                        ->where_not_equal('g_id', ForumEnv::get('FEATHER_GUEST'))
-                        ->where_not_equal('g_id', $group_id)
-                        ->order_by('g_title');
+        $selectGetGroupListDelete = ['g_id', 'g_title'];
+        $result = DB::forTable('groups')->selectMany($selectGetGroupListDelete)
+                        ->whereNotEqual('g_id', ForumEnv::get('FEATHER_GUEST'))
+                        ->whereNotEqual('g_id', $groupId)
+                        ->orderBy('g_title');
         $result = Container::get('hooks')->fireDB('model.admin.groups.get_group_list_delete', $result);
-        $result = $result->find_many();
+        $result = $result->findMany();
 
         $output = '';
 
-        foreach ($result as $cur_group) {
-            if ($cur_group['g_id'] == ForumEnv::get('FEATHER_MEMBER')) {
+        foreach ($result as $curGroup) {
+            if ($curGroup['g_id'] == ForumEnv::get('FEATHER_MEMBER')) {
                 // Pre-select the pre-defined Members group
-                $output .= "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$curGroup['g_id'].'" selected="selected">'.Utils::escape($curGroup['g_title']).'</option>'."\n";
             } else {
-                $output .= "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$curGroup['g_id'].'">'.Utils::escape($curGroup['g_title']).'</option>'."\n";
             }
         }
 
@@ -107,15 +107,15 @@ class Groups
     public function addEdit($groups)
     {
         if (Input::post('group_id')) {
-            $group_id = Input::post('group_id');
+            $groupId = Input::post('group_id');
         } else {
-            $group_id = 0;
+            $groupId = 0;
         }
 
-        $group_id = Container::get('hooks')->fire('model.admin.groups.add_edit_group_start', $group_id);
+        $groupId = Container::get('hooks')->fire('model.admin.groups.add_edit_group_start', $groupId);
 
         // Is this the admin group? (special rules apply)
-        $is_admin_group = (Input::post('group_id') && Input::post('group_id') == ForumEnv::get('FEATHER_ADMIN')) ? true : false;
+        $isAdminGroup = (Input::post('group_id') && Input::post('group_id') == ForumEnv::get('FEATHER_ADMIN')) ? true : false;
 
         // Set group title
         $title = Utils::trim(Input::post('req_title'));
@@ -124,148 +124,148 @@ class Groups
         }
         $title = Container::get('hooks')->fire('model.admin.groups.add_edit_group_set_title', $title);
         // Set user title
-        $user_title = Utils::trim(Input::post('user_title'));
-        $user_title = ($user_title != '') ? $user_title : 'NULL';
-        $user_title = Container::get('hooks')->fire('model.admin.groups.add_edit_group.set_user_title', $user_title);
+        $userTitle = Utils::trim(Input::post('user_title'));
+        $userTitle = ($userTitle != '') ? $userTitle : 'NULL';
+        $userTitle = Container::get('hooks')->fire('model.admin.groups.add_edit_group.set_user_title', $userTitle);
 
-        $promote_min_posts = Input::post('promote_min_posts') ? intval(Input::post('promote_min_posts')) : '0';
+        $promoteMinPosts = Input::post('promote_min_posts') ? intval(Input::post('promote_min_posts')) : '0';
         if (Input::post('promote_next_group') &&
                 isset($groups[Input::post('promote_next_group')]) &&
                 !in_array(Input::post('promote_next_group'), [ForumEnv::get('FEATHER_ADMIN'), ForumEnv::get('FEATHER_GUEST')]) &&
                 (Input::post('group_id') || Input::post('promote_next_group') != Input::post('group_id'))) {
-            $promote_next_group = Input::post('promote_next_group');
+            $promoteNextGroup = Input::post('promote_next_group');
         } else {
-            $promote_next_group = '0';
+            $promoteNextGroup = '0';
         }
 
         // Permissions
         $moderator = Input::post('moderator') && Input::post('moderator') == '1' ? '1' : '0';
-        $mod_edit_users = $moderator == '1' && Input::post('mod_edit_users') == '1' ? '1' : '0';
-        $mod_rename_users = $moderator == '1' && Input::post('mod_rename_users') == '1' ? '1' : '0';
-        $mod_change_passwords = $moderator == '1' && Input::post('mod_change_passwords') == '1' ? '1' : '0';
-        $mod_ban_users = $moderator == '1' && Input::post('mod_ban_users') == '1' ? '1' : '0';
-        $mod_promote_users = $moderator == '1' && Input::post('mod_promote_users') == '1' ? '1' : '0';
-        $read_board = Input::post('read_board') ? intval(Input::post('read_board')) : '1';
-        $view_users = (Input::post('view_users') && Input::post('view_users') == '1') || $is_admin_group ? '1' : '0';
-        $post_replies = Input::post('post_replies') ? intval(Input::post('post_replies')) : '1';
-        $post_topics = Input::post('post_topics') ? intval(Input::post('post_topics')) : '1';
-        $edit_posts = Input::post('edit_posts') ? intval(Input::post('edit_posts')) : ($is_admin_group) ? '1' : '0';
-        $delete_posts = Input::post('delete_posts') ? intval(Input::post('delete_posts')) : ($is_admin_group) ? '1' : '0';
-        $delete_topics = Input::post('delete_topics') ? intval(Input::post('delete_topics')) : ($is_admin_group) ? '1' : '0';
-        $post_links = Input::post('post_links') ? intval(Input::post('post_links')) : '1';
-        $set_title = Input::post('set_title') ? intval(Input::post('set_title')) : ($is_admin_group) ? '1' : '0';
+        $modEditUsers = $moderator == '1' && Input::post('mod_edit_users') == '1' ? '1' : '0';
+        $modRenameUsers = $moderator == '1' && Input::post('mod_rename_users') == '1' ? '1' : '0';
+        $modChangePasswords = $moderator == '1' && Input::post('mod_change_passwords') == '1' ? '1' : '0';
+        $modBanUsers = $moderator == '1' && Input::post('mod_ban_users') == '1' ? '1' : '0';
+        $modPromoteUsers = $moderator == '1' && Input::post('mod_promote_users') == '1' ? '1' : '0';
+        $readBoard = Input::post('read_board') ? intval(Input::post('read_board')) : '1';
+        $viewUsers = (Input::post('view_users') && Input::post('view_users') == '1') || $isAdminGroup ? '1' : '0';
+        $postReplies = Input::post('post_replies') ? intval(Input::post('post_replies')) : '1';
+        $postTopics = Input::post('post_topics') ? intval(Input::post('post_topics')) : '1';
+        $editPosts = Input::post('edit_posts') ? intval(Input::post('edit_posts')) : ($isAdminGroup) ? '1' : '0';
+        $deletePosts = Input::post('delete_posts') ? intval(Input::post('delete_posts')) : ($isAdminGroup) ? '1' : '0';
+        $deleteTopics = Input::post('delete_topics') ? intval(Input::post('delete_topics')) : ($isAdminGroup) ? '1' : '0';
+        $postLinks = Input::post('post_links') ? intval(Input::post('post_links')) : '1';
+        $setTitle = Input::post('set_title') ? intval(Input::post('set_title')) : ($isAdminGroup) ? '1' : '0';
         $search = Input::post('search') ? intval(Input::post('search')) : '1';
-        $search_users = Input::post('search_users') ? intval(Input::post('search_users')) : '1';
-        $send_email = (Input::post('send_email') && Input::post('send_email') == '1') || $is_admin_group ? '1' : '0';
+        $searchUsers = Input::post('search_users') ? intval(Input::post('search_users')) : '1';
+        $sendEmail = (Input::post('send_email') && Input::post('send_email') == '1') || $isAdminGroup ? '1' : '0';
         // Preferences
-        $post_flood = (Input::post('post_flood') && Input::post('post_flood') >= 0) ? Input::post('post_flood') : '0';
-        $search_flood = (Input::post('search_flood') && Input::post('search_flood') >= 0) ? Input::post('search_flood') : '0';
-        $email_flood = (Input::post('email_flood') && Input::post('email_flood') >= 0) ? Input::post('email_flood') : '0';
-        $report_flood = (Input::post('report_flood') && Input::post('report_flood') >= 0) ? Input::post('report_flood') : '0';
+        $postFlood = (Input::post('post_flood') && Input::post('post_flood') >= 0) ? Input::post('post_flood') : '0';
+        $searchFlood = (Input::post('search_flood') && Input::post('search_flood') >= 0) ? Input::post('search_flood') : '0';
+        $emailFlood = (Input::post('email_flood') && Input::post('email_flood') >= 0) ? Input::post('email_flood') : '0';
+        $reportFlood = (Input::post('report_flood') && Input::post('report_flood') >= 0) ? Input::post('report_flood') : '0';
 
-        $insert_update_group = [
+        $insertUpdateGroup = [
             'g_title'               =>  $title,
-            'g_user_title'          =>  $user_title,
+            'g_user_title'          =>  $userTitle,
         ];
-        $group_preferences = [
-            'post.min_interval'     => (int) $post_flood,
-            'search.min_interval'   => (int) $search_flood,
-            'email.min_interval'    => (int) $email_flood,
-            'report.min_interval'   => (int) $report_flood,
-            'promote.min_posts'     => (int) $promote_min_posts,
-            'promote.next_group'    => (int) $promote_next_group,
+        $groupPreferences = [
+            'post.min_interval'     => (int) $postFlood,
+            'search.min_interval'   => (int) $searchFlood,
+            'email.min_interval'    => (int) $emailFlood,
+            'report.min_interval'   => (int) $reportFlood,
+            'promote.min_posts'     => (int) $promoteMinPosts,
+            'promote.next_group'    => (int) $promoteNextGroup,
         ];
-        $group_permissions = [
+        $groupPermissions = [
             'mod.is_mod'            => (int) $moderator,
-            'mod.edit_users'        => (int) $mod_edit_users,
-            'mod.rename_users'      => (int) $mod_rename_users,
-            'mod.change_passwords'  => (int) $mod_change_passwords,
-            'mod.promote_users'     => (int) $mod_promote_users,
-            'mod.ban_users'         => (int) $mod_ban_users,
-            'board.read'            => (int) $read_board,
-            'topic.reply'           => (int) $post_replies,
-            'topic.post'            => (int) $post_topics,
-            'topic.delete'          => (int) $delete_topics,
-            'post.edit'             => (int) $edit_posts,
-            'post.delete'           => (int) $delete_posts,
-            'post.links'            => (int) $post_links,
-            'users.view'            => (int) $view_users,
-            'user.set_title'        => (int) $set_title,
+            'mod.edit_users'        => (int) $modEditUsers,
+            'mod.rename_users'      => (int) $modRenameUsers,
+            'mod.change_passwords'  => (int) $modChangePasswords,
+            'mod.promote_users'     => (int) $modPromoteUsers,
+            'mod.ban_users'         => (int) $modBanUsers,
+            'board.read'            => (int) $readBoard,
+            'topic.reply'           => (int) $postReplies,
+            'topic.post'            => (int) $postTopics,
+            'topic.delete'          => (int) $deleteTopics,
+            'post.edit'             => (int) $editPosts,
+            'post.delete'           => (int) $deletePosts,
+            'post.links'            => (int) $postLinks,
+            'users.view'            => (int) $viewUsers,
+            'user.set_title'        => (int) $setTitle,
             'search.topics'         => (int) $search,
-            'search.users'          => (int) $search_users,
-            'email.send'            => (int) $send_email,
+            'search.users'          => (int) $searchUsers,
+            'email.send'            => (int) $sendEmail,
         ];
 
-        $insert_update_group = Container::get('hooks')->fire('model.admin.groups.add_edit_group.data', $insert_update_group);
-        $group_preferences = Container::get('hooks')->fire('model.admin.groups.add_edit_group.preferences', $group_preferences);
-        $group_permissions = Container::get('hooks')->fire('model.admin.groups.add_edit_group.permissions', $group_permissions);
+        $insertUpdateGroup = Container::get('hooks')->fire('model.admin.groups.add_edit_group.data', $insertUpdateGroup);
+        $groupPreferences = Container::get('hooks')->fire('model.admin.groups.add_edit_group.preferences', $groupPreferences);
+        $groupPermissions = Container::get('hooks')->fire('model.admin.groups.add_edit_group.permissions', $groupPermissions);
 
         if (Input::post('mode') == 'add') {
             // Creating a new group
-            $title_exists = DB::for_table('groups')->where('g_title', $title)->find_one();
-            if ($title_exists) {
+            $titleExists = DB::forTable('groups')->where('g_title', $title)->findOne();
+            if ($titleExists) {
                 throw new Error(sprintf(__('Title already exists message'), Utils::escape($title)), 400);
             }
 
-            $add = DB::for_table('groups')
+            $add = DB::forTable('groups')
                         ->create();
-            $add->set($insert_update_group)->save();
-            $new_group_id = Container::get('hooks')->fire('model.admin.groups.add_edit_group.new_group_id', (int) $add->id());
+            $add->set($insertUpdateGroup)->save();
+            $newGroupId = Container::get('hooks')->fire('model.admin.groups.add_edit_group.new_group_id', (int) $add->id());
 
             // Set new group preferences
-            Container::get('prefs')->setGroup($new_group_id, $group_preferences);
+            Container::get('prefs')->setGroup($newGroupId, $groupPreferences);
 
             // Now lets copy the forum specific permissions from the group which this group is based on
-            $select_forum_perms = ['forum_id', 'read_forum', 'post_replies', 'post_topics'];
-            $result = DB::for_table('forum_perms')->select_many($select_forum_perms)
+            $selectForumPerms = ['forum_id', 'read_forum', 'post_replies', 'post_topics'];
+            $result = DB::forTable('forum_perms')->selectMany($selectForumPerms)
                             ->where('group_id', Input::post('base_group'));
             $result = Container::get('hooks')->fireDB('model.admin.groups.add_edit_group.select_forum_perms_query', $result);
-            $result = $result->find_many();
+            $result = $result->findMany();
 
-            foreach ($result as $cur_forum_perm) {
-                $insert_perms = [
-                    'group_id'       =>  $new_group_id,
-                    'forum_id'       =>  $cur_forum_perm['forum_id'],
-                    'read_forum'     =>  $cur_forum_perm['read_forum'],
-                    'post_replies'   =>  $cur_forum_perm['post_replies'],
-                    'post_topics'    =>  $cur_forum_perm['post_topics'],
+            foreach ($result as $curForumPerm) {
+                $insertPerms = [
+                    'group_id'       =>  $newGroupId,
+                    'forum_id'       =>  $curForumPerm['forum_id'],
+                    'read_forum'     =>  $curForumPerm['read_forum'],
+                    'post_replies'   =>  $curForumPerm['post_replies'],
+                    'post_topics'    =>  $curForumPerm['post_topics'],
                 ];
 
-                DB::for_table('forum_perms')
+                DB::forTable('forum_perms')
                         ->create()
-                        ->set($insert_perms)
+                        ->set($insertPerms)
                         ->save();
             }
         } else {
             // We are editing an existing group
-            $title_exists = DB::for_table('groups')->where('g_title', $title)->where_not_equal('g_id', Input::post('group_id'))->find_one();
-            if ($title_exists) {
+            $titleExists = DB::forTable('groups')->where('g_title', $title)->whereNotEqual('g_id', Input::post('group_id'))->findOne();
+            if ($titleExists) {
                 throw new Error(sprintf(__('Title already exists message'), Utils::escape($title)), 400);
             }
-            DB::for_table('groups')
-                    ->find_one(Input::post('group_id'))
-                    ->set($insert_update_group)
+            DB::forTable('groups')
+                    ->findOne(Input::post('group_id'))
+                    ->set($insertUpdateGroup)
                     ->save();
 
             // Update group preferences
-            Container::get('prefs')->setGroup(Input::post('group_id'), $group_preferences);
+            Container::get('prefs')->setGroup(Input::post('group_id'), $groupPreferences);
 
             // Promote all users who would be promoted to this group on their next post
-            if ($promote_next_group) {
-                DB::for_table('users')->where('group_id', Input::post('group_id'))
-                        ->where_gte('num_posts', $promote_min_posts)
-                        ->update_many('group_id', $promote_next_group);
+            if ($promoteNextGroup) {
+                DB::forTable('users')->where('group_id', Input::post('group_id'))
+                        ->whereGte('num_posts', $promoteMinPosts)
+                        ->updateMany('group_id', $promoteNextGroup);
             }
         }
 
-        $group_id = Input::post('mode') == 'add' ? $new_group_id : Input::post('group_id');
-        $group_id = Container::get('hooks')->fire('model.admin.groups.add_edit_group.group_id', $group_id);
+        $groupId = Input::post('mode') == 'add' ? $newGroupId : Input::post('group_id');
+        $groupId = Container::get('hooks')->fire('model.admin.groups.add_edit_group.group_id', $groupId);
 
         // Update group permissions
-        $allowed_perms = array_filter($group_permissions);
-        $denied_perms = array_diff($group_permissions, $allowed_perms);
-        Container::get('perms')->allowGroup($group_id, array_keys($allowed_perms));
-        Container::get('perms')->denyGroup($group_id, array_keys($denied_perms));
+        $allowedPerms = array_filter($groupPermissions);
+        $deniedPerms = array_diff($groupPermissions, $allowedPerms);
+        Container::get('perms')->allowGroup($groupId, array_keys($allowedPerms));
+        Container::get('perms')->denyGroup($groupId, array_keys($deniedPerms));
         // Reload cache
         Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::getPermissions());
         Container::get('cache')->store('group_preferences', \FeatherBB\Model\Cache::getGroupPreferences());
@@ -282,21 +282,21 @@ class Groups
 
     public function setDefaultGroup($groups)
     {
-        $group_id = intval(Input::post('default_group'));
-        $group_id = Container::get('hooks')->fire('model.admin.groups.set_default_group.group_id', $group_id);
+        $groupId = intval(Input::post('default_group'));
+        $groupId = Container::get('hooks')->fire('model.admin.groups.set_default_group.group_id', $groupId);
 
         // Make sure it's not the admin or guest groups
-        if ($group_id == ForumEnv::get('FEATHER_ADMIN') || $group_id == ForumEnv::get('FEATHER_GUEST')) {
+        if ($groupId == ForumEnv::get('FEATHER_ADMIN') || $groupId == ForumEnv::get('FEATHER_GUEST')) {
             throw new Error(__('Bad request'), 404);
         }
 
         // Make sure it's not a moderator group
-        if (Container::get('perms')->getGroupPermissions($group_id, 'mod.is_mod')) {
+        if (Container::get('perms')->getGroupPermissions($groupId, 'mod.is_mod')) {
             throw new Error(__('Bad request'), 404);
         }
 
-        DB::for_table('config')->where('conf_name', 'o_default_user_group')
-                                                   ->update_many('conf_value', $group_id);
+        DB::forTable('config')->where('conf_name', 'o_default_user_group')
+                                                   ->updateMany('conf_value', $groupId);
 
         // Regenerate the config cache
         $config = array_merge(Cache::getConfig(), Cache::getPreferences());
@@ -305,83 +305,83 @@ class Groups
         return Router::redirect(Router::pathFor('adminGroups'), __('Default group redirect'));
     }
 
-    public function checkMembers($group_id)
+    public function checkMembers($groupId)
     {
-        $group_id = Container::get('hooks')->fire('model.admin.groups.check_members_start', $group_id);
+        $groupId = Container::get('hooks')->fire('model.admin.groups.check_members_start', $groupId);
 
-        $is_member = DB::for_table('groups')->table_alias('g')
+        $isMember = DB::forTable('groups')->tableAlias('g')
             ->select('g.g_title')
-            ->select_expr('COUNT(u.id)', 'members')
-            ->inner_join('users', ['g.g_id', '=', 'u.group_id'], 'u')
-            ->where('g.g_id', $group_id)
-            ->group_by('g.g_id')
-            ->group_by('g_title');
-        $is_member = Container::get('hooks')->fireDB('model.admin.groups.check_members', $is_member);
-        $is_member = $is_member->find_one();
+            ->selectExpr('COUNT(u.id)', 'members')
+            ->innerJoin('users', ['g.g_id', '=', 'u.group_id'], 'u')
+            ->where('g.g_id', $groupId)
+            ->groupBy('g.g_id')
+            ->groupBy('g_title');
+        $isMember = Container::get('hooks')->fireDB('model.admin.groups.check_members', $isMember);
+        $isMember = $isMember->findOne();
 
-        return (bool) $is_member;
+        return (bool) $isMember;
     }
 
-    public function deleteGroup($group_id)
+    public function deleteGroup($groupId)
     {
-        $group_id = Container::get('hooks')->fire('model.admin.groups.delete_group.group_id', $group_id);
+        $groupId = Container::get('hooks')->fire('model.admin.groups.delete_group.group_id', $groupId);
 
         if (Input::post('del_group')) {
-            $move_to_group = intval(Input::post('move_to_group'));
-            $move_to_group = Container::get('hooks')->fire('model.admin.groups.delete_group.move_to_group', $move_to_group);
-            DB::for_table('users')->where('group_id', $group_id)
-                                                      ->update_many('group_id', $move_to_group);
+            $moveToGroup = intval(Input::post('move_to_group'));
+            $moveToGroup = Container::get('hooks')->fire('model.admin.groups.delete_group.move_to_group', $moveToGroup);
+            DB::forTable('users')->where('group_id', $groupId)
+                                                      ->updateMany('group_id', $moveToGroup);
         }
 
         // Delete the group and any forum specific permissions
-        DB::for_table('groups')
-            ->where('g_id', $group_id)
-            ->delete_many();
-        DB::for_table('forum_perms')
-            ->where('group_id', $group_id)
-            ->delete_many();
-        DB::for_table('permissions')
-            ->where('group', $group_id)
-            ->delete_many();
-        DB::for_table('preferences')
-            ->where('group', $group_id)
-            ->delete_many();
+        DB::forTable('groups')
+            ->where('g_id', $groupId)
+            ->deleteMany();
+        DB::forTable('forum_perms')
+            ->where('group_id', $groupId)
+            ->deleteMany();
+        DB::forTable('permissions')
+            ->where('group', $groupId)
+            ->deleteMany();
+        DB::forTable('preferences')
+            ->where('group', $groupId)
+            ->deleteMany();
 
         // Don't let users be promoted to this group
-        DB::for_table('preferences')->where('promote.next_group', $group_id)->delete_many();
+        DB::forTable('preferences')->where('promote.next_group', $groupId)->deleteMany();
 
         return Router::redirect(Router::pathFor('adminGroups'), __('Group removed redirect'));
     }
 
-    public function groupTitle($group_id)
+    public function groupTitle($groupId)
     {
-        $group_id = Container::get('hooks')->fireDB('model.admin.groups.get_group_title.group_id', $group_id);
+        $groupId = Container::get('hooks')->fireDB('model.admin.groups.get_group_title.group_id', $groupId);
 
-        $group_title = DB::for_table('groups')->where('g_id', $group_id);
-        $group_title = Container::get('hooks')->fireDB('model.admin.groups.get_group_title.query', $group_title);
-        $group_title = $group_title->find_one_col('g_title');
+        $groupTitle = DB::forTable('groups')->where('g_id', $groupId);
+        $groupTitle = Container::get('hooks')->fireDB('model.admin.groups.get_group_title.query', $groupTitle);
+        $groupTitle = $groupTitle->findOneCol('g_title');
 
-        return $group_title;
+        return $groupTitle;
     }
 
-    public function titleMembers($group_id)
+    public function titleMembers($groupId)
     {
-        $group_id = Container::get('hooks')->fire('model.admin.groups.get_title_members.group_id', $group_id);
+        $groupId = Container::get('hooks')->fire('model.admin.groups.get_title_members.group_id', $groupId);
 
-        $group = DB::for_table('groups')->table_alias('g')
+        $group = DB::forTable('groups')->tableAlias('g')
                     ->select('g.g_title')
-                    ->select_expr('COUNT(u.id)', 'members')
-                    ->inner_join('users', ['g.g_id', '=', 'u.group_id'], 'u')
-                    ->where('g.g_id', $group_id)
-                    ->group_by('g.g_id')
-                    ->group_by('g_title');
+                    ->selectExpr('COUNT(u.id)', 'members')
+                    ->innerJoin('users', ['g.g_id', '=', 'u.group_id'], 'u')
+                    ->where('g.g_id', $groupId)
+                    ->groupBy('g.g_id')
+                    ->groupBy('g_title');
         $group = Container::get('hooks')->fireDB('model.admin.groups.get_title_members.query', $group);
-        $group = $group->find_one();
+        $group = $group->findOne();
 
-        $group_info['title'] = $group['g_title'];
-        $group_info['members'] = $group['members'];
+        $groupInfo['title'] = $group['g_title'];
+        $groupInfo['members'] = $group['members'];
 
-        $group_info = Container::get('hooks')->fire('model.admin.groups.get_title_members.group_info', $group_info);
-        return $group_info;
+        $groupInfo = Container::get('hooks')->fire('model.admin.groups.get_title_members.group_info', $groupInfo);
+        return $groupInfo;
     }
 }

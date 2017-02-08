@@ -86,7 +86,7 @@ class Cache
     */
     public function store($key, $data, $expires = 0)
     {
-        $new_data = [
+        $newData = [
             'time' => time(),
             'expire' => (int) $expires,
             'data' => serialize($data)
@@ -94,9 +94,9 @@ class Cache
 
         $cache = $this->_loadCache();
         if (is_array($cache)) {
-            $cache[(string) $key] = $new_data;
+            $cache[(string) $key] = $newData;
         } else {
-            $cache = [(string) $key => $new_data];
+            $cache = [(string) $key => $newData];
         }
         $this->_saveCache($cache);
         return $this;

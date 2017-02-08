@@ -32,12 +32,12 @@ class Email
     //
     // Check if $email is banned
     //
-    public function is_banned_email($email)
+    public function isBannedEmail($email)
     {
-        foreach (Container::get('bans') as $cur_ban) {
-            if ($cur_ban['email'] != '' &&
-                ($email == $cur_ban['email'] ||
-                    (strpos($cur_ban['email'], '@') === false && stristr($email, '@' . $cur_ban['email'])))
+        foreach (Container::get('bans') as $curBan) {
+            if ($curBan['email'] != '' &&
+                ($email == $curBan['email'] ||
+                    (strpos($curBan['email'], '@') === false && stristr($email, '@' . $curBan['email'])))
             ) {
                 return true;
             }
@@ -50,7 +50,7 @@ class Email
     //
     // Only encode with base64, if there is at least one unicode character in the string
     //
-    public function encode_mail_text($str)
+    public function encodeMailText($str)
     {
         if (utf8_is_ascii($str)) {
             return $str;
@@ -63,38 +63,38 @@ class Email
     // Extract blocks from a text with a starting and ending string
     // This public function always matches the most outer block so nesting is possible
     //
-    public function extract_blocks($text, $start, $end, $retab = true)
+    public function extractBlocks($text, $start, $end, $retab = true)
     {
         $code = [];
-        $start_len = strlen($start);
-        $end_len = strlen($end);
+        $startLen = strlen($start);
+        $endLen = strlen($end);
         $regex = '%(?:' . preg_quote($start, '%') . '|' . preg_quote($end, '%') . ')%';
         $matches = [];
 
         if (preg_match_all($regex, $text, $matches)) {
             $counter = $offset = 0;
-            $start_pos = $end_pos = false;
+            $startPos = $endPos = false;
 
             foreach ($matches[0] as $match) {
                 if ($match == $start) {
                     if ($counter == 0) {
-                        $start_pos = strpos($text, $start);
+                        $startPos = strpos($text, $start);
                     }
                     $counter++;
                 } elseif ($match == $end) {
                     $counter--;
                     if ($counter == 0) {
-                        $end_pos = strpos($text, $end, $offset + 1);
+                        $endPos = strpos($text, $end, $offset + 1);
                     }
                     $offset = strpos($text, $end, $offset + 1);
                 }
 
-                if ($start_pos !== false && $end_pos !== false) {
-                    $code[] = substr($text, $start_pos + $start_len,
-                        $end_pos - $start_pos - $start_len);
-                    $text = substr_replace($text, "\1", $start_pos,
-                        $end_pos - $start_pos + $end_len);
-                    $start_pos = $end_pos = false;
+                if ($startPos !== false && $endPos !== false) {
+                    $code[] = substr($text, $startPos + $startLen,
+                        $endPos - $startPos - $startLen);
+                    $text = substr_replace($text, "\1", $startPos,
+                        $endPos - $startPos + $endLen);
+                    $startPos = $endPos = false;
                     $offset = 0;
                 }
             }
@@ -112,17 +112,17 @@ class Email
     //
     // Make a post email safe
     //
-    public function bbcode2email($text, $wrap_length = 72)
+    public function bbcode2email($text, $wrapLength = 72)
     {
-        static $base_url;
+        static $baseUrl;
 
-        if (!isset($base_url)) {
-            $base_url = Url::base();
+        if (!isset($baseUrl)) {
+            $baseUrl = Url::base();
         }
 
         $text = Utils::trim($text, "\t\n ");
 
-        $shortcut_urls = [
+        $shortcutUrls = [
             'topic' => '/topic/$1/',
             'post' => '/post/$1/#p$1',
             'forum' => '/forum/$1/',
@@ -130,7 +130,7 @@ class Email
         ];
 
         // Split code blocks and text so BBcode in codeblocks won't be touched
-        list($code, $text) = $this->extract_blocks($text, '[code]', '[/code]');
+        list($code, $text) = $this->extractBlocks($text, '[code]', '[/code]');
 
         // Strip all bbcodes, except the quote, url, img, email, code and list items bbcodes
         $text = preg_replace([
@@ -140,7 +140,7 @@ class Email
 
         // Match the deepest nested bbcode
         // An adapted example from Mastering Regular Expressions
-        $match_quote_regex = '%
+        $matchQuoteRegex = '%
             \[(quote|\*|url|img|email|topic|post|user|forum)(?:=([^\]]+))?\]
             (
                 (?>[^\[]*)
@@ -153,9 +153,9 @@ class Email
             \[/\1\]
         %ix';
 
-        $url_index = 1;
-        $url_stack = [];
-        while (preg_match($match_quote_regex, $text, $matches)) {
+        $urlIndex = 1;
+        $urlStack = [];
+        while (preg_match($matchQuoteRegex, $text, $matches)) {
             // Quotes
             if ($matches[1] == 'quote') {
                 // Put '>' or '> ' at the start of a line
@@ -169,30 +169,30 @@ class Email
             } // URLs and emails
             elseif (in_array($matches[1], ['url', 'email'])) {
                 if (!empty($matches[2])) {
-                    $replacement = '[' . $matches[3] . '][' . $url_index . ']';
-                    $url_stack[$url_index] = $matches[2];
-                    $url_index++;
+                    $replacement = '[' . $matches[3] . '][' . $urlIndex . ']';
+                    $urlStack[$urlIndex] = $matches[2];
+                    $urlIndex++;
                 } else {
                     $replacement = '[' . $matches[3] . ']';
                 }
             } // Images
             elseif ($matches[1] == 'img') {
                 if (!empty($matches[2])) {
-                    $replacement = '[' . $matches[2] . '][' . $url_index . ']';
+                    $replacement = '[' . $matches[2] . '][' . $urlIndex . ']';
                 } else {
-                    $replacement = '[' . basename($matches[3]) . '][' . $url_index . ']';
+                    $replacement = '[' . basename($matches[3]) . '][' . $urlIndex . ']';
                 }
 
-                $url_stack[$url_index] = $matches[3];
-                $url_index++;
+                $urlStack[$urlIndex] = $matches[3];
+                $urlIndex++;
             } // Topic, post, forum and user URLs
             elseif (in_array($matches[1], ['topic', 'post', 'forum', 'user'])) {
-                $url = isset($shortcut_urls[$matches[1]]) ? $base_url . $shortcut_urls[$matches[1]] : '';
+                $url = isset($shortcutUrls[$matches[1]]) ? $baseUrl . $shortcutUrls[$matches[1]] : '';
 
                 if (!empty($matches[2])) {
-                    $replacement = '[' . $matches[3] . '][' . $url_index . ']';
-                    $url_stack[$url_index] = str_replace('$1', $matches[2], $url);
-                    $url_index++;
+                    $replacement = '[' . $matches[3] . '][' . $urlIndex . ']';
+                    $urlStack[$urlIndex] = str_replace('$1', $matches[2], $url);
+                    $urlIndex++;
                 } else {
                     $replacement = '[' . str_replace('$1', $matches[3], $url) . ']';
                 }
@@ -218,20 +218,20 @@ class Email
         }
 
         // Put URLs at the bottom
-        if ($url_stack) {
+        if ($urlStack) {
             $text .= "\n\n";
-            foreach ($url_stack as $i => $url) {
+            foreach ($urlStack as $i => $url) {
                 $text .= "\n" . ' [' . $i . ']: ' . $url;
             }
         }
 
-        // Wrap lines if $wrap_length is higher than -1
-        if ($wrap_length > -1) {
+        // Wrap lines if $wrapLength is higher than -1
+        if ($wrapLength > -1) {
             // Split all lines and wrap them individually
             $parts = explode("\n", $text);
             foreach ($parts as $k => $part) {
                 preg_match('%^(>+ )?(.*)%', $part, $matches);
-                $parts[$k] = wordwrap($matches[1] . $matches[2], $wrap_length -
+                $parts[$k] = wordwrap($matches[1] . $matches[2], $wrapLength -
                     strlen($matches[1]), "\n" . $matches[1]);
             }
 
@@ -245,7 +245,7 @@ class Email
     //
     // Wrapper for PHP's mail()
     //
-    public function send($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
+    public function send($to, $subject, $message, $replyToEmail = '', $replyToName = '')
     {
         // Define line breaks in mail headers; possible values can be PHP_EOL, "\r\n", "\n" or "\r"
         if (!defined('FORUM_EOL')) {
@@ -254,39 +254,39 @@ class Email
 
         // Use \r\n for SMTP servers, the system's line ending for local mailers
         $smtp = ForumSettings::get('o_smtp_host') != '';
-        $EOL = $smtp ? "\r\n" : FORUM_EOL;
+        $eOL = $smtp ? "\r\n" : FORUM_EOL;
 
         // Default sender/return address
-        $from_name = sprintf(__('Mailer'), ForumSettings::get('o_board_title'));
-        $from_email = ForumSettings::get('o_webmaster_email');
+        $fromName = sprintf(__('Mailer'), ForumSettings::get('o_board_title'));
+        $fromEmail = ForumSettings::get('o_webmaster_email');
 
         // Do a little spring cleaning
         $to = Utils::trim(preg_replace('%[\n\r]+%s', '', $to));
         $subject = Utils::trim(preg_replace('%[\n\r]+%s', '', $subject));
-        $from_email = Utils::trim(preg_replace('%[\n\r:]+%s', '', $from_email));
-        $from_name = Utils::trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $from_name)));
-        $reply_to_email = Utils::trim(preg_replace('%[\n\r:]+%s', '', $reply_to_email));
-        $reply_to_name = Utils::trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $reply_to_name)));
+        $fromEmail = Utils::trim(preg_replace('%[\n\r:]+%s', '', $fromEmail));
+        $fromName = Utils::trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $fromName)));
+        $replyToEmail = Utils::trim(preg_replace('%[\n\r:]+%s', '', $replyToEmail));
+        $replyToName = Utils::trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $replyToName)));
 
         // Set up some headers to take advantage of UTF-8
-        $from = '"' . $this->encode_mail_text($from_name) . '" <' . $from_email . '>';
-        $subject = $this->encode_mail_text($subject);
+        $from = '"' . $this->encodeMailText($fromName) . '" <' . $fromEmail . '>';
+        $subject = $this->encodeMailText($subject);
 
-        $headers = 'From: ' . $from . $EOL . 'Date: ' . gmdate('r') . $EOL . 'MIME-Version: 1.0' . $EOL . 'Content-transfer-encoding: 8bit' . $EOL . 'Content-type: text/plain; charset=utf-8' . $EOL . 'X-Mailer: FeatherBB Mailer';
+        $headers = 'From: ' . $from . $eOL . 'Date: ' . gmdate('r') . $eOL . 'MIME-Version: 1.0' . $eOL . 'Content-transfer-encoding: 8bit' . $eOL . 'Content-type: text/plain; charset=utf-8' . $eOL . 'X-Mailer: FeatherBB Mailer';
 
         // If we specified a reply-to email, we deal with it here
-        if (!empty($reply_to_email)) {
-            $reply_to = '"' . $this->encode_mail_text($reply_to_name) . '" <' . $reply_to_email . '>';
+        if (!empty($replyToEmail)) {
+            $replyTo = '"' . $this->encodeMailText($replyToName) . '" <' . $replyToEmail . '>';
 
-            $headers .= $EOL . 'Reply-To: ' . $reply_to;
+            $headers .= $eOL . 'Reply-To: ' . $replyTo;
         }
 
         // Make sure all linebreaks are LF in message (and strip out any NULL bytes)
         $message = str_replace("\0", '', Utils::linebreaks($message));
-        $message = str_replace("\n", $EOL, $message);
+        $message = str_replace("\n", $eOL, $message);
 
         if ($smtp) {
-            $this->smtp_mail($to, $subject, $message, $headers);
+            $this->smtpMail($to, $subject, $message, $headers);
         } else {
             mail($to, $subject, $message, $headers);
         }
@@ -297,17 +297,17 @@ class Email
     // This public function was originally a part of the phpBB Group forum software phpBB2 (http://www.phpbb.com)
     // They deserve all the credit for writing it. I made small modifications for it to suit PunBB and its coding standards
     //
-    public function server_parse($socket, $expected_response)
+    public function serverParse($socket, $expectedResponse)
     {
-        $server_response = '';
-        while (substr($server_response, 3, 1) != ' ') {
-            if (!($server_response = fgets($socket, 256))) {
+        $serverResponse = '';
+        while (substr($serverResponse, 3, 1) != ' ') {
+            if (!($serverResponse = fgets($socket, 256))) {
                 throw new Error('Couldn\'t get mail server response codes. Please contact the forum administrator.', 500);
             }
         }
 
-        if (!(substr($server_response, 0, 3) == $expected_response)) {
-            throw new Error('Unable to send email. Please contact the forum administrator with the following error message reported by the SMTP server: "' . $server_response . '"', 500);
+        if (!(substr($serverResponse, 0, 3) == $expectedResponse)) {
+            throw new Error('Unable to send email. Please contact the forum administrator with the following error message reported by the SMTP server: "' . $serverResponse . '"', 500);
         }
     }
 
@@ -316,9 +316,9 @@ class Email
     // This public function was originally a part of the phpBB Group forum software phpBB2 (http://www.phpbb.com)
     // They deserve all the credit for writing it. I made small modifications for it to suit PunBB and its coding standards.
     //
-    public function smtp_mail($to, $subject, $message, $headers = '')
+    public function smtpMail($to, $subject, $message, $headers = '')
     {
-        static $local_host;
+        static $localHost;
 
         $recipients = explode(',', $to);
 
@@ -328,67 +328,67 @@ class Email
 
         // Are we using port 25 or a custom port?
         if (strpos(ForumSettings::get('o_smtp_host'), ':') !== false) {
-            list($smtp_host, $smtp_port) = explode(':', ForumSettings::get('o_smtp_host'));
+            list($smtpHost, $smtpPort) = explode(':', ForumSettings::get('o_smtp_host'));
         } else {
-            $smtp_host = ForumSettings::get('o_smtp_host');
-            $smtp_port = 25;
+            $smtpHost = ForumSettings::get('o_smtp_host');
+            $smtpPort = 25;
         }
 
         if (ForumSettings::get('o_smtp_ssl') == '1') {
-            $smtp_host = 'ssl://' . $smtp_host;
+            $smtpHost = 'ssl://' . $smtpHost;
         }
 
-        if (!($socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 15))) {
+        if (!($socket = fsockopen($smtpHost, $smtpPort, $errno, $errstr, 15))) {
             throw new Error('Could not connect to smtp host "' . ForumSettings::get('o_smtp_host') . '" (' . $errno . ') (' . $errstr . ')', 500);
         }
 
-        $this->server_parse($socket, '220');
+        $this->serverParse($socket, '220');
 
-        if (!isset($local_host)) {
+        if (!isset($localHost)) {
             // Here we try to determine the *real* hostname (reverse DNS entry preferably)
-            $local_host = php_uname('n');
+            $localHost = php_uname('n');
 
             // Able to resolve name to IP
-            if (($local_addr = @gethostbyname($local_host)) !== $local_host) {
+            if (($localAddr = @gethostbyname($localHost)) !== $localHost) {
                 // Able to resolve IP back to name
-                if (($local_name = @gethostbyaddr($local_addr)) !== $local_addr) {
-                    $local_host = $local_name;
+                if (($localName = @gethostbyaddr($localAddr)) !== $localAddr) {
+                    $localHost = $localName;
                 }
             }
         }
 
         if (ForumSettings::get('o_smtp_user') != '' && ForumSettings::get('o_smtp_pass') != '') {
-            fwrite($socket, 'EHLO ' . $local_host . "\r\n");
-            $this->server_parse($socket, '250');
+            fwrite($socket, 'EHLO ' . $localHost . "\r\n");
+            $this->serverParse($socket, '250');
 
             fwrite($socket, 'AUTH LOGIN' . "\r\n");
-            $this->server_parse($socket, '334');
+            $this->serverParse($socket, '334');
 
             fwrite($socket, base64_encode(ForumSettings::get('o_smtp_user')) . "\r\n");
-            $this->server_parse($socket, '334');
+            $this->serverParse($socket, '334');
 
             fwrite($socket, base64_encode(ForumSettings::get('o_smtp_pass')) . "\r\n");
-            $this->server_parse($socket, '235');
+            $this->serverParse($socket, '235');
         } else {
-            fwrite($socket, 'HELO ' . $local_host . "\r\n");
-            $this->server_parse($socket, '250');
+            fwrite($socket, 'HELO ' . $localHost . "\r\n");
+            $this->serverParse($socket, '250');
         }
 
         fwrite($socket, 'MAIL FROM: <' . ForumSettings::get('o_webmaster_email') . '>' . "\r\n");
-        $this->server_parse($socket, '250');
+        $this->serverParse($socket, '250');
 
         foreach ($recipients as $email) {
             fwrite($socket, 'RCPT TO: <' . $email . '>' . "\r\n");
-            $this->server_parse($socket, '250');
+            $this->serverParse($socket, '250');
         }
 
         fwrite($socket, 'DATA' . "\r\n");
-        $this->server_parse($socket, '354');
+        $this->serverParse($socket, '354');
 
         fwrite($socket, 'Subject: ' . $subject . "\r\n" . 'To: <' . implode('>, <', $recipients) . '>' . "\r\n" . $headers . "\r\n\r\n" . $message . "\r\n");
 
         fwrite($socket, '.' . "\r\n");
-        $this->server_parse($socket, '250');
+        $this->serverParse($socket, '250');
 
         fwrite($socket, 'QUIT' . "\r\n");
         fclose($socket);

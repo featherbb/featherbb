@@ -14,7 +14,7 @@ class Parser
 {
     // Helper public function returns array of smiley image files
     //   stored in the style/img/smilies directory.
-    public function get_smiley_files()
+    public function getSmileyFiles()
     {
         $imgfiles = [];
         $filelist = scandir(ForumEnv::get('FEATHER_ROOT').'style/img/smilies');

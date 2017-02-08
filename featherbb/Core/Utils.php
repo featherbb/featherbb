@@ -57,9 +57,9 @@ class Utils
     }
 
     //
-    // Format a time string according to $time_format and time zones
+    // Format a time string according to $timeFormat and time zones
     //
-    public static function formatTime($timestamp, $date_only = false, $date_format = null, $time_format = null, $time_only = false, $no_text = false)
+    public static function formatTime($timestamp, $dateOnly = false, $dateFormat = null, $timeFormat = null, $timeOnly = false, $noText = false)
     {
         if ($timestamp == '') {
             return __('Never');
@@ -69,19 +69,19 @@ class Utils
         $timestamp += $diff;
         $now = time();
 
-        if (is_null($date_format)) {
-            $date_format = User::getPref('date_format');
+        if (is_null($dateFormat)) {
+            $dateFormat = User::getPref('date_format');
         }
 
-        if (is_null($time_format)) {
-            $time_format = User::getPref('time_format');
+        if (is_null($timeFormat)) {
+            $timeFormat = User::getPref('time_format');
         }
 
-        $date = gmdate($date_format, $timestamp);
-        $today = gmdate($date_format, $now+$diff);
-        $yesterday = gmdate($date_format, $now+$diff-86400);
+        $date = gmdate($dateFormat, $timestamp);
+        $today = gmdate($dateFormat, $now+$diff);
+        $yesterday = gmdate($dateFormat, $now+$diff-86400);
 
-        if (!$no_text) {
+        if (!$noText) {
             if ($date == $today) {
                 $date = __('Today');
             } elseif ($date == $yesterday) {
@@ -89,12 +89,12 @@ class Utils
             }
         }
 
-        if ($date_only) {
+        if ($dateOnly) {
             return $date;
-        } elseif ($time_only) {
-            return gmdate($time_format, $timestamp);
+        } elseif ($timeOnly) {
+            return gmdate($timeFormat, $timestamp);
         } else {
-            return $date.' '.gmdate($time_format, $timestamp);
+            return $date.' '.gmdate($timeFormat, $timestamp);
         }
     }
 
@@ -158,8 +158,8 @@ class Utils
         // If preg_replace() returns false, this probably means unicode support is not built-in, so we need to modify the pattern a little
         if ($replaced === false) {
             if (is_array($pattern)) {
-                foreach ($pattern as $cur_key => $cur_pattern) {
-                    $pattern[$cur_key] = str_replace('\p{L}\p{N}', '\w', $cur_pattern);
+                foreach ($pattern as $curKey => $curPattern) {
+                    $pattern[$curKey] = str_replace('\p{L}\p{N}', '\w', $curPattern);
                 }
 
                 $replaced = preg_replace($pattern, $replace, $subject);
@@ -188,19 +188,19 @@ class Utils
     //
     // Generate browser's title
     //
-    public static function generatePageTitle($page_title, $p = null)
+    public static function generatePageTitle($pageTitle, $p = null)
     {
-        if (!is_array($page_title)) {
-            $page_title = [$page_title];
+        if (!is_array($pageTitle)) {
+            $pageTitle = [$pageTitle];
         }
 
-        $page_title = array_reverse($page_title);
+        $pageTitle = array_reverse($pageTitle);
 
         if ($p > 1) {
-            $page_title[0] .= ' ('.sprintf(__('Page'), self::forumNumberFormat($p)).')';
+            $pageTitle[0] .= ' ('.sprintf(__('Page'), self::forumNumberFormat($p)).')';
         }
 
-        $crumbs = implode(__('Title separator'), $page_title);
+        $crumbs = implode(__('Title separator'), $pageTitle);
 
         return $crumbs;
     }
@@ -227,38 +227,38 @@ class Utils
     //
     public static function getTitle($user)
     {
-        static $ban_list;
+        static $banList;
 
         // If not already built in a previous call, build an array of lowercase banned usernames
-        if (empty($ban_list)) {
-            $ban_list = [];
-            foreach (Container::get('bans') as $cur_ban) {
-                $ban_list[] = utf8_strtolower($cur_ban['username']);
+        if (empty($banList)) {
+            $banList = [];
+            foreach (Container::get('bans') as $curBan) {
+                $banList[] = utf8_strtolower($curBan['username']);
             }
         }
 
         // If the user has a custom title
         if ($user['title'] != '') {
-            $user_title = self::escape($user['title']);
+            $userTitle = self::escape($user['title']);
         }
         // If the user is banned
-        elseif (in_array(utf8_strtolower($user['username']), $ban_list)) {
-            $user_title = __('Banned');
+        elseif (in_array(utf8_strtolower($user['username']), $banList)) {
+            $userTitle = __('Banned');
         }
         // If the user group has a default user title
         elseif ($user['g_user_title'] != '') {
-            $user_title = self::escape($user['g_user_title']);
+            $userTitle = self::escape($user['g_user_title']);
         }
         // If the user is a guest
         elseif ($user['g_id'] == ForumEnv::get('FEATHER_GUEST')) {
-            $user_title = __('Guest');
+            $userTitle = __('Guest');
         }
         // If nothing else helps, we assign the default
         else {
-            $user_title = __('Member');
+            $userTitle = __('Member');
         }
 
-        return $user_title;
+        return $userTitle;
     }
 
     //
@@ -266,20 +266,20 @@ class Utils
     //
     public static function censor($text)
     {
-        static $search_for, $replace_with;
+        static $searchFor, $replaceWith;
 
         if (!Container::get('cache')->isCached('search_for')) {
             Container::get('cache')->store('search_for', Cache::getCensoring('search_for'));
         }
-        $search_for = Container::get('cache')->retrieve('search_for');
+        $searchFor = Container::get('cache')->retrieve('search_for');
 
         if (!Container::get('cache')->isCached('replace_with')) {
             Container::get('cache')->store('replace_with', Cache::getCensoring('replace_with'));
         }
-        $replace_with = Container::get('cache')->retrieve('replace_with');
+        $replaceWith = Container::get('cache')->retrieve('replace_with');
 
-        if (!empty($search_for) && !empty($replace_with)) {
-            return substr(self::ucpPregReplace($search_for, $replace_with, ' '.$text.' '), 1, -1);
+        if (!empty($searchFor) && !empty($replaceWith)) {
+            return substr(self::ucpPregReplace($searchFor, $replaceWith, ' '.$text.' '), 1, -1);
         } else {
             return $text;
         }
@@ -301,21 +301,21 @@ class Utils
     //
     // Outputs markup to display a user's avatar
     //
-    public static function generateAvatarMarkup($user_id)
+    public static function generateAvatarMarkup($userId)
     {
         $filetypes = ['jpg', 'gif', 'png'];
-        $avatar_markup = '';
+        $avatarMarkup = '';
 
-        foreach ($filetypes as $cur_type) {
-            $path = ForumSettings::get('o_avatars_dir').'/'.$user_id.'.'.$cur_type;
+        foreach ($filetypes as $curType) {
+            $path = ForumSettings::get('o_avatars_dir').'/'.$userId.'.'.$curType;
 
-            if (file_exists(ForumEnv::get('FEATHER_ROOT').$path) && $img_size = getimagesize(ForumEnv::get('FEATHER_ROOT').$path)) {
-                $avatar_markup = '<img src="'.self::escape(Container::get('url')->base(true).'/'.$path.'?m='.filemtime(ForumEnv::get('FEATHER_ROOT').$path)).'" '.$img_size[3].' alt="" />';
+            if (file_exists(ForumEnv::get('FEATHER_ROOT').$path) && $imgSize = getimagesize(ForumEnv::get('FEATHER_ROOT').$path)) {
+                $avatarMarkup = '<img src="'.self::escape(Container::get('url')->base(true).'/'.$path.'?m='.filemtime(ForumEnv::get('FEATHER_ROOT').$path)).'" '.$imgSize[3].' alt="" />';
                 break;
             }
         }
 
-        return $avatar_markup;
+        return $avatarMarkup;
     }
 
     //
@@ -362,14 +362,14 @@ class Utils
             return hash_equals((string)$a, (string)$b);
         }
 
-        $a_length = strlen($a);
-        if ($a_length !== strlen($b)) {
+        $aLength = strlen($a);
+        if ($aLength !== strlen($b)) {
             return false;
         }
         $result = 0;
 
         // Do not attempt to "optimize" this.
-        for ($i = 0; $i < $a_length; $i++) {
+        for ($i = 0; $i < $aLength; $i++) {
             $result |= ord($a[ $i ]) ^ ord($b[ $i ]);
         }
 

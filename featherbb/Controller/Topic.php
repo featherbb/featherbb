@@ -42,80 +42,80 @@ class Topic
         Container::get('hooks')->fire('controller.topic.display', $args['id'], $args['name'], $args['page'], $args['pid']);
 
         // Antispam feature
-        $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
-        $index_questions = rand(0, count($lang_antispam_questions)-1);
+        $langAntispamQuestions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
+        $indexQuestions = rand(0, count($langAntispamQuestions)-1);
 
         // Fetch some information about the topic
-        $cur_topic = $this->model->getInfoTopic($args['id']);
+        $curTopic = $this->model->getInfoTopic($args['id']);
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
-        $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : [];
-        $is_admmod = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $modsArray = ($curTopic['moderators'] != '') ? unserialize($curTopic['moderators']) : [];
+        $isAdmmod = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $modsArray))) ? true : false;
 
         // Can we or can we not post replies?
-        $post_link = $this->model->postLink($args['id'], $cur_topic['closed'], $cur_topic['post_replies'], $is_admmod);
+        $postLink = $this->model->postLink($args['id'], $curTopic['closed'], $curTopic['post_replies'], $isAdmmod);
 
         // Add/update this topic in our list of tracked topics
         if (!User::get()->is_guest) {
-            $tracked_topics = Track::getTrackedTopics();
-            $tracked_topics['topics'][$args['id']] = time();
-            Track::setTrackedTopics($tracked_topics);
+            $trackedTopics = Track::getTrackedTopics();
+            $trackedTopics['topics'][$args['id']] = time();
+            Track::setTrackedTopics($trackedTopics);
         }
 
-        // Determine the post offset (based on $_GET['p'])
-        $num_pages = ceil(($cur_topic['num_replies'] + 1) / User::getPref('disp.posts'));
+        // Determine the post offset (based on $_gET['p'])
+        $numPages = ceil(($curTopic['num_replies'] + 1) / User::getPref('disp.posts'));
 
-        $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
-        $start_from = User::getPref('disp.posts') * ($p - 1);
+        $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $numPages) ? 1 : intval($args['page']);
+        $startFrom = User::getPref('disp.posts') * ($p - 1);
 
-        $url_topic = Url::slug($cur_topic['subject']);
-        $url_forum = Url::slug($cur_topic['forum_name']);
+        $urlTopic = Url::slug($curTopic['subject']);
+        $urlForum = Url::slug($curTopic['forum_name']);
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($num_pages, $p, 'topic/'.$args['id'].'/'.$url_topic.'/#');
+        $pagingLinks = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($numPages, $p, 'topic/'.$args['id'].'/'.$urlTopic.'/#');
 
         if (ForumSettings::get('o_censoring') == '1') {
-            $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
+            $curTopic['subject'] = Utils::censor($curTopic['subject']);
         }
 
-        $quickpost = $this->model->isQuickpost($cur_topic['post_replies'], $cur_topic['closed'], $is_admmod);
-        $subscraction = $this->model->getSubscraction(($cur_topic['is_subscribed'] == User::get()->id), $args['id'], $args['name']);
+        $quickpost = $this->model->isQuickpost($curTopic['post_replies'], $curTopic['closed'], $isAdmmod);
+        $subscraction = $this->model->getSubscraction(($curTopic['is_subscribed'] == User::get()->id), $args['id'], $args['name']);
 
-        View::addAsset('canonical', Router::pathFor('Topic', ['id' => $args['id'], 'name' => $url_topic]));
-        if ($num_pages > 1) {
+        View::addAsset('canonical', Router::pathFor('Topic', ['id' => $args['id'], 'name' => $urlTopic]));
+        if ($numPages > 1) {
             if ($p > 1) {
-                View::addAsset('prev', Router::pathFor('Topic', ['id' => $args['id'], 'name' => $url_topic, 'page' => intval($p-1)]));
+                View::addAsset('prev', Router::pathFor('Topic', ['id' => $args['id'], 'name' => $urlTopic, 'page' => intval($p-1)]));
             }
-            if ($p < $num_pages) {
-                View::addAsset('next', Router::pathFor('Topic', ['id' => $args['id'], 'name' => $url_topic, 'page' => intval($p+1)]));
+            if ($p < $numPages) {
+                View::addAsset('next', Router::pathFor('Topic', ['id' => $args['id'], 'name' => $urlTopic, 'page' => intval($p+1)]));
             }
         }
 
         View::setPageInfo([
-            'title' => [Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])],
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($curTopic['forum_name']), Utils::escape($curTopic['subject'])],
             'active_page' => 'Topic',
             'page_number'  =>  $p,
-            'paging_links'  =>  $paging_links,
+            'paging_links'  =>  $pagingLinks,
             'is_indexed' => true,
             'id' => $args['id'],
             'pid' => $args['pid'],
             'tid' => $args['id'],
-            'fid' => $cur_topic['forum_id'],
-            'post_data' => $this->model->printPosts($args['id'], $start_from, $cur_topic, $is_admmod),
-            'cur_topic'    =>    $cur_topic,
+            'fid' => $curTopic['forum_id'],
+            'post_data' => $this->model->printPosts($args['id'], $startFrom, $curTopic, $isAdmmod),
+            'cur_topic'    =>    $curTopic,
             'subscraction'    =>    $subscraction,
-            'post_link' => $post_link,
-            'start_from' => $start_from,
+            'post_link' => $postLink,
+            'start_from' => $startFrom,
             'quickpost'        =>    $quickpost,
-            'index_questions'        =>    $index_questions,
-            'lang_antispam_questions'        =>    $lang_antispam_questions,
-            'url_forum'        =>    $url_forum,
-            'url_topic'        =>    $url_topic,
-            'is_admmod' => $is_admmod,
+            'index_questions'        =>    $indexQuestions,
+            'lang_antispam_questions'        =>    $langAntispamQuestions,
+            'url_forum'        =>    $urlForum,
+            'url_topic'        =>    $urlTopic,
+            'is_admmod' => $isAdmmod,
         ])->addTemplate('topic.php')->display();
 
         // Increment "num_views" for topic
-        $this->model->increment_views($args['id']);
+        $this->model->incrementViews($args['id']);
     }
 
     public function viewpost($req, $res, $args)
@@ -183,8 +183,8 @@ class Topic
     {
         $args['id'] = Container::get('hooks')->fire('controller.topic.move', $args['id']);
 
-        if ($new_fid = Input::post('move_to_forum')) {
-            $this->model->moveTo($args['fid'], $new_fid, $args['id']);
+        if ($newFid = Input::post('move_to_forum')) {
+            $this->model->moveTo($args['fid'], $newFid, $args['id']);
             return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => $args['name']]), __('Move topic redirect'));
         }
 
@@ -207,20 +207,20 @@ class Topic
     {
         Container::get('hooks')->fire('controller.topic.moderate');
 
-        $cur_topic = $this->model->getTopicInfo($args['fid'], $args['id']);
+        $curTopic = $this->model->getTopicInfo($args['fid'], $args['id']);
 
-        // Determine the post offset (based on $_GET['p'])
-        $num_pages = ceil(($cur_topic['num_replies'] + 1) / User::getPref('disp.posts'));
+        // Determine the post offset (based on $_gET['p'])
+        $numPages = ceil(($curTopic['num_replies'] + 1) / User::getPref('disp.posts'));
 
-        $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
+        $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $numPages) ? 1 : intval($args['page']);
 
-        $start_from = User::getPref('disp.posts') * ($p - 1);
+        $startFrom = User::getPref('disp.posts') * ($p - 1);
 
         // Delete one or more posts
         if (Input::post('delete_posts_comply')) {
-            return $this->model->delete_posts($args['id'], $args['fid']);
+            return $this->model->deletePosts($args['id'], $args['fid']);
         } elseif (Input::post('delete_posts')) {
-            $posts = $this->model->delete_posts($args['id'], $args['fid']);
+            $posts = $this->model->deletePosts($args['id'], $args['fid']);
 
             return View::setPageInfo([
                         'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
@@ -244,29 +244,29 @@ class Topic
             // Show the moderate posts view
 
             // Used to disable the Move and Delete buttons if there are no replies to this topic
-            $button_status = ($cur_topic['num_replies'] == 0) ? ' disabled="disabled"' : '';
+            $buttonStatus = ($curTopic['num_replies'] == 0) ? ' disabled="disabled"' : '';
 
-            /*if (isset($_GET['action']) && $_GET['action'] == 'all') {
-                    User::getPref('disp.posts') = $cur_topic['num_replies'] + 1;
+            /*if (isset($_gET['action']) && $_gET['action'] == 'all') {
+                    User::getPref('disp.posts') = $curTopic['num_replies'] + 1;
             }*/
 
             if (ForumSettings::get('o_censoring') == '1') {
-                $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
+                $curTopic['subject'] = Utils::censor($curTopic['subject']);
             }
 
             return View::setPageInfo([
-                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])],
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($curTopic['forum_name']), Utils::escape($curTopic['subject'])],
                     'page' => $p,
                     'active_page' => 'moderate',
-                    'cur_topic' => $cur_topic,
-                    'url_topic' => Url::slug($cur_topic['subject']),
-                    'url_forum' => Url::slug($cur_topic['forum_name']),
+                    'cur_topic' => $curTopic,
+                    'url_topic' => Url::slug($curTopic['subject']),
+                    'url_forum' => Url::slug($curTopic['forum_name']),
                     'fid' => $args['fid'],
                     'id' => $args['id'],
-                    'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginate($num_pages, $p, 'topic/moderate/' . $args['id'] . '/forum/' . $args['fid'] . '/#'),
-                    'post_data' => $this->model->moderateDisplayPosts($args['id'], $start_from),
-                    'button_status' => $button_status,
-                    'start_from' => $start_from,
+                    'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginate($numPages, $p, 'topic/moderate/' . $args['id'] . '/forum/' . $args['fid'] . '/#'),
+                    'post_data' => $this->model->moderateDisplayPosts($args['id'], $startFrom),
+                    'button_status' => $buttonStatus,
+                    'start_from' => $startFrom,
                 ]
             )->addTemplate('moderate/posts_view.php')->display();
         }

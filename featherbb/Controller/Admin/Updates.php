@@ -57,7 +57,7 @@ class Updates
         // Check plugins uavailable versions
         foreach ($allPlugins as $plugin) {
             // If plugin isn't well formed or doesn't want to be auto-updated, skip it
-            if (!isset($plugin->name) || !isset($plugin->version) || (isset($plugin->skip_update) && $plugin->skip_update == true)) {
+            if (!isset($plugin->name) || !isset($plugin->version) || (isset($plugin->skipUpdate) && $plugin->skipUpdate == true)) {
                 continue;
             }
             $pluginsUpdater = new PluginAutoUpdater($plugin);
@@ -68,7 +68,7 @@ class Updates
             }
             // If update available, add plugin to display in view
             if ($pluginsUpdater->newVersionAvailable()) {
-                $plugin->last_version = $pluginsUpdater->getLatestVersion();
+                $plugin->lastVersion = $pluginsUpdater->getLatestVersion();
                 $pluginUpdates[] = $plugin;
             }
         }
@@ -95,25 +95,25 @@ class Updates
             throw new Error(__('Wrong form values'), 500);
         }
 
-        $upgrade_results = [];
+        $upgradeResults = [];
 
         foreach (Input::post('plugin_updates') as $plugin => $version) {
             if ($plugin = Lister::loadPlugin($plugin)) {
                 // If plugin isn't well formed or doesn't want to be auto-updated, skip it
-                if (!isset($plugin->name) || !isset($plugin->version) || (isset($plugin->skip_update) && $plugin->skip_update == true)) {
+                if (!isset($plugin->name) || !isset($plugin->version) || (isset($plugin->skipUpdate) && $plugin->skipUpdate == true)) {
                     continue;
                 }
-                $upgrade_results[$plugin->title] = [];
+                $upgradeResults[$plugin->title] = [];
                 $pluginsUpdater = new PluginAutoUpdater($plugin);
                 $result = $pluginsUpdater->update();
                 if ($result !== true) {
-                    $upgrade_results[$plugin->title]['message'] = sprintf(__('Failed upgrade message'), $plugin->version, $pluginsUpdater->getLatestVersion());
-                    $upgrade_results[$plugin->title]['errors'] = $pluginsUpdater->getErrors();
+                    $upgradeResults[$plugin->title]['message'] = sprintf(__('Failed upgrade message'), $plugin->version, $pluginsUpdater->getLatestVersion());
+                    $upgradeResults[$plugin->title]['errors'] = $pluginsUpdater->getErrors();
                 } else {
-                    $upgrade_results[$plugin->title]['message'] = sprintf(__('Successful upgrade message'), $plugin->version, $pluginsUpdater->getLatestVersion());
+                    $upgradeResults[$plugin->title]['message'] = sprintf(__('Successful upgrade message'), $plugin->version, $pluginsUpdater->getLatestVersion());
                 }
                 // Will not be empty if upgrade has warnings (zip archive or _upgrade.php file could not be deleted)
-                $upgrade_results[$plugin->title]['warnings'] = $pluginsUpdater->getWarnings();
+                $upgradeResults[$plugin->title]['warnings'] = $pluginsUpdater->getWarnings();
             } else {
                 continue;
             }
@@ -129,7 +129,7 @@ class Updates
                 'title'           => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Updates')],
                 'active_page'     => 'admin',
                 'admin_console'   => true,
-                'upgrade_results' => $upgrade_results
+                'upgrade_results' => $upgradeResults
             ]
         )->addTemplate('admin/updates.php')->display();
     }
@@ -144,22 +144,22 @@ class Updates
         }
 
         $key = __('FeatherBB core');
-        $upgrade_results = [$key => []];
+        $upgradeResults = [$key => []];
         $coreUpdater = new CoreAutoUpdater();
         $result = $coreUpdater->update();
         if ($result !== true) {
-            $upgrade_results[$key]['message'] = sprintf(__('Failed upgrade message'), ForumEnv::get('FORUM_VERSION'), $coreUpdater->getLatestVersion());
-            $upgrade_results[$key]['errors'] = $coreUpdater->getErrors();
+            $upgradeResults[$key]['message'] = sprintf(__('Failed upgrade message'), ForumEnv::get('FORUM_VERSION'), $coreUpdater->getLatestVersion());
+            $upgradeResults[$key]['errors'] = $coreUpdater->getErrors();
         } else {
-            $upgrade_results[$key]['message'] = sprintf(__('Successful upgrade message'), ForumEnv::get('FORUM_VERSION'), $coreUpdater->getLatestVersion());
+            $upgradeResults[$key]['message'] = sprintf(__('Successful upgrade message'), ForumEnv::get('FORUM_VERSION'), $coreUpdater->getLatestVersion());
             // Reset cache and update core version in database
             Container::get('cache')->flush();
-            if (!Database::for_table('config')->raw_execute('UPDATE `'.ForumSettings::get('db_prefix').'config` SET `conf_value` = :value WHERE `conf_name` = "o_cur_version"', ['value' => ForumEnv::get('FORUM_VERSION')])) {
+            if (!Database::forTable('config')->rawExecute('UPDATE `'.ForumSettings::get('db_prefix').'config` SET `conf_value` = :value WHERE `conf_name` = "o_cur_version"', ['value' => ForumEnv::get('FORUM_VERSION')])) {
                 $coreUpdater->addWarning(__('Could not update core version in database'));
             }
         }
         // Will not be empty if upgrade has warnings (zip archive or _upgrade.php file could not be deleted)
-        $upgrade_results[$key]['warnings'] = $coreUpdater->getWarnings();
+        $upgradeResults[$key]['warnings'] = $coreUpdater->getWarnings();
 
         // Display upgrade results
         AdminUtils::generateAdminMenu('updates');
@@ -168,7 +168,7 @@ class Updates
                 'title'           => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Updates')],
                 'active_page'     => 'admin',
                 'admin_console'   => true,
-                'upgrade_results' => $upgrade_results
+                'upgrade_results' => $upgradeResults
             ]
         )->addTemplate('admin/updates.php')->display();
     }

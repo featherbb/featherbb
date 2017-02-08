@@ -19,21 +19,21 @@ class Censoring
 {
     public function addWord()
     {
-        $search_for = Utils::trim(Input::post('new_search_for'));
-        $replace_with = Utils::trim(Input::post('new_replace_with'));
+        $searchFor = Utils::trim(Input::post('new_search_for'));
+        $replaceWith = Utils::trim(Input::post('new_replace_with'));
 
-        if ($search_for == '') {
+        if ($searchFor == '') {
             throw new Error(__('Must enter word message'), 400);
         }
 
-        $set_search_word = ['search_for' => $search_for,
-                                'replace_with' => $replace_with];
+        $setSearchWord = ['search_for' => $searchFor,
+                                'replace_with' => $replaceWith];
 
-        $set_search_word = Container::get('hooks')->fire('model.admin.censoring.add_censoring_word_data', $set_search_word);
+        $setSearchWord = Container::get('hooks')->fire('model.admin.censoring.add_censoring_word_data', $setSearchWord);
 
-        $result = DB::for_table('censoring')
+        $result = DB::forTable('censoring')
             ->create()
-            ->set($set_search_word)
+            ->set($setSearchWord)
             ->save();
 
         // Regenerate the censoring cache
@@ -47,21 +47,21 @@ class Censoring
     {
         $id = intval(key(Input::post('update')));
 
-        $search_for = Utils::trim(Input::post('search_for')[$id]);
-        $replace_with = Utils::trim(Input::post('replace_with')[$id]);
+        $searchFor = Utils::trim(Input::post('search_for')[$id]);
+        $replaceWith = Utils::trim(Input::post('replace_with')[$id]);
 
-        if ($search_for == '') {
+        if ($searchFor == '') {
             throw new Error(__('Must enter word message'), 400);
         }
 
-        $set_search_word = ['search_for' => $search_for,
-                                'replace_with' => $replace_with];
+        $setSearchWord = ['search_for' => $searchFor,
+                                'replace_with' => $replaceWith];
 
-        $set_search_word = Container::get('hooks')->fire('model.admin.censoring.update_censoring_word_start', $set_search_word);
+        $setSearchWord = Container::get('hooks')->fire('model.admin.censoring.update_censoring_word_start', $setSearchWord);
 
-        $result = DB::for_table('censoring')
-            ->find_one($id)
-            ->set($set_search_word)
+        $result = DB::forTable('censoring')
+            ->findOne($id)
+            ->set($setSearchWord)
             ->save();
 
         // Regenerate the censoring cache
@@ -76,7 +76,7 @@ class Censoring
         $id = intval(key(Input::post('remove')));
         $id = Container::get('hooks')->fire('model.admin.censoring.remove_censoring_word_start', $id);
 
-        $result = DB::for_table('censoring')->find_one($id);
+        $result = DB::forTable('censoring')->findOne($id);
         $result = Container::get('hooks')->fireDB('model.admin.censoring.remove_censoring_word', $result);
         $result = $result->delete();
 
@@ -89,13 +89,13 @@ class Censoring
 
     public function getWords()
     {
-        $word_data = [];
+        $wordData = [];
 
-        $word_data = DB::for_table('censoring')
-                        ->order_by_asc('id');
-        $word_data = Container::get('hooks')->fireDB('model.admin.censoring.update_censoring_word_query', $word_data);
-        $word_data = $word_data->find_array();
+        $wordData = DB::forTable('censoring')
+                        ->orderByAsc('id');
+        $wordData = Container::get('hooks')->fireDB('model.admin.censoring.update_censoring_word_query', $wordData);
+        $wordData = $wordData->findArray();
 
-        return $word_data;
+        return $wordData;
     }
 }

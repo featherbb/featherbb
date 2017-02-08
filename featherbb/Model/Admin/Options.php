@@ -154,11 +154,11 @@ class Options
 
         // Change or enter a SMTP password
         if (Input::post('form_smtp_change_pass')) {
-            $smtp_pass1 = Input::post('form_smtp_pass1') ? Utils::trim(Input::post('form_smtp_pass1')) : '';
-            $smtp_pass2 = Input::post('form_smtp_pass2') ? Utils::trim(Input::post('form_smtp_pass2')) : '';
+            $smtpPass1 = Input::post('form_smtp_pass1') ? Utils::trim(Input::post('form_smtp_pass1')) : '';
+            $smtpPass2 = Input::post('form_smtp_pass2') ? Utils::trim(Input::post('form_smtp_pass2')) : '';
 
-            if ($smtp_pass1 == $smtp_pass2) {
-                $form['smtp_pass'] = $smtp_pass1;
+            if ($smtpPass1 == $smtpPass2) {
+                $form['smtp_pass'] = $smtpPass1;
             } else {
                 throw new Error(__('SMTP passwords did not match'), 400);
             }
@@ -214,11 +214,11 @@ class Options
             // Only update values that have changed
             if (array_key_exists('o_'.$key, Container::get('forum_settings')) && ForumSettings::get('o_'.$key) != $input) {
                 if ($input != '' || is_int($input)) {
-                    DB::for_table('config')->where('conf_name', 'o_'.$key)
-                                                               ->update_many('conf_value', $input);
+                    DB::forTable('config')->where('conf_name', 'o_'.$key)
+                                                               ->updateMany('conf_value', $input);
                 } else {
-                    DB::for_table('config')->where('conf_name', 'o_'.$key)
-                                                               ->update_many_expr('conf_value', 'NULL');
+                    DB::forTable('config')->where('conf_name', 'o_'.$key)
+                                                               ->updateManyExpr('conf_value', 'NULL');
                 }
             }
         }

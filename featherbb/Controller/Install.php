@@ -17,22 +17,22 @@ use FeatherBB\Middleware\Core;
 
 class Install
 {
-    protected $supported_dbs = ['mysql' => 'MySQL',
+    protected $supportedDbs = ['mysql' => 'MySQL',
         'pgsql' => 'PostgreSQL',
         'sqlite' => 'SQLite',
         'sqlite3' => 'SQLite3',
     ];
-    protected $available_langs;
-    protected $optional_fields = ['db_user', 'db_pass', 'db_prefix'];
-    protected $install_lang = 'English';
-    protected $default_style = 'FeatherBB';
-    protected $config_keys = ['db_type', 'db_host', 'db_name', 'db_user', 'db_pass', 'db_prefix'];
+    protected $availableLangs;
+    protected $optionalFields = ['db_user', 'db_pass', 'db_prefix'];
+    protected $installLang = 'English';
+    protected $defaultStyle = 'FeatherBB';
+    protected $configKeys = ['db_type', 'db_host', 'db_name', 'db_user', 'db_pass', 'db_prefix'];
     protected $errors = [];
 
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Install();
-        $this->available_langs = Lister::getLangs();
+        $this->availableLangs = Lister::getLangs();
         Container::set('user', null);
         View::setStyle('FeatherBB');
     }
@@ -44,19 +44,19 @@ class Install
 
         // First form has been submitted to change default language
         if (Input::post('choose_lang')) {
-            if (in_array(Utils::trim(Input::post('install_lang')), $this->available_langs)) {
-                $this->install_lang = Input::post('install_lang');
+            if (in_array(Utils::trim(Input::post('install_lang')), $this->availableLangs)) {
+                $this->installLang = Input::post('install_lang');
             }
         }
 
         $csrf = new \FeatherBB\Middleware\Csrf();
         $csrf->generateNewToken(Container::get('request'));
 
-        Lang::load('install', 'featherbb', $this->install_lang);
+        Lang::load('install', 'featherbb', $this->installLang);
 
         // Second form has been submitted to start install
         if (Request::isPost() && !Input::post('choose_lang')) {
-            $missing_fields = [];
+            $missingFields = [];
             $data = array_map(function ($item) {
                 return Utils::escape(Utils::trim($item));
             }, Input::post('install'));
@@ -65,14 +65,14 @@ class Install
                 // Handle empty fields
                 if (empty($value)) {
                     // If the field is required, or if user and pass are missing even though mysql or pgsql are selected as DB
-                    if (!in_array($field, $this->optional_fields) || (in_array($field, ['db_user']) && in_array($data['db_type'], ['mysql', 'pgsql']))) {
-                        $missing_fields[] = $field;
+                    if (!in_array($field, $this->optionalFields) || (in_array($field, ['db_user']) && in_array($data['db_type'], ['mysql', 'pgsql']))) {
+                        $missingFields[] = $field;
                     }
                 }
             }
 
-            if (!empty($missing_fields)) {
-                $this->errors = 'The following fields are required but are missing : '.implode(', ', $missing_fields);
+            if (!empty($missingFields)) {
+                $this->errors = 'The following fields are required but are missing : '.implode(', ', $missingFields);
             } else { // Missing fields, so we don't need to validate the others
                 // VALIDATION
                 // Make sure base_url doesn't end with a slash
@@ -130,25 +130,25 @@ class Install
             // End validation and check errors
             if (!empty($this->errors)) {
                 return View::setPageInfo([
-                    'languages' => $this->available_langs,
-                    'supported_dbs' => $this->supported_dbs,
+                    'languages' => $this->availableLangs,
+                    'supported_dbs' => $this->supportedDbs,
                     'data' => $data,
                     'errors' => $this->errors,
                 ])->addTemplate('install.php')->display(false);
             } else {
-                $data['style'] = $this->default_style;
+                $data['style'] = $this->defaultStyle;
                 $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), ['on', 'true', '1']) ? 1 : 0;
                 return $this->createConfig($data);
             }
         } else {
-            $base_url = str_replace('index.php', '', Url::base());
+            $baseUrl = str_replace('index.php', '', Url::base());
             $data = ['title' => __('My FeatherBB Forum'),
                 'description' => __('Description'),
-                'base_url' => $base_url,
-                'language' => $this->install_lang];
+                'base_url' => $baseUrl,
+                'language' => $this->installLang];
             return View::setPageInfo([
-                'languages' => $this->available_langs,
-                'supported_dbs' => $this->supported_dbs,
+                'languages' => $this->availableLangs,
+                'supported_dbs' => $this->supportedDbs,
                 'data' => $data,
                 'alerts' => [],
             ])->addTemplate('install.php')->display(false);
@@ -162,7 +162,7 @@ class Install
         // Generate config ...
         $config = [];
         foreach ($data as $key => $value) {
-            if (in_array($key, $this->config_keys)) {
+            if (in_array($key, $this->configKeys)) {
                 $config[$key] = $value;
             }
         }
@@ -202,8 +202,8 @@ class Install
         }
 
         // Populate group table with default values
-        foreach ($this->model->loadDefaultGroups() as $group_name => $group_data) {
-            $this->model->addData('groups', $group_data);
+        foreach ($this->model->loadDefaultGroups() as $groupName => $groupData) {
+            $this->model->addData('groups', $groupData);
         }
 
         // Init permissions
@@ -266,7 +266,7 @@ class Install
         // Populate categories, forums, topics, posts
         $this->model->addMockForum($this->model->loadMockForumData($data));
         // Store config in DB
-        $this->model->save_config($this->loadDefaultConfig($data));
+        $this->model->saveConfig($this->loadDefaultConfig($data));
 
         // Handle .htaccess
         if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) {
@@ -281,7 +281,7 @@ class Install
     {
         Container::get('hooks')->fire('controller.install.write_config');
 
-        return file_put_contents(ForumEnv::get('FORUM_CONFIG_FILE'), '<?php'."\n".'$featherbb_config = '.var_export($array, true).';');
+        return file_put_contents(ForumEnv::get('FORUM_CONFIG_FILE'), '<?php'."\n".'$featherbbConfig = '.var_export($array, true).';');
     }
 
     public function writeHtaccess()

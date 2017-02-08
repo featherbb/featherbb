@@ -30,13 +30,13 @@ class Forums
     {
         Container::get('hooks')->fire('controller.admin.forums.add');
 
-        $cat_id = (int) Input::post('cat');
+        $catId = (int) Input::post('cat');
 
-        if ($cat_id < 1) {
+        if ($catId < 1) {
             return Router::redirect(Router::pathFor('adminForums'), __('Must be valid category'));
         }
 
-        if ($fid = $this->model->addForum($cat_id, __('New forum'))) {
+        if ($fid = $this->model->addForum($catId, __('New forum'))) {
             // Regenerate the quick jump cache
             Container::get('cache')->store('quickjump', Cache::quickjump());
 
@@ -54,44 +54,44 @@ class Forums
             if (Input::post('save') && Input::post('read_forum_old')) {
 
                 // Forums parameters / TODO : better handling of wrong parameters
-                $forum_data = ['forum_name' => Utils::escape(Input::post('forum_name')),
+                $forumData = ['forum_name' => Utils::escape(Input::post('forum_name')),
                                     'forum_desc' => Input::post('forum_desc') ? Utils::linebreaks(Utils::trim(Input::post('forum_desc'))) : null,
                                     'cat_id' => (int) Input::post('cat_id'),
                                     'sort_by' => (int) Input::post('sort_by'),
                                     'redirect_url' => Url::isValid(Input::post('redirect_url')) ? Utils::escape(Input::post('redirect_url')) : null];
 
-                if ($forum_data['forum_name'] == '') {
+                if ($forumData['forum_name'] == '') {
                     return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Must enter name message'));
                 }
-                if ($forum_data['cat_id'] < 1) {
+                if ($forumData['cat_id'] < 1) {
                     return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Must be valid category'));
                 }
 
-                $this->model->updateForum($args['id'], $forum_data);
+                $this->model->updateForum($args['id'], $forumData);
 
                 // Permissions
                 $permissions = $this->model->getDefaultGroupPermissions(false);
-                foreach ($permissions as $perm_group) {
-                    $permissions_data = ['group_id' => $perm_group['g_id'],
+                foreach ($permissions as $permGroup) {
+                    $permissionsData = ['group_id' => $permGroup['g_id'],
                                                 'forum_id' => $args['id']];
-                    if ($perm_group['board.read'] == '1' && isset(Input::post('read_forum_new')[$perm_group['g_id']]) && Input::post('read_forum_new')[$perm_group['g_id']] == '1') {
-                        $permissions_data['read_forum'] = '1';
+                    if ($permGroup['board.read'] == '1' && isset(Input::post('read_forum_new')[$permGroup['g_id']]) && Input::post('read_forum_new')[$permGroup['g_id']] == '1') {
+                        $permissionsData['read_forum'] = '1';
                     } else {
-                        $permissions_data['read_forum'] = '0';
+                        $permissionsData['read_forum'] = '0';
                     }
 
-                    $permissions_data['post_replies'] = (isset(Input::post('post_replies_new')[$perm_group['g_id']])) ? '1' : '0';
-                    $permissions_data['post_topics'] = (isset(Input::post('post_topics_new')[$perm_group['g_id']])) ? '1' : '0';
+                    $permissionsData['post_replies'] = (isset(Input::post('post_replies_new')[$permGroup['g_id']])) ? '1' : '0';
+                    $permissionsData['post_topics'] = (isset(Input::post('post_topics_new')[$permGroup['g_id']])) ? '1' : '0';
                     // Check if the new settings differ from the old
-                    if ($permissions_data['read_forum'] != Input::post('read_forum_old')[$perm_group['g_id']] ||
-                        $permissions_data['post_replies'] != Input::post('post_replies_old')[$perm_group['g_id']] ||
-                        $permissions_data['post_topics'] != Input::post('post_topics_old')[$perm_group['g_id']]) {
+                    if ($permissionsData['read_forum'] != Input::post('read_forum_old')[$permGroup['g_id']] ||
+                        $permissionsData['post_replies'] != Input::post('post_replies_old')[$permGroup['g_id']] ||
+                        $permissionsData['post_topics'] != Input::post('post_topics_old')[$permGroup['g_id']]) {
                         // If there is no group permissions override for this forum
-                            if ($permissions_data['read_forum'] == '1' && $permissions_data['post_replies'] == $perm_group['topic.reply'] && $permissions_data['post_topics'] == $perm_group['topic.post']) {
-                                $this->model->deletePermissions($args['id'], $perm_group['g_id']);
+                            if ($permissionsData['read_forum'] == '1' && $permissionsData['post_replies'] == $permGroup['topic.reply'] && $permissionsData['post_topics'] == $permGroup['topic.post']) {
+                                $this->model->deletePermissions($args['id'], $permGroup['g_id']);
                             } else {
                                 // Run an UPDATE and see if it affected a row, if not, INSERT
-                                $this->model->updatePermissions($permissions_data);
+                                $this->model->updatePermissions($permissionsData);
                             }
                     }
                 }
@@ -128,13 +128,13 @@ class Forums
     {
         Container::get('hooks')->fire('controller.admin.forums.delete');
 
-        if (!$cur_forum = $this->model->getForumInfo($args['id'])) {
+        if (!$curForum = $this->model->getForumInfo($args['id'])) {
             $notFoundHandler = Container::get('notFoundHandler');
             return $notFoundHandler($req, $res);
         }
 
         if (Request::isPost()) {
-            $this->model->delete_forum($args['id']);
+            $this->model->deleteForum($args['id']);
             // Regenerate the quick jump cache
             Container::get('cache')->store('quickjump', Cache::quickjump());
 
@@ -147,7 +147,7 @@ class Forums
                     'title'    =>    [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')],
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
-                    'cur_forum' => $cur_forum
+                    'cur_forum' => $curForum
                 ]
             )->addTemplate('admin/forums/delete_forum.php')->display();
         }
@@ -178,12 +178,12 @@ class Forums
 
         AdminUtils::generateAdminMenu('forums');
 
-        $categories_model = new \FeatherBB\Model\Admin\Categories();
+        $categoriesModel = new \FeatherBB\Model\Admin\Categories();
         View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')],
                 'active_page' => 'admin',
                 'admin_console' => true,
-                'cat_list' => $categories_model->categoryList(),
+                'cat_list' => $categoriesModel->categoryList(),
                 'forum_data' => $this->model->getForums(),
                 'cur_index' => 4,
             ]

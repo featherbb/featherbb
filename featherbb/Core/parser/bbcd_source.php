@@ -9,7 +9,7 @@
  */
 
 
-// File: $bbcd_source.php Rev:20110403_2100
+// File: $bbcdSource.php Rev:20110403_2100
 // Contains master default: $config, $syntaxes, $smilies and $bbcd arrays.
 // This file is not used during runtime. It is used to compile the actual runtime
 // cache file: cache_parser_data.php whenever the parser options need to be reset

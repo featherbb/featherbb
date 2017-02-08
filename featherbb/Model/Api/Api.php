@@ -41,11 +41,11 @@ class Api
     {
         // Get the user ID from its name
         if (Input::query('username')) {
-            $user_id = DB::for_table('users')
-                ->where_like('username', Input::query('username'))
-                ->find_one_col('id');
-            if ($user_id) {
-                $this->tmpUser = User::get($user_id);
+            $userId = DB::forTable('users')
+                ->whereLike('username', Input::query('username'))
+                ->findOneCol('id');
+            if ($userId) {
+                $this->tmpUser = User::get($userId);
             }
         }
         // Load the user object from its ID directly
