@@ -61,7 +61,7 @@ Container::get('hooks')->fire('view.admin.users.find_users.start');
                     <td class="tcl"><?= '<a href="'.Router::pathFor('userProfile', ['id' => $user['id']]).'">'.Utils::escape($user['username']).'</a>' ?></td>
                     <td class="tc2"><a href="mailto:<?= Utils::escape($user['email']) ?>"><?= Utils::escape($user['email']) ?></a></td>
                     <td class="tc3"><?= $user['user_title'] ?></td>
-                    <td class="tc4"><?= Utils::forum_number_format($user['num_posts']) ?></td>
+                    <td class="tc4"><?= Utils::forumNumberFormat($user['num_posts']) ?></td>
                     <td class="tc5"><?php echo($user['admin_note'] != '') ? Utils::escape($user['admin_note']) : '&#160;' ?></td>
                     <td class="tcr"><?= '<a href="'.Router::pathFor('usersIpStats', ['id' => $user['id']]).'">'.__('Results view IP link').'</a> | <a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Results show posts link').'</a>' ?></td>
 <?php if ($can_action): ?>                    <td class="tcmod"><input type="checkbox" name="users[<?= $user['id'] ?>]" value="1" /></td>

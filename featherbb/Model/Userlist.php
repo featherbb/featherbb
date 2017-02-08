@@ -15,7 +15,7 @@ use FeatherBB\Core\Utils;
 class Userlist
 {
     // Counts the number of user for a specific query
-    public function fetch_user_count($username, $show_group)
+    public function userCount($username, $show_group)
     {
         // Fetch user count
         $num_users = DB::for_table('users')->table_alias('u')
@@ -37,7 +37,7 @@ class Userlist
     }
 
     // Generates the dropdown menu containing groups
-    public function generate_dropdown_menu($show_group)
+    public function dropdownMenu($show_group)
     {
         $show_group = Container::get('hooks')->fire('model.userlist.generate_dropdown_menu_start', $show_group);
 
@@ -66,7 +66,7 @@ class Userlist
     }
 
     // Prints the users
-    public function print_users($username, $start_from, $sort_by, $sort_dir, $show_group)
+    public function printUsers($username, $start_from, $sort_by, $sort_dir, $show_group)
     {
         $userlist_data = [];
 

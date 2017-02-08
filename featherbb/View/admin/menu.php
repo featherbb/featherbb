@@ -56,7 +56,7 @@ if (!empty($plugins)): ?>
                         <div class="inbox">
                             <ul>
 <?php foreach ($plugins as $plugin) {
-    $plugin_url = Url::url_friendly($plugin);
+    $plugin_url = Url::slug($plugin);
     echo "\t\t\t\t\t\t\t\t".'<li'.(($page == $plugin_url) ? ' class="isactive"' : '').'><a href="'.Router::pathFor('infoPlugin', ['name' => $plugin_url]).'">'.$plugin.'</a></li>'."\n";
 }
 ?>

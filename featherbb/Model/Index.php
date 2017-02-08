@@ -17,7 +17,7 @@ use FeatherBB\Core\Utils;
 class Index
 {
     // Returns forum action
-    public function get_forum_actions()
+    public function forumActions()
     {
         Container::get('hooks')->fire('model.index.get_forum_actions_start');
 
@@ -56,7 +56,7 @@ class Index
         $query = $query->find_result_set();
 
         $forums = $new_topics = [];
-        $tracked_topics = Track::get_tracked_topics();
+        $tracked_topics = Track::getTrackedTopics();
 
         foreach ($query as $cur_forum) {
             if (!isset($tracked_topics['forums'][$cur_forum->id]) || $tracked_topics['forums'][$cur_forum->id] < $cur_forum->last_post) {
@@ -94,7 +94,7 @@ class Index
     }
 
     // Returns the elements needed to display categories and their forums
-    public function print_categories_forums()
+    public function printCategoriesForums()
     {
         Container::get('hooks')->fire('model.index.print_categories_forums_start');
 
@@ -164,7 +164,7 @@ class Index
                 $cur_forum->item_status .= ' iredirect';
                 $cur_forum->icon_type = 'icon';
             } else {
-                $forum_name = Url::url_friendly($cur_forum->forum_name);
+                $forum_name = Url::slug($cur_forum->forum_name);
                 $cur_forum->forum_field = '<h3><a href="'.Router::pathFor('Forum', ['id' => $cur_forum->fid, 'name' => $forum_name]).'">'.Utils::escape($cur_forum->forum_name).'</a>'.(!empty($forum_field_new) ? ' '.$forum_field_new : '').'</h3>';
                 $cur_forum->num_topics_formatted = $cur_forum->num_topics;
                 $cur_forum->num_posts_formatted = $cur_forum->num_posts;
@@ -176,7 +176,7 @@ class Index
 
             // If there is a last_post/last_poster
             if ($cur_forum->last_post != '') {
-                $cur_forum->last_post_formatted = '<a href="'.Router::pathFor('viewPost', ['id' => $cur_forum->last_post_tid, 'name' => Url::url_friendly($cur_forum->last_post_subject), 'pid' => $cur_forum->last_post_id]).'#p'.$cur_forum->last_post_id.'">'.Container::get('utils')->format_time($cur_forum->last_post).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_forum->last_poster).'</span>';
+                $cur_forum->last_post_formatted = '<a href="'.Router::pathFor('viewPost', ['id' => $cur_forum->last_post_tid, 'name' => Url::slug($cur_forum->last_post_subject), 'pid' => $cur_forum->last_post_id]).'#p'.$cur_forum->last_post_id.'">'.Container::get('utils')->formatTime($cur_forum->last_post).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_forum->last_poster).'</span>';
             } elseif ($cur_forum->redirect_url != '') {
                 $cur_forum->last_post_formatted = '- - -';
             } else {
@@ -210,13 +210,13 @@ class Index
     }
 
     // Returns the elements needed to display stats
-    public function collect_stats()
+    public function stats()
     {
         Container::get('hooks')->fire('model.index.collect_stats_start');
 
         // Collect some statistics from the database
         if (!Container::get('cache')->isCached('users_info')) {
-            Container::get('cache')->store('users_info', Cache::get_users_info());
+            Container::get('cache')->store('users_info', Cache::getUsersInfo());
         }
 
         $stats = Container::get('cache')->retrieve('users_info');
@@ -244,7 +244,7 @@ class Index
     }
 
     // Returns the elements needed to display users online
-    public function fetch_users_online()
+    public function usersOnline()
     {
         Container::get('hooks')->fire('model.index.fetch_users_online_start');
 

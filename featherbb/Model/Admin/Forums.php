@@ -13,7 +13,7 @@ use FeatherBB\Core\Database as DB;
 
 class Forums
 {
-    public function add_forum($cat_id, $forum_name)
+    public function addForum($cat_id, $forum_name)
     {
         $set_add_forum = ['forum_name' => $forum_name,
                                 'cat_id' => $cat_id];
@@ -28,7 +28,7 @@ class Forums
         return $forum->id();
     }
 
-    public function update_forum($forum_id, array $forum_data)
+    public function updateForum($forum_id, array $forum_data)
     {
         $update_forum = DB::for_table('forums')
                     ->find_one($forum_id)
@@ -77,7 +77,7 @@ class Forums
         return true; // TODO, better error handling
     }
 
-    public function get_forum_info($forum_id)
+    public function getForumInfo($forum_id)
     {
         $result = DB::for_table('forums')
                     ->where('id', $forum_id);
@@ -87,7 +87,7 @@ class Forums
         return $result;
     }
 
-    public function get_forums()
+    public function getForums()
     {
         $forum_data = [];
         $forum_data = Container::get('hooks')->fire('model.admin.forums.get_forums_start', $forum_data);
@@ -118,7 +118,7 @@ class Forums
         return $forum_data;
     }
 
-    public function update_positions($forum_id, $position)
+    public function updatePositions($forum_id, $position)
     {
         Container::get('hooks')->fire('model.admin.forums.update_positions_start', $forum_id, $position);
 
@@ -128,7 +128,7 @@ class Forums
                 ->save();
     }
 
-    public function get_permissions($forum_id)
+    public function getPermissions($forum_id)
     {
         $perm_data = [];
         $forum_id = Container::get('hooks')->fire('model.admin.forums.get_permissions_start', $forum_id);
@@ -164,7 +164,7 @@ class Forums
         return $perm_data;
     }
 
-    public function get_default_group_permissions($fetch_admin = true)
+    public function getDefaultGroupPermissions($fetch_admin = true)
     {
         $perm_data = [];
 
@@ -190,7 +190,7 @@ class Forums
         return $perm_data;
     }
 
-    public function update_permissions(array $permissions_data)
+    public function updatePermissions(array $permissions_data)
     {
         $permissions_data = Container::get('hooks')->fire('model.admin.forums.update_permissions_start', $permissions_data);
 
@@ -207,7 +207,7 @@ class Forums
         }
     }
 
-    public function delete_permissions($forum_id, $group_id = null)
+    public function deletePermissions($forum_id, $group_id = null)
     {
         $result = DB::for_table('forum_perms')
                     ->where('forum_id', $forum_id);

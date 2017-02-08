@@ -18,7 +18,7 @@ use FeatherBB\Core\Utils;
 class Forum
 {
     // Returns basic informations about the forum
-    public function get_forum_info($id)
+    public function getForumInfo($id)
     {
         $id = Container::get('hooks')->fire('model.forum.get_info_forum_start', $id);
 
@@ -54,13 +54,13 @@ class Forum
             throw new Error(__('Bad request'), '404');
         }
 
-        $cur_forum['forum_url'] = Url::url_friendly($cur_forum['forum_name']);
+        $cur_forum['forum_url'] = Url::slug($cur_forum['forum_name']);
         $cur_forum = Container::get('hooks')->fire('model.forum.get_info_forum', $cur_forum);
 
         return $cur_forum;
     }
 
-    public static function get_moderators($fid)
+    public static function getModerators($fid)
     {
         $moderators = DB::for_table('forums')
                         ->where('id', $fid);
@@ -70,7 +70,7 @@ class Forum
         return $moderators;
     }
 
-    public static function get_forum_id($tid)
+    public static function getId($tid)
     {
         $fid = DB::for_table('topics')
             ->where('id', $tid);
@@ -81,7 +81,7 @@ class Forum
     }
 
     // Returns the text required by the query to sort the forum
-    public function sort_forum_by($sort_by_sql)
+    public function sortForumBy($sort_by_sql)
     {
         $sort_by_sql = Container::get('hooks')->fire('model.forum.sort_forum_by_start', $sort_by_sql);
 
@@ -106,7 +106,7 @@ class Forum
     }
 
     // Returns forum action
-    public function get_forum_actions($forum_id, $forum_url, $is_subscribed)
+    public function getForumActions($forum_id, $forum_url, $is_subscribed)
     {
         $forum_actions = [];
 
@@ -130,13 +130,13 @@ class Forum
     }
 
     // Returns the elements needed to display topics
-    public function print_topics($forum_id, $sort_by, $start_from)
+    public function printTopics($forum_id, $sort_by, $start_from)
     {
         $forum_id = Container::get('hooks')->fire('model.forum.print_topics_start', $forum_id, $sort_by, $start_from);
 
         // Get topic/forum tracking data
         if (!User::get()->is_guest) {
-            $tracked_topics = Track::get_tracked_topics();
+            $tracked_topics = Track::getTrackedTopics();
         }
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
@@ -196,10 +196,10 @@ class Forum
                 $status_text = [];
                 $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
                 $cur_topic['icon_type'] = 'icon';
-                $url_subject = Url::url_friendly($cur_topic['subject']);
+                $url_subject = Url::slug($cur_topic['subject']);
 
                 if (is_null($cur_topic['moved_to'])) {
-                    $cur_topic['last_post_formatted'] = '<a href="'.Router::pathFor('viewPost', ['id' => $cur_topic['id'], 'name' => $url_subject, 'pid' => $cur_topic['last_post_id']]).'#p'.$cur_topic['last_post_id'].'">'.Utils::format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
+                    $cur_topic['last_post_formatted'] = '<a href="'.Router::pathFor('viewPost', ['id' => $cur_topic['id'], 'name' => $url_subject, 'pid' => $cur_topic['last_post_id']]).'#p'.$cur_topic['last_post_id'].'">'.Utils::formatTime($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
                 } else {
                     $cur_topic['last_post_formatted'] = '- - -';
                 }
@@ -275,7 +275,7 @@ class Forum
         return $forum_data;
     }
 
-    public function display_topics_moderate($fid, $sort_by, $start_from)
+    public function displayTopicsModerate($fid, $sort_by, $start_from)
     {
         Container::get('hooks')->fire('model.forum.display_topics_start', $fid, $sort_by, $start_from);
 
@@ -283,7 +283,7 @@ class Forum
 
         // Get topic/forum tracking data
         if (!User::get()->is_guest) {
-            $tracked_topics = Track::get_tracked_topics();
+            $tracked_topics = Track::getTrackedTopics();
         }
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
@@ -318,10 +318,10 @@ class Forum
                 $status_text = [];
                 $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
                 $cur_topic['icon_type'] = 'icon';
-                $url_topic = Url::url_friendly($cur_topic['subject']);
+                $url_topic = Url::slug($cur_topic['subject']);
 
                 if (is_null($cur_topic['moved_to'])) {
-                    $cur_topic['last_post_disp'] = '<a href="'.Router::pathFor('viewPost', ['id' => $cur_topic['id'], 'name' => $url_topic, 'pid' => $cur_topic['last_post_id']]).'#p'.$cur_topic['last_post_id'].'">'.Utils::format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
+                    $cur_topic['last_post_disp'] = '<a href="'.Router::pathFor('viewPost', ['id' => $cur_topic['id'], 'name' => $url_topic, 'pid' => $cur_topic['last_post_id']]).'#p'.$cur_topic['last_post_id'].'">'.Utils::formatTime($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
                     $cur_topic['ghost_topic'] = false;
                 } else {
                     $cur_topic['last_post_disp'] = '- - -';
@@ -515,7 +515,7 @@ class Forum
         $subscription->save();
     }
 
-    public function close_multiple_topics($action, $topics)
+    public function closeMultiple($action, $topics)
     {
         $close_multiple_topics = DB::for_table('topics')
                                     ->where_in('id', $topics);
@@ -523,7 +523,7 @@ class Forum
         $close_multiple_topics = $close_multiple_topics->update_many('closed', $action);
     }
 
-    public function stick_multiple_topics($action, $topics)
+    public function stickMultiple($action, $topics)
     {
         $stick_multiple_topics = DB::for_table('topics')
                                     ->where_in('id', $topics);
@@ -531,7 +531,7 @@ class Forum
         $stick_multiple_topics = $stick_multiple_topics->update_many('sticky', $action);
     }
 
-    public function delete_topics($topics, $fid)
+    public function delete($topics, $fid)
     {
         Container::get('hooks')->fire('model.forum.delete_topics', $topics, $fid);
 
@@ -556,7 +556,7 @@ class Forum
         if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN')) {
             $authorized = DB::for_table('posts')
                             ->where_in('topic_id', $topics_sql)
-                            ->where('poster_id', Utils::get_admin_ids());
+                            ->where('poster_id', Utils::getAdminIds());
             $authorized = Container::get('hooks')->fireDB('model.forum.delete_topics_authorized', $authorized);
             $authorized = $authorized->find_many();
             if ($authorized) {
@@ -600,7 +600,7 @@ class Forum
         // We have to check that we actually have a list of post IDs since we could be deleting just a redirect topic
         if ($post_ids != '') {
             $search = new \FeatherBB\Core\Search();
-            $search->strip_search_index($post_ids);
+            $search->stripSearchIndex($post_ids);
         }
 
         // Delete posts
@@ -612,7 +612,7 @@ class Forum
         self::update($fid);
     }
 
-    public function merge_topics($fid)
+    public function merge($fid)
     {
         $fid = Container::get('hooks')->fire('model.forum.merge_topics_start', $fid);
 
@@ -737,9 +737,9 @@ class Forum
         self::update($fid);
     }
 
-    public static function can_moderate($fid)
+    public static function canModerate($fid)
     {
-        $moderators = self::get_moderators($fid);
+        $moderators = self::getModerators($fid);
         $mods_array = ($moderators != '') ? unserialize($moderators) : [];
 
         // Sort out who has permission to moderate

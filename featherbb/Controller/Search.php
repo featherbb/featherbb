@@ -34,7 +34,7 @@ class Search
 
         // Figure out what to do :-)
         if (Input::query('action') || isset($args['search_id'])) {
-            $search = (isset($args['search_id'])) ? $this->model->get_search_results($args['search_id']) : $this->model->get_search_results();
+            $search = (isset($args['search_id'])) ? $this->model->getSearchResults($args['search_id']) : $this->model->getSearchResults();
 
             if (is_object($search)) {
                 // $search is most likely a Router::redirect() to search page (no hits or other error) or to a search_id
@@ -54,7 +54,7 @@ class Search
                     'footer' => $search,
                 ]);
 
-                $display = $this->model->display_search_results($search);
+                $display = $this->model->displaySearchResults($search);
 
                 View::setPageInfo([
                         'display' => $display,
@@ -78,7 +78,7 @@ class Search
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Search')],
                 'active_page' => 'search',
                 'is_indexed' => true,
-                'forums' => $this->model->get_list_forums(),
+                'forums' => $this->model->forumsList(),
             ])->addTemplate('search/form.php')->display();
         }
     }

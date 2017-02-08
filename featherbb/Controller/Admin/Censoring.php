@@ -30,17 +30,17 @@ class Censoring
 
         // Add a censor word
         if (Input::post('add_word')) {
-            return $this->model->add_word();
+            return $this->model->addWord();
         }
 
         // Update a censor word
         elseif (Input::post('update')) {
-            return $this->model->update_word();
+            return $this->model->updateWord();
         }
 
         // Remove a censor word
         elseif (Input::post('remove')) {
-            return $this->model->remove_word();
+            return $this->model->removeWord();
         }
 
         AdminUtils::generateAdminMenu('censoring');
@@ -49,7 +49,7 @@ class Censoring
                 'title'    =>    [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Censoring')],
                 'active_page'    =>    'admin',
                 'admin_console'    =>    true,
-                'word_data'    =>    $this->model->get_words(),
+                'word_data'    =>    $this->model->getWords(),
             ]
         )->addTemplate('admin/censoring.php')->display();
     }

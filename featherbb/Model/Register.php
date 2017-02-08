@@ -18,7 +18,7 @@ use FeatherBB\Model\Auth as AuthModel;
 
 class Register
 {
-    public function check_for_errors()
+    public function checkErrors()
     {
         $user = [];
         $user['errors'] = '';
@@ -52,7 +52,7 @@ class Register
 
         // Validate username and passwords
         $profile = new \FeatherBB\Model\Profile();
-        $user['errors'] = $profile->check_username($user['username'], $user['errors']);
+        $user['errors'] = $profile->checkUsername($user['username'], $user['errors']);
 
         if (Utils::strlen($user['password1']) < 6) {
             $user['errors'][] = __('Pass too short');
@@ -74,7 +74,7 @@ class Register
         }
 
         // Validate email
-        if (!Container::get('email')->is_valid_email($user['email1'])) {
+        if (!Container::get('email')->isValidEmail($user['email1'])) {
             $user['errors'][] = __('Invalid email');
         } elseif (ForumSettings::get('o_regs_verify') == '1' && $user['email1'] != $email2) {
             $user['errors'][] = __('Email not match');
@@ -122,7 +122,7 @@ class Register
         return $user;
     }
 
-    public function insert_user($user)
+    public function insertUser($user)
     {
         $user = Container::get('hooks')->fire('model.register.insert_user_start', $user);
 
@@ -130,7 +130,7 @@ class Register
         $now = time();
 
         $intial_group_id = (ForumSettings::get('o_regs_verify') == '0') ? ForumSettings::get('o_default_user_group') : ForumEnv::get('FEATHER_UNVERIFIED');
-        $password_hash = Utils::password_hash($user['password1']);
+        $password_hash = Utils::passwordHash($user['password1']);
 
         // Add the user
         $user_data = [
@@ -177,7 +177,7 @@ class Register
                 $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                 $mail_message = Container::get('hooks')->fire('model.register.insert_user_banned_mail_message', $mail_message);
 
-                Container::get('email')->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
             }
 
             // If we previously found out that the email was a dupe
@@ -198,7 +198,7 @@ class Register
                 $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                 $mail_message = Container::get('hooks')->fire('model.register.insert_user_dupe_mail_message', $mail_message);
 
-                Container::get('email')->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
             }
 
             // Should we alert people on the admin mailing list that a new user has registered?
@@ -220,7 +220,7 @@ class Register
                 $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                 $mail_message = Container::get('hooks')->fire('model.register.insert_user_new_mail_message', $mail_message);
 
-                Container::get('email')->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
             }
         }
 
@@ -244,7 +244,7 @@ class Register
             $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
             $mail_message = Container::get('hooks')->fire('model.register.insert_user_welcome_mail_message', $mail_message);
 
-            Container::get('email')->feather_mail($user['email1'], $mail_subject, $mail_message);
+            Container::get('email')->send($user['email1'], $mail_subject, $mail_message);
 
             return Router::redirect(Router::pathFor('home'), __('Reg email').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.');
         } else {
@@ -253,12 +253,12 @@ class Register
             $user_object->id = $new_uid;
             $user_object->username = $user['username'];
             $expire = time() + ForumSettings::get('o_timeout_visit');
-            $jwt = AuthModel::generate_jwt($user_object, $expire);
-            AuthModel::feather_setcookie('Bearer '.$jwt, $expire);
+            $jwt = AuthModel::generateJwt($user_object, $expire);
+            AuthModel::setCookie('Bearer '.$jwt, $expire);
         }
 
         // Refresh cache
-        Container::get('cache')->store('users_info', Cache::get_users_info());
+        Container::get('cache')->store('users_info', Cache::getUsersInfo());
 
         Container::get('hooks')->fire('model.register.insert_user');
 

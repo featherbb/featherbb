@@ -44,38 +44,38 @@ class Profile
                 throw new Error(__('No permission'), 403);
             }
 
-            return $this->model->update_group_membership($args['id']);
+            return $this->model->updateGroupMembership($args['id']);
         } elseif (Input::post('update_forums')) {
             if (User::get()->g_id > ForumEnv::get('FEATHER_ADMIN')) {
                 throw new Error(__('No permission'), 403);
             }
 
-            return $this->model->update_mod_forums($args['id']);
+            return $this->model->updateModForums($args['id']);
         } elseif (Input::post('ban')) {
             if (!User::isAdmin() && (!User::isAdminMod() || !User::can('mod.ban_users'))) {
                 throw new Error(__('No permission'), 403);
             }
 
-            return $this->model->ban_user($args['id']);
+            return $this->model->banUser($args['id']);
         } elseif (Input::post('delete_user') || Input::post('delete_user_comply')) {
             if (User::get()->g_id > ForumEnv::get('FEATHER_ADMIN')) {
                 throw new Error(__('No permission'), 403);
             }
 
             if (Input::post('delete_user_comply')) {
-                return $this->model->delete_user($args['id']);
+                return $this->model->deleteUser($args['id']);
             } else {
                 return View::setPageInfo([
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Confirm delete user')],
                     'active_page' => 'profile',
-                    'username' => $this->model->get_username($args['id']),
+                    'username' => $this->model->getUsername($args['id']),
                     'id' => $args['id'],
                 ])->addTemplate('profile/delete_user.php')->display();
             }
         } elseif (Input::post('form_sent')) {
 
             // Fetch the user group of the user we are editing
-            $info = $this->model->fetch_user_group($args['id']);
+            $info = $this->model->getUserGroup($args['id']);
 
             if (User::get()->id != $args['id'] &&                                                            // If we aren't the user (i.e. editing your own profile)
                                     (!User::isAdminMod() ||                                      // and we are not an admin or mod
@@ -86,13 +86,13 @@ class Profile
                                     throw new Error(__('No permission'), 403);
             }
 
-            return $this->model->update_profile($args['id'], $info, $args['section']);
+            return $this->model->updateProfile($args['id'], $info, $args['section']);
         }
 
-        $user = $this->model->get_user_info($args['id']);
+        $user = $this->model->getUserInfo($args['id']);
 
         if ($user['signature'] != '') {
-            $parsed_signature = Container::get('parser')->parse_signature($user['signature']);
+            $parsed_signature = Container::get('parser')->parseSignature($user['signature']);
         }
 
         // View or edit?
@@ -103,7 +103,7 @@ class Profile
                 User::isAdmin($user) ||                     // or the user is an admin
                 User::isAdminMod($user))))                  // or the user is another mod
             ) {
-            $user_info = $this->model->parse_user_info($user);
+            $user_info = $this->model->parseUserInfo($user);
 
             View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), sprintf(__('Users profile'), Utils::escape($user['username']))],
@@ -115,7 +115,7 @@ class Profile
             View::addTemplate('profile/view_profile.php')->display();
         } else {
             if (!isset($args['section']) || $args['section'] == 'essentials') {
-                $user_disp = $this->model->edit_essentials($args['id'], $user);
+                $user_disp = $this->model->editEssentials($args['id'], $user);
 
                 View::setPageInfo([
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section essentials')],
@@ -151,7 +151,7 @@ class Profile
 
                 $avatar_field = '<span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'], 'action' => 'upload_avatar']).'">'.__('Change avatar').'</a></span>';
 
-                $user_avatar = Utils::generate_avatar_markup($args['id']);
+                $user_avatar = Utils::generateAvatarMarkup($args['id']);
                 if ($user_avatar) {
                     $avatar_field .= ' <span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'], 'action' => 'delete_avatar']).'">'.__('Delete avatar').'</a></span>';
                 } else {
@@ -206,8 +206,8 @@ class Profile
                     'active_page' => 'profile',
                     'page' => 'admin',
                     'user' => $user,
-                    'forum_list' => $this->model->get_forum_list($args['id']),
-                    'group_list' => $this->model->get_group_list($user),
+                    'forum_list' => $this->model->forumList($args['id']),
+                    'group_list' => $this->model->groupList($user),
                     'id' => $args['id']
                 ]);
 
@@ -257,7 +257,7 @@ class Profile
 
             // User is allowed to change pass and has submitted the forum, do it
             if (Request::isPost()) {
-                return $this->model->change_pass($args['id']);
+                return $this->model->changePass($args['id']);
             }
 
             return View::setPageInfo([
@@ -283,7 +283,7 @@ class Profile
 
             // User is allowed to change email and has submitted the forum, do it
             if (Request::isPost() || Input::query('key')) {
-                return $this->model->change_email($args['id']);
+                return $this->model->changeEmail($args['id']);
             }
 
             return View::setPageInfo([
@@ -302,7 +302,7 @@ class Profile
             }
 
             if (Request::isPost()) {
-                return $this->model->upload_avatar($args['id'], $_FILES);
+                return $this->model->uploadAvatar($args['id'], $_FILES);
             }
 
             return View::setPageInfo([
@@ -316,7 +316,7 @@ class Profile
                 throw new Error(__('No permission'), 403);
             }
 
-            $this->model->delete_avatar($args['id']);
+            $this->model->deleteAvatar($args['id']);
 
             return Router::redirect(Router::pathFor('profileSection', ['id' => $args['id'], 'section' => 'personality']), __('Avatar deleted redirect'));
         } elseif ($args['action'] == 'promote') {
@@ -324,7 +324,7 @@ class Profile
                 throw new Error(__('No permission'), 403);
             }
 
-            return $this->model->promote_user($args['id'], $args['pid']);
+            return $this->model->promoteUser($args['id'], $args['pid']);
         } else {
             throw new Error(__('Bad request'), 404);
         }
@@ -342,14 +342,14 @@ class Profile
             throw new Error(__('Bad request'), 400);
         }
 
-        $mail = $this->model->get_info_mail($args['id']);
+        $mail = $this->model->getInfoMail($args['id']);
 
         if ($mail['email_setting'] == 2 && !User::isAdminMod()) {
             throw new Error(__('Form email disabled'), 403);
         }
 
         if (Request::isPost()) {
-            return $this->model->send_email($mail);
+            return $this->model->sendEmail($mail);
         }
 
         return View::setPageInfo([
@@ -363,6 +363,6 @@ class Profile
     {
         $args['ip'] = Container::get('hooks')->fire('controller.profile.gethostip', $args['ip']);
 
-        $this->model->display_ip_info($args['ip']);
+        $this->model->displayIpInfo($args['ip']);
     }
 }

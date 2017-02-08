@@ -325,7 +325,7 @@ class View
     {
         // Check if config file exists to avoid error when installing forum
         if (!Container::get('cache')->isCached('quickjump') && is_file(ForumEnv::get('FORUM_CONFIG_FILE'))) {
-            Container::get('cache')->store('quickjump', \FeatherBB\Model\Cache::get_quickjump());
+            Container::get('cache')->store('quickjump', \FeatherBB\Model\Cache::quickjump());
         }
 
         $title = Container::get('forum_settings') ? ForumSettings::get('o_board_title') : 'FeatherBB';
@@ -350,9 +350,9 @@ class View
         }
 
         if (ForumEnv::get('FEATHER_SHOW_INFO')) {
-            $data['exec_info'] = \FeatherBB\Model\Debug::get_info();
+            $data['exec_info'] = \FeatherBB\Model\Debug::getInfo();
             if (ForumEnv::get('FEATHER_SHOW_QUERIES')) {
-                $data['queries_info'] = \FeatherBB\Model\Debug::get_queries();
+                $data['queries_info'] = \FeatherBB\Model\Debug::getQueries();
             }
         }
 

@@ -138,7 +138,7 @@ class Install
             } else {
                 $data['style'] = $this->default_style;
                 $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), ['on', 'true', '1']) ? 1 : 0;
-                return $this->create_config($data);
+                return $this->createConfig($data);
             }
         } else {
             $base_url = str_replace('index.php', '', Url::base());
@@ -155,7 +155,7 @@ class Install
         }
     }
 
-    public function create_config(array $data)
+    public function createConfig(array $data)
     {
         Container::get('hooks')->fire('controller.install.create_config');
 
@@ -169,41 +169,41 @@ class Install
 
         $config = array_merge($config, [
             'cookie_name' => mb_strtolower(ForumEnv::get('FORUM_NAME')).'_cookie_'.Random::key(7, false, true),
-            'jwt_token' => base64_encode(Random::secure_random_bytes(64)),
+            'jwt_token' => base64_encode(Random::secureRandomBytes(64)),
             'jwt_algorithm' => 'HS512'
         ]);
 
         // ... And write it on disk
-        if ($this->write_config($config)) {
-            return $this->create_db($data);
+        if ($this->writeConfig($config)) {
+            return $this->createDb($data);
         } else {
             // TODO: Translate
             return Router::redirect(Router::pathFor('install'), ['error', 'Error while writing config file']);
         }
     }
 
-    public function create_db(array $data)
+    public function createDb(array $data)
     {
         Container::get('hooks')->fire('controller.install.create_db');
 
         // Handle db prefix
         $data['db_prefix'] = (!empty($data['db_prefix'])) ? $data['db_prefix'] : '';
         // Init DB
-        Core::init_db($data);
+        Core::initDb($data);
         // Load appropriate language
         Lang::load('install', 'featherbb', $data['language']);
 
         // Create tables
-        foreach ($this->model->get_database_scheme() as $table => $sql) {
-            if (!$this->model->create_table($data['db_prefix'].$table, $sql)) {
+        foreach ($this->model->getDatabaseScheme() as $table => $sql) {
+            if (!$this->model->createTable($data['db_prefix'].$table, $sql)) {
                 // Error handling
                 $this->errors[] = 'A problem was encountered while creating table '.$table;
             }
         }
 
         // Populate group table with default values
-        foreach ($this->model->load_default_groups() as $group_name => $group_data) {
-            $this->model->add_data('groups', $group_data);
+        foreach ($this->model->loadDefaultGroups() as $group_name => $group_data) {
+            $this->model->addData('groups', $group_data);
         }
 
         // Init permissions
@@ -219,7 +219,7 @@ class Install
         Container::get('perms')->allowGroup(4, ['board.read', 'users.view', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send']);
         Container::get('perms')->allowGroup(2, ['board.read', 'users.view', 'user.set_title', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send', 'mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users']);
         Container::get('perms')->allowGroup(1, ['*']);
-        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
+        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::getPermissions());
         // Init preferences
         Container::get('prefs')->set([
             'disp.topics' => 30,
@@ -261,30 +261,30 @@ class Install
 
 
         // Populate user table with default values
-        $this->model->add_data('users', $this->model->load_default_user());
-        $this->model->add_data('users', $this->model->load_admin_user($data));
+        $this->model->addData('users', $this->model->loadDefaultUser());
+        $this->model->addData('users', $this->model->loadAdminUser($data));
         // Populate categories, forums, topics, posts
-        $this->model->add_mock_forum($this->model->load_mock_forum_data($data));
+        $this->model->addMockForum($this->model->loadMockForumData($data));
         // Store config in DB
-        $this->model->save_config($this->load_default_config($data));
+        $this->model->save_config($this->loadDefaultConfig($data));
 
         // Handle .htaccess
         if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) {
-            $this->write_htaccess();
+            $this->writeHtaccess();
         }
 
         // Redirect to homepage with success message
         return Router::redirect(Router::pathFor('home'), ['success', __('Message')]);
     }
 
-    public function write_config($array)
+    public function writeConfig($array)
     {
         Container::get('hooks')->fire('controller.install.write_config');
 
         return file_put_contents(ForumEnv::get('FORUM_CONFIG_FILE'), '<?php'."\n".'$featherbb_config = '.var_export($array, true).';');
     }
 
-    public function write_htaccess()
+    public function writeHtaccess()
     {
         Container::get('hooks')->fire('controller.install.write_htaccess');
 
@@ -292,7 +292,7 @@ class Install
         return file_put_contents(ForumEnv::get('FEATHER_ROOT').'.htaccess', $data);
     }
 
-    public function load_default_config(array $data)
+    public function loadDefaultConfig(array $data)
     {
         Container::get('hooks')->fire('controller.install.load_default_config');
 

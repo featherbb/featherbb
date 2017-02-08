@@ -51,15 +51,15 @@ Container::get('hooks')->fire('view.forum.start');
                 ++$topic_count; ?>
                     <tr class="<?= $topic['item_status'] ?>">
                         <td class="tcl">
-                            <div class="<?= $topic['icon_type'] ?>"><div class="nosize"><?= Utils::forum_number_format($topic_count + $start_from) ?></div></div>
+                            <div class="<?= $topic['icon_type'] ?>"><div class="nosize"><?= Utils::forumNumberFormat($topic_count + $start_from) ?></div></div>
                             <div class="tclcon">
                                 <div>
                                     <?= $topic['subject_formatted']."\n" ?>
                                 </div>
                             </div>
                         </td>
-                        <td class="tc2"><?php echo(is_null($topic['moved_to'])) ? Utils::forum_number_format($topic['num_replies']) : '-' ?></td>
-    <?php if (ForumSettings::get('o_topic_views') == '1'): ?>                    <td class="tc3"><?php echo(is_null($topic['moved_to'])) ? Utils::forum_number_format($topic['num_views']) : '-' ?></td>
+                        <td class="tc2"><?php echo(is_null($topic['moved_to'])) ? Utils::forumNumberFormat($topic['num_replies']) : '-' ?></td>
+    <?php if (ForumSettings::get('o_topic_views') == '1'): ?>                    <td class="tc3"><?php echo(is_null($topic['moved_to'])) ? Utils::forumNumberFormat($topic['num_views']) : '-' ?></td>
     <?php endif; ?>                    <td class="tcr"><?= $topic['last_post_formatted'] ?></td>
                     </tr>
             <?php

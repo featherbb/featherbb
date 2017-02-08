@@ -29,7 +29,7 @@ class Reports
         // Zap a report
         if (Request::isPost()) {
             $zap_id = intval(key(Input::post('zap_id')));
-            $this->model->zap_report($zap_id);
+            $this->model->zap($zap_id);
             return Router::redirect(Router::pathFor('adminReports'), __('Report zapped redirect'));
         }
 
@@ -39,8 +39,8 @@ class Reports
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Reports')],
                 'active_page' => 'admin',
                 'admin_console' => true,
-                'report_data'   =>  $this->model->get_reports(),
-                'report_zapped_data'   =>  $this->model->get_zapped_reports(),
+                'report_data'   =>  $this->model->reports(),
+                'report_zapped_data'   =>  $this->model->zappedReports(),
             ]
         )->addTemplate('admin/reports.php')->display();
     }

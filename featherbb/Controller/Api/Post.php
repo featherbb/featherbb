@@ -28,7 +28,7 @@ class Post extends Api
     public function delete($req, $res, $args)
     {
         // Fetch some information about the post, the topic and the forum
-        $cur_post = $this->model->get_info_delete($args['id']);
+        $cur_post = $this->model->getInfoDelete($args['id']);
 
         if (!is_object($cur_post)) {
             return $cur_post;
@@ -41,7 +41,7 @@ class Post extends Api
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $is_topic_post = $this->model->getDeletePermissions($cur_post, $args);
 
-        \FeatherBB\Model\Post::handle_deletion($is_topic_post, $args['id'], $cur_post);
+        \FeatherBB\Model\Post::handleDeletion($is_topic_post, $args['id'], $cur_post);
 
         return json_encode("Success", JSON_PRETTY_PRINT);
     }
@@ -49,7 +49,7 @@ class Post extends Api
     public function update($req, $res, $args)
     {
         // Fetch some information about the post, the topic and the forum
-        $cur_post = $this->model->get_info_edit($args['id']);
+        $cur_post = $this->model->getInfoEdit($args['id']);
 
         if (!is_object($cur_post)) {
             return $cur_post;
@@ -68,10 +68,10 @@ class Post extends Api
         $errors = [];
 
         // Let's see if everything went right
-        $errors = \FeatherBB\Model\Post::check_errors_before_edit($can_edit_subject, $errors, $is_admmod);
+        $errors = \FeatherBB\Model\Post::checkErrorsEdit($can_edit_subject, $errors, $is_admmod);
 
         // Setup some variables before post
-        $post = \FeatherBB\Model\Post::setup_edit_variables($cur_post, $is_admmod, $can_edit_subject, $errors);
+        $post = \FeatherBB\Model\Post::setupEditVariables($cur_post, $is_admmod, $can_edit_subject, $errors);
 
         // Did everything go according to plan?
         if (empty($errors)) {

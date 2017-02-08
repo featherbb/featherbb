@@ -15,7 +15,7 @@ use FeatherBB\Model\Cache;
 
 class Permissions
 {
-    public function update_permissions()
+    public function update()
     {
         $form = array_map('intval', Input::post('form'));
         $form = Container::get('hooks')->fire('model.admin.permissions.update_permissions.form', $form);
@@ -34,7 +34,7 @@ class Permissions
         }
 
         // Regenerate the config cache
-        $config = array_merge(Cache::get_config(), Cache::get_preferences());
+        $config = array_merge(Cache::getConfig(), Cache::getPreferences());
         Container::get('cache')->store('config', $config);
         // $this->clear_feed_cache();
 

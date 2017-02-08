@@ -14,7 +14,7 @@ use FeatherBB\Core\Utils;
 
 class Debug
 {
-    public static function get_queries()
+    public static function getQueries()
     {
         if (empty(DB::get_query_log())) {
             return null;
@@ -25,12 +25,12 @@ class Debug
         return $data;
     }
 
-    public static function get_info()
+    public static function getInfo()
     {
-        $data = ['exec_time' => (Utils::get_microtime() - Container::get('start'))];
+        $data = ['exec_time' => (Utils::getMicrotime() - Container::get('start'))];
         $data['nb_queries'] = (isset(DB::get_query_log()[0])) ? count(DB::get_query_log()[0]) : 'N/A';
-        $data['mem_usage'] = (function_exists('memory_get_usage')) ? Utils::file_size(memory_get_usage()) : 'N/A';
-        $data['mem_peak_usage'] = (function_exists('memory_get_peak_usage')) ? Utils::file_size(memory_get_peak_usage()) : 'N/A';
+        $data['mem_usage'] = (function_exists('memory_get_usage')) ? Utils::fileSize(memory_get_usage()) : 'N/A';
+        $data['mem_peak_usage'] = (function_exists('memory_get_peak_usage')) ? Utils::fileSize(memory_get_peak_usage()) : 'N/A';
         return $data;
     }
 }

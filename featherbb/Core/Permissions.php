@@ -128,7 +128,7 @@ class Permissions
             }
         }
         // Reload permissions cache
-        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
+        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::getPermissions());
         return $this;
     }
 
@@ -170,7 +170,7 @@ class Permissions
                         ->save();
         }
         // Reload permissions cache
-        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
+        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::getPermissions());
         return $this;
     }
 

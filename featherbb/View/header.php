@@ -30,7 +30,7 @@ Container::get('hooks')->fire('view.header.start');
     <meta name="robots" content="noindex, follow">
 <?php 
 } ?>
-    <title><?= Utils::generate_page_title($title, $page_number) ?></title>
+    <title><?= Utils::generatePageTitle($title, $page_number) ?></title>
     <link rel="shortcut icon" href="<?= Url::base() ?>/style/img/favicon.ico" />
 <?php
 
@@ -155,7 +155,7 @@ if (User::get()->is_guest) {
 } else {
     echo "\t\t\t\t\t\t".'<ul class="conl">';
     echo "\n\t\t\t\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape(User::get()->username).'</strong></span></li>'."\n";
-    echo "\t\t\t\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), Container::get('utils')->format_time(User::get()->last_visit)).'</span></li>'."\n";
+    echo "\t\t\t\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), Container::get('utils')->formatTime(User::get()->last_visit)).'</span></li>'."\n";
 
     if (User::isAdminMod()) {
         if (ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2') {

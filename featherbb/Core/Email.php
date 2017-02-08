@@ -19,7 +19,7 @@ class Email
     //
     // Validate an email address
     //
-    public function is_valid_email($email)
+    public function isValidEmail($email)
     {
         if (strlen($email) > 80) {
             return false;
@@ -245,7 +245,7 @@ class Email
     //
     // Wrapper for PHP's mail()
     //
-    public function feather_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
+    public function send($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
     {
         // Define line breaks in mail headers; possible values can be PHP_EOL, "\r\n", "\n" or "\r"
         if (!defined('FORUM_EOL')) {

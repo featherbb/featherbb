@@ -606,7 +606,7 @@ class Url
         } else {
             // Add a previous page link
             if ($num_pages > 1 && $cur_page > 1) {
-                $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.self::get_sublink($link, 'page/$1', ($cur_page - 1), $args).'">'.__('Previous').'</a>';
+                $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.self::getSublink($link, 'page/$1', ($cur_page - 1), $args).'">'.__('Previous').'</a>';
             }
 
             if ($cur_page > 3) {
@@ -622,9 +622,9 @@ class Url
                 if ($current < 1 || $current > $num_pages) {
                     continue;
                 } elseif ($current != $cur_page || $link_to_all) {
-                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.str_replace('#', '', self::get_sublink($link, 'page/$1', $current, $args)).'">'.Utils::forum_number_format($current).'</a>';
+                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.str_replace('#', '', self::getSublink($link, 'page/$1', $current, $args)).'">'.Utils::forumNumberFormat($current).'</a>';
                 } else {
-                    $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.Utils::forum_number_format($current).'</strong>';
+                    $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.Utils::forumNumberFormat($current).'</strong>';
                 }
             }
 
@@ -633,12 +633,12 @@ class Url
                     $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
                 }
 
-                $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.self::get_sublink($link, 'page/$1', $num_pages, $args).'">'.Utils::forum_number_format($num_pages).'</a>';
+                $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.self::getSublink($link, 'page/$1', $num_pages, $args).'">'.Utils::forumNumberFormat($num_pages).'</a>';
             }
 
             // Add a next page link
             if ($num_pages > 1 && !$link_to_all && $cur_page < $num_pages) {
-                $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.self::get_sublink($link, 'page/$1', ($cur_page + 1), $args).'">'.__('Next').'</a>';
+                $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.self::getSublink($link, 'page/$1', ($cur_page + 1), $args).'">'.__('Next').'</a>';
             }
         }
 
@@ -649,7 +649,7 @@ class Url
     // Generate a string with numbered links (for multipage scripts)
     // Old FluxBB-style function for search page
     //
-    public static function paginate_old($num_pages, $cur_page, $link)
+    public static function paginateOld($num_pages, $cur_page, $link)
     {
         $pages = [];
         $link_to_all = false;
@@ -681,9 +681,9 @@ class Url
                 if ($current < 1 || $current > $num_pages) {
                     continue;
                 } elseif ($current != $cur_page || $link_to_all) {
-                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($current == 1 ? '' : '&amp;p='.$current).'">'.Utils::forum_number_format($current).'</a>';
+                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($current == 1 ? '' : '&amp;p='.$current).'">'.Utils::forumNumberFormat($current).'</a>';
                 } else {
-                    $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.Utils::forum_number_format($current).'</strong>';
+                    $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.Utils::forumNumberFormat($current).'</strong>';
                 }
             }
 
@@ -692,7 +692,7 @@ class Url
                     $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
                 }
 
-                $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.$num_pages.'">'.Utils::forum_number_format($num_pages).'</a>';
+                $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.$num_pages.'">'.Utils::forumNumberFormat($num_pages).'</a>';
             }
 
             // Add a next page link
@@ -708,7 +708,7 @@ class Url
     // Make a string safe to use in a URL
     // Inspired by (c) Panther <http://www.pantherforum.org/>
     //
-    public static function url_friendly($str)
+    public static function slug($str)
     {
         $str = strtr($str, self::$url_replace);
         $str = strtolower(utf8_decode($str));
@@ -748,7 +748,7 @@ class Url
     // Generate a hyperlink with parameters and anchor and a subsection such as a subpage
     // Inspired by (c) Panther <http://www.pantherforum.org/>
     //
-    private static function get_sublink($link, $sublink, $subarg, $args = null)
+    private static function getSublink($link, $sublink, $subarg, $args = null)
     {
         $base_url = self::base();
 
@@ -781,7 +781,7 @@ class Url
     //
     // Fetch the base_url for static files, optionally support HTTPS and HTTP
     //
-    public static function base_static()
+    public static function baseStatic()
     {
         return Request::getUri()->getScheme().'://'.Request::getUri()->getHost();
     }
@@ -814,7 +814,7 @@ class Url
     //      [fragment] => fragone
     //      [url] => http://www.jmrware.com:80/articles?height=10&width=75#fragone
     // )
-    public static function is_valid($url)
+    public static function isValid($url)
     {
         if (strpos($url, 'www.') === 0) {
             $url = 'http://'. $url;

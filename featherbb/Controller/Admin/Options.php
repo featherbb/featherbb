@@ -29,7 +29,7 @@ class Options
         Container::get('hooks')->fire('controller.admin.options.display');
 
         if (Request::isPost()) {
-            return $this->model->update_options();
+            return $this->model->update();
         }
 
         AdminUtils::generateAdminMenu('admin options');
@@ -38,9 +38,9 @@ class Options
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Admin options')],
                 'active_page' => 'admin',
                 'admin_console' => true,
-                'languages' => $this->model->get_langs(),
-                'styles' => $this->model->get_styles(),
-                'times' => $this->model->get_times(),
+                'languages' => $this->model->languages(),
+                'styles' => $this->model->styles(),
+                'times' => $this->model->times(),
             ]
         )->addTemplate('admin/options.php')->display();
     }

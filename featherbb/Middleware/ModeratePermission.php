@@ -27,8 +27,8 @@ class ModeratePermission
         $args = $request->getAttribute('routeInfo')[2];
         $tid = $args['id'];
 
-        $fid = Forum::get_forum_id($tid);
-        $permission = Forum::can_moderate($fid);
+        $fid = Forum::getId($tid);
+        $permission = Forum::canModerate($fid);
 
         if (!$permission) {
             throw new Error(__('No permission'), 403);

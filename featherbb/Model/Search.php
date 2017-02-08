@@ -22,7 +22,7 @@ class Search
         $this->search = new \FeatherBB\Core\Search();
     }
 
-    public function get_search_results($search_id = null)
+    public function getSearchResults($search_id = null)
     {
         $search = [];
 
@@ -53,7 +53,7 @@ class Search
             $keywords = (Input::query('keywords')) ? utf8_strtolower(Utils::trim(Input::query('keywords'))) : null;
             $author = (Input::query('author')) ? utf8_strtolower(Utils::trim(Input::query('author'))) : null;
 
-            if (preg_match('%^[\*\%]+$%', $keywords) || (Utils::strlen(str_replace(['*', '%'], '', $keywords)) < ForumEnv::get('FEATHER_SEARCH_MIN_WORD') && !$this->search->is_cjk($keywords))) {
+            if (preg_match('%^[\*\%]+$%', $keywords) || (Utils::strlen(str_replace(['*', '%'], '', $keywords)) < ForumEnv::get('FEATHER_SEARCH_MIN_WORD') && !$this->search->isCjk($keywords))) {
                 $keywords = '';
             }
 
@@ -174,7 +174,7 @@ class Search
                 // If it's a search for keywords
                 if ($keywords) {
                     // split the keywords into words
-                    $keywords_array = $this->search->split_words($keywords, false);
+                    $keywords_array = $this->search->splitWords($keywords, false);
                     $keywords_array = Container::get('hooks')->fire('model.search.get_search_results_keywords_array', $keywords_array);
 
                     if (empty($keywords_array)) {
@@ -199,7 +199,7 @@ class Search
 
                             default:
                             {
-                                if ($this->search->is_cjk($cur_word)) {
+                                if ($this->search->isCjk($cur_word)) {
                                     $where_cond = str_replace('*', '%', $cur_word);
                                     $where_cond_cjk = ($search_in ? (($search_in > 0) ? 'p.message LIKE %:where_cond%' : 't.subject LIKE %:where_cond%') : 'p.message LIKE %:where_cond% OR t.subject LIKE %:where_cond%');
 
@@ -598,7 +598,7 @@ class Search
             $search['start_from'] = $start_from;
 
             // Generate paging links
-            $search['paging_links'] = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?');
+            $search['paging_links'] = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginateOld($num_pages, $p, '?');
 
             // throw away the first $start_from of $search_ids, only keep the top $per_page of $search_ids
             $search_ids = array_slice($search_ids, $start_from, $per_page);
@@ -681,13 +681,13 @@ class Search
         return $search;
     }
 
-    public function display_search_results($search)
+    public function displaySearchResults($search)
     {
         $search = Container::get('hooks')->fire('model.search.display_search_results_start', $search);
 
         // Get topic/forum tracking data
         if (!User::get()->is_guest) {
-            $tracked_topics = Track::get_tracked_topics();
+            $tracked_topics = Track::getTrackedTopics();
         }
 
         $post_count = $topic_count = 0;
@@ -695,9 +695,9 @@ class Search
         $display = [];
 
         foreach ($search['search_set'] as $cur_search) {
-            $forum_name = Url::url_friendly($cur_search['forum_name']);
+            $forum_name = Url::slug($cur_search['forum_name']);
             $forum = '<a href="'.Router::pathFor('Forum', ['id' => $cur_search['forum_id'], 'name' => $forum_name]).'">'.Utils::escape($cur_search['forum_name']).'</a>';
-            $url_topic = Url::url_friendly($cur_search['subject']);
+            $url_topic = Url::slug($cur_search['subject']);
 
             if (ForumSettings::get('o_censoring') == '1') {
                 $cur_search['subject'] = Utils::censor($cur_search['subject']);
@@ -720,7 +720,7 @@ class Search
                     $cur_search['message'] = Utils::censor($cur_search['message']);
                 }
 
-                $cur_search['message'] = Container::get('parser')->parse_message($cur_search['message'], $cur_search['hide_smilies']);
+                $cur_search['message'] = Container::get('parser')->parseMessage($cur_search['message'], $cur_search['hide_smilies']);
                 $pposter = Utils::escape($cur_search['pposter']);
 
                 if ($cur_search['poster_id'] > 1 && User::can('users.view')) {
@@ -797,7 +797,7 @@ class Search
         return $display;
     }
 
-    public function get_list_forums()
+    public function forumsList()
     {
         $output = '';
 

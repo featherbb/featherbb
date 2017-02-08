@@ -55,7 +55,7 @@ if (!empty($errors)) {
 <?php
 
 } elseif (Input::post('preview')) {
-    $preview_message = Container::get('parser')->parse_message($post['message'], $post['hide_smilies']); ?>
+    $preview_message = Container::get('parser')->parseMessage($post['message'], $post['hide_smilies']); ?>
 <div id="postpreview" class="blockpost">
     <h2><span><?= __('Post preview') ?></span></h2>
     <div class="box">
@@ -171,7 +171,7 @@ if ($tid && ForumSettings::get('o_topic_review') != '0') :
                 <div class="postleft">
                     <dl>
                         <dt><strong><?= Utils::escape($post['poster']) ?></strong></dt>
-                        <dd><span><?= Utils::format_time($post['posted']) ?></span></dd>
+                        <dd><span><?= Utils::formatTime($post['posted']) ?></span></dd>
                     </dl>
                 </div>
                 <div class="postright">

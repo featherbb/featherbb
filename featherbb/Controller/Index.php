@@ -30,10 +30,10 @@ class Index
             'title' => [Utils::escape(ForumSettings::get('o_board_title'))],
             'active_page' => 'index',
             'is_indexed' => true,
-            'index_data' => $this->model->print_categories_forums(),
-            'stats' => $this->model->collect_stats(),
-            'online'    =>    $this->model->fetch_users_online(),
-            'forum_actions'        =>    $this->model->get_forum_actions(),
+            'index_data' => $this->model->printCategoriesForums(),
+            'stats' => $this->model->stats(),
+            'online'    =>    $this->model->usersOnline(),
+            'forum_actions'        =>    $this->model->forumActions(),
             'cur_cat'   => 0
         ])->addTemplate('index.php')->display();
     }
@@ -57,9 +57,9 @@ class Index
     {
         Container::get('hooks')->fire('controller.index.markread');
 
-        Auth::set_last_visit(User::get()->id, User::get()->logged);
+        Auth::setLastVisit(User::get()->id, User::get()->logged);
         // Reset tracked topics
-        Track::set_tracked_topics(null);
+        Track::setTrackedTopics(null);
         return Router::redirect(Router::pathFor('home'), __('Mark read redirect'));
     }
 }

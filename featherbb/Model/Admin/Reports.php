@@ -13,7 +13,7 @@ use FeatherBB\Core\Database as DB;
 
 class Reports
 {
-    public function zap_report($zap_id)
+    public function zap($zap_id)
     {
         $zap_id = Container::get('hooks')->fire('model.admin.reports.zap_report.zap_id', $zap_id);
 
@@ -60,7 +60,7 @@ class Reports
         return (bool) $result_header->find_one();
     }
 
-    public function get_reports()
+    public function reports()
     {
         $reports = [];
         $select_reports = ['r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.created', 'r.message', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username'];
@@ -80,7 +80,7 @@ class Reports
         return $reports;
     }
 
-    public function get_zapped_reports()
+    public function zappedReports()
     {
         $zapped_reports = [];
         $select_zapped_reports = ['r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.message', 'r.zapped', 'zapped_by_id' => 'r.zapped_by', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username', 'zapped_by' => 'u2.username'];

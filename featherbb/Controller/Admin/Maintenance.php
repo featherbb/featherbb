@@ -40,7 +40,7 @@ class Maintenance
 
             View::setPageInfo([
                     'page_title'    =>    [Utils::escape(ForumSettings::get('o_board_title')), __('Rebuilding search index')],
-                    'query_str' => $this->model->get_query_str()
+                    'query_str' => $this->model->getQueryString()
                 ]
             )->addTemplate('admin/maintenance/rebuild.php')->display();
         }
@@ -52,7 +52,7 @@ class Maintenance
             AdminUtils::generateAdminMenu('maintenance');
 
             if (Input::post('prune_comply')) {
-                $this->model->prune_comply($prune_from, $prune_sticky);
+                $this->model->pruneComply($prune_from, $prune_sticky);
             }
 
             View::setPageInfo([
@@ -61,7 +61,7 @@ class Maintenance
                     'admin_console' => true,
                     'prune_sticky'    =>    $prune_sticky,
                     'prune_from'    =>    $prune_from,
-                    'prune' => $this->model->get_info_prune($prune_sticky, $prune_from),
+                    'prune' => $this->model->getInfoPrune($prune_sticky, $prune_from),
                 ]
             )->addTemplate('admin/maintenance/prune.php')->display();
         }
@@ -72,8 +72,8 @@ class Maintenance
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Maintenance')],
                 'active_page' => 'admin',
                 'admin_console' => true,
-                'first_id' => $this->model->get_first_id(),
-                'categories' => $this->model->get_categories(),
+                'first_id' => $this->model->getFirstId(),
+                'categories' => $this->model->getCategories(),
             ]
         )->addTemplate('admin/maintenance/admin_maintenance.php')->display();
     }

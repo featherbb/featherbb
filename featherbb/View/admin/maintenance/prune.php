@@ -30,7 +30,7 @@ Container::get('hooks')->fire('view.admin.maintenance.prune.start');
                     <fieldset>
                         <legend><?= __('Confirm prune subhead') ?></legend>
                         <div class="infldset">
-                            <p><?php printf(__('Confirm prune info'), $prune['days'], $prune['forum'], Utils::forum_number_format($prune['num_topics'])) ?></p>
+                            <p><?php printf(__('Confirm prune info'), $prune['days'], $prune['forum'], Utils::forumNumberFormat($prune['num_topics'])) ?></p>
                             <p class="warntext"><?= __('Confirm prune warn') ?></p>
                         </div>
                     </fieldset>

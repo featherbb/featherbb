@@ -24,7 +24,7 @@ class Random
     //
     public static function key($len, $readable = false, $hash = false)
     {
-        $key = self::secure_random_bytes($len);
+        $key = self::secureRandomBytes($len);
 
         if ($hash) {
             return substr(bin2hex($key), 0, $len);
@@ -86,7 +86,7 @@ class Random
      * $len bytes of entropy under any PHP installation or operating system.
      * The execution time should be at most 10-20 ms in any system.
      */
-    public static function secure_random_bytes($len = 10)
+    public static function secureRandomBytes($len = 10)
     {
         /*
          * Our primary choice for a cryptographic strong randomness function is
@@ -99,23 +99,6 @@ class Random
             $SSLstr = openssl_random_pseudo_bytes($len, $strong);
             if ($strong) {
                 return $SSLstr;
-            }
-        }
-
-        /*
-         * If mcrypt extension is available then we use it to gather entropy from
-         * the operating system's PRNG. This is better than reading /dev/urandom
-         * directly since it avoids reading larger blocks of data than needed.
-         * Older versions of mcrypt_create_iv may be broken or take too much time
-         * to finish so we only use this function with PHP 5.3.7 and above.
-         * @see https://bugs.php.net/bug.php?id=55169
-         */
-        if (function_exists('mcrypt_create_iv') &&
-            (version_compare(PHP_VERSION, '5.3.7') >= 0 ||
-                substr(PHP_OS, 0, 3) !== 'WIN')) {
-            $str = mcrypt_create_iv($len, MCRYPT_DEV_URANDOM);
-            if ($str !== false) {
-                return $str;
             }
         }
 

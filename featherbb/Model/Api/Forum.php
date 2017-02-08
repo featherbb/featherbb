@@ -23,7 +23,7 @@ class Forum extends Api
         });
 
         try {
-            $data = $forum->get_forum_info($id);
+            $data = $forum->getForumInfo($id);
         } catch (Error $e) {
             return $this->errorMessage;
         }

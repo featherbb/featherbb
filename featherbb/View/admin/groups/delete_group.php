@@ -26,7 +26,7 @@ Container::get('hooks')->fire('view.admin.groups.delete_group.start');
                     <fieldset>
                         <legend><?= __('Move users subhead') ?></legend>
                         <div class="infldset">
-                            <p><?php printf(__('Move users info'), Utils::escape($group_info['title']), Utils::forum_number_format($group_info['members'])) ?></p>
+                            <p><?php printf(__('Move users info'), Utils::escape($group_info['title']), Utils::forumNumberFormat($group_info['members'])) ?></p>
                             <label><?= __('Move users label') ?>
                             <select name="move_to_group">
                                 <?= $group_list_delete; ?>

@@ -34,7 +34,7 @@ Container::get('hooks')->fire('view.admin.statistics.start');
                     </dd>
                     <dt><?= __('Database label') ?></dt>
                     <dd>
-<?php if (isset($total_records) && isset($total_size)): ?>                        <?php printf(__('Database data rows')."\n", Utils::forum_number_format($total_records)) ?>
+<?php if (isset($total_records) && isset($total_size)): ?>                        <?php printf(__('Database data rows')."\n", Utils::forumNumberFormat($total_records)) ?>
                         <br /><?php printf(__('Database data size')."\n", $total_size) ?>
 <?php endif; ?>                    </dd>
 <?php endif; ?>

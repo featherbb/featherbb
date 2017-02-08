@@ -57,7 +57,7 @@ class Api
         if (Input::query('token') &&                                                         // We have a token
             (Input::query('username') || Input::query('id')) &&                              // User's ID or username are provided
             is_object($this->tmpUser) &&                                                     // The user loaded above exists
-            Utils::hash_equals(self::getToken($this->tmpUser), Input::query('token'))) {     // Provided token is correct
+            Utils::hashEquals(self::getToken($this->tmpUser), Input::query('token'))) {     // Provided token is correct
             $this->connected = true;
             $this->user = $this->tmpUser;
         }

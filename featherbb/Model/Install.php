@@ -219,14 +219,14 @@ class Install
             KEY `users_registered_idx` (`registered`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",];
 
-    public function create_table($table_name, $sql)
+    public function createTable($table_name, $sql)
     {
         $db = DB::get_db();
         $req = preg_replace('/%t%/', '`'.$table_name.'`', $sql);
         return $db->exec($req);
     }
 
-    public function add_data($table_name, array $data)
+    public function addData($table_name, array $data)
     {
         return (bool) DB::for_table($table_name)
                         ->create()
@@ -234,27 +234,27 @@ class Install
                         ->save();
     }
 
-    public function add_mock_forum(array $arch)
+    public function addMockForum(array $arch)
     {
         foreach ($arch as $table_name => $data) {
-            $this->add_data($table_name, $data);
+            $this->addData($table_name, $data);
         }
     }
 
     public function save_config(array $data)
     {
         foreach ($data as $key => $value) {
-            $this->add_data('config', ['conf_name' => $key,
+            $this->addData('config', ['conf_name' => $key,
                                             'conf_value' => $value]);
         }
     }
 
-    public function get_database_scheme()
+    public function getDatabaseScheme()
     {
         return $this->database_scheme;
     }
 
-    public static function load_default_groups()
+    public static function loadDefaultGroups()
     {
         $groups['Administrators'] = [
             'g_id' => 1,
@@ -280,7 +280,7 @@ class Install
         return $groups;
     }
 
-    public static function load_default_user()
+    public static function loadDefaultUser()
     {
         return $user = [
                 'group_id' => 3,
@@ -289,13 +289,13 @@ class Install
                 'email' => __('Guest')];
     }
 
-    public static function load_admin_user(array $data)
+    public static function loadAdminUser(array $data)
     {
         $now = time();
         return $user = [
             'group_id' => 1,
             'username' => $data['username'],
-            'password' => Utils::password_hash($data['password']),
+            'password' => Utils::passwordHash($data['password']),
             'email' => $data['email'],
             'num_posts' => 1,
             'last_post' => $now,
@@ -304,7 +304,7 @@ class Install
             'last_visit' => $now];
     }
 
-    public static function load_mock_forum_data(array $data)
+    public static function loadMockForumData(array $data)
     {
         $cat_name = __('Test category');
         $subject = __('Test post');

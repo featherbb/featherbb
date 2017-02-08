@@ -101,7 +101,7 @@ class Bans
         return $ban;
     }
 
-    public function edit_ban_info($id)
+    public function editBanInfo($id)
     {
         $ban = [];
 
@@ -136,7 +136,7 @@ class Bans
         return $ban;
     }
 
-    public function insert_ban()
+    public function insertBan()
     {
         $ban_user = Utils::trim(Input::post('ban_user'));
         $ban_ip = Utils::trim(Input::post('ban_ip'));
@@ -210,7 +210,7 @@ class Bans
             $ban_ip = implode(' ', $addresses);
         }
 
-        if ($ban_email != '' && !Container::get('email')->is_valid_email($ban_email)) {
+        if ($ban_email != '' && !Container::get('email')->isValidEmail($ban_email)) {
             if (!preg_match('%^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,63})$%', $ban_email)) {
                 throw new Error(__('Invalid e-mail message'), 400);
             }
@@ -264,12 +264,12 @@ class Bans
         }
 
         // Regenerate the bans cache
-        Container::get('cache')->store('bans', Cache::get_bans());
+        Container::get('cache')->store('bans', Cache::getBans());
 
         return Router::redirect(Router::pathFor('adminBans'), __('Ban edited redirect'));
     }
 
-    public function remove_ban($ban_id)
+    public function removeBan($ban_id)
     {
         $ban_id = Container::get('hooks')->fire('model.admin.bans.remove_ban', $ban_id);
 
@@ -279,12 +279,12 @@ class Bans
         $result = $result->delete();
 
         // Regenerate the bans cache
-        Container::get('cache')->store('bans', Cache::get_bans());
+        Container::get('cache')->store('bans', Cache::getBans());
 
         return Router::redirect(Router::pathFor('adminBans'), __('Ban removed redirect'));
     }
 
-    public function find_ban($start_from = false)
+    public function findBan($start_from = false)
     {
         $ban_info = [];
 

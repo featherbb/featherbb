@@ -23,7 +23,7 @@ class Topic extends Api
         $topic = new \FeatherBB\Model\Topic();
 
         try {
-            $data = $topic->get_info_topic($id);
+            $data = $topic->getInfoTopic($id);
         } catch (Error $e) {
             return $this->errorMessage;
         }
@@ -36,7 +36,7 @@ class Topic extends Api
     }
 
     //  Get some info about the post
-    public function get_info_post($tid, $fid)
+    public function getInfoPost($tid, $fid)
     {
         if (!$fid && !$tid) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
@@ -100,7 +100,7 @@ class Topic extends Api
         return $is_admmod;
     }
 
-    public function check_errors_before_post($fid, $errors)
+    public function checkErrorsBeforePost($fid, $errors)
     {
         // Flood protection
         if (Input::post('preview') != '' && $this->user->last_post != '' && (time() - $this->user->last_post) < Container::get('prefs')->get($this->user, 'post.min_interval')) {
@@ -121,7 +121,7 @@ class Topic extends Api
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !User::isAdminMod($this->user)) {
+            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::isAllUppercase($subject) && !User::isAdminMod($this->user)) {
                 $errors[] = __('All caps subject');
             }
         }
@@ -130,7 +130,7 @@ class Topic extends Api
             $email = strtolower(Utils::trim((ForumSettings::get('p_force_guest_email') == '1') ? Input::post('req_email') : Input::post('email')));
 
             if (ForumSettings::get('p_force_guest_email') == '1' || $email != '') {
-                if (!Container::get('email')->is_valid_email($email)) {
+                if (!Container::get('email')->isValidEmail($email)) {
                     $errors[] = __('Invalid email');
                 }
 
@@ -151,8 +151,8 @@ class Topic extends Api
 
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > ForumEnv::get('FEATHER_MAX_POSTSIZE')) {
-            $errors[] = sprintf(__('Too long message'), Utils::forum_number_format(ForumEnv::get('FEATHER_MAX_POSTSIZE')));
-        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::is_all_uppercase($message) && !User::isAdminMod($this->user)) {
+            $errors[] = sprintf(__('Too long message'), Utils::forumNumberFormat(ForumEnv::get('FEATHER_MAX_POSTSIZE')));
+        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::isAllUppercase($message) && !User::isAdminMod($this->user)) {
             $errors[] = __('All caps message');
         }
 
@@ -178,7 +178,7 @@ class Topic extends Api
     }
 
     // If the previous check went OK, setup some variables used later
-    public function setup_variables($errors, $is_admmod)
+    public function setupVariables($errors, $is_admmod)
     {
         $post = [];
 
@@ -208,7 +208,7 @@ class Topic extends Api
         }
 
         // Replace four-byte characters (MySQL cannot handle them)
-        $post['message'] = Utils::strip_bad_multibyte_chars($post['message']);
+        $post['message'] = Utils::stripBadMultibyteChars($post['message']);
 
         $post['time'] = time();
 
@@ -216,7 +216,7 @@ class Topic extends Api
     }
 
     // Insert a topic
-    public function insert_topic($post, $fid)
+    public function insertTopic($post, $fid)
     {
         $new = [];
 
@@ -305,7 +305,7 @@ class Topic extends Api
 
         $search = new \FeatherBB\Core\Search();
 
-        $search->update_search_index('post', $new['pid'], $post['message'], $post['subject']);
+        $search->updateSearchIndex('post', $new['pid'], $post['message'], $post['subject']);
 
         \FeatherBB\Model\Forum::update($fid);
 
@@ -313,7 +313,7 @@ class Topic extends Api
     }
 
     // Send notifications for new topics
-    public function send_notifications_new_topic($post, $cur_posting, $new_tid)
+    public function sendNotificationsNewTopic($post, $cur_posting, $new_tid)
     {
         // Get any subscribed users that should be notified (banned users are excluded)
         $result['where'] = [
@@ -372,8 +372,8 @@ class Topic extends Api
                         $mail_message = str_replace('<topic_subject>', $cleaned_subject, $mail_message);
                         $mail_message = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message);
                         $mail_message = str_replace('<poster>', $post['username'], $mail_message);
-                        $mail_message = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $new_tid, 'name' => Url::url_friendly($post['subject'])]), $mail_message);
-                        $mail_message = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $cur_posting['id'], 'name' => Url::url_friendly($post['subject'])]), $mail_message);
+                        $mail_message = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $new_tid, 'name' => Url::slug($post['subject'])]), $mail_message);
+                        $mail_message = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $cur_posting['id'], 'name' => Url::slug($post['subject'])]), $mail_message);
                         $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
 
                         $mail_subject_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_subject_full);
@@ -381,8 +381,8 @@ class Topic extends Api
                         $mail_message_full = str_replace('<forum_name>', $cur_posting['forum_name'], $mail_message_full);
                         $mail_message_full = str_replace('<poster>', $post['username'], $mail_message_full);
                         $mail_message_full = str_replace('<message>', $cleaned_message, $mail_message_full);
-                        $mail_message_full = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $new_tid, 'name' => Url::url_friendly($post['subject'])]), $mail_message_full);
-                        $mail_message_full = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid, 'name' => Url::url_friendly($post['subject'])]), $mail_message_full);
+                        $mail_message_full = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $new_tid, 'name' => Url::slug($post['subject'])]), $mail_message_full);
+                        $mail_message_full = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid, 'name' => Url::slug($post['subject'])]), $mail_message_full);
                         $mail_message_full = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message_full);
 
                         $notification_emails[$cur_subscriber['language']][0] = $mail_subject;
@@ -395,9 +395,9 @@ class Topic extends Api
                 // We have to double check here because the templates could be missing
                 if (isset($notification_emails[$cur_subscriber['language']])) {
                     if ($cur_subscriber['notify_with_post'] == '0') {
-                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
+                        Container::get('email')->send($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][0], $notification_emails[$cur_subscriber['language']][1]);
                     } else {
-                        Container::get('email')->feather_mail($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
+                        Container::get('email')->send($cur_subscriber['email'], $notification_emails[$cur_subscriber['language']][2], $notification_emails[$cur_subscriber['language']][3]);
                     }
                 }
             }
@@ -407,7 +407,7 @@ class Topic extends Api
     }
 
     // Increment post count, change group if needed
-    public function increment_post_count($post, $new_tid)
+    public function incrementPostCount($post, $new_tid)
     {
         if (!$this->user->is_guest) {
             $increment = DB::for_table('users')
@@ -428,9 +428,9 @@ class Topic extends Api
             }
 
             // Topic tracking stuff...
-            $tracked_topics = Track::get_tracked_topics();
+            $tracked_topics = Track::getTrackedTopics();
             $tracked_topics['topics'][$new_tid] = time();
-            Track::set_tracked_topics($tracked_topics);
+            Track::setTrackedTopics($tracked_topics);
         } else {
             // Update the last_post field for guests
             $last_post = DB::for_table('online')
@@ -442,7 +442,7 @@ class Topic extends Api
     }
 
     // Insert a reply
-    public function insert_reply($post, $tid, $cur_posting, $is_subscribed)
+    public function insertReply($post, $tid, $cur_posting, $is_subscribed)
     {
         $new = [];
 
@@ -534,13 +534,13 @@ class Topic extends Api
         $topic = Container::get('hooks')->fireDB('model.post.insert_reply_update_query', $topic);
 
         // Get topic subject to redirect
-        $new['topic_subject'] = Url::url_friendly($topic->subject);
+        $new['topic_subject'] = Url::slug($topic->subject);
 
         $topic = $topic->save();
 
         $search = new \FeatherBB\Core\Search();
 
-        $search->update_search_index('post', $new['pid'], $post['message']);
+        $search->updateSearchIndex('post', $new['pid'], $post['message']);
 
         \FeatherBB\Model\Forum::update($cur_posting['id']);
 

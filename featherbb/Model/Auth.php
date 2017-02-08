@@ -17,7 +17,7 @@ use Firebase\JWT\JWT;
 
 class Auth
 {
-    public static function load_user($user_id)
+    public static function loadUser($user_id)
     {
         $user_id = (int) $user_id;
         $result['select'] = ['u.*', 'g.*', 'o.logged', 'o.idle'];
@@ -36,14 +36,14 @@ class Auth
         return $result;
     }
 
-    public static function delete_online_by_ip($ip)
+    public static function deleteOnlineByIP($ip)
     {
         $delete_online = DB::for_table('online')->where('ident', $ip);
         $delete_online = Container::get('hooks')->fireDB('delete_online_login', $delete_online);
         return $delete_online->delete_many();
     }
 
-    public static function delete_online_by_id($user_id)
+    public static function deleteOnlineById($user_id)
     {
         // Remove user from "users online" list
         $delete_online = DB::for_table('online')->where('user_id', $user_id);
@@ -51,14 +51,14 @@ class Auth
         return $delete_online->delete_many();
     }
 
-    public static function get_user_from_name($username)
+    public static function getUserFromName($username)
     {
         $user = DB::for_table('users')->where('username', $username);
         $user = Container::get('hooks')->fireDB('find_user_login', $user);
         return $user->find_one();
     }
 
-    public static function get_user_from_email($email)
+    public static function getUserFromEmail($email)
     {
         $result['select'] = ['id', 'username', 'last_email_sent'];
         $result = DB::for_table('users')
@@ -68,7 +68,7 @@ class Auth
         return $result->find_one();
     }
 
-    public static function update_group($user_id, $group_id)
+    public static function updateGroup($user_id, $group_id)
     {
         $update_usergroup = DB::for_table('users')->where('id', $user_id)
             ->find_one()
@@ -77,7 +77,7 @@ class Auth
         return $update_usergroup->save();
     }
 
-    public static function set_last_visit($user_id, $last_visit)
+    public static function setLastVisit($user_id, $last_visit)
     {
         $update_last_visit = DB::for_table('users')->where('id', (int) $user_id)
             ->find_one()
@@ -86,10 +86,10 @@ class Auth
         return $update_last_visit->save();
     }
 
-    public static function set_new_password($pass, $key, $user_id)
+    public static function setNewPassword($pass, $key, $user_id)
     {
         $query['update'] = [
-            'activate_string' => Utils::password_hash($pass),
+            'activate_string' => Utils::passwordHash($pass),
             'activate_key'    => $key,
             'last_email_sent' => time(),
         ];
@@ -102,21 +102,21 @@ class Auth
         return $query->save();
     }
 
-    public static function update_password($user_id, $clear_password)
+    public static function updatePassword($user_id, $clear_password)
     {
         $query = DB::for_table('users')
             ->where('id', $user_id)
             ->find_one()
-            ->set('password', Utils::password_hash($clear_password));
+            ->set('password', Utils::passwordHash($clear_password));
         $query = Container::get('hooks')->fireDB('update_password_query', $query);
         return $query->save();
     }
 
-    public static function generate_jwt($user, $expire)
+    public static function generateJwt($user, $expire)
     {
         $issuedAt   = time();
         $tokenId    = base64_encode(Random::key(32));
-        $serverName = Url::base_static();
+        $serverName = Url::baseStatic();
 
         /*
         * Create the token as an array
@@ -159,7 +159,7 @@ class Auth
         return $jwt;
     }
 
-    public static function feather_setcookie($jwt, $expire)
+    public static function setCookie($jwt, $expire)
     {
         // Store cookie to client storage
         setcookie(ForumSettings::get('cookie_name'), $jwt, $expire, '/', '', false, true);

@@ -26,7 +26,7 @@ class User extends Api
         }
 
         try {
-            $data = $user->get_user_info($id);
+            $data = $user->getUserInfo($id);
         } catch (Error $e) {
             return $this->errorMessage;
         }

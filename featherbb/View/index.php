@@ -48,15 +48,15 @@ foreach ($index_data as $forum) {
     endif; ?>
                 <tr class="<?= $forum->item_status ?>">
                     <td class="tcl">
-                        <div class="<?= $forum->icon_type ?>"><div class="nosize"><?= Utils::forum_number_format($forum->forum_count_formatted) ?></div></div>
+                        <div class="<?= $forum->icon_type ?>"><div class="nosize"><?= Utils::forumNumberFormat($forum->forum_count_formatted) ?></div></div>
                         <div class="tclcon">
                             <div>
                                 <?= $forum->forum_field."\n".$forum->moderators_formatted ?>
                             </div>
                         </div>
                     </td>
-                    <td class="tc2"><?= Utils::forum_number_format($forum->num_topics_formatted) ?></td>
-                    <td class="tc3"><?= Utils::forum_number_format($forum->num_posts_formatted) ?></td>
+                    <td class="tc2"><?= Utils::forumNumberFormat($forum->num_topics_formatted) ?></td>
+                    <td class="tc3"><?= Utils::forumNumberFormat($forum->num_posts_formatted) ?></td>
                     <td class="tcr"><?= $forum->last_post_formatted ?></td>
                 </tr>
     <?php
@@ -87,16 +87,16 @@ endif;
         <div class="inbox">
             <dl class="conr">
                 <dt><strong><?= __('Board stats') ?></strong></dt>
-                <dd><span><?php printf(__('No of users'), '<strong>'.Utils::forum_number_format($stats['total_users']).'</strong>') ?></span></dd>
-                <dd><span><?php printf(__('No of topics'), '<strong>'.Utils::forum_number_format($stats['total_topics']).'</strong>') ?></span></dd>
-                <dd><span><?php printf(__('No of posts'), '<strong>'.Utils::forum_number_format($stats['total_posts']).'</strong>') ?></span></dd>
+                <dd><span><?php printf(__('No of users'), '<strong>'.Utils::forumNumberFormat($stats['total_users']).'</strong>') ?></span></dd>
+                <dd><span><?php printf(__('No of topics'), '<strong>'.Utils::forumNumberFormat($stats['total_topics']).'</strong>') ?></span></dd>
+                <dd><span><?php printf(__('No of posts'), '<strong>'.Utils::forumNumberFormat($stats['total_posts']).'</strong>') ?></span></dd>
             </dl>
             <dl class="conl">
                 <dt><strong><?= __('User info') ?></strong></dt>
                 <dd><span><?php printf(__('Newest user'), $stats['newest_user']) ?></span></dd>
                 <?php if (ForumSettings::get('o_users_online') == 1) : ?>
-                <dd><span><?php printf(__('Users online'), '<strong>'.Utils::forum_number_format($online['num_users']).'</strong>') ?></span></dd>
-                <dd><span><?php printf(__('Guests online'), '<strong>'.Utils::forum_number_format($online['num_guests']).'</strong>') ?></span></dd>
+                <dd><span><?php printf(__('Users online'), '<strong>'.Utils::forumNumberFormat($online['num_users']).'</strong>') ?></span></dd>
+                <dd><span><?php printf(__('Guests online'), '<strong>'.Utils::forumNumberFormat($online['num_guests']).'</strong>') ?></span></dd>
                 <?php endif; ?>
             </dl>
             <?php

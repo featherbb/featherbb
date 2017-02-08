@@ -36,9 +36,9 @@ class Forums
             return Router::redirect(Router::pathFor('adminForums'), __('Must be valid category'));
         }
 
-        if ($fid = $this->model->add_forum($cat_id, __('New forum'))) {
+        if ($fid = $this->model->addForum($cat_id, __('New forum'))) {
             // Regenerate the quick jump cache
-            Container::get('cache')->store('quickjump', Cache::get_quickjump());
+            Container::get('cache')->store('quickjump', Cache::quickjump());
 
             return Router::redirect(Router::pathFor('editForum', ['id' => $fid]), __('Forum added redirect'));
         } else {
@@ -58,7 +58,7 @@ class Forums
                                     'forum_desc' => Input::post('forum_desc') ? Utils::linebreaks(Utils::trim(Input::post('forum_desc'))) : null,
                                     'cat_id' => (int) Input::post('cat_id'),
                                     'sort_by' => (int) Input::post('sort_by'),
-                                    'redirect_url' => Url::is_valid(Input::post('redirect_url')) ? Utils::escape(Input::post('redirect_url')) : null];
+                                    'redirect_url' => Url::isValid(Input::post('redirect_url')) ? Utils::escape(Input::post('redirect_url')) : null];
 
                 if ($forum_data['forum_name'] == '') {
                     return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Must enter name message'));
@@ -67,10 +67,10 @@ class Forums
                     return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Must be valid category'));
                 }
 
-                $this->model->update_forum($args['id'], $forum_data);
+                $this->model->updateForum($args['id'], $forum_data);
 
                 // Permissions
-                $permissions = $this->model->get_default_group_permissions(false);
+                $permissions = $this->model->getDefaultGroupPermissions(false);
                 foreach ($permissions as $perm_group) {
                     $permissions_data = ['group_id' => $perm_group['g_id'],
                                                 'forum_id' => $args['id']];
@@ -88,23 +88,23 @@ class Forums
                         $permissions_data['post_topics'] != Input::post('post_topics_old')[$perm_group['g_id']]) {
                         // If there is no group permissions override for this forum
                             if ($permissions_data['read_forum'] == '1' && $permissions_data['post_replies'] == $perm_group['topic.reply'] && $permissions_data['post_topics'] == $perm_group['topic.post']) {
-                                $this->model->delete_permissions($args['id'], $perm_group['g_id']);
+                                $this->model->deletePermissions($args['id'], $perm_group['g_id']);
                             } else {
                                 // Run an UPDATE and see if it affected a row, if not, INSERT
-                                $this->model->update_permissions($permissions_data);
+                                $this->model->updatePermissions($permissions_data);
                             }
                     }
                 }
 
                 // Regenerate the quick jump cache
-                Container::get('cache')->store('quickjump', Cache::get_quickjump());
+                Container::get('cache')->store('quickjump', Cache::quickjump());
 
                 return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Forum updated redirect'));
             } elseif (Input::post('revert_perms')) {
-                $this->model->delete_permissions($args['id']);
+                $this->model->deletePermissions($args['id']);
 
                 // Regenerate the quick jump cache
-                Container::get('cache')->store('quickjump', Cache::get_quickjump());
+                Container::get('cache')->store('quickjump', Cache::quickjump());
 
                 return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Perms reverted redirect'));
             }
@@ -115,10 +115,10 @@ class Forums
                     'title'    =>    [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')],
                     'active_page'    =>    'admin',
                     'admin_console'    =>    true,
-                    'perm_data' => $this->model->get_permissions($args['id']),
+                    'perm_data' => $this->model->getPermissions($args['id']),
                     'cur_index'     =>  7,
-                    'cur_forum' => $this->model->get_forum_info($args['id']),
-                    'forum_data' => $this->model->get_forums(),
+                    'cur_forum' => $this->model->getForumInfo($args['id']),
+                    'forum_data' => $this->model->getForums(),
                 ]
             )->addTemplate('admin/forums/permissions.php')->display();
         }
@@ -128,7 +128,7 @@ class Forums
     {
         Container::get('hooks')->fire('controller.admin.forums.delete');
 
-        if (!$cur_forum = $this->model->get_forum_info($args['id'])) {
+        if (!$cur_forum = $this->model->getForumInfo($args['id'])) {
             $notFoundHandler = Container::get('notFoundHandler');
             return $notFoundHandler($req, $res);
         }
@@ -136,7 +136,7 @@ class Forums
         if (Request::isPost()) {
             $this->model->delete_forum($args['id']);
             // Regenerate the quick jump cache
-            Container::get('cache')->store('quickjump', Cache::get_quickjump());
+            Container::get('cache')->store('quickjump', Cache::quickjump());
 
             return Router::redirect(Router::pathFor('adminForums'), __('Forum deleted redirect'));
         } else { // If the user hasn't confirmed
@@ -153,17 +153,17 @@ class Forums
         }
     }
 
-    public function edit_positions($req, $res, $args)
+    public function editPositions($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.forums.edit_positions');
 
         foreach (Input::post('position') as $args['forum_id'] => $position) {
             $position = (int) Utils::trim($position);
-            $this->model->update_positions($args['forum_id'], $position);
+            $this->model->updatePositions($args['forum_id'], $position);
         }
 
         // Regenerate the quick jump cache
-        Container::get('cache')->store('quickjump', Cache::get_quickjump());
+        Container::get('cache')->store('quickjump', Cache::quickjump());
 
         return Router::redirect(Router::pathFor('adminForums'), __('Forums updated redirect'));
     }
@@ -173,7 +173,7 @@ class Forums
         Container::get('hooks')->fire('controller.admin.forums.display');
 
         if (Input::post('update_positions')) {
-            return $this->edit_positions($req, $res, $args);
+            return $this->editPositions($req, $res, $args);
         }
 
         AdminUtils::generateAdminMenu('forums');
@@ -183,8 +183,8 @@ class Forums
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')],
                 'active_page' => 'admin',
                 'admin_console' => true,
-                'cat_list' => $categories_model->get_cat_list(),
-                'forum_data' => $this->model->get_forums(),
+                'cat_list' => $categories_model->categoryList(),
+                'forum_data' => $this->model->getForums(),
                 'cur_index' => 4,
             ]
         )->addTemplate('admin/forums/admin_forums.php')->display();

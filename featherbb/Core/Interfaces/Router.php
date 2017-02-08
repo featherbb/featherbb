@@ -7,7 +7,7 @@ class Router extends SlimSugar
 {
     public static function pathFor($name, array $data = [], array $queryParams = [])
     {
-        $base_url = Url::base_static();
+        $base_url = Url::baseStatic();
         // if (!(function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules()) && is_file(getcwd().'/.htaccess'))) { // If we have Apache's mod_rewrite enabled
         //     $base_url .= '/index.php';
         // }

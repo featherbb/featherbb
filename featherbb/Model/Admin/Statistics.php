@@ -14,7 +14,7 @@ use FeatherBB\Core\Utils;
 
 class Statistics
 {
-    public function get_server_load()
+    public function serverLoad()
     {
         if (@file_exists('/proc/loadavg') && is_readable('/proc/loadavg')) {
             // We use @ just in case
@@ -43,7 +43,7 @@ class Statistics
         return $server_load;
     }
 
-    public function get_num_online()
+    public function numOnline()
     {
         $num_online = DB::for_table('online')->where('idle', 0)
                             ->count('user_id');
@@ -52,7 +52,7 @@ class Statistics
         return $num_online;
     }
 
-    public function get_total_size()
+    public function totalSize()
     {
         $total = [];
 
@@ -67,14 +67,14 @@ class Statistics
                 $total['size'] += $status['Data_length'] + $status['Index_length'];
             }
 
-            $total['size'] = Utils::file_size($total['size']);
+            $total['size'] = Utils::fileSize($total['size']);
         }
 
         $total = Container::get('hooks')->fire('model.admin.model.statistics.get_total_size.total', $total);
         return $total;
     }
 
-    public function get_php_accelerator()
+    public function phpAccelerator()
     {
         if (function_exists('mmcache')) {
             $php_accelerator = '<a href="http://'.__('Turck MMCache link').'">'.__('Turck MMCache').'</a>';

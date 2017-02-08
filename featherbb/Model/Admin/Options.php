@@ -17,7 +17,7 @@ use FeatherBB\Model\Cache;
 
 class Options
 {
-    public function update_options()
+    public function update()
     {
         $form = [
             'board_title'            => Utils::trim(Input::post('form_board_title')),
@@ -131,11 +131,11 @@ class Options
             $prefs['date_format'] = 'Y-m-d';
         }
 
-        if (!Container::get('email')->is_valid_email($form['admin_email'])) {
+        if (!Container::get('email')->isValidEmail($form['admin_email'])) {
             throw new Error(__('Invalid e-mail message'), 400);
         }
 
-        if (!Container::get('email')->is_valid_email($form['webmaster_email'])) {
+        if (!Container::get('email')->isValidEmail($form['webmaster_email'])) {
             throw new Error(__('Invalid webmaster e-mail message'), 400);
         }
 
@@ -226,13 +226,13 @@ class Options
         Container::get('prefs')->set($prefs);
 
         // Regenerate the config cache
-        $config = array_merge(Cache::get_config(), Cache::get_preferences());
+        $config = array_merge(Cache::getConfig(), Cache::getPreferences());
         Container::get('cache')->store('config', $config);
 
         return Router::redirect(Router::pathFor('adminOptions'), __('Options updated redirect'));
     }
 
-    public function get_styles()
+    public function styles()
     {
         $styles = \FeatherBB\Core\Lister::getStyles();
         $styles = Container::get('hooks')->fire('model.admin.options.get_styles.styles', $styles);
@@ -251,7 +251,7 @@ class Options
         return $output;
     }
 
-    public function get_langs()
+    public function languages()
     {
         $langs = \FeatherBB\Core\Lister::getLangs();
         $langs = Container::get('hooks')->fire('model.admin.options.get_langs.langs', $langs);
@@ -270,7 +270,7 @@ class Options
         return $output;
     }
 
-    public function get_times()
+    public function times()
     {
         $times = [5, 15, 30, 60];
         $times = Container::get('hooks')->fire('model.admin.options.get_times.times', $times);

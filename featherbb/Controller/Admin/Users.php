@@ -87,7 +87,7 @@ class Users
             $start_from = 50 * ($p - 1);
 
             // Generate paging links
-            $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginate_old($num_pages, $p, '?find_user=&amp;'.implode('&amp;', $search['query_str']));
+            $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' . Url::paginateOld($num_pages, $p, '?find_user=&amp;'.implode('&amp;', $search['query_str']));
 
             // Some helper variables for permissions
             $can_delete = $can_move = User::isAdmin();
@@ -141,7 +141,7 @@ class Users
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'page' => $p,
-                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?ip_stats='.$args['id']),
+                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginateOld($num_pages, $p, '?ip_stats='.$args['id']),
                 'start_from'        =>  $start_from,
                 'ip_data'   =>  $this->model->get_ip_stats($args['id'], $start_from),
             ]
@@ -172,7 +172,7 @@ class Users
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Users'), __('Results head')],
                 'active_page' => 'admin',
                 'admin_console' => true,
-                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?ip_stats='.$search_ip),
+                'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.Url::paginateOld($num_pages, $p, '?ip_stats='.$search_ip),
                 'page' => $p,
                 'start_from'        =>  $start_from,
                 'info'   =>  $this->model->get_info_poster($search_ip, $start_from),

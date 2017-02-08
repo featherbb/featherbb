@@ -20,16 +20,16 @@ class Search
     // "Cleans up" a text string and returns an array of unique words
     // This function depends on the current locale setting
     //
-    public static function split_words($text, $idx)
+    public static function splitWords($text, $idx)
     {
         // Remove BBCode
         $text = preg_replace('%\[/?(b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|topic|post|forum|user)(?:\=[^\]]*)?\]%', ' ', $text);
 
         // Remove any apostrophes or dashes which aren't part of words
-        $text = substr(Utils::ucp_preg_replace('%((?<=[^\p{L}\p{N}])[\'\-]|[\'\-](?=[^\p{L}\p{N}]))%u', '', ' ' . $text . ' '), 1, -1);
+        $text = substr(Utils::ucpPregReplace('%((?<=[^\p{L}\p{N}])[\'\-]|[\'\-](?=[^\p{L}\p{N}]))%u', '', ' ' . $text . ' '), 1, -1);
 
         // Remove punctuation and symbols (actually anything that isn't a letter or number), allow apostrophes and dashes (and % * if we aren't indexing)
-        $text = Utils::ucp_preg_replace('%(?![\'\-' . ($idx ? '' : '\%\*') . '])[^\p{L}\p{N}]+%u', ' ', $text);
+        $text = Utils::ucpPregReplace('%(?![\'\-' . ($idx ? '' : '\%\*') . '])[^\p{L}\p{N}]+%u', ' ', $text);
 
         // Replace multiple whitespace or dashes
         $text = preg_replace('%(\s){2,}%u', '\1', $text);
@@ -40,7 +40,7 @@ class Search
         // Remove any words that should not be indexed
         foreach ($words as $key => $value) {
             // If the word shouldn't be indexed, remove it
-            if (!self::validate_search_word($value, $idx)) {
+            if (!self::validateSearchWord($value, $idx)) {
                 unset($words[$key]);
             }
         }
@@ -52,18 +52,18 @@ class Search
     //
     // Checks if a word is a valid searchable word
     //
-    public static function validate_search_word($word, $idx)
+    public static function validateSearchWord($word, $idx)
     {
         static $stopwords;
 
         // If the word is a keyword we don't want to index it, but we do want to be allowed to search it
-        if (self::is_keyword($word)) {
+        if (self::isKeyword($word)) {
             return !$idx;
         }
 
         if (!isset($stopwords)) {
             if (!Container::get('cache')->isCached('stopwords')) {
-                Container::get('cache')->store('stopwords', \FeatherBB\Model\Cache::get_stopwords(), '+1 week');
+                Container::get('cache')->store('stopwords', \FeatherBB\Model\Cache::getStopwords(), '+1 week');
             }
             $stopwords = Container::get('cache')->retrieve('stopwords');
         }
@@ -74,7 +74,7 @@ class Search
         }
 
         // If the word is CJK we don't want to index it, but we do want to be allowed to search it
-        if (self::is_cjk($word)) {
+        if (self::isCjk($word)) {
             return !$idx;
         }
 
@@ -90,7 +90,7 @@ class Search
     //
     // Check a given word is a search keyword.
     //
-    public static function is_keyword($word)
+    public static function isKeyword($word)
     {
         return $word == 'and' || $word == 'or' || $word == 'not';
     }
@@ -99,7 +99,7 @@ class Search
     //
     // Check if a given word is CJK or Hangul.
     //
-    public static function is_cjk($word)
+    public static function isCjk($word)
     {
         // Make a regex that will match CJK or Hangul characters
         return preg_match('%^' . '[' .
@@ -131,7 +131,7 @@ class Search
     //
     // Strip [img] [url] and [email] out of the message so we don't index their contents
     //
-    public static function strip_bbcode($text)
+    public static function stripBbcode($text)
     {
         static $patterns;
 
@@ -151,17 +151,17 @@ class Search
     //
     // Updates the search index with the contents of $post_id (and $subject)
     //
-    public static function update_search_index($mode, $post_id, $message, $subject = null)
+    public static function updateSearchIndex($mode, $post_id, $message, $subject = null)
     {
         $message = utf8_strtolower($message);
         $subject = utf8_strtolower($subject);
 
         // Remove any bbcode that we shouldn't index
-        $message = self::strip_bbcode($message);
+        $message = self::stripBbcode($message);
 
         // Split old and new post/subject to obtain array of 'words'
-        $words_message = self::split_words($message, true);
-        $words_subject = ($subject) ? self::split_words($subject, true) : [];
+        $words_message = self::splitWords($message, true);
+        $words_subject = ($subject) ? self::splitWords($subject, true) : [];
 
         if ($mode == 'edit') {
             $select_update_search_index = ['w.id', 'w.word', 'm.subject_match'];
@@ -282,7 +282,7 @@ class Search
     //
     // Strip search index of indexed words in $post_ids
     //
-    public function strip_search_index($post_ids)
+    public function stripSearchIndex($post_ids)
     {
         if (!is_array($post_ids)) {
             $post_ids_sql = explode(',', $post_ids);

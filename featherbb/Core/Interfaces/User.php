@@ -18,7 +18,7 @@ class User extends \Statical\BaseProxy
             return Container::get('user');
         } else {
             // Load user from Db based on $id
-            return AuthModel::load_user($id);
+            return AuthModel::loadUser($id);
         }
     }
 
@@ -36,7 +36,7 @@ class User extends \Statical\BaseProxy
             return Container::get('user');
         } else {
             // Load user from DB based on ID
-            return AuthModel::load_user($user);
+            return AuthModel::loadUser($user);
         }
     }
 

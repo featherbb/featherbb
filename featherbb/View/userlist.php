@@ -92,10 +92,10 @@ Container::get('hooks')->fire('view.userlist.start');
                 ?>
                     <tr>
                         <td class="tcl"><?= '<a href="'.Router::pathFor('userProfile', ['id' => $user['id']]).'">'.Utils::escape($user['username']).'</a>' ?></td>
-                        <td class="tc2"><?= Utils::get_title($user) ?></td>
-    <?php if ($show_post_count): ?>                    <td class="tc3"><?= Utils::forum_number_format($user['num_posts']) ?></td>
+                        <td class="tc2"><?= Utils::getTitle($user) ?></td>
+    <?php if ($show_post_count): ?>                    <td class="tc3"><?= Utils::forumNumberFormat($user['num_posts']) ?></td>
     <?php endif; ?>
-                        <td class="tcr"><?= Utils::format_time($user['registered'], true) ?></td>
+                        <td class="tcr"><?= Utils::formatTime($user['registered'], true) ?></td>
                     </tr>
             <?php
 

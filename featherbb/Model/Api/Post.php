@@ -21,7 +21,7 @@ class Post extends Api
         $post = new \FeatherBB\Model\Post();
 
         try {
-            $data = $post->get_info_edit($id);
+            $data = $post->getInfoEdit($id);
         } catch (Error $e) {
             return $this->errorMessage;
         }
@@ -49,7 +49,7 @@ class Post extends Api
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
-        if ($is_admmod && !User::isAdmin($this->user) && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+        if ($is_admmod && !User::isAdmin($this->user) && in_array($cur_post['poster_id'], Utils::getAdminIds())) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
@@ -67,14 +67,14 @@ class Post extends Api
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
-        if ($is_admmod && !User::isAdmin($this->user) && in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+        if ($is_admmod && !User::isAdmin($this->user) && in_array($cur_post['poster_id'], Utils::getAdminIds())) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
         return $is_admmod;
     }
 
-    public function get_info_edit($id)
+    public function getInfoEdit($id)
     {
         $cur_post['select'] = ['fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies'];
         $cur_post['where'] = [
@@ -100,7 +100,7 @@ class Post extends Api
         return $cur_post;
     }
 
-    public function get_info_delete($id)
+    public function getInfoDelete($id)
     {
         $id = Container::get('hooks')->fire('model.post.get_info_delete_start', $id);
 
@@ -132,6 +132,6 @@ class Post extends Api
 
     public function update($args, $can_edit_subject, $post, $cur_post, $is_admmod)
     {
-        \FeatherBB\Model\Post::edit_post($args['id'], $can_edit_subject, $post, $cur_post, $is_admmod, $this->user->username);
+        \FeatherBB\Model\Post::editPost($args['id'], $can_edit_subject, $post, $cur_post, $is_admmod, $this->user->username);
     }
 }

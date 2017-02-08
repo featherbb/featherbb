@@ -17,7 +17,7 @@ use FeatherBB\Model\Cache;
 
 class Groups
 {
-    public function fetch_groups()
+    public function groups()
     {
         $result = DB::for_table('groups')->order_by('g_id')->find_many();
         Container::get('hooks')->fireDB('model.admin.groups.fetch_groups_query', $result);
@@ -32,7 +32,7 @@ class Groups
         return $groups;
     }
 
-    public function info_add_group($groups, $id)
+    public function infoAdd($groups, $id)
     {
         $group = [];
 
@@ -59,7 +59,7 @@ class Groups
         return $group;
     }
 
-    public function get_group_list($groups, $group)
+    public function getGroupList($groups, $group)
     {
         $output = '';
 
@@ -77,7 +77,7 @@ class Groups
         return $output;
     }
 
-    public function get_group_list_delete($group_id)
+    public function groupListDelete($group_id)
     {
         $group_id = Container::get('hooks')->fire('model.admin.groups.get_group_list_delete_start', $group_id);
 
@@ -104,7 +104,7 @@ class Groups
         return $output;
     }
 
-    public function add_edit_group($groups)
+    public function addEdit($groups)
     {
         if (Input::post('group_id')) {
             $group_id = Input::post('group_id');
@@ -267,11 +267,11 @@ class Groups
         Container::get('perms')->allowGroup($group_id, array_keys($allowed_perms));
         Container::get('perms')->denyGroup($group_id, array_keys($denied_perms));
         // Reload cache
-        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
-        Container::get('cache')->store('group_preferences', \FeatherBB\Model\Cache::get_group_preferences());
+        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::getPermissions());
+        Container::get('cache')->store('group_preferences', \FeatherBB\Model\Cache::getGroupPreferences());
 
         // Regenerate the quick jump cache
-        Container::get('cache')->store('quickjump', Cache::get_quickjump());
+        Container::get('cache')->store('quickjump', Cache::quickjump());
 
         if (Input::post('mode') == 'edit') {
             return Router::redirect(Router::pathFor('adminGroups'), __('Group edited redirect'));
@@ -280,7 +280,7 @@ class Groups
         }
     }
 
-    public function set_default_group($groups)
+    public function setDefaultGroup($groups)
     {
         $group_id = intval(Input::post('default_group'));
         $group_id = Container::get('hooks')->fire('model.admin.groups.set_default_group.group_id', $group_id);
@@ -299,13 +299,13 @@ class Groups
                                                    ->update_many('conf_value', $group_id);
 
         // Regenerate the config cache
-        $config = array_merge(Cache::get_config(), Cache::get_preferences());
+        $config = array_merge(Cache::getConfig(), Cache::getPreferences());
         Container::get('cache')->store('config', $config);
 
         return Router::redirect(Router::pathFor('adminGroups'), __('Default group redirect'));
     }
 
-    public function check_members($group_id)
+    public function checkMembers($group_id)
     {
         $group_id = Container::get('hooks')->fire('model.admin.groups.check_members_start', $group_id);
 
@@ -322,7 +322,7 @@ class Groups
         return (bool) $is_member;
     }
 
-    public function delete_group($group_id)
+    public function deleteGroup($group_id)
     {
         $group_id = Container::get('hooks')->fire('model.admin.groups.delete_group.group_id', $group_id);
 
@@ -353,7 +353,7 @@ class Groups
         return Router::redirect(Router::pathFor('adminGroups'), __('Group removed redirect'));
     }
 
-    public function get_group_title($group_id)
+    public function groupTitle($group_id)
     {
         $group_id = Container::get('hooks')->fireDB('model.admin.groups.get_group_title.group_id', $group_id);
 
@@ -364,7 +364,7 @@ class Groups
         return $group_title;
     }
 
-    public function get_title_members($group_id)
+    public function titleMembers($group_id)
     {
         $group_id = Container::get('hooks')->fire('model.admin.groups.get_title_members.group_id', $group_id);
 

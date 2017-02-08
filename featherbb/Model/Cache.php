@@ -13,7 +13,7 @@ use FeatherBB\Core\Database as DB;
 
 class Cache
 {
-    public static function get_config()
+    public static function getConfig()
     {
         $result = DB::for_table('config')
                     ->find_array();
@@ -24,7 +24,7 @@ class Cache
         return $config;
     }
 
-    public static function get_preferences()
+    public static function getPreferences()
     {
         $result = DB::for_table('preferences')
                     ->where('default', 1)
@@ -36,13 +36,13 @@ class Cache
         return $preferences;
     }
 
-    public static function get_bans()
+    public static function getBans()
     {
         return DB::for_table('bans')
                 ->find_array();
     }
 
-    public static function get_censoring($select_censoring = 'search_for')
+    public static function getCensoring($select_censoring = 'search_for')
     {
         $result = DB::for_table('censoring')
                     ->select_many($select_censoring)
@@ -55,7 +55,7 @@ class Cache
         return $output;
     }
 
-    public static function get_users_info()
+    public static function getUsersInfo()
     {
         $stats = [];
         $select_get_users_info = ['id', 'username'];
@@ -79,7 +79,7 @@ class Cache
                 ->find_array();
     }
 
-    public static function get_quickjump()
+    public static function quickjump()
     {
         $read_perms = DB::for_table('permissions')
             ->select('group', 'g_id')
@@ -125,7 +125,7 @@ class Cache
         return $output;
     }
 
-    public static function get_stopwords($lang_path = null)
+    public static function getStopwords($lang_path = null)
     {
         if (!$lang_path) {
             $lang_path = ForumEnv::get('FEATHER_ROOT').'featherbb/lang';
@@ -140,7 +140,7 @@ class Cache
         return array_map('trim', $stopwords);
     }
 
-    public static function get_permissions()
+    public static function getPermissions()
     {
         // Initial empty array
         $result = [];
@@ -168,7 +168,7 @@ class Cache
         return $result;
     }
 
-    public static function get_group_preferences()
+    public static function getGroupPreferences()
     {
         $groups_preferences = [];
 

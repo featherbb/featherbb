@@ -53,7 +53,7 @@ class Maintenance
         }
     }
 
-    public function get_query_str()
+    public function getQueryString()
     {
         $query_str = '';
 
@@ -79,9 +79,9 @@ class Maintenance
             echo '<p><span>'.sprintf(__('Processing post'), $cur_item['id']).'</span></p>'."\n";
 
             if ($cur_item['id'] == $cur_item['first_post_id']) {
-                $this->search->update_search_index('post', $cur_item['id'], $cur_item['message'], $cur_item['subject']);
+                $this->search->updateSearchIndex('post', $cur_item['id'], $cur_item['message'], $cur_item['subject']);
             } else {
-                $this->search->update_search_index('post', $cur_item['id'], $cur_item['message']);
+                $this->search->updateSearchIndex('post', $cur_item['id'], $cur_item['message']);
             }
 
             $end_at = $cur_item['id'];
@@ -157,12 +157,12 @@ class Maintenance
                         ->delete_many();
 
                 // We removed a bunch of posts, so now we have to update the search index
-                $this->search->strip_search_index($post_ids);
+                $this->search->stripSearchIndex($post_ids);
             }
         }
     }
 
-    public function prune_comply($prune_from, $prune_sticky)
+    public function pruneComply($prune_from, $prune_sticky)
     {
         $prune_days = intval(Input::post('prune_days'));
         $prune_days = Container::get('hooks')->fire('model.admin.maintenance.prune_comply.prune_days', $prune_days);
@@ -211,7 +211,7 @@ class Maintenance
         return Router::redirect(Router::pathFor('adminMaintenance'), __('Posts pruned redirect'));
     }
 
-    public function get_info_prune($prune_sticky, $prune_from)
+    public function getInfoPrune($prune_sticky, $prune_from)
     {
         $prune = [];
 
@@ -255,7 +255,7 @@ class Maintenance
         return $prune;
     }
 
-    public function get_categories()
+    public function getCategories()
     {
         $output = '';
 
@@ -291,7 +291,7 @@ class Maintenance
         return $output;
     }
 
-    public function get_first_id()
+    public function getFirstId()
     {
         $first_id = '';
         $first_id_sql = DB::for_table('posts')->order_by_asc('id')

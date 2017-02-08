@@ -382,12 +382,12 @@ class Users
             // Delete user avatars
             $userProfile = new \FeatherBB\Model\Profile();
             foreach ($user_ids as $user_id) {
-                $userProfile->delete_avatar($user_id);
+                $userProfile->deleteAvatar($user_id);
             }
 
             // Regenerate the users info cache
             if (!Container::get('cache')->isCached('users_info')) {
-                Container::get('cache')->store('users_info', Cache::get_users_info());
+                Container::get('cache')->store('users_info', Cache::getUsersInfo());
             }
 
             $stats = Container::get('cache')->retrieve('users_info');
@@ -510,7 +510,7 @@ class Users
                 }
 
                 // Regenerate the bans cache
-                Container::get('cache')->store('bans', Cache::get_bans());
+                Container::get('cache')->store('bans', Cache::getBans());
 
                 return Router::redirect(Router::pathFor('adminUsers'), __('Users banned redirect'));
             }
@@ -654,7 +654,7 @@ class Users
 
         if ($result) {
             foreach ($result as $cur_user) {
-                $cur_user['user_title'] = Utils::get_title($cur_user);
+                $cur_user['user_title'] = Utils::getTitle($cur_user);
 
                 // This script is a special case in that we want to display "Not verified" for non-verified users
                 if (($cur_user['g_id'] == '' || $cur_user['g_id'] == ForumEnv::get('FEATHER_UNVERIFIED')) && $cur_user['user_title'] != __('Banned')) {

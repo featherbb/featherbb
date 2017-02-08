@@ -24,7 +24,7 @@ use Firebase\JWT\JWT;
 
 class Auth
 {
-    protected function get_cookie_data($authCookie = null)
+    protected function getCookieData($authCookie = null)
     {
         if ($authCookie) {
             /*
@@ -58,7 +58,7 @@ class Auth
         }
     }
 
-    public function update_online()
+    public function updateOnline()
     {
         // Define this if you want this visit to affect the online list and the users last visit data
         if (!defined('FEATHER_QUIET_VISIT')) {
@@ -83,7 +83,7 @@ class Auth
                 }
 
                 // Reset tracked topics
-                Track::set_tracked_topics(null);
+                Track::setTrackedTopics(null);
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
                 if (User::get()->logged < (Container::get('now')-ForumSettings::get('o_timeout_visit'))) {
@@ -101,7 +101,7 @@ class Auth
                 // Update tracked topics with the current expire time
                 $cookie_tracked_topics = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
                 if (isset($cookie_tracked_topics)) {
-                    Track::set_tracked_topics(json_decode($cookie_tracked_topics, true));
+                    Track::setTrackedTopics(json_decode($cookie_tracked_topics, true));
                 }
             }
         } else {
@@ -111,7 +111,7 @@ class Auth
         }
     }
 
-    public function update_users_online()
+    public function updateUsersOnline()
     {
         // Fetch all online list entries that are older than "o_timeout_online"
         $select_update_users_online = ['user_id', 'ident', 'logged', 'idle'];
@@ -143,7 +143,7 @@ class Auth
         }
     }
 
-    public function check_bans()
+    public function checkBans()
     {
         // Admins and moderators aren't affected
         if (User::isAdminMod() || !Container::get('bans')) {
@@ -194,17 +194,17 @@ class Auth
                 DB::for_table('online')
                     ->where('ident', User::get()->username)
                     ->delete_many();
-                throw new Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower(Utils::format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 403, false, true);
+                throw new Error(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower(Utils::formatTime($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br /><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 403, false, true);
             }
         }
 
         // If we removed any expired bans during our run-through, we need to regenerate the bans cache
         if ($bans_altered) {
-            Container::get('cache')->store('bans', Cache::get_bans());
+            Container::get('cache')->store('bans', Cache::getBans());
         }
     }
 
-    public function maintenance_message()
+    public function maintenanceMessage()
     {
         // Admins and moderators aren't affected
         if (User::isAdminMod()) {
@@ -221,9 +221,9 @@ class Auth
         }
     }
 
-    private function load_default_user()
+    private function loadDefaultUser()
     {
-        $user = AuthModel::load_user(1);
+        $user = AuthModel::loadUser(1);
 
         $user->is_guest = true;
         $user->is_admmod = false;
@@ -238,15 +238,15 @@ class Auth
         $jwt = false;
 
         try {
-            $jwt = $this->get_cookie_data($authCookie);
+            $jwt = $this->getCookieData($authCookie);
         } catch (\Exception $e) {
-            $user = $this->load_default_user();
+            $user = $this->loadDefaultUser();
 
             // Add $user as guest to DIC
             Container::set('user', $user);
         }
 
-        if ($jwt && $user = AuthModel::load_user($jwt->data->userId)) {
+        if ($jwt && $user = AuthModel::loadUser($jwt->data->userId)) {
 
             // Load permissions and preferences for logged user
             Container::get('perms')->getUserPermissions($user);
@@ -267,12 +267,12 @@ class Auth
             Container::set('user', $user);
 
             // Refresh cookie to avoid re-logging between idle
-            $jwt = AuthModel::generate_jwt($user, $expires);
-            AuthModel::feather_setcookie('Bearer '.$jwt, $expires);
+            $jwt = AuthModel::generateJwt($user, $expires);
+            AuthModel::setCookie('Bearer '.$jwt, $expires);
 
-            $this->update_online();
+            $this->updateOnline();
         } else {
-            $user = $this->load_default_user();
+            $user = $this->loadDefaultUser();
 
             // Update online list
             if (!$user->logged) {
@@ -309,20 +309,20 @@ class Auth
         Lang::load('common');
         // Load bans from cache
         if (!Container::get('cache')->isCached('bans')) {
-            Container::get('cache')->store('bans', Cache::get_bans());
+            Container::get('cache')->store('bans', Cache::getBans());
         }
 
         // Add bans to the container
         Container::set('bans', Container::get('cache')->retrieve('bans'));
 
         // Check if current user is banned
-        $this->check_bans();
+        $this->checkBans();
 
         // Check if we have to display the maintenance message
-        $this->maintenance_message();
+        $this->maintenanceMessage();
 
         // Update online list
-        $this->update_users_online();
+        $this->updateUsersOnline();
 
         return $next($req, $res);
     }

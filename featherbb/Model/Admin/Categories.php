@@ -13,7 +13,7 @@ use FeatherBB\Core\Database as DB;
 
 class Categories
 {
-    public function add_category($cat_name)
+    public function addCategory($cat_name)
     {
         $cat_name = Container::get('hooks')->fire('model.admin.categories.add_category', $cat_name);
 
@@ -38,7 +38,7 @@ class Categories
                 ->save();
     }
 
-    public function delete_category($cat_to_delete)
+    public function deleteCategory($cat_to_delete)
     {
         $cat_to_delete = Container::get('hooks')->fire('model.admin.categories.delete_category_start', $cat_to_delete);
 
@@ -80,7 +80,7 @@ class Categories
         return true;
     }
 
-    public function get_cat_list()
+    public function categoryList()
     {
         $cat_list = [];
         $select_get_cat_list = ['id', 'cat_name', 'disp_position'];

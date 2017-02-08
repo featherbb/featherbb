@@ -28,11 +28,11 @@ class Groups
     {
         Container::get('hooks')->fire('controller.admin.groups.display');
 
-        $groups = $this->model->fetch_groups();
+        $groups = $this->model->groups();
 
         // Set default group
         if (Request::isPost()) {
-            return $this->model->set_default_group($groups);
+            return $this->model->setDefaultGroup($groups);
         }
 
         AdminUtils::generateAdminMenu('user groups');
@@ -61,12 +61,12 @@ class Groups
         }
 
         // Check if this group has any members
-        $is_member = $this->model->check_members($args['id']);
+        $is_member = $this->model->checkMembers($args['id']);
 
         // If the group doesn't have any members or if we've already selected a group to move the members to
         if (!$is_member || Input::post('del_group')) {
             if (Input::post('del_group_comply') || Input::post('del_group')) {
-                return $this->model->delete_group($args['id']);
+                return $this->model->deleteGroup($args['id']);
             } else {
                 AdminUtils::generateAdminMenu('user groups');
 
@@ -74,7 +74,7 @@ class Groups
                         'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
                         'active_page' => 'admin',
                         'admin_console' => true,
-                        'group_title'      =>  $this->model->get_group_title($args['id']),
+                        'group_title'      =>  $this->model->groupTitle($args['id']),
                         'id'    => $args['id'],
                     ]
                 )->addTemplate('admin/groups/confirm_delete.php')->display();
@@ -88,8 +88,8 @@ class Groups
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'id'    => $args['id'],
-                'group_info'      =>  $this->model->get_title_members($args['id']),
-                'group_list_delete'      =>  $this->model->get_group_list_delete($args['id']),
+                'group_info'      =>  $this->model->titleMembers($args['id']),
+                'group_list_delete'      =>  $this->model->groupListDelete($args['id']),
             ]
         )->addTemplate('admin/groups/delete_group.php')->display();
     }
@@ -98,11 +98,11 @@ class Groups
     {
         Container::get('hooks')->fire('controller.admin.groups.addedit');
 
-        $groups = $this->model->fetch_groups();
+        $groups = $this->model->groups();
 
         // Add/edit a group (stage 2)
         if (Input::post('add_edit_group')) {
-            return $this->model->add_edit_group($groups);
+            return $this->model->addEdit($groups);
         }
 
         // Add/edit a group (stage 1)
@@ -110,7 +110,7 @@ class Groups
             AdminUtils::generateAdminMenu('user groups');
 
             $id = isset($args['id']) ? intval($args['id']) : intval(Input::post('base_group'));
-            $group = $this->model->info_add_group($groups, $id);
+            $group = $this->model->infoAdd($groups, $id);
 
             View::setPageInfo([
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
@@ -118,7 +118,7 @@ class Groups
                     'admin_console' => true,
                     'group'    =>    $group,
                     'id'    => $id,
-                    'group_list'    => $this->model->get_group_list($groups, $group),
+                    'group_list'    => $this->model->getGroupList($groups, $group),
                 ]
             )->addTemplate('admin/groups/add_edit_group.php')->display();
         }

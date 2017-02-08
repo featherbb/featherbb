@@ -186,7 +186,7 @@ class Plugins
     /**
      * Upload a plugin manually
      */
-    public function upload_plugin($files_data)
+    public function uploadPlugin($files_data)
     {
         if (!isset($files_data['req_file'])) {
             throw new Error(__('No file'));

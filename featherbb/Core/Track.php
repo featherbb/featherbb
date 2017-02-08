@@ -14,7 +14,7 @@ class Track
     //
     // Save array of tracked topics in cookie
     //
-    public static function set_tracked_topics($tracked_topics = null)
+    public static function setTrackedTopics($tracked_topics = null)
     {
         if (!empty($tracked_topics)) {
             // Sort the arrays (latest read first)
@@ -31,7 +31,7 @@ class Track
     //
     // Extract array of tracked topics from cookie
     //
-    public static function get_tracked_topics()
+    public static function getTrackedTopics()
     {
         $cookie_raw = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
 

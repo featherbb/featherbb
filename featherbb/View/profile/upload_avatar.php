@@ -28,7 +28,7 @@ Container::get('hooks')->fire('view.profile.upload_avatar.start');
                                     <input type="hidden" name="form_sent" value="1" />
                                     <input type="hidden" name="MAX_FILE_SIZE" value="<?= ForumSettings::get('o_avatars_size') ?>" />
                                     <label class="required"><strong><?= __('File') ?> <span><?= __('Required') ?></span></strong><br /><input name="req_file" type="file" size="40" required="required" autofocus /><br /></label>
-                                    <p><?= __('Avatar desc'); echo ' '.ForumSettings::get('o_avatars_width').' x '.ForumSettings::get('o_avatars_height').' '.__('pixels').' '.__('and').' '.Utils::forum_number_format(ForumSettings::get('o_avatars_size')).' '.__('bytes').' ('.Utils::file_size(ForumSettings::get('o_avatars_size')).').' ?></p>
+                                    <p><?= __('Avatar desc'); echo ' '.ForumSettings::get('o_avatars_width').' x '.ForumSettings::get('o_avatars_height').' '.__('pixels').' '.__('and').' '.Utils::forumNumberFormat(ForumSettings::get('o_avatars_size')).' '.__('bytes').' ('.Utils::fileSize(ForumSettings::get('o_avatars_size')).').' ?></p>
                                 </div>
                             </fieldset>
                         </div>

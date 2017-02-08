@@ -16,7 +16,7 @@ class Utils
     //
     // Return current timestamp (with microseconds) as a float
     //
-    public static function get_microtime()
+    public static function getMicrotime()
     {
         list($usec, $sec) = explode(' ', microtime());
         return ((float)$usec + (float)$sec);
@@ -29,7 +29,7 @@ class Utils
     // charset up until version 5.5.3 (where a special charset has to be used), they
     // need to be replaced, by question marks in this case.
     //
-    public static function strip_bad_multibyte_chars($str)
+    public static function stripBadMultibyteChars($str)
     {
         $result = '';
         $length = strlen($str);
@@ -51,7 +51,7 @@ class Utils
     //
     // A wrapper for PHP's number_format function
     //
-    public static function forum_number_format($number, $decimals = 0)
+    public static function forumNumberFormat($number, $decimals = 0)
     {
         return is_numeric($number) ? number_format($number, $decimals, __('lang_decimal_point'), __('lang_thousands_sep')) : $number;
     }
@@ -59,7 +59,7 @@ class Utils
     //
     // Format a time string according to $time_format and time zones
     //
-    public static function format_time($timestamp, $date_only = false, $date_format = null, $time_format = null, $time_only = false, $no_text = false)
+    public static function formatTime($timestamp, $date_only = false, $date_format = null, $time_format = null, $time_only = false, $no_text = false)
     {
         if ($timestamp == '') {
             return __('Never');
@@ -137,7 +137,7 @@ class Utils
     //
     // Checks if a string is in all uppercase
     //
-    public static function is_all_uppercase($string)
+    public static function isAllUppercase($string)
     {
         return utf8_strtoupper($string) == $string && utf8_strtolower($string) != $string;
     }
@@ -147,7 +147,7 @@ class Utils
     //
     // This function takes care of possibly disabled unicode properties in PCRE builds
     //
-    public static function ucp_preg_replace($pattern, $replace, $subject, $callback = false)
+    public static function ucpPregReplace($pattern, $replace, $subject, $callback = false)
     {
         if ($callback) {
             $replaced = preg_replace_callback($pattern, create_function('$matches', 'return '.$replace.';'), $subject);
@@ -174,7 +174,7 @@ class Utils
     //
     // Converts the file size in bytes to a human readable file size
     //
-    public static function file_size($size)
+    public static function fileSize($size)
     {
         $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB'];
 
@@ -188,7 +188,7 @@ class Utils
     //
     // Generate browser's title
     //
-    public static function generate_page_title($page_title, $p = null)
+    public static function generatePageTitle($page_title, $p = null)
     {
         if (!is_array($page_title)) {
             $page_title = [$page_title];
@@ -197,7 +197,7 @@ class Utils
         $page_title = array_reverse($page_title);
 
         if ($p > 1) {
-            $page_title[0] .= ' ('.sprintf(__('Page'), self::forum_number_format($p)).')';
+            $page_title[0] .= ' ('.sprintf(__('Page'), self::forumNumberFormat($p)).')';
         }
 
         $crumbs = implode(__('Title separator'), $page_title);
@@ -225,7 +225,7 @@ class Utils
     // Determines the correct title for $user
     // $user must contain the elements 'username', 'title', 'posts', 'g_id' and 'g_user_title'
     //
-    public static function get_title($user)
+    public static function getTitle($user)
     {
         static $ban_list;
 
@@ -269,17 +269,17 @@ class Utils
         static $search_for, $replace_with;
 
         if (!Container::get('cache')->isCached('search_for')) {
-            Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
+            Container::get('cache')->store('search_for', Cache::getCensoring('search_for'));
         }
         $search_for = Container::get('cache')->retrieve('search_for');
 
         if (!Container::get('cache')->isCached('replace_with')) {
-            Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
+            Container::get('cache')->store('replace_with', Cache::getCensoring('replace_with'));
         }
         $replace_with = Container::get('cache')->retrieve('replace_with');
 
         if (!empty($search_for) && !empty($replace_with)) {
-            return substr(self::ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
+            return substr(self::ucpPregReplace($search_for, $replace_with, ' '.$text.' '), 1, -1);
         } else {
             return $text;
         }
@@ -288,7 +288,7 @@ class Utils
     //
     // Fetch admin IDs
     //
-    public static function get_admin_ids()
+    public static function getAdminIds()
     {
         // Get Slim current session
         if (!Container::get('cache')->isCached('admin_ids')) {
@@ -301,7 +301,7 @@ class Utils
     //
     // Outputs markup to display a user's avatar
     //
-    public static function generate_avatar_markup($user_id)
+    public static function generateAvatarMarkup($user_id)
     {
         $filetypes = ['jpg', 'gif', 'png'];
         $avatar_markup = '';
@@ -356,7 +356,7 @@ class Utils
      *
      * Sourcecode from WordPress
      */
-    public static function hash_equals($a, $b)
+    public static function hashEquals($a, $b)
     {
         if (function_exists('hash_equals')) {
             return hash_equals((string)$a, (string)$b);
@@ -384,7 +384,7 @@ class Utils
      * @param  string $password User password
      * @return string           Hashed password
      */
-    public static function password_hash($password)
+    public static function passwordHash($password)
     {
         return password_hash($password, PASSWORD_DEFAULT);
     }
@@ -397,7 +397,7 @@ class Utils
      * @param  string $hash     Password stored in database
      * @return bool             Do the passwords match ?
      */
-    public static function password_verify($password, $hash)
+    public static function passwordVerify($password, $hash)
     {
         return password_verify($password, $hash);
     }

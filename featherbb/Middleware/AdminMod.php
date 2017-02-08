@@ -18,7 +18,7 @@ use FeatherBB\Core\Error;
 /**
  * Middleware to check if user is logged and admin
  */
-class AdminModo
+class AdminMod
 {
     public function __invoke($request, $response, $next)
     {

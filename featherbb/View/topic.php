@@ -42,7 +42,7 @@ foreach ($post_data as $post) {
     } ?><?php if ($post_count == 1) {
         echo ' blockpost1';
     } ?>">
-    <h2><span><span class="conr">#<?= ($start_from + $post_count) ?></span> <a href="<?= Router::pathFor('viewPost', ['id' => $id, 'name' => $url_topic, 'pid' => $post['id']]).'#p'.$post['id'] ?>"><?= Utils::format_time($post['posted']) ?></a></span></h2>
+    <h2><span><span class="conr">#<?= ($start_from + $post_count) ?></span> <a href="<?= Router::pathFor('viewPost', ['id' => $id, 'name' => $url_topic, 'pid' => $post['id']]).'#p'.$post['id'] ?>"><?= Utils::formatTime($post['posted']) ?></a></span></h2>
     <div class="box">
         <div class="inbox">
             <div class="postbody">
@@ -69,7 +69,7 @@ foreach ($post_data as $post) {
                     <div class="postmsg">
                         <?= $post['message']."\n" ?>
 <?php if ($post['edited'] != '') {
-        echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.Utils::escape($post['edited_by']).' ('.Utils::format_time($post['edited']).')</em></p>'."\n";
+        echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.Utils::escape($post['edited_by']).' ('.Utils::formatTime($post['edited']).')</em></p>'."\n";
     } ?>
                     </div>
 <?php if ($post['signature_formatted'] != '') {
@@ -112,19 +112,19 @@ if (isset($active_page) && $active_page == 'Topic' && $is_admmod) {
     echo "\t\t\t".'<div id="modcontrols" class="inbox">'."\n";
     echo "\t\t\t\t".'<dl>'."\n";
     echo "\t\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
-    echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moderateTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject']), 'fid' => $fid, 'page' => $page_number]).'">'.__('Moderate topic').'</a></span></dd>'."\n";
-    echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moveTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject']), 'fid' => $fid]).'">'.__('Move topic').'</a></span></dd>'."\n";
+    echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moderateTopic', ['id' => $tid, 'name' => Url::slug($cur_topic['subject']), 'fid' => $fid, 'page' => $page_number]).'">'.__('Moderate topic').'</a></span></dd>'."\n";
+    echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moveTopic', ['id' => $tid, 'name' => Url::slug($cur_topic['subject']), 'fid' => $fid]).'">'.__('Move topic').'</a></span></dd>'."\n";
 
     if ($cur_topic['closed'] == '1') {
-        echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('openTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Open topic').'</a></span></dd>'."\n";
+        echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('openTopic', ['id' => $tid, 'name' => Url::slug($cur_topic['subject'])]).'">'.__('Open topic').'</a></span></dd>'."\n";
     } else {
-        echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('closeTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Close topic').'</a></span></dd>'."\n";
+        echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('closeTopic', ['id' => $tid, 'name' => Url::slug($cur_topic['subject'])]).'">'.__('Close topic').'</a></span></dd>'."\n";
     }
 
     if ($cur_topic['sticky'] == '1') {
-        echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('unstickTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Unstick topic').'</a></span></dd>'."\n";
+        echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('unstickTopic', ['id' => $tid, 'name' => Url::slug($cur_topic['subject'])]).'">'.__('Unstick topic').'</a></span></dd>'."\n";
     } else {
-        echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('stickTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Stick topic').'</a></span></dd>'."\n";
+        echo "\t\t\t\t\t".'<dd><span><a href="'.Router::pathFor('stickTopic', ['id' => $tid, 'name' => Url::slug($cur_topic['subject'])]).'">'.__('Stick topic').'</a></span></dd>'."\n";
     }
 
     echo "\t\t\t\t".'</dl>'."\n";

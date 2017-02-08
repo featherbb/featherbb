@@ -27,17 +27,17 @@ class Statistics
 
         AdminUtils::generateAdminMenu('index');
 
-        $total = $this->model->get_total_size();
+        $total = $this->model->totalSize();
 
         return View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Server statistics')],
                 'active_page' => 'admin',
                 'admin_console' => true,
-                'server_load'    =>    $this->model->get_server_load(),
-                'num_online'    =>    $this->model->get_num_online(),
+                'server_load'    =>    $this->model->serverLoad(),
+                'num_online'    =>    $this->model->numOnline(),
                 'total_size'    =>    $total['size'],
                 'total_records'    =>    $total['records'],
-                'php_accelerator'    =>    $this->model->get_php_accelerator(),
+                'php_accelerator'    =>    $this->model->phpAccelerator(),
             ]
         )->addTemplate('admin/statistics.php')->display();
     }

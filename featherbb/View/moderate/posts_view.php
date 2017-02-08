@@ -44,7 +44,7 @@ foreach ($post_data as $post) {
     } ?><?php echo($post_count % 2 == 0) ? ' roweven' : ' rowodd' ?><?php if ($post_count == 1) {
         echo ' blockpost1';
     } ?>">
-        <h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?= Router::pathFor('viewPost', ['id' => $id, 'name' => $url_topic, 'pid' => $post['id']]).'#p'.$post['id'] ?>"><?= Utils::format_time($post['posted']) ?></a></span></h2>
+        <h2><span><span class="conr">#<?php echo($start_from + $post_count) ?></span> <a href="<?= Router::pathFor('viewPost', ['id' => $id, 'name' => $url_topic, 'pid' => $post['id']]).'#p'.$post['id'] ?>"><?= Utils::formatTime($post['posted']) ?></a></span></h2>
         <div class="box">
             <div class="inbox">
                 <div class="postbody">
@@ -59,7 +59,7 @@ foreach ($post_data as $post) {
                         <div class="postmsg">
                             <?= $post['message']."\n" ?>
     <?php if ($post['edited'] != '') {
-        echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.Utils::escape($post['edited_by']).' ('.Utils::format_time($post['edited']).')</em></p>'."\n";
+        echo "\t\t\t\t\t\t".'<p class="postedit"><em>'.__('Last edit').' '.Utils::escape($post['edited_by']).' ('.Utils::formatTime($post['edited']).')</em></p>'."\n";
     } ?>
                         </div>
                     </div>

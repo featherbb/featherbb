@@ -44,11 +44,11 @@ class Register
         $user['errors'] = '';
 
         if (Request::isPost()) {
-            $user = $this->model->check_for_errors();
+            $user = $this->model->checkErrors();
 
             // Did everything go according to plan? Insert the user
             if (empty($user['errors'])) {
-                return $this->model->insert_user($user);
+                return $this->model->insertUser($user);
             }
         }
 

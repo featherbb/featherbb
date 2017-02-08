@@ -101,7 +101,7 @@ class Core
         ];
     }
 
-    public static function init_db(array $config, $log_queries = false)
+    public static function initDb(array $config, $log_queries = false)
     {
         $config['db_prefix'] = (!empty($config['db_prefix'])) ? $config['db_prefix'] : '';
         switch ($config['db_type']) {
@@ -172,7 +172,7 @@ class Core
             return new Utils();
         });
         // Record start time
-        Container::set('start', Utils::get_microtime());
+        Container::set('start', Utils::getMicrotime());
         // Define now var
         Container::set('now', function () {
             return time();
@@ -243,19 +243,19 @@ class Core
         }
 
         // Init DB and configure Slim
-        self::init_db($this->forum_settings, ForumEnv::get('FEATHER_SHOW_INFO'));
+        self::initDb($this->forum_settings, ForumEnv::get('FEATHER_SHOW_INFO'));
         Config::set('displayErrorDetails', ForumEnv::get('FEATHER_DEBUG'));
 
         // Ensure cached forum data exist
         if (!Container::get('cache')->isCached('config')) {
-            $config = array_merge(\FeatherBB\Model\Cache::get_config(), \FeatherBB\Model\Cache::get_preferences());
+            $config = array_merge(\FeatherBB\Model\Cache::getConfig(), \FeatherBB\Model\Cache::getPreferences());
             Container::get('cache')->store('config', $config);
         }
         if (!Container::get('cache')->isCached('permissions')) {
-            Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::get_permissions());
+            Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::getPermissions());
         }
         if (!Container::get('cache')->isCached('group_preferences')) {
-            Container::get('cache')->store('group_preferences', \FeatherBB\Model\Cache::get_group_preferences());
+            Container::get('cache')->store('group_preferences', \FeatherBB\Model\Cache::getGroupPreferences());
         }
 
         // Finalize forum_settings array

@@ -38,35 +38,35 @@ class Auth
             $form_password = Input::post('req_password');
             $save_pass = (bool)Input::post('save_pass');
 
-            $user = ModelAuth::get_user_from_name($form_username);
+            $user = ModelAuth::getUserFromName($form_username);
 
             if ($user && !empty($user->password)) {
                 // Convert old password to BCrypt if needed
                 $old_password_hash = Random::hash($form_password);
-                $password_to_convert = Utils::hash_equals($old_password_hash, $user->password);
+                $password_to_convert = Utils::hashEquals($old_password_hash, $user->password);
                 
-                if (Utils::password_verify($form_password, $user->password) || $password_to_convert) {
+                if (Utils::passwordVerify($form_password, $user->password) || $password_to_convert) {
                     if ($password_to_convert) {
-                        ModelAuth::update_password($user->id, $form_password);
-                        $user = ModelAuth::get_user_from_name($form_username);
+                        ModelAuth::updatePassword($user->id, $form_password);
+                        $user = ModelAuth::getUserFromName($form_username);
                     }
 
                     if ($user->group_id == ForumEnv::get('FEATHER_UNVERIFIED')) {
-                        ModelAuth::update_group($user->id, ForumSettings::get('o_default_user_group'));
+                        ModelAuth::updateGroup($user->id, ForumSettings::get('o_default_user_group'));
                         if (!Container::get('cache')->isCached('users_info')) {
-                            Container::get('cache')->store('users_info', Cache::get_users_info());
+                            Container::get('cache')->store('users_info', Cache::getUsersInfo());
                         }
                     }
 
-                    ModelAuth::delete_online_by_ip(Utils::getIp());
+                    ModelAuth::deleteOnlineByIP(Utils::getIp());
                     // Reset tracked topics
-                    Track::set_tracked_topics(null);
+                    Track::setTrackedTopics(null);
 
                     $expire = ($save_pass) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
                     $expire = Container::get('hooks')->fire('controller.expire_login', $expire);
 
-                    $jwt = ModelAuth::generate_jwt($user, $expire);
-                    ModelAuth::feather_setcookie('Bearer ' . $jwt, $expire);
+                    $jwt = ModelAuth::generateJwt($user, $expire);
+                    ModelAuth::setCookie('Bearer ' . $jwt, $expire);
 
                     return Router::redirect(Router::pathFor('home'), __('Login redirect'));
                 } else {
@@ -88,18 +88,18 @@ class Auth
     {
         $token = Container::get('hooks')->fire('controller.logout', $args['token']);
 
-        if (User::get()->is_guest || !isset($token) || !Utils::hash_equals($token, Random::hash(User::get()->id.Random::hash(Utils::getIp())))) {
+        if (User::get()->is_guest || !isset($token) || !Utils::hashEquals($token, Random::hash(User::get()->id.Random::hash(Utils::getIp())))) {
             return Router::redirect(Router::pathFor('home'), 'Not logged in');
         }
 
-        ModelAuth::delete_online_by_id(User::get()->id);
+        ModelAuth::deleteOnlineById(User::get()->id);
 
         // Update last_visit (make sure there's something to update it with)
         if (isset(User::get()->logged)) {
-            ModelAuth::set_last_visit(User::get()->id, User::get()->logged);
+            ModelAuth::setLastVisit(User::get()->id, User::get()->logged);
         }
 
-        ModelAuth::feather_setcookie('Bearer ', 1);
+        ModelAuth::setCookie('Bearer ', 1);
         Container::get('hooks')->fire('controller.logout_end');
 
         return Router::redirect(Router::pathFor('home'), __('Logout redirect'));
@@ -115,10 +115,10 @@ class Auth
         if (Request::isPost()) {
             // Validate the email address
             $email = strtolower(Utils::trim(Input::post('req_email')));
-            if (!Container::get('email')->is_valid_email($email)) {
+            if (!Container::get('email')->isValidEmail($email)) {
                 throw new Error(__('Invalid email'), 400);
             }
-            $user = ModelAuth::get_user_from_email($email);
+            $user = ModelAuth::getUserFromEmail($email);
 
             if ($user) {
                 // Load the "activate password" template
@@ -144,7 +144,7 @@ class Auth
                 $new_password = Random::pass(12);
                 $new_password_key = Random::pass(8);
 
-                ModelAuth::set_new_password($new_password, $new_password_key, $user->id);
+                ModelAuth::setNewPassword($new_password, $new_password_key, $user->id);
 
                 // Do the user specific replacements to the template
                 $cur_mail_message = str_replace('<username>', $user->username, $mail_message);
@@ -152,7 +152,7 @@ class Auth
                 $cur_mail_message = str_replace('<new_password>', $new_password, $cur_mail_message);
                 $cur_mail_message = Container::get('hooks')->fire('controller.cur_mail_message_password_forgotten', $cur_mail_message);
 
-                Container::get('email')->feather_mail($email, $mail_subject, $cur_mail_message);
+                Container::get('email')->send($email, $mail_subject, $cur_mail_message);
 
                 return Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 200, true, true);
             } else {
@@ -189,7 +189,6 @@ class Auth
         }
 
         View::setPageInfo([
-//                'errors'    =>    $this->model->password_forgotten(),
                 'active_page' => 'login',
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Request pass')]
             ]

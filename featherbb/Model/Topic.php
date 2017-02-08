@@ -44,7 +44,7 @@ class Topic
     }
 
     // Redirect to a post in particular
-    public function redirect_to_post($post_id)
+    public function redirectToPost($post_id)
     {
         $post_id = Container::get('hooks')->fire('model.topic.redirect_to_post', $post_id);
 
@@ -79,7 +79,7 @@ class Topic
     }
 
     // Redirect to new posts or last post
-    public function handle_actions($topic_id, $topic_subject, $action)
+    public function handleActions($topic_id, $topic_subject, $action)
     {
         $action = Container::get('hooks')->fire('model.topic.handle_actions_start', $action, $topic_id);
 
@@ -87,7 +87,7 @@ class Topic
         if ($action == 'new') {
             if (!User::get()->is_guest) {
                 // We need to check if this topic has been viewed recently by the user
-                $tracked_topics = Track::get_tracked_topics();
+                $tracked_topics = Track::getTrackedTopics();
                 $last_viewed = isset($tracked_topics['topics'][$topic_id]) ? $tracked_topics['topics'][$topic_id] : User::get()->last_visit;
 
                 $first_new_post_id = DB::for_table('posts')
@@ -123,7 +123,7 @@ class Topic
     }
 
     // Gets some info about the topic
-    public function get_info_topic($id)
+    public function getInfoTopic($id)
     {
         $cur_topic['where'] = [
             ['fp.read_forum' => 'IS NULL'],
@@ -169,7 +169,7 @@ class Topic
     }
 
     // Generates the post link
-    public function get_post_link($topic_id, $closed, $post_replies, $is_admmod)
+    public function postLink($topic_id, $closed, $post_replies, $is_admmod)
     {
         $closed = Container::get('hooks')->fire('model.topic.get_post_link_start', $closed, $topic_id, $post_replies, $is_admmod);
 
@@ -195,7 +195,7 @@ class Topic
     }
 
     // Should we display the quickpost?
-    public function is_quickpost($post_replies, $closed, $is_admmod)
+    public function isQuickpost($post_replies, $closed, $is_admmod)
     {
         $quickpost = false;
         if (ForumSettings::get('o_quickpost') == '1' && ($post_replies == '1' || ($post_replies == '' && User::can('topic.reply'))) && ($closed == '0' || $is_admmod)) {
@@ -288,7 +288,7 @@ class Topic
     }
 
     // Subscraction link
-    public function get_subscraction($is_subscribed, $topic_id, $topic_subject)
+    public function getSubscraction($is_subscribed, $topic_id, $topic_subject)
     {
         if (!User::get()->is_guest && ForumSettings::get('o_topic_subscriptions') == '1') {
             if ($is_subscribed) {
@@ -328,7 +328,7 @@ class Topic
         return $closed;
     }
 
-    public function check_move_possible()
+    public function checkMove()
     {
         Container::get('hooks')->fire('model.topic.check_move_possible_start');
 
@@ -356,7 +356,7 @@ class Topic
         return true;
     }
 
-    public function get_forum_list_move($fid)
+    public function getForumListMove($fid)
     {
         $output = '';
 
@@ -402,7 +402,7 @@ class Topic
         return $output;
     }
 
-    public function get_forum_list_split($id)
+    public function getSplitForumList($id)
     {
         $output = '';
 
@@ -446,7 +446,7 @@ class Topic
         return $output;
     }
 
-    public function move_to($fid, $new_fid, $tid = null)
+    public function moveTo($fid, $new_fid, $tid = null)
     {
         Container::get('hooks')->fire('model.topic.move_to_start', $fid, $new_fid, $tid);
 
@@ -557,7 +557,7 @@ class Topic
                 ->where('topic_id', $tid);
 
             if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN')) {
-                $result->where_not_in('poster_id', Utils::get_admin_ids());
+                $result->where_not_in('poster_id', Utils::getAdminIds());
             }
 
             $result = Container::get('hooks')->fireDB('model.topic.delete_posts_first_query', $result);
@@ -574,7 +574,7 @@ class Topic
             $delete_posts = $delete_posts->delete_many();
 
             $search = new \FeatherBB\Core\Search();
-            $search->strip_search_index($posts);
+            $search->stripSearchIndex($posts);
 
             // Get last_post, last_post_id, and last_poster for the topic after deletion
             $last_post['select'] = ['id', 'poster', 'posted'];
@@ -600,7 +600,7 @@ class Topic
                 ->set($update_topic['insert'])
                 ->set_expr('num_replies', 'num_replies-'.$num_posts_deleted);
             $update_topic = Container::get('hooks')->fireDB('model.topic.delete_posts_update_topic_query', $update_topic);
-            $topic_subject = Url::url_friendly($update_topic->subject);
+            $topic_subject = Url::slug($update_topic->subject);
             $update_topic = $update_topic->save();
 
             Forum::update($fid);
@@ -611,7 +611,7 @@ class Topic
         }
     }
 
-    public function get_topic_info($fid, $tid)
+    public function getTopicInfo($fid, $tid)
     {
         // Fetch some info about the topic
         $cur_topic['select'] = ['forum_id' => 'f.id', 'f.forum_name', 't.subject', 't.num_replies', 't.first_post_id'];
@@ -639,7 +639,7 @@ class Topic
         return $cur_topic;
     }
 
-    public function split_posts($tid, $fid, $p = null)
+    public function splitPosts($tid, $fid, $p = null)
     {
         $posts = Input::post('posts') ? Input::post('posts') : [];
         $posts = Container::get('hooks')->fire('model.topic.split_posts_start', $posts, $tid, $fid);
@@ -791,7 +791,7 @@ class Topic
             Forum::update($fid);
             Forum::update($move_to_forum);
 
-            return Router::redirect(Router::pathFor('Topic', ['id' => $new_tid, 'name' => Url::url_friendly($new_subject)]), __('Split posts redirect'));
+            return Router::redirect(Router::pathFor('Topic', ['id' => $new_tid, 'name' => Url::slug($new_subject)]), __('Split posts redirect'));
         }
 
         $posts = Container::get('hooks')->fire('model.topic.split_posts', $posts);
@@ -799,7 +799,7 @@ class Topic
     }
 
     // Prints the posts
-    public function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
+    public function printPosts($topic_id, $start_from, $cur_topic, $is_admmod)
     {
         $post_data = [];
 
@@ -859,7 +859,7 @@ class Topic
                     $cur_post['username_formatted'] = Utils::escape($cur_post['username']);
                 }
 
-                $cur_post['user_title_formatted'] = Utils::get_title($cur_post);
+                $cur_post['user_title_formatted'] = Utils::getTitle($cur_post);
 
                 if (ForumSettings::get('o_censoring') == '1') {
                     $cur_post['user_title_formatted'] = Utils::censor($cur_post['user_title_formatted']);
@@ -872,7 +872,7 @@ class Topic
                     if (isset($avatar_cache[$cur_post['poster_id']])) {
                         $cur_post['user_avatar'] = $avatar_cache[$cur_post['poster_id']];
                     } else {
-                        $cur_post['user_avatar'] = $avatar_cache[$cur_post['poster_id']] = Utils::generate_avatar_markup($cur_post['poster_id']);
+                        $cur_post['user_avatar'] = $avatar_cache[$cur_post['poster_id']] = Utils::generateAvatarMarkup($cur_post['poster_id']);
                     }
                 }
 
@@ -886,10 +886,10 @@ class Topic
                         $cur_post['user_info'][] = '<dd><span>'.__('From').' '.Utils::escape($cur_post['location']).'</span></dd>';
                     }
 
-                    $cur_post['user_info'][] = '<dd><span>'.__('Registered topic').' '.Utils::format_time($cur_post['registered'], true).'</span></dd>';
+                    $cur_post['user_info'][] = '<dd><span>'.__('Registered topic').' '.Utils::formatTime($cur_post['registered'], true).'</span></dd>';
 
                     if (ForumSettings::get('o_show_post_count') == '1' || User::isAdminMod()) {
-                        $cur_post['user_info'][] = '<dd><span>'.__('Posts topic').' '.Utils::forum_number_format($cur_post['num_posts']).'</span></dd>';
+                        $cur_post['user_info'][] = '<dd><span>'.__('Posts topic').' '.Utils::forumNumberFormat($cur_post['num_posts']).'</span></dd>';
                     }
 
                     // Now let's deal with the contact links (Email and URL)
@@ -928,7 +928,7 @@ class Topic
             // If the poster is a guest (or a user that has been deleted)
             else {
                 $cur_post['username_formatted'] = Utils::escape($cur_post['username']);
-                $cur_post['user_title_formatted'] = Utils::get_title($cur_post);
+                $cur_post['user_title_formatted'] = Utils::getTitle($cur_post);
 
                 if (User::isAdminMod()) {
                     $cur_post['user_info'][] = '<dd><span><a href="'.Router::pathFor('getPostHost', ['pid' => $cur_post['id']]).'" title="'.Utils::escape($cur_post['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
@@ -961,7 +961,7 @@ class Topic
                 }
             } else {
                 $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.Router::pathFor('report', ['id' => $cur_post['id']]).'">'.__('Report').'</a></span></li>';
-                if (User::isAdmin() || !in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+                if (User::isAdmin() || !in_array($cur_post['poster_id'], Utils::getAdminIds())) {
                     $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.Router::pathFor('deletePost', ['id' => $cur_post['id']]).'">'.__('Delete').'</a></span></li>';
                     $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.Router::pathFor('editPost', ['id' => $cur_post['id']]).'">'.__('Edit').'</a></span></li>';
                 }
@@ -969,14 +969,14 @@ class Topic
             }
 
             // Perform the main parsing of the message (BBCode, smilies, censor words etc)
-            $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
+            $cur_post['message'] = Container::get('parser')->parseMessage($cur_post['message'], $cur_post['hide_smilies']);
 
             // Do signature parsing/caching
             if (ForumSettings::get('o_signatures') == '1' && $cur_post['signature'] != '' && User::getPref('show.sig') != '0') {
                 // if (isset($avatar_cache[$cur_post['poster_id']])) {
                 //     $cur_post['signature_formatted'] = $avatar_cache[$cur_post['poster_id']];
                 // } else {
-                    $cur_post['signature_formatted'] = Container::get('parser')->parse_signature($cur_post['signature']);
+                    $cur_post['signature_formatted'] = Container::get('parser')->parseSignature($cur_post['signature']);
                 //     $avatar_cache[$cur_post['poster_id']] = $cur_post['signature_formatted'];
                 // }
             }
@@ -989,7 +989,7 @@ class Topic
         return $post_data;
     }
 
-    public function display_posts_moderate($tid, $start_from)
+    public function moderateDisplayPosts($tid, $start_from)
     {
         Container::get('hooks')->fire('model.disp.topics_posts_view_start', $tid, $start_from);
 
@@ -1036,7 +1036,7 @@ class Topic
 
                 // Utils::get_title() requires that an element 'username' be present in the array
                 $cur_post->username = $cur_post->poster;
-                $cur_post->user_title = Utils::get_title($cur_post);
+                $cur_post->user_title = Utils::getTitle($cur_post);
 
                 if (ForumSettings::get('o_censoring') == '1') {
                     $cur_post->user_title = Utils::censor($cur_post->user_title);
@@ -1049,7 +1049,7 @@ class Topic
             }
 
             // Perform the main parsing of the message (BBCode, smilies, censor words etc)
-            $cur_post->message = Container::get('parser')->parse_message($cur_post->message, $cur_post->hide_smilies);
+            $cur_post->message = Container::get('parser')->parseMessage($cur_post->message, $cur_post->hide_smilies);
 
             $post_data[] = $cur_post;
         }

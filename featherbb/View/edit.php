@@ -24,8 +24,8 @@ Container::get('hooks')->fire('view.edit.start');
     <div class="inbox">
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?= __('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_post['fid'], 'name' => Url::url_friendly($cur_post['forum_name'])]) ?>"><?= Utils::escape($cur_post['forum_name']) ?></a></li>
-            <li><span>»&#160;</span><a href="<?= Router::pathFor('Topic', ['id' => $cur_post['tid'], 'name' => Url::url_friendly($cur_post['subject'])]) ?>"><?= Utils::escape($cur_post['subject']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_post['fid'], 'name' => Url::slug($cur_post['forum_name'])]) ?>"><?= Utils::escape($cur_post['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Topic', ['id' => $cur_post['tid'], 'name' => Url::slug($cur_post['subject'])]) ?>"><?= Utils::escape($cur_post['subject']) ?></a></li>
             <li><span>»&#160;</span><strong><?= __('Edit post') ?></strong></li>
         </ul>
     </div>
@@ -76,7 +76,7 @@ endif;
     <div class="box">
         <form id="edit" method="post" action="<?= Router::pathFor('editPost', ['id' => $id]) ?>">
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
-            <input type="hidden" name="topic_subject" value="<?= Url::url_friendly($cur_post['subject']) ?>">
+            <input type="hidden" name="topic_subject" value="<?= Url::slug($cur_post['subject']) ?>">
             <div class="inform">
                 <fieldset>
                     <legend><?= __('Edit post legend') ?></legend>

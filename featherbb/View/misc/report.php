@@ -22,8 +22,8 @@ Container::get('hooks')->fire('view.misc.email.report');
     <div class="inbox">
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?= __('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_post['fid'], 'name' => Url::url_friendly($cur_post['forum_name'])]) ?>"><?= Utils::escape($cur_post['forum_name']) ?></a></li>
-            <li><span>»&#160;</span><a href="<?= Router::pathFor('viewPost', ['id' => $cur_post['tid'], 'name' => Url::url_friendly($cur_post['subject']), 'pid' => $id]).'#p'.$id ?>"><?= Utils::escape($cur_post['subject']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_post['fid'], 'name' => Url::slug($cur_post['forum_name'])]) ?>"><?= Utils::escape($cur_post['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('viewPost', ['id' => $cur_post['tid'], 'name' => Url::slug($cur_post['subject']), 'pid' => $id]).'#p'.$id ?>"><?= Utils::escape($cur_post['subject']) ?></a></li>
             <li><span>»&#160;</span><strong><?= __('Report post') ?></strong></li>
         </ul>
     </div>

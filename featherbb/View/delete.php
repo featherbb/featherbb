@@ -22,8 +22,8 @@ Container::get('hooks')->fire('view.delete.start');
     <div class="inbox">
         <ul class="crumbs">
             <li><a href="<?= Url::base() ?>"><?= __('Index') ?></a></li>
-            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_post['fid'], 'name' => Url::url_friendly($cur_post['forum_name'])]) ?>"><?= Utils::escape($cur_post['forum_name']) ?></a></li>
-            <li><span>»&#160;</span><a href="<?= Router::pathFor('viewPost', ['id' => $cur_post['tid'], 'name' => Url::url_friendly($cur_post['subject']), 'pid' => $id]).'#p'.$id ?>"><?= Utils::escape($cur_post['subject']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('Forum', ['id' => $cur_post['fid'], 'name' => Url::slug($cur_post['forum_name'])]) ?>"><?= Utils::escape($cur_post['forum_name']) ?></a></li>
+            <li><span>»&#160;</span><a href="<?= Router::pathFor('viewPost', ['id' => $cur_post['tid'], 'name' => Url::slug($cur_post['subject']), 'pid' => $id]).'#p'.$id ?>"><?= Utils::escape($cur_post['subject']) ?></a></li>
             <li><span>»&#160;</span><strong><?= __('Delete post') ?></strong></li>
         </ul>
     </div>
@@ -36,7 +36,7 @@ Container::get('hooks')->fire('view.delete.start');
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <div class="forminfo">
-                    <h3><span><?php printf($is_topic_post ? __('Topic by') : __('Reply by'), '<strong>'.Utils::escape($cur_post['poster']).'</strong>', Utils::format_time($cur_post['posted'])) ?></span></h3>
+                    <h3><span><?php printf($is_topic_post ? __('Topic by') : __('Reply by'), '<strong>'.Utils::escape($cur_post['poster']).'</strong>', Utils::formatTime($cur_post['posted'])) ?></span></h3>
                     <p><?= ($is_topic_post) ? '<strong>'.__('Topic warning').'</strong>' : '<strong>'.__('Warning').'</strong>' ?><br /><?= __('Delete info') ?></p>
                 </div>
             </div>
@@ -53,7 +53,7 @@ Container::get('hooks')->fire('view.delete.start');
                     <div class="postleft">
                         <dl>
                             <dt><strong><?= Utils::escape($cur_post['poster']) ?></strong></dt>
-                            <dd><span><?= Utils::format_time($cur_post['posted']) ?></span></dd>
+                            <dd><span><?= Utils::formatTime($cur_post['posted']) ?></span></dd>
                         </dl>
                     </div>
                     <div class="postright">

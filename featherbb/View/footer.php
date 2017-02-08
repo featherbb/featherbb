@@ -37,7 +37,7 @@ if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) {
                 foreach ($quickjump[(int) User::get()->g_id] as $cat_id => $cat_data) {
                     echo "\t\t\t\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";
                     foreach ($cat_data['cat_forums'] as $forum) {
-                        echo "\t\t\t\t\t\t\t\t\t\t".'<option value="'.Router::pathFor('Forum', ['id' => $forum['forum_id'], 'name' => Url::url_friendly($forum['forum_name'])]).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
+                        echo "\t\t\t\t\t\t\t\t\t\t".'<option value="'.Router::pathFor('Forum', ['id' => $forum['forum_id'], 'name' => Url::slug($forum['forum_name'])]).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
                     }
                     echo "\t\t\t\t\t\t\t\t\t".'</optgroup>'."\n";
                 } ?>

@@ -183,7 +183,7 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
         if (User::getPref('time_format', $user) == $time_format) {
             echo ' selected="selected"';
         }
-        echo '>'. Utils::format_time(time(), false, null, $time_format, true, true);
+        echo '>'. Utils::formatTime(time(), false, null, $time_format, true, true);
         if ($key == 0) {
             echo ' ('.__('Default').')';
         }
@@ -200,7 +200,7 @@ Container::get('hooks')->fire('view.profile.section_essentials.start');
         if (User::getPref('date_format', $user) == $date_format) {
             echo ' selected="selected"';
         }
-        echo '>'. Utils::format_time(time(), true, $date_format, null, false, true);
+        echo '>'. Utils::formatTime(time(), true, $date_format, null, false, true);
         if ($key == 0) {
             echo ' ('.__('Default').')';
         }
@@ -240,9 +240,9 @@ if (count($languages) > 1) {
                                 <fieldset>
                                     <legend><?= __('User activity') ?></legend>
                                     <div class="infldset">
-                                        <p><?php printf(__('Registered info'), Utils::format_time($user['registered'], true).((User::isAdminMod()) ? ' (<a href="'.Router::pathFor('usersIpShow', ['ip' => $user['registration_ip']]).'">'.Utils::escape($user['registration_ip']).'</a>)' : '')) ?></p>
-                                        <p><?php printf(__('Last post info'), Utils::format_time($user['last_post'])) ?></p>
-                                        <p><?php printf(__('Last visit info'), Utils::format_time($user['last_visit'])) ?></p>
+                                        <p><?php printf(__('Registered info'), Utils::formatTime($user['registered'], true).((User::isAdminMod()) ? ' (<a href="'.Router::pathFor('usersIpShow', ['ip' => $user['registration_ip']]).'">'.Utils::escape($user['registration_ip']).'</a>)' : '')) ?></p>
+                                        <p><?php printf(__('Last post info'), Utils::formatTime($user['last_post'])) ?></p>
+                                        <p><?php printf(__('Last visit info'), Utils::formatTime($user['last_visit'])) ?></p>
                                         <?= $user_disp['posts_field'] ?>
 <?php if (User::isAdminMod()): ?>
                                         <label><?= __('Admin note') ?><br />
