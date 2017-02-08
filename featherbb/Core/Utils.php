@@ -292,7 +292,7 @@ class Utils
     {
         // Get Slim current session
         if (!Container::get('cache')->isCached('admin_ids')) {
-            Container::get('cache')->store('admin_ids', Cache::get_admin_ids());
+            Container::get('cache')->store('admin_ids', Cache::getAdminIds());
         }
 
         return Container::get('cache')->retrieve('admin_ids');

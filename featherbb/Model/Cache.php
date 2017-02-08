@@ -71,7 +71,7 @@ class Cache
         return $stats;
     }
 
-    public static function get_admin_ids()
+    public static function getAdminIds()
     {
         return DB::for_table('users')
                 ->select('id')

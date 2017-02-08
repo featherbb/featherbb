@@ -351,7 +351,7 @@ class Profile
         $stats = Container::get('cache')->retrieve('users_info');
 
         if ($old_group_id == ForumEnv::get('FEATHER_ADMIN') || $new_group_id == ForumEnv::get('FEATHER_ADMIN')) {
-            Container::get('cache')->store('admin_ids', Cache::get_admin_ids());
+            Container::get('cache')->store('admin_ids', Cache::getAdminIds());
         }
 
         // If the user was a moderator or an administrator, we remove him/her from the moderator list in all forums as well
@@ -635,7 +635,7 @@ class Profile
             $stats = Container::get('cache')->retrieve('users_info');
 
             if ($group_id == ForumEnv::get('FEATHER_ADMIN')) {
-                Container::get('cache')->store('admin_ids', Cache::get_admin_ids());
+                Container::get('cache')->store('admin_ids', Cache::getAdminIds());
             }
 
             Container::get('hooks')->fire('model.profile.delete_user');

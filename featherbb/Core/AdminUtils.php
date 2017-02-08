@@ -20,7 +20,7 @@ class AdminUtils
 
         \View::setPageInfo([
             'page'        =>    $page,
-            'menu_items'  =>    Container::get('hooks')->fire('admin.menu', self::load_default_menu()),
+            'menu_items'  =>    Container::get('hooks')->fire('admin.menu', self::loadDefaultMenu()),
             'plugins'     =>    self::adminPluginsMenu() // See if there are any plugins that want to be displayed in the menu
         ], 1
         )->addTemplate('admin/menu.php');
@@ -29,7 +29,7 @@ class AdminUtils
     /**
      * Add plugin options to menu if needed
      */
-    public static function adminPluginsMenu($isAdmin = false)
+    public static function adminPluginsMenu()
     {
         $menuItems = [];
         $menuItems = Container::get('hooks')->fire('admin.plugin.menu', $menuItems);
@@ -40,7 +40,7 @@ class AdminUtils
     /**
      * Generate breadcrumbs from an array of name and URLs
      */
-    public static function breadcrumbs_admin(array $links)
+    public static function breadcrumbsAdmin(array $links)
     {
         foreach ($links as $name => $url) {
             if ($name != '' && $url != '') {
@@ -56,7 +56,7 @@ class AdminUtils
     /**
      * Delete a folder and all its content
      */
-    public static function delete_folder($dirPath)
+    public static function deleteFolder($dirPath)
     {
         $it = new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::SKIP_DOTS);
         $files = new RecursiveIteratorIterator($it,
@@ -75,10 +75,10 @@ class AdminUtils
     /**
      * Fetch admin IDs
      */
-    public static function get_admin_ids()
+    public static function getAdminIds()
     {
         if (!Container::get('cache')->isCached('admin_ids')) {
-            Container::get('cache')->store('admin_ids', \FeatherBB\Model\Cache::get_admin_ids());
+            Container::get('cache')->store('admin_ids', \FeatherBB\Model\Cache::getAdminIds());
         }
 
         return Container::get('cache')->retrieve('admin_ids');
@@ -87,7 +87,7 @@ class AdminUtils
     /**
      * Wrapper for cURL
      */
-    public static function get_content($url)
+    public static function getContent($url)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -111,7 +111,7 @@ class AdminUtils
         return $content;
     }
 
-    protected static function load_default_menu()
+    protected static function loadDefaultMenu()
     {
         return [
             'mod.index' => ['title' => 'Index', 'url' => 'adminIndex'],

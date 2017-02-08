@@ -399,7 +399,7 @@ class AutoUpdater
             $updateFile = $this->_updateUrl;
 
             // Read update file from update server
-            $update = AdminUtils::get_content($updateFile);
+            $update = AdminUtils::getContent($updateFile);
         if ($update === false) {
             $this->_errors[] = sprintf(__('Could not check for updates'), $updateFile);
 
@@ -470,7 +470,7 @@ class AutoUpdater
      */
     protected function _downloadUpdate($updateUrl, $updateFile)
     {
-        $update = AdminUtils::get_content($updateUrl);
+        $update = AdminUtils::getContent($updateUrl);
 
         if ($update === false) {
             $this->_errors[] = sprintf(__('Could not download update'), $updateUrl);

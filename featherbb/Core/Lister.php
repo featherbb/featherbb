@@ -41,14 +41,14 @@ class Lister
         $plugins = [];
 
         // Get the official list from the website
-        $content = json_decode(AdminUtils::get_content('http://featherbb.org/plugins.json'));
+        $content = json_decode(AdminUtils::getContent('http://featherbb.org/plugins.json'));
 
         // If internet is available
         if (!is_null($content)) {
             foreach ($content as $plugin) {
                 // Get information from each repo
                 // TODO: cache
-                $plugins[] = json_decode(AdminUtils::get_content('https://raw.githubusercontent.com/featherbb/'.$plugin.'/master/featherbb.json'));
+                $plugins[] = json_decode(AdminUtils::getContent('https://raw.githubusercontent.com/featherbb/'.$plugin.'/master/featherbb.json'));
             }
         }
 
