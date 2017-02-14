@@ -41,7 +41,6 @@ Container::get('hooks')->fire('view.admin.parser.start');
                                 <tbody>
                                 <?php
                                 $i = 0;
-                                var_dump($smilies);
                                 foreach ($smilies as $key => $value) {
                                     ?>
                                     <tr>
