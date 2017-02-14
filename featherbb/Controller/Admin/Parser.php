@@ -43,7 +43,7 @@ class Parser
                             if (preg_match('%^image/%', $f['type'])) {        // If we have an image file type?
                                 if ($f['size'] > 0 && $f['size'] <= ForumSettings::get('o_avatars_size')) {
                                     if (move_uploaded_file($f['tmp_name'], ForumEnv::get('FEATHER_ROOT') .'style/img/smilies/'. $name)) {
-                                        return Router::redirect(Router::pathFor('adminParser'), _e('upload success'));
+                                        return Router::redirect(Router::pathFor('adminParser'), __('upload success'));
                                     } else { //  Error #1: 'Smiley upload failed. Unable to move to smiley folder.'.
                                         throw new Error(__('upload_err_1'), 500);
                                     }
@@ -75,7 +75,7 @@ class Parser
                 $stext = Input::post('smiley_text');
                 $sfile = Input::post('smiley_file');
                 $len = count(Input::post('smiley_text'));
-                $smilies = array();
+                $smilies = [];
                 for ($i = 0; $i < $len; ++$i) { // Loop through all posted smileys.
                     if (isset($stext[$i]) && $stext[$i] != '' && $sfile !== 'select new file') {
                         echo $i.'<br>';
@@ -86,19 +86,19 @@ class Parser
                 Container::get('cache')->store('smilies', $smilies);
             }
 
-            return Router::redirect(Router::pathFor('adminParser'), _e('save_success'));
+            return Router::redirect(Router::pathFor('adminParser'), __('save_success'));
         }
 
         AdminUtils::generateAdminMenu('parser');
 
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Parser')),
+        return View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Parser')],
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'smiley_files' => $this->model->getSmileyFiles(),
                 'smilies' =>    $smilies,
                 'urlBase' => URL::base().'/style/img/smilies/',
-            )
+            ]
         )->addTemplate('admin/parser.php')->display();
     }
 }
