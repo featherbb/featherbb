@@ -18,6 +18,7 @@ class Parser
     {
         $imgfiles = [];
         $filelist = scandir(ForumEnv::get('FEATHER_ROOT').'style/img/smilies');
+        var_dump($filelist);
         $filelist = Container::get('hooks')->fire('model.admin.parser.get_smiley_files.filelist', $filelist);
         foreach ($filelist as $file) {
             if (preg_match('/\.(?:png|gif|jpe?g)$/', $file)) {
@@ -25,32 +26,7 @@ class Parser
             }
         }
         $imgfiles = Container::get('hooks')->fire('model.admin.parser.get_smiley_files.imgfiles', $imgfiles);
+        var_dump($imgfiles);
         return $imgfiles;
-    }
-    
-    // Array of BBCode text (title) elements
-    public function tagSummary()
-    {
-        $tagSummary = [
-            'unknown' => 'Unrecognized Tag',
-            'code'    => 'Computer Code',
-            'quote'   => 'Block Quotation',
-            'list'    => 'Ordered or Unordered',
-            '*'       => 'List Item',
-            'h'       => 'Header 5',
-            'img'     => 'Inline Image',
-            'url'     => 'Hypertext Link',
-            'b'       => 'Strong Emphasis',
-            'i'       => 'Emphasis',
-            's'       => 'Strike-through',
-            'u'       => 'Underlined Text',
-            'color'   => 'Color',
-            'tt'      => 'Teletype Text',
-            'center'  => 'Centered Block',
-            'err'     => 'Error Codes',
-        ];
-        $tagSummary = Container::get('hooks')->fire('model.admin.parser.tagSummary', $tagSummary);
-        
-        return $tagSummary;
     }
 }
