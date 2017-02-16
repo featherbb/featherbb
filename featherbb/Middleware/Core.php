@@ -182,7 +182,7 @@ class Core
             $path = $this->forumEnv['FORUM_CACHE_DIR'];
             return new \FeatherBB\Core\Cache(['name' => 'feather',
                                                'path' => $path,
-                                               'extension' => '.cache']);
+                                               'extension' => '.cache.php']);
         });
         // Load FeatherBB permissions
         Container::set('perms', function ($container) {

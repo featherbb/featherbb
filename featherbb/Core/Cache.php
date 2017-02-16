@@ -55,7 +55,7 @@ class Cache
     {
         return ['name' => 'default',
         'path' => 'cache/',
-        'extension' => '.cache'];
+        'extension' => '.cache.php'];
     }
 
     /**
@@ -369,7 +369,7 @@ class Cache
     */
     public function setCacheExtension($ext)
     {
-        $this->settings['extension']= $ext;
+        $this->settings['extension'] = $ext;
     }
 
     /**
