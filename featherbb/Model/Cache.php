@@ -153,7 +153,7 @@ class Cache
             }
         }
 
-        // Then get optionnal user permissions to override their group defaults
+        // Then get optional user permissions to override their group defaults
         // TODO: Add a page in profile Administration section to display custom permissions
         $usersPerms = DB::table('permissions')
             ->tableAlias('p')

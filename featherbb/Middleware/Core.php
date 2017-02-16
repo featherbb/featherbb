@@ -27,8 +27,8 @@ use FeatherBB\Core\Interfaces\Lang;
 
 class Core
 {
-    protected $forum_env;
-    protected $forum_settings;
+    protected $forumEnv;
+    protected $forumSettings;
     protected $headers = [
         'Cache-Control' => 'no-cache, no-store, must-revalidate',
         'Pragma' => 'no-cache',
@@ -42,23 +42,23 @@ class Core
                                   'cache_dir' => 'cache/',
                                   'debug'   => false], $data);
         // Define some core variables
-        $this->forum_env['FEATHER_ROOT'] = realpath(dirname(__FILE__).'/../../').'/';
-        $this->forum_env['FORUM_CACHE_DIR'] = is_writable($this->forum_env['FEATHER_ROOT'].$data['cache_dir']) ? realpath($this->forum_env['FEATHER_ROOT'].$data['cache_dir']).'/' : null;
-        $this->forum_env['FORUM_CONFIG_FILE'] = $this->forum_env['FEATHER_ROOT'].$data['config_file'];
-        $this->forum_env['FEATHER_DEBUG'] = $this->forum_env['FEATHER_SHOW_QUERIES'] = ($data['debug'] == 'all' || filter_var($data['debug'], FILTER_VALIDATE_BOOLEAN) == true);
-        $this->forum_env['FEATHER_SHOW_INFO'] = ($data['debug'] == 'info' || $data['debug'] == 'all');
+        $this->forumEnv['FEATHER_ROOT'] = realpath(dirname(__FILE__).'/../../').'/';
+        $this->forumEnv['FORUM_CACHE_DIR'] = is_writable($this->forumEnv['FEATHER_ROOT'].$data['cache_dir']) ? realpath($this->forumEnv['FEATHER_ROOT'].$data['cache_dir']).'/' : null;
+        $this->forumEnv['FORUM_CONFIG_FILE'] = $this->forumEnv['FEATHER_ROOT'].$data['config_file'];
+        $this->forumEnv['FEATHER_DEBUG'] = $this->forumEnv['FEATHER_SHOW_QUERIES'] = ($data['debug'] == 'all' || filter_var($data['debug'], FILTER_VALIDATE_BOOLEAN) == true);
+        $this->forumEnv['FEATHER_SHOW_INFO'] = ($data['debug'] == 'info' || $data['debug'] == 'all');
 
         // Populate forum_env
-        $this->forum_env = array_merge(self::load_default_forum_env(), $this->forum_env);
+        $this->forumEnv = array_merge(self::loadDefaultForumEnv(), $this->forumEnv);
 
         // Load files
-        require $this->forum_env['FEATHER_ROOT'].'featherbb/Helpers/utf8/utf8.php';
+        require $this->forumEnv['FEATHER_ROOT'].'featherbb/Helpers/utf8/utf8.php';
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
     }
 
-    public static function load_default_forum_env()
+    public static function loadDefaultForumEnv()
     {
         return [
                 'FEATHER_ROOT' => '',
@@ -84,7 +84,7 @@ class Core
         ];
     }
 
-    public static function load_default_forum_settings()
+    public static function loadDefaultForumSettings()
     {
         return [
                 // Database
@@ -145,12 +145,12 @@ class Core
 
     // Headers
 
-    protected function set_headers($res)
+    protected function setHeaders($res)
     {
         foreach ($this->headers as $label => $value) {
             $res = $res->withHeader($label, $value);
         }
-        $res = $res->withHeader('X-Powered-By', $this->forum_env['FORUM_NAME']);
+        $res = $res->withHeader('X-Powered-By', $this->forumEnv['FORUM_NAME']);
 
         return $res;
     }
@@ -158,7 +158,7 @@ class Core
     public function __invoke($req, $res, $next)
     {
         // Set headers
-        $res = $this->set_headers($res);
+        $res = $this->setHeaders($res);
 
         // Block prefetch requests
         if ((isset($_SERVER['HTTP_X_MOZ'])) && ($_SERVER['HTTP_X_MOZ'] == 'prefetch')) {
@@ -166,7 +166,7 @@ class Core
             return $next($req, $res);
         }
         // Populate Slim object with forum_env vars
-        Container::set('forum_env', $this->forum_env);
+        Container::set('forum_env', $this->forumEnv);
         // Load FeatherBB utils class
         Container::set('utils', function ($container) {
             return new Utils();
@@ -179,7 +179,7 @@ class Core
         });
         // Load FeatherBB cache
         Container::set('cache', function ($container) {
-            $path = $this->forum_env['FORUM_CACHE_DIR'];
+            $path = $this->forumEnv['FORUM_CACHE_DIR'];
             return new \FeatherBB\Core\Cache(['name' => 'feather',
                                                'path' => $path,
                                                'extension' => '.cache']);
@@ -208,7 +208,6 @@ class Core
         Container::set('email', function ($container) {
             return new Email();
         });
-
         Container::set('parser', function ($container) {
             return new Parser();
         });
@@ -233,8 +232,8 @@ class Core
 
         // Load config from disk
         include ForumEnv::get('FORUM_CONFIG_FILE');
-        if (isset($featherbb_config) && is_array($featherbb_config)) {
-            $this->forum_settings = array_merge(self::load_default_forum_settings(), $featherbb_config);
+        if (isset($featherbbConfig) && is_array($featherbbConfig)) {
+            $this->forumSettings = array_merge(self::loadDefaultForumSettings(), $featherbbConfig);
         } else {
             $res = $res->withStatus(500); // Send forbidden header
             $body = $res->getBody();
@@ -243,7 +242,7 @@ class Core
         }
 
         // Init DB and configure Slim
-        self::initDb($this->forum_settings, ForumEnv::get('FEATHER_SHOW_INFO'));
+        self::initDb($this->forumSettings, ForumEnv::get('FEATHER_SHOW_INFO'));
         Config::set('displayErrorDetails', ForumEnv::get('FEATHER_DEBUG'));
 
         // Ensure cached forum data exist
@@ -259,8 +258,8 @@ class Core
         }
 
         // Finalize forum_settings array
-        $this->forum_settings = array_merge(Container::get('cache')->retrieve('config'), $this->forum_settings);
-        Container::set('forum_settings', $this->forum_settings);
+        $this->forumSettings = array_merge(Container::get('cache')->retrieve('config'), $this->forumSettings);
+        Container::set('forum_settings', $this->forumSettings);
 
         Lang::construct();
 

@@ -166,6 +166,13 @@ class Install
             PRIMARY KEY (`word`),
             KEY `search_words_id_idx` (`id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+        'smilies' => "CREATE TABLE IF NOT EXISTS %t% (
+          `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+          `image` varchar(40) NOT NULL DEFAULT '',
+          `text` varchar(20) NOT NULL DEFAULT '',
+          `disp_position` tinyint(2) UNSIGNED NOT NULL DEFAULT '0',
+          PRIMARY KEY (`id`)
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
         'topic_subscriptions' => "CREATE TABLE IF NOT EXISTS %t% (
             `user_id` int(10) unsigned NOT NULL DEFAULT '0',
             `topic_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -246,6 +253,13 @@ class Install
         foreach ($data as $key => $value) {
             $this->addData('config', ['conf_name' => $key,
                                             'conf_value' => $value]);
+        }
+    }
+
+    public function addSmilies(array $smilies)
+    {
+        foreach ($smilies as $smiley) {
+            $this->addData('smilies', $smiley);
         }
     }
 
@@ -340,5 +354,119 @@ class Install
                                  'message' => $message,
                                  'posted' => $now,
                                  'topic_id' => 1]];
+    }
+
+    public static function loadSmilies()
+    {
+        return $smilies = [
+            [
+                'id' => 1,
+                'image' => 'smile.png',
+                'text' => ':)',
+                'disp_position' => 0
+            ],
+            [
+                'id' => 2,
+                'image' => 'smile.png',
+                'text' => '=)',
+                'disp_position' => 1
+            ],
+            [
+                'id' => 3,
+                'image' => 'neutral.png',
+                'text' => ':|',
+                'disp_position' => 2
+            ],
+            [
+                'id' => 4,
+                'image' => 'neutral.png',
+                'text' => '=|',
+                'disp_position' => 3
+            ],
+            [
+                'id' => 5,
+                'image' => 'sad.png',
+                'text' => ':(',
+                'disp_position' => 4
+            ],
+            [
+                'id' => 6,
+                'image' => 'sad.png',
+                'text' => '=(',
+                'disp_position' => 5
+            ],
+            [
+                'id' => 7,
+                'image' => 'big_smile.png',
+                'text' => '=D',
+                'disp_position' => 6
+            ],
+            [
+                'id' => 8,
+                'image' => 'big_smile.png',
+                'text' => ':D',
+                'disp_position' => 7
+            ],
+            [
+                'id' => 9,
+                'image' => 'yikes.png',
+                'text' => ':o',
+                'disp_position' => 8
+            ],
+            [
+                'id' => 10,
+                'image' => 'yikes.png',
+                'text' => ':O',
+                'disp_position' => 9
+            ],
+            [
+                'id' => 11,
+                'image' => 'wink.png',
+                'text' => ';)',
+                'disp_position' => 10
+            ],
+            [
+                'id' => 12,
+                'image' => 'hmm.png',
+                'text' => ':/',
+                'disp_position' => 11
+            ],
+            [
+                'id' => 13,
+                'image' => 'tongue.png',
+                'text' => ':P',
+                'disp_position' => 12
+            ],
+            [
+                'id' => 14,
+                'image' => 'tongue.png',
+                'text' => ':p',
+                'disp_position' => 13
+            ],
+            [
+                'id' => 15,
+                'image' => 'lol.png',
+                'text' => ':lol:',
+                'disp_position' => 14
+            ],
+            [
+                'id' => 16,
+                'image' => 'mad.png',
+                'text' => ':mad:',
+                'disp_position' => 15
+            ],
+            [
+                'id' => 17,
+                'image' => 'roll.png',
+                'text' => ':rolleyes:',
+                'disp_position' => 16
+            ],
+            [
+                'id' => 18,
+                'image' => 'cool.png',
+                'text' => ':cool:',
+                'disp_position' => 17
+            ],
+        ];
     }
 }

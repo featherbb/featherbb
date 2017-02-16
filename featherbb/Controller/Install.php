@@ -35,6 +35,7 @@ class Install
         $this->availableLangs = Lister::getLangs();
         Container::set('user', null);
         View::setStyle('FeatherBB');
+        Lang::construct();
     }
 
     public function run()
@@ -52,7 +53,7 @@ class Install
         $csrf = new \FeatherBB\Middleware\Csrf();
         $csrf->generateNewToken(Container::get('request'));
 
-        Lang::load('install', 'featherbb', $this->installLang);
+        Lang::load('install', 'FeatherBB', false, $this->installLang);
 
         // Second form has been submitted to start install
         if (Request::isPost() && !Input::post('choose_lang')) {
@@ -191,7 +192,7 @@ class Install
         // Init DB
         Core::initDb($data);
         // Load appropriate language
-        Lang::load('install', 'featherbb', $data['language']);
+        Lang::load('install', 'featherbb', false, $data['language']);
 
         // Create tables
         foreach ($this->model->getDatabaseScheme() as $table => $sql) {
@@ -267,6 +268,8 @@ class Install
         $this->model->addMockForum($this->model->loadMockForumData($data));
         // Store config in DB
         $this->model->saveConfig($this->loadDefaultConfig($data));
+        // Add smilies
+        $this->model->addSmilies($this->model->loadSmilies());
 
         // Handle .htaccess
         if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) {
