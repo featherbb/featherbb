@@ -21,6 +21,11 @@ class Parser
     public function __construct()
     {
         $this->cacheDir = ForumEnv::get('FORUM_CACHE_DIR').'/parser';
+
+        // Load smilies
+        if (!Container::get('cache')->isCached('smilies')) {
+            Container::get('smilies')->store('smilies', Cache::getSmilies());
+        }
         $this->smilies = Container::get('cache')->retrieve('smilies');
 
         if (Container::get('cache')->isCached('s9eparser') && Container::get('cache')->isCached('s9erenderer')) {

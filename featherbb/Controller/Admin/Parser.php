@@ -13,6 +13,7 @@ use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
+use FeatherBB\Model\Cache;
 
 class Parser
 {
@@ -22,6 +23,10 @@ class Parser
         Lang::load('admin/parser');
         if (!User::isAdmin()) {
             throw new Error(__('No permission'), '403');
+        }
+
+        if (!Container::get('cache')->isCached('smilies')) {
+            Container::get('cache')->store('smilies', Cache::getSmilies());
         }
     }
 

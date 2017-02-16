@@ -192,4 +192,19 @@ class Cache
 
         return (array) $groupsPreferences;
     }
+
+    public static function getSmilies()
+    {
+        $result = [];
+
+        $smilies = DB::table('smilies')
+                    ->selectMany('text', 'image')
+                    ->findArray();
+
+        foreach ($smilies as $smiley) {
+            $result[$smiley['text']] = $smiley['image'];
+        }
+
+        return $result;
+    }
 }
