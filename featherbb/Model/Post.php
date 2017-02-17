@@ -1229,13 +1229,11 @@ class Post
                     // Post has special chars. Escape escapes and quotes then wrap in quotes.
                     if (strpos($quote['poster'], '"') !== false && strpos($quote['poster'], '\'') === false) { // If there are double quotes but no single quotes, use single quotes,
                         $quote['poster'] = Utils::escape(str_replace('\\', '\\\\', $quote['poster']));
-                        $quote['poster'] = '\''. $quote['poster'] .'#'. $qid .'\'';
+                        $quote['poster'] = '\''. $quote['poster'];
                     } else { // otherwise use double quotes.
                         $quote['poster'] = Utils::escape(str_replace(['\\', '"'], ['\\\\', '\\"'], $quote['poster']));
-                        $quote['poster'] = '"'. $quote['poster'] .'#'. $qid .'"';
+                        $quote['poster'] = '"'. $quote['poster'];
                     }
-                } else {
-                    $quote['poster'] = $quote['poster'] .'#'. $qid;
                 }
             $quote = '[quote='. $quote['poster'] .']'.$quote['message'].'[/quote]'."\n";
         } else {
