@@ -76,7 +76,7 @@ class Parser
         $configurator->BBCodes->addFromRepository('JUSTIFY');
 
         // Alias COLOUR to COLOR
-        $configurator->BBCodes->add('COLOUR')->tagName = 'COLOR';
+        $configurator->BBCodes->add('COLOUR', ['defaultAttribute' => 'color'])->tagName = 'COLOR';
 
         // Add some default limits
         $configurator->tags['QUOTE']->nestingLimit = 3;
