@@ -51,9 +51,6 @@ class Core
         // Populate forum_env
         $this->forumEnv = array_merge(self::loadDefaultForumEnv(), $this->forumEnv);
 
-        // Load files
-        require $this->forumEnv['FEATHER_ROOT'].'featherbb/Helpers/utf8/utf8.php';
-
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
     }
@@ -182,7 +179,7 @@ class Core
             $path = $this->forumEnv['FORUM_CACHE_DIR'];
             return new \FeatherBB\Core\Cache(['name' => 'feather',
                                                'path' => $path,
-                                               'extension' => '.cache.php']);
+                                               'extension' => '.cache']);
         });
         // Load FeatherBB permissions
         Container::set('perms', function ($container) {

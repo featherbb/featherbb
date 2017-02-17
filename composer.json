@@ -29,7 +29,8 @@
         "vierbergenlars/php-semver": "^3.0",
         "slim/flash": "^0.1.0",
         "gettext/gettext": "^4.2",
-        "s9e/text-formatter": "^0.9"
+        "s9e/text-formatter": "^0.9",
+        "featherbb/php-utf-8": "dev-master"
     },
     "support": {
         "email": "admin@featherbb.org",

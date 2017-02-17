@@ -425,7 +425,7 @@ class Profile
             // If the user should have moderator access (and he/she doesn't already have it)
             if (in_array($curForum['id'], $moderatorIn) && !in_array($id, $curModerators)) {
                 $curModerators[$username] = $id;
-                uksort($curModerators, 'utf8_strcasecmp');
+                uksort($curModerators, [$this, 'utf8_strcasecmp']);
 
                 $updateForums = DB::table('forums')
                     ->where('id', $curForum['id'])
@@ -950,7 +950,7 @@ class Profile
                     if (in_array($id, $curModerators)) {
                         unset($curModerators[$info['old_username']]);
                         $curModerators[$form['username']] = $id;
-                        uksort($curModerators, 'utf8_strcasecmp');
+                        uksort($curModerators, [$this, 'utf8_strcasecmp']);
 
                         $updateMods = DB::table('forums')
                             ->where('id', $curForum['id'])
@@ -1214,14 +1214,19 @@ class Profile
         return $output;
     }
 
+    private static function utf8_strcasecmp($strX, $strY)
+    {
+        $strX = utf8_strtolower($strX);
+        $strY = utf8_strtolower($strY);
+
+        return strcmp($strX, $strY);
+    }
+
     //
     // Check username
     //
     public function checkUsername($username, $errors, $excludeId = null)
     {
-        // Include UTF-8 function
-        require_once ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/strcasecmp.php';
-
         Lang::load('register');
         Lang::load('prof_reg');
 
@@ -1233,7 +1238,7 @@ class Profile
             $errors[] = __('Username too short');
         } elseif (Utils::strlen($username) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
             $errors[] = __('Username too long');
-        } elseif (!strcasecmp($username, 'Guest') || !utf8_strcasecmp($username, __('Guest'))) {
+        } elseif (!strcasecmp($username, 'Guest') || !self::utf8_strcasecmp($username, __('Guest'))) {
             $errors[] = __('Username guest');
         } elseif (filter_var($username, FILTER_VALIDATE_IP)) {
             $errors[] = __('Username IP');

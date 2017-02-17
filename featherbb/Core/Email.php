@@ -11,11 +11,6 @@ namespace FeatherBB\Core;
 
 class Email
 {
-    public function __construct()
-    {
-        require ForumEnv::get('FEATHER_ROOT') . 'featherbb/Helpers/utf8/utils/ascii.php';
-    }
-
     //
     // Validate an email address
     //
@@ -52,11 +47,22 @@ class Email
     //
     public function encodeMailText($str)
     {
-        if (utf8_is_ascii($str)) {
+        if (self::utf8_is_ascii($str)) {
             return $str;
         }
 
         return '=?UTF-8?B?' . base64_encode($str) . '?=';
+    }
+
+    /**
+     * Tests whether a string contains only 7bit ASCII bytes with device
+     * control codes omitted. The device control codes can be found on the
+     * second table here: http://www.w3schools.com/tags/ref_ascii.asp
+     */
+    private static function utf8_is_ascii($str)
+    {
+        // Search for any bytes which are outside the ASCII range...
+        return (preg_match('/(?:[^\x00-\x7F])/', $str) !== 1);
     }
 
     //

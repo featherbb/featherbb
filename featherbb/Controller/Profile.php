@@ -35,7 +35,6 @@ class Profile
         // Include UTF-8 function
         require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/substr_replace.php';
         require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
-        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/strcasecmp.php';
 
         $args['id'] = Container::get('hooks')->fire('controller.profile.display', $args['id']);
 
@@ -223,7 +222,6 @@ class Profile
         // Include UTF-8 function
         require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/substr_replace.php';
         require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
-        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/strcasecmp.php';
 
         $args['id'] = Container::get('hooks')->fire('controller.profile.action', $args['id']);
 

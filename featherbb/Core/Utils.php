@@ -131,7 +131,7 @@ class Utils
     //
     public static function trim($str, $charlist = false)
     {
-        return is_string($str) ? utf8_trim($str, $charlist) : '';
+        return is_string($str) ? \utf8\trim($str, $charlist) : '';
     }
 
     //
