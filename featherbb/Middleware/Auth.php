@@ -167,7 +167,7 @@ class Auth
                 continue;
             }
 
-            if ($cur_ban['username'] != '' && utf8_strtolower(User::get()->username) == utf8_strtolower($cur_ban['username'])) {
+            if ($cur_ban['username'] != '' && \utf8\to_lower(User::get()->username) == \utf8\to_lower($cur_ban['username'])) {
                 $is_banned = true;
             }
 

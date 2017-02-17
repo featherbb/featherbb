@@ -50,8 +50,8 @@ class Search
         }
         // If it's a regular search (keywords and/or author)
         elseif ($action == 'search') {
-            $keywords = (Input::query('keywords')) ? utf8_strtolower(Utils::trim(Input::query('keywords'))) : null;
-            $author = (Input::query('author')) ? utf8_strtolower(Utils::trim(Input::query('author'))) : null;
+            $keywords = (Input::query('keywords')) ? \utf8\to_lower(Utils::trim(Input::query('keywords'))) : null;
+            $author = (Input::query('author')) ? \utf8\to_lower(Utils::trim(Input::query('author'))) : null;
 
             if (preg_match('%^[\*\%]+$%', $keywords) || (Utils::strlen(str_replace(['*', '%'], '', $keywords)) < ForumEnv::get('FEATHER_SEARCH_MIN_WORD') && !$this->search->isCjk($keywords))) {
                 $keywords = '';
@@ -259,7 +259,7 @@ class Search
                 }
 
                 // If it's a search for author name (and that author name isn't Guest)
-                if ($author && $author != 'guest' && $author != utf8_strtolower(__('Guest'))) {
+                if ($author && $author != 'guest' && $author != \utf8\to_lower(__('Guest'))) {
                     $usernameExists = DB::table('users')
                                         ->select('id')
                                         ->whereLike('username', $author);

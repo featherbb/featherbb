@@ -153,8 +153,8 @@ class Search
     //
     public static function updateSearchIndex($mode, $postId, $message, $subject = null)
     {
-        $message = utf8_strtolower($message);
-        $subject = utf8_strtolower($subject);
+        $message = \utf8\to_lower($message);
+        $subject = \utf8\to_lower($subject);
 
         // Remove any bbcode that we shouldn't index
         $message = self::stripBbcode($message);

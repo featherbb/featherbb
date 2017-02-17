@@ -763,9 +763,9 @@ class Profile
                     if ($form['title'] != '') {
                         // A list of words that the title may not contain
                         // If the language is English, there will be some duplicates, but it's not the end of the world
-                        $forbidden = ['member', 'moderator', 'administrator', 'banned', 'guest', utf8_strtolower(__('Member')), utf8_strtolower(__('Moderator')), utf8_strtolower(__('Administrator')), utf8_strtolower(__('Banned')), utf8_strtolower(__('Guest'))];
+                        $forbidden = ['member', 'moderator', 'administrator', 'banned', 'guest', \utf8\to_lower(__('Member')), \utf8\to_lower(__('Moderator')), \utf8\to_lower(__('Administrator')), \utf8\to_lower(__('Banned')), \utf8\to_lower(__('Guest'))];
 
-                        if (in_array(utf8_strtolower($form['title']), $forbidden)) {
+                        if (in_array(\utf8\to_lower($form['title']), $forbidden)) {
                             throw new Error(__('Forbidden title'));
                         }
                     }
@@ -788,7 +788,7 @@ class Profile
                     } elseif (substr_count($form['signature'], "\n") > (ForumSettings::get('p_sig_lines')-1)) {
                         throw new Error(sprintf(__('Sig too many lines'), ForumSettings::get('p_sig_lines')));
                     } elseif ($form['signature'] && ForumSettings::get('p_sig_all_caps') == '0' && Utils::isAllUppercase($form['signature']) && !User::isAdminMod()) {
-                        $form['signature'] = utf8_ucwords(utf8_strtolower($form['signature']));
+                        $form['signature'] = utf8_ucwords(\utf8\to_lower($form['signature']));
                     }
 
                     // Validate BBCode syntax
@@ -1216,8 +1216,8 @@ class Profile
 
     private static function utf8_strcasecmp($strX, $strY)
     {
-        $strX = utf8_strtolower($strX);
-        $strY = utf8_strtolower($strY);
+        $strX = \utf8\to_lower($strX);
+        $strY = \utf8\to_lower($strY);
 
         return strcmp($strX, $strY);
     }
@@ -1265,7 +1265,7 @@ class Profile
 
         // Check username for any banned usernames
         foreach (Container::get('bans') as $curBan) {
-            if ($curBan['username'] != '' && utf8_strtolower($username) == utf8_strtolower($curBan['username'])) {
+            if ($curBan['username'] != '' && \utf8\to_lower($username) == \utf8\to_lower($curBan['username'])) {
                 $errors[] = __('Banned username');
                 break;
             }

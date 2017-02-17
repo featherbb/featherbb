@@ -113,7 +113,7 @@ class Utils
     //
     public static function strlen($str)
     {
-        return utf8_strlen($str);
+        return \utf8\len($str);
     }
 
 
@@ -139,7 +139,7 @@ class Utils
     //
     public static function isAllUppercase($string)
     {
-        return utf8_strtoupper($string) == $string && utf8_strtolower($string) != $string;
+        return \utf8\to_upper($string) == $string && \utf8\to_lower($string) != $string;
     }
 
     //
@@ -233,7 +233,7 @@ class Utils
         if (empty($banList)) {
             $banList = [];
             foreach (Container::get('bans') as $curBan) {
-                $banList[] = utf8_strtolower($curBan['username']);
+                $banList[] = \utf8\to_lower($curBan['username']);
             }
         }
 
@@ -242,7 +242,7 @@ class Utils
             $userTitle = self::escape($user['title']);
         }
         // If the user is banned
-        elseif (in_array(utf8_strtolower($user['username']), $banList)) {
+        elseif (in_array(\utf8\to_lower($user['username']), $banList)) {
             $userTitle = __('Banned');
         }
         // If the user group has a default user title

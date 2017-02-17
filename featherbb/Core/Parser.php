@@ -24,7 +24,7 @@ class Parser
 
         // Load smilies
         if (!Container::get('cache')->isCached('smilies')) {
-            Container::get('smilies')->store('smilies', Cache::getSmilies());
+            Container::get('cache')->store('smilies', \FeatherBB\Model\Cache::getSmilies());
         }
         $this->smilies = Container::get('cache')->retrieve('smilies');
 
