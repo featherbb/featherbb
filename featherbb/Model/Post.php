@@ -1191,7 +1191,7 @@ class Post
 
         // If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)
         if (strpos($quote['message'], '[code]') !== false && strpos($quote['message'], '[/code]') !== false) {
-            list($inside, $outside) = split_text($quote['message'], '[code]', '[/code]');
+            list($inside, $outside) = self::splitText($quote['message'], '[code]', '[/code]');
 
             $quote['message'] = implode("\1", $outside);
         }
