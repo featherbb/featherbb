@@ -301,7 +301,7 @@ class Search
                     ->findMany();
 
                 if ($result) {
-                    $wordIds = '';
+                    $wordIds = [];
                     foreach ($result as $row) {
                         $wordIds[] = $row['word_id'];
                     }
@@ -313,7 +313,7 @@ class Search
                         ->findMany();
 
                     if ($result) {
-                        $wordIds = '';
+                        $wordIds = [];
                         foreach ($result as $row) {
                             $wordIds[] = $row['word_id'];
                         }
