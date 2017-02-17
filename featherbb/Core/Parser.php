@@ -75,6 +75,13 @@ class Parser
         $configurator->BBCodes->addFromRepository('LEFT');
         $configurator->BBCodes->addFromRepository('JUSTIFY');
 
+        // Alias COLOUR to COLOR
+        $configurator->BBCodes->add('COLOUR')->tagName = 'COLOR';
+
+        // Add some default limits
+        $configurator->tags['QUOTE']->nestingLimit = 3;
+        $configurator->tags['LIST']->nestingLimit = 5;
+
         $configurator->registeredVars['cacheDir'] = ForumEnv::get('FORUM_CACHE_DIR');
 
         // Get an instance of the parser and the renderer
