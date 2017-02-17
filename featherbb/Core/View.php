@@ -33,7 +33,7 @@ class View
     */
     public function __construct()
     {
-        $this->data = new \FeatherBB\Helpers\Set();
+        $this->data = new \FeatherBB\Core\Set();
         // Set default dir for view fallback
         $this->addTemplatesDirectory(ForumEnv::get('FEATHER_ROOT') . 'featherbb/View/', 10);
     }
