@@ -32,10 +32,6 @@ class Profile
             throw new Error(__('Bad request'), 400);
         }
 
-        // Include UTF-8 function
-        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/substr_replace.php';
-        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
-
         $args['id'] = Container::get('hooks')->fire('controller.profile.display', $args['id']);
 
         if (Input::post('update_group_membership')) {
@@ -219,10 +215,6 @@ class Profile
 
     public function action($req, $res, $args)
     {
-        // Include UTF-8 function
-        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/substr_replace.php';
-        require ForumEnv::get('FEATHER_ROOT').'featherbb/Helpers/utf8/ucwords.php'; // utf8_ucwords needs utf8_substr_replace
-
         $args['id'] = Container::get('hooks')->fire('controller.profile.action', $args['id']);
 
         if ($args['action'] != 'change_pass' || !Input::query('key')) {

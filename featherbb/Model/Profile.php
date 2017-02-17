@@ -788,7 +788,7 @@ class Profile
                     } elseif (substr_count($form['signature'], "\n") > (ForumSettings::get('p_sig_lines')-1)) {
                         throw new Error(sprintf(__('Sig too many lines'), ForumSettings::get('p_sig_lines')));
                     } elseif ($form['signature'] && ForumSettings::get('p_sig_all_caps') == '0' && Utils::isAllUppercase($form['signature']) && !User::isAdminMod()) {
-                        $form['signature'] = utf8_ucwords(\utf8\to_lower($form['signature']));
+                        $form['signature'] = \utf8\ucwords(\utf8\to_lower($form['signature']));
                     }
 
                     // Validate BBCode syntax
