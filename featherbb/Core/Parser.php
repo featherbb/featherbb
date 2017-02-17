@@ -53,9 +53,27 @@ class Parser
         $configurator->plugins->load('Litedown');//Fatdown default
         $configurator->plugins->load('MediaEmbed');//Fatdown & Forum default
         $configurator->plugins->load('PipeTables');//Fatdown default
-//        $configurator->plugins->load('BBCodes');//Forum default
-//        $configurator->plugins->load('Emoji');//Forum default
-//        $configurator->plugins->load('Emoticons');//Forum default
+
+        // Load BBCodes
+        $configurator->plugins->load('BBCodes');//Forum default
+        $configurator->BBCodes->addFromRepository('B');
+        $configurator->BBCodes->addFromRepository('U');
+        $configurator->BBCodes->addFromRepository('I');
+        $configurator->BBCodes->addFromRepository('S');
+        $configurator->BBCodes->addFromRepository('DEL');
+        $configurator->BBCodes->addFromRepository('INS');
+        $configurator->BBCodes->addFromRepository('EM');
+        $configurator->BBCodes->addFromRepository('COLOR');
+        $configurator->BBCodes->addFromRepository('H1');
+        $configurator->BBCodes->addFromRepository('URL');
+        $configurator->BBCodes->addFromRepository('IMG');
+        $configurator->BBCodes->addFromRepository('QUOTE');
+        $configurator->BBCodes->addFromRepository('CODE');
+        $configurator->BBCodes->addFromRepository('LIST');
+        $configurator->BBCodes->addFromRepository('CENTER');
+        $configurator->BBCodes->addFromRepository('RIGHT');
+        $configurator->BBCodes->addFromRepository('LEFT');
+        $configurator->BBCodes->addFromRepository('JUSTIFY');
 
         $configurator->registeredVars['cacheDir'] = ForumEnv::get('FORUM_CACHE_DIR');
 
