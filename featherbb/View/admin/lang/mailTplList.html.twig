@@ -1,0 +1,45 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+    {{ fireHook('view.admin.mailTplList.start') }}
+
+    <div class="block">
+
+        <form class="panel panel-primary" action="{{ pathFor('adminLanguages.showmailtpls') }}" method="post">
+            <div class="panel-heading">
+                <h3 class="panel-title">Language: {{ name }}</h3>
+            </div>
+            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+            <input type="hidden" name="lng" value="{{ lng }}">
+
+            <div class="list-group">
+                {#id, lid, file, text#}
+                {% for row in templates %}
+                    <div class="list-group-item list-striped">
+                        <p class="list-group-item-heading">file: <u>{{ row.file }}</u></p>
+                        <textarea name="mailTemplateText[{{ row.id }}]" class="form-control">{{ row.text }}</textarea>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="panel-footer">
+                <input type="submit" class="btn btn-success btn-xs">save</input>
+            </div>
+        </form>
+
+    </div>
+
+    <script>
+        // auto expand textarea
+        window.onload = function(){
+            $('textarea').each(function () {
+                this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+            }).on('input', function () {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        };
+    </script>
+
+    {{ fireHook('view.admin.mailTplList.end') }}
+{% endblock content %}

@@ -1,0 +1,23 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.misc.rules.start') }}
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Forum rules') }}</h3>
+        </div>
+        <div class="list-group">
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        {{ settings('o_rules_message') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ fireHook('view.misc.rules.end') }}
+{% endblock content %}

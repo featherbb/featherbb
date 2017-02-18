@@ -1,0 +1,49 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+    {{ fireHook('view.admin.users.ban_users.start') }}
+
+    <div class="blockform">
+        <h2><span>{{ trans('Ban users') }}</span></h2>
+        <div class="box">
+            <form id="bans2" name="confirm_ban_users" method="post" action="{{ pathFor('adminUsers') }}">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <input type="hidden" name="users" value="{{ user_ids|join(',') }}" />
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Message expiry subhead') }}</legend>
+                        <div class="infldset">
+                            <table class="aligntop">
+                                <tr>
+                                    <th scope="row">{{ trans('Ban message label') }}</th>
+                                    <td>
+                                        <input type="text" name="ban_message" size="50" maxlength="255" tabindex="1" />
+                                        <span>{{ trans('Ban message help') }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ trans('Expire date label') }}</th>
+                                    <td>
+                                        <input type="text" name="ban_expire" size="17" maxlength="10" tabindex="2" />
+                                        <span>{{ trans('Expire date help') }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ trans('Ban IP label') }}</th>
+                                    <td>
+                                        <label class="conl"><input type="radio" name="ban_the_ip" tabindex="3" value="1" checked="checked" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="ban_the_ip" tabindex="4" value="0" checked="checked" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <span class="clearb">{{ trans('Ban IP help') }}</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+                <p class="submitend"><input type="submit" name="ban_users_comply" value="{{ trans('Save') }}" tabindex="3" /></p>
+            </form>
+        </div>
+    </div>
+    {{ fireHook('view.admin.users.ban_users.end') }}
+{% endblock content %}

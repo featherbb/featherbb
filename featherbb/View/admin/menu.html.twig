@@ -1,0 +1,149 @@
+{{ fireHook('view.admin.menu.start') }}
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Moderator menu') }}</h3>
+        </div>
+        <div class="list-group">
+            <div class="list-group-item{{ page == 'index' ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <a href="{{ pathFor('adminIndex') }}">{{ trans('Index') }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item{{ page == 'users' ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <a href="{{ pathFor('adminUsers') }}">{{ trans('Users') }}</a>
+                    </div>
+                </div>
+            </div>
+            {% if is_admin or userGet('g_mod_ban_users') == '1' %}
+            <div class="list-group-item{{ page == 'bans' ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <a href="{{ pathFor('adminBans') }}">{{ trans('Bans') }}</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% if is_admin or settings('o_report_method') == '0' or settings('o_report_method') == '2' %}
+                <div class="list-group-item{{ page == 'reports' ? ' list-group-item-info' : '' }}">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <a href="{{ pathFor('adminReports') }}">{{ trans('Reports') }}</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if is_admin %}
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Admin menu') }}</h3>
+        </div>
+        <div class="list-group">
+            <div class="list-group-item{{ page == 'options' ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <a href="{{ pathFor('adminOptions') }}">{{ trans('Options') }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item{{ page == 'permissions' ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <a href="{{ pathFor('adminPermissions') }}">{{ trans('Permissions') }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item{{ page == 'categories' ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <a href="{{ pathFor('adminCategories') }}">{{ trans('Categories') }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item{{ page == 'forums' ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <a href="{{ pathFor('adminForums') }}">{{ trans('Forums') }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item{{ page == 'groups' ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-7">
+                        <a href="{{ pathFor('adminGroups') }}">{{ trans('User groups') }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item{{ page == 'templates' ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-7">
+                        <a href="{{ pathFor('adminTemplates') }}">Templates</a>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item{{ page == 'languages' ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-7">
+                        <a href="{{ pathFor('adminLanguages') }}">Languages</a>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item{{ page == 'plugins' ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-7">
+                        <a href="{{ pathFor('adminPlugins') }}">{{ trans('Plugins') }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item{{ page == 'censoring' ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-7">
+                        <a href="{{ pathFor('adminCensoring') }}">{{ trans('Censoring') }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item{{ page == 'parser' ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-7">
+                        <a href="{{ pathFor('adminParser') }}">{{ trans('Parser') }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item{{ page == 'maintenance' ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-7">
+                        <a href="{{ pathFor('adminMaintenance') }}">{{ trans('Maintenance') }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if plugins is not empty %}
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Plugins menu') }}</h3>
+        </div>
+        <div class="list-group">
+            {% for plugin in plugins %}
+            <div class="list-group-item{{ page == plugin.url ? ' list-group-item-info' : '' }}">
+                <div class="row">
+                    <div class="col-sm-7">
+                        <a href="{{ pathFor('infoPlugin', {'name': plugin.url}) }}">{{ plugin.name }}</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+{{ fireHook('view.admin.menu.end') }}

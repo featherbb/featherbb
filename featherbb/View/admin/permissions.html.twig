@@ -1,0 +1,140 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.admin.permissions.start') }}
+                <div class="blockform">
+                    <h2><span>{{ trans('Permissions head') }}</span></h2>
+                    <div class="box">
+                        <form method="post" action="{{ pathFor('adminPermissions') }}">
+                            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                            <p class="submittop"><input type="submit" name="save" value="{{ trans('Save changes') }}" /></p>
+                            <div class="inform">
+                                <input type="hidden" name="form_sent" value="1" />
+                                <fieldset>
+                                    <legend>{{ trans('Posting subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('BBCode label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form[message_bbcode]" value="1"{{ settings('p_message_bbcode') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form[message_bbcode]" value="0"{{ settings('p_message_bbcode') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('BBCode help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Image tag label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form[message_img_tag]" value="1"{{ settings('p_message_img_tag') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form[message_img_tag]" value="0"{{ settings('p_message_img_tag') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Image tag help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('All caps message label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form[message_all_caps]" value="1"{{ settings('p_message_all_caps') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form[message_all_caps]" value="0"{{ settings('p_message_all_caps') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('All caps message help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('All caps subject label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form[subject_all_caps]" value="1"{{ settings('p_subject_all_caps') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form[subject_all_caps]" value="0"{{ settings('p_subject_all_caps') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('All caps subject help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Require e-mail label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form[force_guest_email]" value="1"{{ settings('p_force_guest_email') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form[force_guest_email]" value="0"{{ settings('p_force_guest_email') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Require e-mail help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Signatures subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('BBCode sigs label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form[sig_bbcode]" value="1"{{ settings('p_sig_bbcode') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form[sig_bbcode]" value="0"{{ settings('p_sig_bbcode') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('BBCode sigs help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Image tag sigs label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form[sig_img_tag]" value="1"{{ settings('p_sig_img_tag') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form[sig_img_tag]" value="0"{{ settings('p_sig_img_tag') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Image tag sigs help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('All caps sigs label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form[sig_all_caps]" value="1"{{ settings('p_sig_all_caps') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form[sig_all_caps]" value="0"{{ settings('p_sig_all_caps') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('All caps sigs help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Max sig length label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form[sig_length]" size="5" maxlength="5" value="{{ settings('p_sig_length') }}" />
+                                                    <span class="clearb">{{ trans('Max sig length help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Max sig lines label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form[sig_lines]" size="3" maxlength="3" value="{{ settings('p_sig_lines') }}" />
+                                                    <span class="clearb">{{ trans('Max sig lines help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Registration subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Banned e-mail label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form[allow_banned_email]" value="1"{{ settings('p_allow_banned_email') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form[allow_banned_email]" value="0"{{ settings('p_allow_banned_email') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Banned e-mail help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Duplicate e-mail label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form[allow_dupe_email]" value="1"{{ settings('p_allow_dupe_email') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form[allow_dupe_email]" value="0"{{ settings('p_allow_dupe_email') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Duplicate e-mail help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            {{ fireHook('view.admin.permissions.form') }}
+                            <p class="submitend"><input type="submit" name="save" value="{{ trans('Save changes') }}" /></p>
+                        </form>
+                    </div>
+                </div>
+    {{ fireHook('view.admin.permissions.end') }}
+{% endblock content %}

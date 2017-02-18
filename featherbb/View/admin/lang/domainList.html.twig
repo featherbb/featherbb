@@ -1,0 +1,60 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.admin.domainlist.start') }}
+
+    <div class="block">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Domains list for: {{ langinfo.name }}</h3>
+                </div>
+
+                    <div class="list-group">
+                        <div class="list-group-item list-group-item-info">
+                            <div class="row">
+                                <div class="col-sm-4">Domain</div>
+                                {#<div class="col-sm-2">Count</div>#}
+                                <div class="col-sm-6 text-right">Actions</div>
+                            </div>
+                        </div>
+                        {% set total = 0 %}
+                        {% for grp in domainList %}
+                            {% set total = total + grp.count %}
+                            <div class="list-group-item list-group-item-text">
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <a href="#">{{ grp.domain }}</a>
+                                        <div class="pull-right">
+                                            <span class="badge">{{ grp.count }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 text-right">
+                                        <a href="{{ pathFor('adminLanguages.editlang') }}?lng={{ grp.lid }}&grp={{ grp.domain }}" class="btn btn-success btn-xs">
+                                            <i class="fa fa-edit fa-lg"></i>
+                                        </a>
+                                        <a href="#?lng={{ grp.lid }}" class="btn btn-danger btn-xs">
+                                            <i class="fa fa-trash-o fa-lg"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <div class="pull-right">
+                                total: <span class="badge">{{ total }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+
+    {{ fireHook('view.admin.domainlist.end') }}
+{% endblock content %}

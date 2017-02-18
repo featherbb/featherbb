@@ -1,0 +1,117 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+    {{ fireHook('view.admin.forums.permissions.start') }}
+
+    <div class="blockform">
+        <h2><span>{{ trans('Edit forum head') }}</span></h2>
+        <div class="box">
+            <form id="edit_forum" method="post" action="{{ pathFor('editForum', {'id': cur_forum.id}) }}">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <p class="submittop"><input type="submit" name="save" value="{{ trans('Save changes') }}" tabindex="{{ getIndex() }}" /></p>
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Edit details subhead') }}</legend>
+                        <div class="infldset">
+                            <table class="aligntop">
+                                <tr>
+                                    <th scope="row">{{ trans('Forum name label') }}</th>
+                                    <td><input type="text" name="forum_name" size="35" maxlength="80" value="{{ cur_forum.forum_name }}" tabindex="{{ getIndex() }}" /></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ trans('Forum description label') }}</th>
+                                    <td><textarea name="forum_desc" rows="3" cols="50" tabindex="{{ getIndex() }}">{{ cur_forum.forum_desc }}</textarea></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ trans('Category label') }}</th>
+                                    <td>
+                                        <select name="cat_id" tabindex="{{ getIndex() }}">
+
+                {% for cat_id, cat_data in forum_data %}
+                                                <option value="{{ cat_id }}"{{ cat_id == cur_forum.cat_id ? ' selected="selected"' : '' }}>{{ cat_data.cat_name }}</option>
+                {% endfor %}
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ trans('Sort by label') }}</th>
+                                    <td>
+                                        <select name="sort_by" tabindex="{{ getIndex() }}">
+                                            <option value="0"{{ cur_forum.sort_by == '0' ? ' selected="selected"' : '' }}>{{ trans('Last post') }}</option>
+                                            <option value="1"{{ cur_forum.sort_by == '1' ? ' selected="selected"' : '' }}>{{ trans('Topic start') }}</option>
+                                            <option value="2"{{ cur_forum.sort_by == '2' ? ' selected="selected"' : '' }}>{{ trans('Subject') }}</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ trans('Redirect label') }}</th>
+                                    <td>
+    {{ cur_forum.num_topics is not empty ? trans('Redirect help') : ('<input type="text" name="redirect_url" size="45" maxlength="100" value="' ~cur_forum.redirect_url ~'" tabindex="{{ getIndex() }}" />') }}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Group permissions subhead') }}</legend>
+                        <div class="infldset">
+                            <p>
+                            {{
+                            trans(['Group permissions info', '<a href="' ~pathFor('adminGroups') ~'">' ~trans('User groups') ~'</a>'])
+                            }}
+                            </p>
+                            <table id="forumperms">
+                            <thead>
+                                <tr>
+                                    <th class="atcl">&#160;</th>
+                                    <th>{{ trans('Read forum label') }}</th>
+                                    <th>{{ trans('Post replies label') }}</th>
+                                    <th>{{ trans('Post topics label') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+{% for perm in perm_data %}
+                        <tr>
+                            <th class="atcl">{{ perm.g_title }}</th>
+                            <td{{  perm.read_forum_def == false ? ' class="nodefault"' : '' }}>
+                                <input type="hidden" name="read_forum_old[{{ perm.g_id }}]" value="{{ perm.read_forum ? '1' : '0' }}" />
+                                <input type="checkbox" name="read_forum_new[{{ perm.g_id }}]" value="1"
+                                {{ perm.read_forum ? ' checked="checked"' : '' }}
+                                {{ perm.g_read_board == '0' ? ' disabled="disabled"' : '' }}
+                                tabindex="{{ getIndex() }}" />
+                            </td>
+                            <td{{ perm.post_replies_def == 0 and cur_forum.redirect_url == '' ? ' class="nodefault"' : '' }}>
+                                <input type="hidden" name="post_replies_old[{{ perm.g_id }}]" value="{{ perm.post_replies ? '1' : '0' }}" />
+                                <input type="checkbox" name="post_replies_new[{{ perm.g_id }}]" value="1"
+                                {{ perm.post_replies ? ' checked="checked"' : '' }}
+                                {{ cur_forum.redirect_url != '' ? ' disabled="disabled"' : '' }} tabindex="{{ getIndex() }}" />
+                            </td>
+                            <td
+                            {{ perm.post_topics_def == false and cur_forum.redirect_url == '' ? ' class="nodefault"' : '' }}>
+                                <input type="hidden" name="post_topics_old[{{ perm.g_id }}]" value="{{ perm.post_topics ? '1' : '0' }}" />
+                                <input type="checkbox" name="post_topics_new[{{ perm.g_id }}]" value="1"
+                                {{ perm.post_topics ? ' checked="checked"' : '' }}
+                                {{ cur_forum.redirect_url != '' ? ' disabled="disabled"' : '' }} tabindex="{{ getIndex() }}" />
+                            </td>
+                        </tr>
+
+{% endfor %}
+
+
+                            </tbody>
+                            </table>
+                            <div class="fsetsubmit"><input type="submit" name="revert_perms" value="{{ trans('Revert to default') }}" tabindex="{{ getIndex() }}" /></div>
+                        </div>
+                    </fieldset>
+                </div>
+                <p class="submitend"><input type="submit" name="save" value="{{ trans('Save changes') }}" tabindex="{{ getIndex() }}" /></p>
+            </form>
+        </div>
+    </div>
+
+    {{ fireHook('view.admin.forums.permissions.start') }}
+{% endblock content %}

@@ -1,0 +1,202 @@
+{{ fireHook('view.install.start') }}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{ trans('FeatherBB Installation') }}</title>
+    <link rel="stylesheet" type="text/css" href="/themes/runbb/style.css" />
+</head>
+
+<body>
+    <div id="puninstall" class="pun">
+        <div class="top-box"><div><!-- Top Corners --></div></div>
+        <div class="punwrap">
+
+            <section class="container">
+                <div id="brdheader" class="block">
+                    <div class="box">
+                        <div id="brdtitle" class="inbox">
+                            <h1><span>{{ trans('FeatherBB Installation') }}</span></h1>
+                            <div id="brddesc"><p>{{ trans('Welcome') }}</p></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="container">
+                <div id="brdmain">
+                    {% if languages|length > 1 %}
+                    <div class="blockform">
+                        <h2><span><{{ trans('Choose install language') }}</span></h2>
+                        <div class="box">
+                            <form id="install" method="post" action="">
+                                <input type="hidden" name="choose_lang" value="1">
+                                <div class="inform">
+                                    <fieldset>
+                                        <legend>{{ trans('Install language') }}</legend>
+                                        <div class="infldset">
+                                            <p>{{ trans('Choose install language info') }}</p>
+                                            <label><strong>{{ trans('Install language') }}</strong>
+                                                <br /><select name="install_lang">
+                                                    {% for lang in languages %}
+                                                        <option value="{{ lang }}" {{ data.default_lang == lang ? 'selected' : '' }}>{{ lang }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <br /></label>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <p class="buttons"><input type="submit" value="{{ trans('Change language') }}" /></p>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                        <div class="blockform">
+                            <h2><span>{{ trans(['Install', getEnv('FORUM_VERSION')]) }}</span></h2>
+                            <div class="box">
+                                <form id="install" method="post" action="">
+                                    <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                                    <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                                    {% if errors is not empty %}
+                                        <div class="inform">
+                                            <div class="forminfo error-info">
+                                                <h3>{{ trans('Errors') }}</h3>
+                                                <ul class="error-list">
+                                                    {% for error in errors %}
+                                                        <li><strong>{{ error|raw }}</strong></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="inform">
+                                        <div class="forminfo">
+                                            <h3>{{ trans('Database setup') }}</h3>
+                                            <p>{{ trans('Info 1') }}</p>
+                                        </div>
+                                        <fieldset>
+                                            <legend>{{ trans('Select database') }}</legend>
+                                            <div class="infldset">
+                                                <p>{{ trans('Info 2') }}</p>
+                                                <label class="required"><strong>{{ trans('Database type') }} <span>{{ trans('Required') }}</span></strong></label>
+                                                <select name="install[db_type]" required>
+                                                    {% for id, db_type in supported_dbs %}
+                                                        {% if id in dbConfig %}
+                                                            <option value="{{ id }}" selected="selected">{{ db_type }}</option>
+                                                        {% else %}
+                                                            <option value="{{ id }}">{{ db_type }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="inform">
+                                        <fieldset>
+                                            <legend>{{ trans('Database hostname') }}</legend>
+                                            <div class="infldset">
+                                                <p>{{ trans('Info 3') }}</p>
+                                                <label class="required"><strong>{{ trans('Database server hostname') }} <span>{{ trans('Required') }}</span></strong></label>
+                                                <input type="text" name="install[db_host]" size="50" value="{{ dbConfig.db_host }}" required />
+                                            </div>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="inform">
+                                        <fieldset>
+                                            <legend>{{ trans('Database enter name') }}</legend>
+                                            <div class="infldset">
+                                                <p>{{ trans('Info 4') }}</p>
+                                                <label class="required"><strong>{{ trans('Database name') }} <span>{{ trans('Required') }}</span></strong></label>
+                                                <input type="text" name="install[db_name]" size="30" value="{{ dbConfig.db_name }}" required />
+                                            </div>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="inform">
+                                        <fieldset>
+                                            <legend>{{ trans('Database enter informations') }}</legend>
+                                            <div class="infldset">
+                                                <p>{{ trans('Info 5') }}</p>
+                                                <label class="conl">{{ trans('Database username') }}</label>
+                                                <input type="text" name="install[db_user]" size="30" value="{{ dbConfig.db_user }}" />
+                                                <label class="conl">{{ ('Database password') }}</label>
+                                                <input type="password" name="install[db_pass]" size="30" value="{{ dbConfig.db_pass }}" />
+                                                <div class="clearer"></div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="inform">
+                                        <fieldset>
+                                            <legend>{{ ('Database enter prefix') }}</legend>
+                                            <div class="infldset">
+                                                <p>{{ trans('Info 6') }}</p>
+                                                <label>{{ trans('Table prefix') }}</label>
+                                                <input type="text" name="install[db_prefix]" size="20" maxlength="30" value="{{ dbConfig.db_prefix }}" />
+                                            </div>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="inform">
+                                        <div class="forminfo">
+                                            <h3>{{ trans('Administration setup') }}</h3>
+                                            <p>{{ trans('Info 7') }}</p>
+                                        </div>
+                                        <fieldset>
+                                            <legend>{{ trans('Administration setup') }}</legend>
+                                            <div class="infldset">
+                                                <p>{{ trans('Info 8') }}</p>
+                                                <label class="required"><strong>{{ trans('Administrator username') }} <span>{{ trans('Required') }}</span></strong></label>
+                                                <input type="text" name="install[username]" size="25" maxlength="25" required />
+                                                <label class="conl required"><strong>{{ trans('Password') }} <span>{{ trans('Required') }}</span></strong></label>
+                                                <input type="password" name="install[password]" size="16" required />
+                                                <label class="conl required"><strong>{{ trans('Confirm password') }} <span>{{ trans('Required') }}</span></strong></label>
+                                                <input type="password" name="install[password_conf]" size="16" required />
+                                                <!-- <div class="clearer"></div> -->
+                                                <label class="required"><strong>{{ trans('Administrator email') }} <span>{{ trans('Required') }}</span></strong></label>
+                                                <input type="text" name="install[email]" size="50" maxlength="80" required />
+                                            </div>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="inform">
+                                        <div class="forminfo">
+                                            <h3>{{ trans('Board setup') }}</h3>
+                                            <p>{{ trans('Info 11') }}</p>
+                                        </div>
+                                        <fieldset>
+                                            <legend>{{ trans('General information') }}</legend>
+                                            <div class="infldset">
+                                                <label class="required"><strong>{{ trans('Board title') }} <span>{{ trans('Required') }}</span></strong></label>
+                                                <input type="text" name="install[title]" value="{{ data.title }}" size="60" maxlength="255" required />
+                                                <label>{{ trans('Board description') }}</label>
+                                                <input type="text" name="install[description]" value="{{ data.description }}" size="60" maxlength="255" required />
+                                                <label class="required"><strong>{{ trans('Base URL') }} <span>{{ trans('Required') }}</span></strong></label>
+                                                <input type="text" name="install[base_url]" value="{{ data.base_url }}" size="60" maxlength="100" required />
+                                                <label class="required"><strong>{{ trans('Default language') }} <span>{{ trans('Required') }}</span></strong></label>
+                                                <select name="install[default_lang]" required />
+                                                {% for lang in languages %}
+                                                    <option value="{{ lang }}" {{ data.default_lang == lang ? 'selected' : '' }}>{{ lang }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <p class="buttons"><input type="submit" value="{{ trans('Start install') }}" /></p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="end-box"><div><!-- Bottom Corners --></div></div>
+    </div>
+</body>
+</html>
+{{ fireHook('view.install.end') }}

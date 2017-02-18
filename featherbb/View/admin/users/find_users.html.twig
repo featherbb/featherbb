@@ -1,0 +1,121 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.admin.users.find_users.start') }}
+
+    <div class="linkst">
+        <div class="inbox crumbsplus">
+            <ul class="crumbs">
+                <li><a href="{{ pathFor('adminIndex') }}">{{ trans('Admin') }} {{ trans('Index') }}</a></li>
+                <li><span>»&#160;</span><a href="{{ pathFor('adminUsers') }}">{{ trans('Users') }}</a></li>
+                <li><span>»&#160;</span><strong>{{ trans('Results head') }}</strong></li>
+            </ul>
+            <div class="pagepost">
+                <p class="pagelink">{{ paging_links|raw }}</p>
+            </div>
+            <div class="clearer"></div>
+        </div>
+    </div>
+
+
+    <form id="search-users-form" action="{{ pathFor('adminUsers') }}" method="post">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+        <div id="users2" class="blocktable">
+            <h2><span>{{ trans('Results head') }}</span></h2>
+            <div class="box">
+                <div class="inbox">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th class="tcl" scope="col">{{ trans('Results username head') }}</th>
+                            <th class="tc2" scope="col">{{ trans('Results e-mail head') }}</th>
+                            <th class="tc3" scope="col">{{ trans('Results title head') }}</th>
+                            <th class="tc4" scope="col">{{ trans('Results posts head') }}</th>
+                            <th class="tc5" scope="col">{{ trans('Results admin note head') }}</th>
+                            <th class="tcr" scope="col">{{ trans('Results actions head') }}</th>
+
+                            {% if can_action %}
+
+                                <th class="tcmod" scope="col">{{ trans('Select') }}</th>
+
+                            {% endif %}
+
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% if user_data is not empty %}
+
+                            {% for user in user_data %}
+                                <tr>
+                                    <td class="tcl"><a
+                                                href="{{ pathFor('userProfile', {'id': user.id}) }}">{{ user.username }}</a>
+                                    </td>
+                                    <td class="tc2"><a href="mailto:{{ user.email }}">{{ user.email }}</a></td>
+                                    <td class="tc3">{{ user.user_title }}</td>
+                                    <td class="tc4">{{ formatNumber(user.num_posts) }}</td>
+                                    <td class="tc5">{{ user.admin_note != '' ? user.admin_note|raw : '&#160;'|raw }}</td>
+                                    <td class="tcr">
+                                        <a href="{{ pathFor('usersIpStats', {'id': user.id}) }}">{{ trans('Results view IP link') }}</a>
+                                        |
+                                        <a href="{{ pathFor('search') }}?action=show_user_posts&user_id={{ user.id }}">{{ trans('Results show posts link') }}</a>
+                                    </td>
+
+                                    {% if can_action %}
+                                        <td class="tcmod"><input type="checkbox" name="users[{{ user.id }}]"
+                                                                 value="1"/></td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+
+                        {% else %}
+                            <tr>
+                                <td class="tcl" colspan="6">{{ trans('No match') }}</td>
+                            </tr>
+                        {% endif %}
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="linksb">
+            <div class="inbox crumbsplus">
+                <div class="pagepost">
+                    <p class="pagelink">{{ paging_links|raw }}</p>
+
+                    {% if can_action %}
+                        <p class="conr modbuttons">
+                            <a href="#" onclick="RunBB.selectCheckboxes('search-users-form', this, '{{ trans('Unselect all') }}')">{{ trans('Select all') }}</a>
+
+                            {% if can_ban %}
+                                <input type="submit" name="ban_users" value="{{ trans('Ban') }}"/>
+                            {% endif %}
+
+                            {% if can_delete %}
+                                <input type="submit" name="delete_users" value="{{ trans('Delete') }}"/>
+                            {% endif %}
+
+                            {% if can_move %}
+                                <input type="submit" name="move_users" value="{{ trans('Change group') }}"/>
+                            {% endif %}
+                        </p>
+                    {% endif %}
+
+                </div>
+                <ul class="crumbs">
+                    <li><a href="{{ pathFor('adminIndex') }}">{{ trans('Admin') }} {{ trans('Index') }}</a></li>
+                    <li><span>»&#160;</span><a href="{{ pathFor('adminUsers') }}">{{ trans('Users') }}</a></li>
+                    <li><span>»&#160;</span><strong>{{ trans('Results head') }}</strong></li>
+                </ul>
+                <div class="clearer"></div>
+            </div>
+        </div>
+    </form>
+
+    {{ fireHook('view.admin.users.find_users.end') }}
+{% endblock content %}

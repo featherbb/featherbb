@@ -1,0 +1,61 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.admin.index.start') }}
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{ trans('Forum admin head') }}</h3>
+                    </div>
+                    <div class="list-group">
+                        {#<div class="row">#}
+                            <div class="col-sm-12">
+                                <br>
+                                <p>{{ trans('Welcome to admin') }}</p>
+                                <ul>
+                                    <li><span>{{ trans('Welcome 1') }}</span></li>
+                                    <li><span>{{ trans('Welcome 2') }}</span></li>
+                                    <li><span>{{ trans('Welcome 3') }}</span></li>
+                                    <li><span>{{ trans('Welcome 4') }}</span></li>
+                                    <li><span>{{ trans('Welcome 5') }}</span></li>
+                                    <li><span>{{ trans('Welcome 6') }}</span></li>
+                                    <li><span>{{ trans('Welcome 7') }}</span></li>
+                                    <li><span>{{ trans('Welcome 8') }}</span></li>
+                                    <li><span>{{ trans('Welcome 9') }}</span></li>
+                                </ul>
+                            </div>
+                        {#</div>#}
+                    </div>
+                </div>
+
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{ trans('About head') }}</h3>
+                    </div>
+                    <div class="list-group">
+                        {#<div class="row">#}
+                        <div class="col-sm-12">
+                            <br>
+                            <dl>
+                                <dt>{{ trans('FeatherBB version label') }}</dt>
+                                <dd>
+                                    {{ trans(['FeatherBB version data',
+                                    settings('o_cur_version'),
+                                    '<a href="' ~pathFor('adminAction', {'action': 'check_upgrade'}) ~'">' ~trans('Check for upgrade') ~'</a>'
+                                    ]) }}
+                                </dd>
+                                <dt>{{ trans('Server statistics label') }}</dt>
+                                <dd>
+                                    <a href="{{ pathFor('statistics') }}">{{ trans('View server statistics') }}</a>
+                                </dd>
+                                <dt>{{ trans('Support label') }}</dt>
+                                <dd>
+                                    <a href="https://github.com/runcmf/runbb">{{ trans('Forum label') }}</a> - <a
+                                            href="#">{{ trans('IRC label') }}</a>
+                                </dd>
+                            </dl>
+                        </div>
+                        {#</div>#}
+                    </div>
+                </div>
+    {{ fireHook('view.admin.index.end') }}
+{% endblock content %}

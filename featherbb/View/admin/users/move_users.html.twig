@@ -1,0 +1,40 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+    {{ fireHook('view.admin.users.move_users.start') }}
+
+    <div class="blockform">
+        <h2><span>{{ trans('Move users') }}</span></h2>
+        <div class="box">
+            <form name="confirm_move_users" method="post" action="{{ pathFor('adminUsers') }}">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <input type="hidden" name="users" value="{{ move.user_ids|join(',') }}" />
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Move users subhead') }}</legend>
+                        <div class="infldset">
+                            <table class="aligntop">
+                                <tr>
+                                    <th scope="row">{{ trans('New group label') }}</th>
+                                    <td>
+                                        <select name="new_group" tabindex="1">
+
+                                            {% for gid, group in move.all_groups %}
+                                            <option value="{{ gid }}">{{ group }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                        <span>{{ trans('New group help') }}</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+                <p class="submitend"><input type="submit" name="move_users_comply" value="{{ trans('Save') }}" tabindex="2" /></p>
+            </form>
+        </div>
+    </div>
+    {{ fireHook('view.admin.users.move_users.end') }}
+{% endblock content %}

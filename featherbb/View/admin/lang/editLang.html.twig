@@ -1,0 +1,39 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+    {{ fireHook('view.admin.editlang.start') }}
+
+        <div class="block">
+
+            <form class="panel panel-primary" action="{{ pathFor('adminLanguages.editlang') }}" method="post">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Language: {{ langinfo.name }}, cat: {{ grp }}</h3>
+                </div>
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <input type="hidden" name="lng" value="{{ lng }}">
+                <input type="hidden" name="grp" value="{{ grp }}">
+
+                <div class="list-group">
+                    {#id, lid, domain, msgid, msgstr, msgstrwith#}
+                    {% for row in translateList %}
+                        <div class="list-group-item list-striped">
+                            <p class="list-group-item-heading">msgid: <u>{{ row.msgid }}</u></p>
+                            {% if row.msgstrwith is not null %}
+                                <div class="well well-sm">en: {{ row.msgstrwith }}</div>
+                            {% endif %}
+                            <div class="form-inline">{{ langinfo.code }} <textarea name="transtr[{{ row.id }}]" class="list-group-item-text" style="width: 97%">{{ row.msgstr }}</textarea></div>
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+                <div class="panel-footer">
+                    <input type="submit" class="btn btn-success btn-xs">save</input>
+                </div>
+            </form>
+
+        </div>
+
+    {{ fireHook('view.admin.editlang.end') }}
+{% endblock content %}

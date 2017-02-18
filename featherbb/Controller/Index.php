@@ -35,7 +35,7 @@ class Index
             'online'    =>    $this->model->usersOnline(),
             'forum_actions'        =>    $this->model->forumActions(),
             'cur_cat'   => 0
-        ])->addTemplate('index.php')->display();
+        ])->addTemplate('@forum/index')->display();
     }
 
     public function rules()

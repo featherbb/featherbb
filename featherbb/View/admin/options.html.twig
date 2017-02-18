@@ -1,0 +1,637 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.admin.options.start') }}
+                <div class="blockform">
+                    <h2><span>{{ trans('Options head') }}</span></h2>
+                    <div class="box">
+                        <form method="post" action="{{ pathFor('adminOptions') }}">
+                            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                            <p class="submittop"><input type="submit" name="save" value="{{ trans('Save changes') }}" /></p>
+                            <div class="inform">
+                                <input type="hidden" name="form_sent" value="1" />
+                                <fieldset>
+                                    <legend>{{ trans('Essentials subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Board title label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_board_title" size="50" maxlength="255" value="{{ settings('o_board_title') }}" />
+                                                    <span>{{ trans('Board title help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Board desc label') }}</th>
+                                                <td>
+                                                    <textarea name="form_board_desc" cols="60" rows="3">{{ settings('o_board_desc') }}</textarea>
+                                                    <span>{{ trans('Board desc help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Base URL label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_base_url" size="50" maxlength="100" value="{{ settings('o_base_url') }}" />
+                                                    <span>{{ trans('Base URL help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Timezone label') }}</th>
+                                                <td>
+                                                    <select name="form_default_timezone">
+                                                        <option value="-12"{{ settings('o_default_timezone') == -12 ? ' selected="selected"' : '' }}>{{ trans('UTC-12:00') }}</option>
+                                                        <option value="-11"{{ settings('o_default_timezone') == -11 ? ' selected="selected"' : '' }}>{{ trans('UTC-11:00') }}</option>
+                                                        <option value="-10"{{ settings('o_default_timezone') == -10 ? ' selected="selected"' : '' }}>{{ trans('UTC-10:00') }}</option>
+                                                        <option value="-9.5"{{ settings('o_default_timezone') == -9.5 ? ' selected="selected"' : '' }}>{{ trans('UTC-09:30') }}</option>
+                                                        <option value="-9"{{ settings('o_default_timezone') == -9 ? ' selected="selected"' : '' }}>{{ trans('UTC-09:00') }}</option>
+                                                        <option value="-8.5"{{ settings('o_default_timezone') == -8.5 ? ' selected="selected"' : '' }}>{{ trans('UTC-08:30') }}</option>
+                                                        <option value="-8"{{ settings('o_default_timezone') == -8 ? ' selected="selected"' : '' }}>{{ trans('UTC-08:00') }}</option>
+                                                        <option value="-7"{{ settings('o_default_timezone') == -7 ? ' selected="selected"' : '' }}>{{ trans('UTC-07:00') }}</option>
+                                                        <option value="-6"{{ settings('o_default_timezone') == -6 ? ' selected="selected"' : '' }}>{{ trans('UTC-06:00') }}</option>
+                                                        <option value="-5"{{ settings('o_default_timezone') == -5 ? ' selected="selected"' : '' }}>{{ trans('UTC-05:00') }}</option>
+                                                        <option value="-4"{{ settings('o_default_timezone') == -4 ? ' selected="selected"' : '' }}>{{ trans('UTC-04:00') }}</option>
+                                                        <option value="-3.5"{{ settings('o_default_timezone') == -3.5 ? ' selected="selected"' : '' }}>{{ trans('UTC-03:30') }}</option>
+                                                        <option value="-3"{{ settings('o_default_timezone') == -3 ? ' selected="selected"' : '' }}>{{ trans('UTC-03:00') }}</option>
+                                                        <option value="-2"{{ settings('o_default_timezone') == -2 ? ' selected="selected"' : '' }}>{{ trans('UTC-02:00') }}</option>
+                                                        <option value="-1"{{ settings('o_default_timezone') == -1 ? ' selected="selected"' : '' }}>{{ trans('UTC-01:00') }}</option>
+                                                        <option value="0"{{ settings('o_default_timezone') == 0 ? ' selected="selected"' : '' }}>{{ trans('UTC') }}</option>
+                                                        <option value="1"{{ settings('o_default_timezone') == 1 ? ' selected="selected"' : '' }}>{{ trans('UTC+01:00') }}</option>
+                                                        <option value="2"{{ settings('o_default_timezone') == 2 ? ' selected="selected"' : '' }}>{{ trans('UTC+02:00') }}</option>
+                                                        <option value="3"{{ settings('o_default_timezone') == 3 ? ' selected="selected"' : '' }}>{{ trans('UTC+03:00') }}</option>
+                                                        <option value="3.5"{{ settings('o_default_timezone') == 3.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+03:30') }}</option>
+                                                        <option value="4"{{ settings('o_default_timezone') == 4 ? ' selected="selected"' : '' }}>{{ trans('UTC+04:00') }}</option>
+                                                        <option value="4.5"{{ settings('o_default_timezone') == 4.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+04:30') }}</option>
+                                                        <option value="5"{{ settings('o_default_timezone') == 5 ? ' selected="selected"' : '' }}>{{ trans('UTC+05:00') }}</option>
+                                                        <option value="5.5"{{ settings('o_default_timezone') == 5.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+05:30') }}</option>
+                                                        <option value="5.75"{{ settings('o_default_timezone') == 5.75 ? ' selected="selected"' : '' }}>{{ trans('UTC+05:45') }}</option>
+                                                        <option value="6"{{ settings('o_default_timezone') == 6 ? ' selected="selected"' : '' }}>{{ trans('UTC+06:00') }}</option>
+                                                        <option value="6.5"{{ settings('o_default_timezone') == 6.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+06:30') }}</option>
+                                                        <option value="7"{{ settings('o_default_timezone') == 7 ? ' selected="selected"' : '' }}>{{ trans('UTC+07:00') }}</option>
+                                                        <option value="8"{{ settings('o_default_timezone') == 8 ? ' selected="selected"' : '' }}>{{ trans('UTC+08:00') }}</option>
+                                                        <option value="8.75"{{ settings('o_default_timezone') == 8.75 ? ' selected="selected"' : '' }}>{{ trans('UTC+08:45') }}</option>
+                                                        <option value="9"{{ settings('o_default_timezone') == 9 ? ' selected="selected"' : '' }}>{{ trans('UTC+09:00') }}</option>
+                                                        <option value="9.5"{{ settings('o_default_timezone') == 9.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+09:30') }}</option>
+                                                        <option value="10"{{ settings('o_default_timezone') == 10 ? ' selected="selected"' : '' }}>{{ trans('UTC+10:00') }}</option>
+                                                        <option value="10.5"{{ settings('o_default_timezone') == 10.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+10:30') }}</option>
+                                                        <option value="11"{{ settings('o_default_timezone') == 11 ? ' selected="selected"' : '' }}>{{ trans('UTC+11:00') }}</option>
+                                                        <option value="11.5"{{ settings('o_default_timezone') == 11.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+11:30') }}</option>
+                                                        <option value="12"{{ settings('o_default_timezone') == 12 ? ' selected="selected"' : '' }}>{{ trans('UTC+12:00') }}</option>
+                                                        <option value="12.75"{{ settings('o_default_timezone') == 12.75 ? ' selected="selected"' : '' }}>{{ trans('UTC+12:45') }}</option>
+                                                        <option value="13"{{ settings('o_default_timezone') == 13 ? ' selected="selected"' : '' }}>{{ trans('UTC+13:00') }}</option>
+                                                        <option value="14"{{ settings('o_default_timezone') == 14 ? ' selected="selected"' : '' }}>{{ trans('UTC+14:00') }}</option>
+                                                    </select>
+                                                    <span>{{ trans('Timezone help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('DST label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_default_dst" value="1"{{ settings('o_default_dst') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_default_dst" value="0"
+                                                        {{ settings('o_default_dst') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('DST help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Language label') }}</th>
+                                                <td>
+                                                    <select name="form_default_lang">
+                                                        {{ languages|raw }}
+                                                    </select>
+                                                    <span>{{ trans('Language help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Default style label') }}</th>
+                                                <td>
+                                                    <select name="form_default_style">
+                                                        {{ styles|raw }}
+                                                    </select>
+                                                    <span>{{ trans('Default style help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+
+                $diff = (User::get()->timezone + User::get()->dst) * 3600;
+                $timestamp = time() + $diff;
+
+
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Timeouts subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Time format label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_time_format" size="25" maxlength="25" value="{{ settings('o_time_format') }}" />
+                                                    <span>
+                                                    {{ trans(['Time format help', timestamp|date(settings('o_time_format')),
+                                                    '<a href="http://www.php.net/manual/en/function.date.php">' ~trans('PHP manual') ~'</a>']) }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Date format label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_date_format" size="25" maxlength="25" value="{{ settings('o_date_format') }}" />
+                                                    <span>
+                                                    {{ trans(['Date format help', timestamp|date(settings('o_date_format')),
+                                                    '<a href="http://www.php.net/manual/en/function.date.php">' ~trans('PHP manual') ~'</a>']) }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Visit timeout label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_timeout_visit" size="5" maxlength="5" value="{{ settings('o_timeout_visit') }}" />
+                                                    <span>{{ trans('Visit timeout help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Online timeout label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_timeout_online" size="5" maxlength="5" value="{{ settings('o_timeout_online') }}" />
+                                                    <span>{{ trans('Online timeout help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Redirect time label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_redirect_delay" size="3" maxlength="3" value="{{ settings('o_redirect_delay') }}" />
+                                                    <span>{{ trans('Redirect time help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Display subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Version number label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_show_version" value="1"{{ settings('o_show_version') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_show_version" value="0"{{ settings('o_show_version') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Version number help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Info in posts label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_show_user_info" value="1"{{ settings('o_show_user_info') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_show_user_info" value="0"{{ settings('o_show_user_info') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Info in posts help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Post count label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_show_post_count" value="1"{{ settings('o_show_post_count') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_show_post_count" value="0"{{ settings('o_show_post_count') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Post count help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Smilies label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_smilies" value="1"{{ settings('o_smilies') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_smilies" value="0"{{ settings('o_smilies') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Smilies help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Smilies sigs label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_smilies_sig" value="1"{{ settings('o_smilies_sig') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_smilies_sig" value="0"{{ settings('o_smilies_sig') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Smilies sigs help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Clickable links label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_make_links" value="1"{{ settings('o_make_links') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_make_links" value="0"{{ settings('o_make_links') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Clickable links help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Topic review label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_topic_review" size="3" maxlength="3" value="{{ settings('o_topic_review') }}" />
+                                                    <span>{{ trans('Topic review help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Topics per page label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_disp_topics_default" size="3" maxlength="2" value="{{ settings('o_disp_topics_default') }}" />
+                                                    <span>{{ trans('Topics per page help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Posts per page label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_disp_posts_default" size="3" maxlength="2" value="{{ settings('o_disp_posts_default') }}" />
+                                                    <span>{{ trans('Posts per page help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Indent label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_indent_num_spaces" size="3" maxlength="3" value="{{ settings('o_indent_num_spaces') }}" />
+                                                    <span>{{ trans('Indent help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Quote depth label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_quote_depth" size="3" maxlength="3" value="{{ settings('o_quote_depth') }}" />
+                                                    <span>{{ trans('Quote depth help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Features subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Quick post label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_quickpost" value="1"{{ settings('o_quickpost') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_quickpost" value="0"{{ settings('o_quickpost') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Quick post help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Users online label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_users_online" value="1"{{ settings('o_users_online') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_users_online" value="0"{{ settings('o_users_online') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Users online help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><a name="censoring"></a>{{ trans('Censor words label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_censoring" value="1"{{ settings('o_censoring') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_censoring" value="0"{{ settings('o_censoring') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">
+                                                         {{ trans(['Censor words help', '<a href="' ~pathFor('adminCensoring') ~'">' ~trans('Censoring') ~'</a>']) }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><a name="signatures"></a>{{ trans('Signatures label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_signatures" value="1"{{ settings('o_signatures') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_signatures" value="0"{{ settings('o_signatures') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Signatures help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('User has posted label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_show_dot" value="1"{{ settings('o_show_dot') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_show_dot" value="0"{{ settings('o_show_dot') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('User has posted help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Topic views label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_topic_views" value="1"{{ settings('o_topic_views') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_topic_views" value="0"{{ settings('o_topic_views') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Topic views help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Quick jump label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_quickjump" value="1"{{ settings('o_quickjump') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_quickjump" value="0"{{ settings('o_quickjump') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Quick jump help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('GZip label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_gzip" value="1"{{ settings('o_gzip') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_gzip" value="0"{{ settings('o_gzip') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('GZip help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Search all label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_search_all_forums" value="1"{{ settings('o_search_all_forums') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_search_all_forums" value="0"{{ settings('o_search_all_forums') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Search all help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Menu items label') }}</th>
+                                                <td>
+                                                    <textarea name="form_additional_navlinks" rows="3" cols="55">{{ settings('o_additional_navlinks') }}</textarea>
+                                                    <span>{{ trans('Menu items help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Feed subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Default feed label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_feed_type" value="0"{{ settings('o_feed_type') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('None') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_feed_type" value="1"{{ settings('o_feed_type') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('RSS') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_feed_type" value="2"{{ settings('o_feed_type') == '2' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Atom') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Default feed help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Feed TTL label') }}</th>
+                                                <td>
+                                                    <select name="form_feed_ttl">
+                                                        <option value="0"{{ settings('o_feed_ttl') == '0' ? ' selected="selected"' : '' }}>
+                                                        {{ trans('No cache') }}
+                                                        </option>
+                                                        {{ times|raw }}
+                                                    </select>
+                                                    <span>{{ trans('Feed TTL help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Reports subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Reporting method label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_report_method" value="0"{{ settings('o_report_method') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Internal') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_report_method" value="1"{{ settings('o_report_method') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('By e-mail') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_report_method" value="2"{{ settings('o_report_method') == '2' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Both') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Reporting method help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Mailing list label') }}</th>
+                                                <td>
+                                                    <textarea name="form_mailing_list" rows="5" cols="55">{{ settings('o_mailing_list') }}</textarea>
+                                                    <span>{{ trans('Mailing list help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Avatars subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Use avatars label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_avatars" value="1"{{ settings('o_avatars') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_avatars" value="0"{{ settings('o_avatars') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Use avatars help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Upload directory label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_avatars_dir" size="35" maxlength="50" value="{{ settings('o_avatars_dir') }}" />
+                                                    <span>{{ trans('Upload directory help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Max width label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_avatars_width" size="5" maxlength="5" value="{{ settings('o_avatars_width') }}" />
+                                                    <span>{{ trans('Max width help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Max height label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_avatars_height" size="5" maxlength="5" value="{{ settings('o_avatars_height') }}" />
+                                                    <span>{{ trans('Max height help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Max size label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_avatars_size" size="6" maxlength="6" value="{{ settings('o_avatars_size') }}" />
+                                                    <span>{{ trans('Max size help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('E-mail subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Admin e-mail label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_admin_email" size="50" maxlength="80" value="{{ settings('o_admin_email') }}" />
+                                                    <span>{{ trans('Admin e-mail help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Webmaster e-mail label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_webmaster_email" size="50" maxlength="80" value="{{ settings('o_webmaster_email') }}" />
+                                                    <span>{{ trans('Webmaster e-mail help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Forum subscriptions label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_forum_subscriptions" value="1"{{ settings('o_forum_subscriptions') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_forum_subscriptions" value="0"{{ settings('o_forum_subscriptions') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Forum subscriptions help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Topic subscriptions label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_topic_subscriptions" value="1"{{ settings('o_topic_subscriptions') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_topic_subscriptions" value="0"{{ settings('o_topic_subscriptions') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Topic subscriptions help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('SMTP address label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_smtp_host" size="30" maxlength="100" value="{{ settings('o_smtp_host') }}" />
+                                                    <span>{{ trans('SMTP address help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('SMTP username label') }}</th>
+                                                <td>
+                                                    <input type="text" name="form_smtp_user" size="25" maxlength="50" value="{{ settings('o_smtp_user') }}" />
+                                                    <span>{{ trans('SMTP username help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('SMTP password label') }}</th>
+                                                <td>
+                                                    <label><input type="checkbox" name="form_smtp_change_pass" value="1" />&#160;{{ trans('SMTP change password help') }}</label>
+                                                    <input type="password" name="form_smtp_pass1" size="25" maxlength="50" value="{{ smtp_pass }}" />
+                                                    <input type="password" name="form_smtp_pass2" size="25" maxlength="50" value="{{ smtp_pass }}" />
+                                                    <span>{{ trans('SMTP password help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('SMTP SSL label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_smtp_ssl" value="1"{{ settings('o_smtp_ssl') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_smtp_ssl" value="0"{{ settings('o_smtp_ssl') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('SMTP SSL help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Registration subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Allow new label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_regs_allow" value="1"{{ settings('o_regs_allow') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_regs_allow" value="0"{{ settings('o_regs_allow') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Allow new help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Verify label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_regs_verify" value="1"{{ settings('o_regs_verify') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_regs_verify" value="0"{{ settings('o_regs_verify') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Verify help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Report new label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_regs_report" value="1"{{ settings('o_regs_report') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_regs_report" value="0"{{ settings('o_regs_report') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Report new help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Use rules label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_rules" value="1"{{ settings('o_rules') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_rules" value="0"{{ settings('o_rules') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Use rules help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Rules label') }}</th>
+                                                <td>
+                                                    <textarea name="form_rules_message" rows="10" cols="55">{{ settings('o_rules_message') }}</textarea>
+                                                    <span>{{ trans('Rules help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('E-mail default label') }}</th>
+                                                <td>
+                                                    <span>{{ trans('E-mail default help') }}</span>
+                                                    <label><input type="radio" name="form_default_email_setting" id="form_default_email_setting_0" value="0"{{ settings('o_default_email_setting') == '0' ? ' checked="checked"' : '' }} />&#160;{{ trans('Display e-mail label') }}</label>
+                                                    <label><input type="radio" name="form_default_email_setting" id="form_default_email_setting_1" value="1"{{ settings('o_default_email_setting') == '1' ? ' checked="checked"' : '' }} />&#160;{{ trans('Hide allow form label') }}</label>
+                                                    <label><input type="radio" name="form_default_email_setting" id="form_default_email_setting_2" value="2"{{ settings('o_default_email_setting') == '2' ? ' checked="checked"' : '' }} />&#160;{{ trans('Hide both label') }}</label>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Announcement subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Display announcement label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_announcement" value="1"{{ settings('o_announcement') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_announcement" value="0"{{ settings('o_announcement') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Display announcement help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Announcement message label') }}</th>
+                                                <td>
+                                                    <textarea name="form_announcement_message" rows="5" cols="55">{{ settings('o_announcement_message') }}</textarea>
+                                                    <span>{{ trans('Announcement message help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Maintenance subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row"><a name="maintenance"></a>{{ trans('Maintenance mode label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="form_maintenance" value="1"{{ settings('o_maintenance') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="form_maintenance" value="0"{{ settings('o_maintenance') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Maintenance mode help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Maintenance message label') }}</th>
+                                                <td>
+                                                    <textarea name="form_maintenance_message" rows="5" cols="55">{{ settings('o_maintenance_message') }}</textarea>
+                                                    <span>{{ trans('Maintenance message help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            {{ fireHook('view.admin.options.form') }}
+                            <p class="submitend"><input type="submit" name="save" value="{{ trans('Save changes') }}" /></p>
+                        </form>
+                    </div>
+                </div>
+    {{ fireHook('view.admin.options.end') }}
+{% endblock content %}

@@ -1,0 +1,55 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.admin.parser.start') }}
+
+    <form class="panel panel-primary" method="post" action="{{ pathFor('adminParser') }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+        <input type="hidden" name="form_sent" value="1" />
+
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Parser head') }} <a href="https://github.com/s9e/TextFormatter">s9e/TextFormatter</a></h3>
+        </div>
+
+        <div class="list-group">
+            {% for group in groups %}
+                <div class="list-group-item">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <i class="fa fa-toggle-on fa-lg toggler pull-right" aria-hidden="true"
+                               role="button" data-toggle="collapse" href="#parserGrp{{ group.g_id }}"
+                               aria-expanded="false" aria-controls="parserGrp{{ group.g_id }}"></i>
+                            {{ group.g_title }}
+                        </h3>
+                    </div>
+                    <div id="parserGrp{{ group.g_id }}" class="collapse">
+                        <div class="panel-footer">
+                            <input class="btn btn-primary" type="submit" name="save" value="{{ trans('Save changes') }}" />
+                            {#<input class="btn btn-primary" type="submit" name="reset" value="{{ trans('reset defaults') }}" />#}
+                        </div>
+                        <div class="panel panel-info text-center">Checked is enabled</div>
+                        {% set groupPlugins = unSerialize(group.g_parser_plugins) %}
+                        {% for plug, vars in parserPluginsList %}
+                        <div class="row list-striped">
+                            <div class="col-xs-1 col-sm-1">{{ loop.index }}</div>
+                            <div class="col-xs-2 col-sm-2">{{ plug }}</div>
+                            <div class="col-xs-1 col-sm-1">
+                                <input name="parserPlugin[{{ group.g_id }}][{{ plug }}]" type="checkbox" value="1"{{ plug in groupPlugins ? ' checked' : '' }}>
+                            </div>
+                            <div class="col-xs-8 col-sm-8">{{ vars.info|raw }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="panel-footer">
+            <input class="btn btn-primary" type="submit" name="save" value="{{ trans('Save changes') }}" />
+            <input class="btn btn-primary" type="submit" name="reset" value="{{ trans('reset defaults') }}" />
+        </div>
+    </form>
+
+{{ fireHook('view.admin.parser.end') }}
+{% endblock content %}

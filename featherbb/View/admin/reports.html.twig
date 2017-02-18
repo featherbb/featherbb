@@ -1,0 +1,116 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.admin.reports.start') }}
+                <div class="blockform">
+                    <h2><span>{{ trans('New reports head') }}</span></h2>
+                    <div class="box">
+                        <form method="post" action="{{ pathFor('adminReports') }}">
+                            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+
+            {% if report_data is not empty %}
+                {% for report in report_data %}
+
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans(['Report subhead', formatTime(report.created)]) }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans(['Reported by', (report.reporter != '' ? '<a href="' ~pathFor('userProfile', {'id': report.reported_by}) ~'">' ~report.reporter ~'</a>' : trans('Deleted user')) ]) }}</th>
+                                                <td class="location">
+                                                    {{ breadcrumbsAdmin({
+                                                            (report.forum_name): pathFor('Forum', {'id': report.forum_id, 'name': slug(report.forum_name)}),
+                                                            (report.subject): pathFor('Forum', {'id': report.topic_id, 'name': slug(report.subject)}),
+                                                            (trans(['Post ID', report.pid])): pathFor('viewPost', {'pid': report.pid}) ~'#p' ~report.pid
+                                                        })
+                                                    }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Reason') }}
+                                                    <div><input type="submit" name="zap_id[{{ report.id }}]" value="{{ trans('Zap') }}" /></div>
+                                                </th>
+                                                <td>{{ report.message|nl2br }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+                {% endfor %}
+            {% else %}
+
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('None') }}</legend>
+                                    <div class="infldset">
+                                        <p>{{ trans('No new reports') }}</p>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+            {% endif %}
+
+
+                        </form>
+                    </div>
+                </div>
+
+                <div class="blockform block2">
+                    <h2><span>{{ trans('Last 10 head') }}</span></h2>
+                    <div class="box">
+                        <div class="fakeform">
+
+
+            {% if report_zapped_data is not empty %}
+                {% for report in report_zapped_data %}
+
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>
+                                        {{ trans(['Zapped subhead', formatTime(report.zapped), (report.zapped_by != '' ? '<a href="' ~pathFor('userProfile', {'id': report.zapped_by_id}) ~'">' ~report.zapped_by ~'</a>' : trans('NA') )]) }}
+                                    </legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">
+                                                    {{ trans(['Reported by', (report.reporter != '' ? '<a href="' ~pathFor('userProfile', {'id': report.reported_by}) ~'">' ~report.reporter ~'</a>' : trans('Deleted user') ) ]) }}
+                                                </th>
+                                                <td class="location">
+                                                    {{ breadcrumbsAdmin({
+                                                    (report.forum_name): pathFor('Forum', {'id': report.forum_id, 'name': slug(report.forum_name)}),
+                                                    (report.subject): pathFor('Forum', {'id': report.topic_id, 'name': slug(report.subject)}),
+                                                    (trans(['Post ID', report.pid])): pathFor('viewPost', {'pid': report.pid}) ~'#p' ~report.pid
+                                                    }) }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Reason') }}</th>
+                                                <td>{{ report.message|nl2br }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+                {% endfor %}
+            {% else %}
+
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('None') }}</legend>
+                                    <div class="infldset">
+                                        <p>{{ trans('No zapped reports') }}</p>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+    {{ fireHook('view.admin.reports.end') }}
+{% endblock content %}

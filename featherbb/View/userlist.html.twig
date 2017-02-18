@@ -1,0 +1,123 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+    {{ fireHook('view.userlist.start') }}
+
+    <form id="userlist" class="panel panel-primary" method="get" action="">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('User search') }}</h3>
+        </div>
+
+        <div class="panel-body">
+            <fieldset>
+                <legend>{{ trans('User find legend') }}</legend>
+                <div class="infldset">
+                    {% if userGet('g_search_users') == '1' %}
+                    <label class="conl">{{ trans('Username') }}<br />
+                        <input type="text" name="username" value="{{ username }}" size="25" maxlength="25" /><br />
+                    </label>
+                    {% endif %}
+                    <label class="conl">{{ trans('User group') }}<br />
+                        <select name="show_group">
+                            <option value="-1"{{ show_group == -1 ? ' selected="selected"' : '' }}>{{ trans('All users') }}</option>
+                        {{ dropdown_menu|raw }}
+                    </select>
+                    <br /></label>
+                    <label class="conl">{{ trans('Sort by') }}
+                    <br /><select name="sort_by">
+                        <option value="username"{{ sort_by == 'username' ? ' selected="selected"' : '' }}>{{ trans('Username') }}</option>
+                        <option value="registered"{{ sort_by == 'registered' ? ' selected="selected"' : ''}}>{{ trans('Registered') }}</option>
+                        {% if show_post_count %}
+                        <option value="num_posts"{{ sort_by == 'num_posts' ? ' selected="selected"' : '' }}>{{ trans('No of posts') }}</option>
+                        {% endif %}
+                        </select>
+                    <br /></label>
+                    <label class="conl">{{ trans('Sort order') }}
+                    <br /><select name="sort_dir">
+                        <option value="ASC"{{ sort_dir == 'ASC' ? ' selected="selected"' : '' }}>{{ trans('Ascending') }}</option>
+                        <option value="DESC"{{ sort_dir == 'DESC' ? ' selected="selected"' : '' }}>{{ trans('Descending') }}</option>
+                    </select>
+                    <br /></label>
+                    <p class="clearb">
+                        {{ userGet('g_search_users') == '1' ? trans('User search info') : '' }}
+                        {{ trans('User sort info') }}
+                    </p>
+                </div>
+            </fieldset>
+        </div>
+        <div class="panel-footer">
+            <input class="btn btn-primary" type="submit" name="search" value="{{ trans('Submit') }}" accesskey="s" />
+        </div>
+    </form>
+
+    <div class="linkst">
+        <div class="inbox">
+            <p class="pagelink">{{ paging_links|raw }}</p>
+            <div class="clearer"></div>
+        </div>
+    </div>
+
+    <div id="users1" class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-xs-6 col-sm-6">
+                    <h3 class="panel-title">{#{{ trans('User list') }}#} {{ trans('Username') }}</h3>
+                </div>
+                <div class="hidden-xs col-sm-2 text-nowrap">
+                    <span class="hidden-xs hidden-sm">{{ trans('Title') }}</span>
+                </div>
+                {% if show_post_count %}
+                <div class="hidden-xs col-sm-2">
+                    <span class="hidden-xs hidden-sm">{{ trans('Posts') }}</span>
+                </div>
+                {% endif %}
+                <div class="col-sm-2">
+                    {{ trans('Registered') }}
+                </div>
+            </div>
+        </div>
+        {% if userlist_data is not empty %}
+            <div class="list-group">
+                {% for user in userlist_data %}
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6">
+                            <a href="{{ pathFor('userProfile', {'id': "#{ user.id }"}) }}">{{ user.username }}</a>
+                        </div>
+                        <div class="hidden-xs col-sm-2 text-nowrap">
+                            {{ formatTitle(user.title, user.username, user.g_user_title, user.g_id) }}
+                        </div>
+                        {% if show_post_count %}
+                            <div class="hidden-xs col-sm-2">
+                                {{ formatNumber(user.num_posts) }}
+                            </div>
+                        {% endif %}
+                        <div class="col-sm-2">
+                            {{ formatTime(user.registered, true) }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="list-group">
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{ trans('No hits') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="linksb">
+        <div class="inbox">
+            <p class="pagelink">{{ paging_links|raw }}</p>
+            <div class="clearer"></div>
+        </div>
+    </div>
+
+{{ fireHook('view.userlist.end') }}
+{% endblock content %}

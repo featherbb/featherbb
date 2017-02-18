@@ -315,6 +315,9 @@ class Auth
         // Add bans to the container
         Container::set('bans', Container::get('cache')->retrieve('bans'));
 
+        // load theme assets, also set setStyle, also init template engine, also load template config
+        Container::get('template')->setStyle($user->prefs['style']);
+
         // Check if current user is banned
         $this->checkBans();
 

@@ -1,0 +1,262 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.admin.groups.add_edit_group.start') }}
+
+                <div class="blockform">
+                    <h2><span>{{ trans('Group settings head') }}</span></h2>
+                    <div class="box">
+                        <form id="groups2" method="post" action="" onsubmit="return process_form(this)">
+                            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                            <p class="submittop"><input type="submit" name="add_edit_group" value="{{ trans('Save') }}" /></p>
+                            <div class="inform">
+                                <input type="hidden" name="mode" value="{{ group.mode }}" />
+
+                        {% if group.mode == 'edit' %}
+                                <input type="hidden" name="group_id" value="{{ id }}" />
+                        {% endif %}
+
+
+                        {% if group.mode == 'add' %}
+                                <input type="hidden" name="base_group" value="{{ group.base_group }}" />
+                        {% endif %}
+                                <fieldset>
+                                    <legend>{{ trans('Group settings subhead') }}</legend>
+                                    <div class="infldset">
+                                        <p>{{ trans('Group settings info') }}</p>
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Group title label') }}</th>
+                                                <td>
+                                                    <input type="text" name="req_title" size="25" maxlength="50" value="{{ group.mode == 'edit' ? group.info.g_title : '' }}" tabindex="1" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('User title label') }}</th>
+                                                <td>
+                                                    <input type="text" name="user_title" size="25" maxlength="50" value="{{ group.info.g_user_title }}" tabindex="2" />
+                                                    <span>
+                                                         {{ trans(['User title help', (group.info.g_id != getEnv('FEATHER_GUEST') ? trans('Member') : trans('Guest'))]) }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                    {% if group.info.g_id != getEnv('FEATHER_ADMIN') %}
+                        {% if group.info.g_id != getEnv('FEATHER_GUEST') %}
+                                            <tr>
+                                                <th scope="row">{{ trans('Promote users label') }}</th>
+                                                <td>
+                                                    <select name="promote_next_group" tabindex="3">
+                                                        <option value="0">{{ trans('Disable promotion') }}</option>
+                                                        {{ group_list|raw }}
+                                                    </select>
+                                                    <input type="text" name="promote_min_posts" size="5" maxlength="10" value="{{ group.info.g_promote_min_posts }}" tabindex="4" />
+                                                    <span>{{ trans(['Promote users help', trans('Disable promotion')]) }}</span>
+                                                </td>
+                                            </tr>
+                            {% if group.mode != 'edit' or settings('o_default_user_group') != group.info.g_id %}
+                                            <tr>
+                                                <th scope="row"> {{ trans('Mod privileges label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="moderator" value="1"{{ group.info.g_moderator == '1' ? ' checked="checked"' : '' }} tabindex="5" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="moderator" value="0"{{ group.info.g_moderator == '0' ? ' checked="checked"' : '' }} tabindex="6" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Mod privileges help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Edit profile label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="mod_edit_users" value="1"{{ group.info.g_mod_edit_users == '1' ? ' checked="checked"' : '' }} tabindex="7" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="mod_edit_users" value="0"{{ group.info.g_mod_edit_users == '0' ? ' checked="checked"' : '' }} tabindex="8" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Edit profile help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Rename users label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="mod_rename_users" value="1"{{ group.info.g_mod_rename_users == '1' ? ' checked="checked"' : '' }} tabindex="9" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="mod_rename_users" value="0"{{ group.info.g_mod_rename_users == '0' ? ' checked="checked"' : '' }} tabindex="10" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Rename users help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Change passwords label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="mod_change_passwords" value="1"{{ group.info.g_mod_change_passwords == '1' ? ' checked="checked"' : '' }} tabindex="11" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="mod_change_passwords" value="0"{{ group.info.g_mod_change_passwords == '0' ? ' checked="checked"' : '' }} tabindex="12" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Change passwords help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Mod promote users label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="mod_promote_users" value="1"{{ group.info.g_mod_promote_users == '1' ? ' checked="checked"' : '' }} tabindex="13" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="mod_promote_users" value="0"{{ group.info.g_mod_promote_users == '0' ? ' checked="checked"' : '' }} tabindex="14" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Mod promote users help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Ban users label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="mod_ban_users" value="1"{{ group.info.g_mod_ban_users == '1' ? ' checked="checked"' : '' }} tabindex="15" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="mod_ban_users" value="0"{{ group.info.g_mod_ban_users == '0' ? ' checked="checked"' : '' }} tabindex="16" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Ban users help') }}</span>
+                                                </td>
+                                            </tr>
+
+                            {% endif %}
+                        {% endif %}
+
+                                            <tr>
+                                                <th scope="row">{{ trans('Read board label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="read_board" value="1"{{ group.info.g_read_board == '1' ? ' checked="checked"' : '' }} tabindex="17" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="read_board" value="0"{{ group.info.g_read_board == '0' ? ' checked="checked"' : '' }} tabindex="18" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Read board help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('View user info label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="view_users" value="1"{{ group.info.g_view_users == '1' ? ' checked="checked"' : '' }} tabindex="19" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="view_users" value="0"{{ group.info.g_view_users == '0' ? ' checked="checked"' : '' }} tabindex="20" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('View user info help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Post replies label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="post_replies" value="1"{{ group.info.g_post_replies == '1' ? ' checked="checked"' : '' }} tabindex="21" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="post_replies" value="0"{{ group.info.g_post_replies == '0' ? ' checked="checked"' : '' }} tabindex="22" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Post replies help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Post topics label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="post_topics" value="1"{{ group.info.g_post_topics == '1' ? ' checked="checked"' : '' }} tabindex="23" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="post_topics" value="0"{{ group.info.g_post_topics == '0' ? ' checked="checked"' : '' }} tabindex="24" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Post topics help') }}</span>
+                                                </td>
+                                            </tr>
+                            {% if group.info.g_id != getEnv('FEATHER_GUEST') %}
+                                            <tr>
+                                                <th scope="row">{{ trans('Edit posts label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="edit_posts" value="1"{{ group.info.g_edit_posts == '1' ? ' checked="checked"' : '' }} tabindex="25" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="edit_posts" value="0"{{ group.info.g_edit_posts == '0' ? ' checked="checked"' : '' }} tabindex="26" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Edit posts help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Delete posts label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="delete_posts" value="1"{{ group.info.g_delete_posts == '1' ? ' checked="checked"' : '' }} tabindex="27" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="delete_posts" value="0"{{ group.info.g_delete_posts == '0' ? ' checked="checked"' : '' }} tabindex="28" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Delete posts help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Delete topics label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="delete_topics" value="1"{{ group.info.g_delete_topics == '1' ? ' checked="checked"' : '' }} tabindex="29" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="delete_topics" value="0"{{ group.info.g_delete_topics == '0' ? ' checked="checked"' : '' }} tabindex="30" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Delete topics help') }}</span>
+                                                </td>
+                                            </tr>
+                            {% endif %}
+
+                                            <tr>
+                                                <th scope="row">{{ trans('Post links label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="post_links" value="1"{{ group.info.g_post_links == '1' ? ' checked="checked"' : '' }} tabindex="31" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="post_links" value="0"{{ group.info.g_post_links == '0' ? ' checked="checked"' : '' }} tabindex="32" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Post links help') }}</span>
+                                                </td>
+                                            </tr>
+                            {% if group.info.g_id != getEnv('FEATHER_GUEST') %}
+                                            <tr>
+                                                <th scope="row">{{ trans('Set own title label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="set_title" value="1"{{ group.info.g_set_title == '1' ? ' checked="checked"' : '' }} tabindex="33" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="set_title" value="0"{{ group.info.g_set_title == '0' ? ' checked="checked"' : '' }} tabindex="34" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Set own title help') }}</span>
+                                                </td>
+                                            </tr>
+                            {% endif %}
+
+                                            <tr>
+                                                <th scope="row">{{ trans('User search label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="search" value="1"{{ group.info.g_search == '1' ? ' checked="checked"' : '' }} tabindex="35" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="search" value="0"{{ group.info.g_search == '0' ? ' checked="checked"' : '' }} tabindex="36" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('User search help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('User list search label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="search_users" value="1"{{ group.info.g_search_users == '1' ? ' checked="checked"' : '' }} tabindex="37" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="search_users" value="0"{{ group.info.g_search_users == '0' ? ' checked="checked"' : '' }} tabindex="38" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('User list search help') }}</span>
+                                                </td>
+                                            </tr>
+
+                            {% if group.info.g_id != getEnv('FEATHER_GUEST') %}
+                                            <tr>
+                                                <th scope="row">{{ trans('Send e-mails label') }}</th>
+                                                <td>
+                                                    <label class="conl"><input type="radio" name="send_email" value="1"{{ group.info.g_send_email == '1' ? ' checked="checked"' : '' }} tabindex="39" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                                    <label class="conl"><input type="radio" name="send_email" value="0"{{ group.info.g_send_email == '0' ? ' checked="checked"' : '' }} tabindex="40" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                                    <span class="clearb">{{ trans('Send e-mails help') }}</span>
+                                                </td>
+                                            </tr>
+                            {% endif %}
+
+                                            <tr>
+                                                <th scope="row">{{ trans('Post flood label') }}</th>
+                                                <td>
+                                                    <input type="text" name="post_flood" size="5" maxlength="4" value="{{ group.info.g_post_flood }}" tabindex="41" />
+                                                    <span>{{ trans('Post flood help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Search flood label') }}</th>
+                                                <td>
+                                                    <input type="text" name="search_flood" size="5" maxlength="4" value="{{ group.info.g_search_flood }}" tabindex="42" />
+                                                    <span>{{ trans('Search flood help') }}</span>
+                                                </td>
+                                            </tr>
+
+                            {% if group.info.g_id != getEnv('FEATHER_GUEST') %}
+                                            <tr>
+                                                <th scope="row">{{ trans('E-mail flood label') }}</th>
+                                                <td>
+                                                    <input type="text" name="email_flood" size="5" maxlength="4" value="{{ group.info.g_email_flood }}" tabindex="43" />
+                                                    <span>{{ trans('E-mail flood help') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Report flood label') }}</th>
+                                                <td>
+                                                    <input type="text" name="report_flood" size="5" maxlength="4" value="{{ group.info.g_report_flood }}" tabindex="44" />
+                                                    <span>{{ trans('Report flood help') }}</span>
+                                                </td>
+                                            </tr>
+                            {% endif %}
+                    {% endif %}
+
+                                        </table>
+                                        {{ fireHook('view.admin.groups.add_edit_group.form') }}
+                        {% if group.info.g_moderator == '1' %}
+                                        <p class="warntext">{{ trans('Moderator info') }}</p>
+                        {% endif %}
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <p class="submitend"><input type="submit" name="add_edit_group" value="{{ trans('Save') }}" tabindex="45" /></p>
+                        </form>
+                    </div>
+                </div>
+    {{ fireHook('view.admin.groups.add_edit_group.end') }}
+{% endblock content %}

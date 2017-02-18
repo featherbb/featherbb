@@ -1,0 +1,13 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.admin.maintenance.rebuild.start') }}
+
+<h1>{{ trans('Rebuilding index info') }}</h1>
+
+<script type="text/javascript">window.location="{{ query_str|raw }}"</script>
+
+<p>{{ trans(['Javascript redirect failed', ('<a href="' ~query_str|raw ~'">' ~trans('Click here') ~'</a>')|raw]) }}</p>
+
+{{ fireHook('view.admin.maintenance.rebuild.end') }}
+{% endblock content %}

@@ -1,0 +1,90 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+    {{ fireHook('view.admin.bans.add.start') }}
+
+    <div class="blockform">
+        <h2><span>{{ trans('Ban advanced head') }}</span></h2>
+        <div class="box">
+            <form id="bans2" method="post" action="">
+                <div class="inform">
+                    <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                    <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                    <input type="hidden" name="mode" value="{{ ban.mode }}"/>
+                    {% if ban.mode == 'edit' %}
+                        <input type="hidden" name="ban_id" value="{{ ban.id }}"/>
+                    {% endif %}
+
+
+                    {% if ban.mode == 'add' and ban.user_id is defined %}
+                        <input type="hidden" name="ban_user_id" value="{{ ban.user_id }}"/>
+                    {% endif %}
+
+                    <fieldset>
+                        <legend>{{ trans('Ban advanced subhead') }}</legend>
+                        <div class="infldset">
+                            <table class="aligntop">
+                                <tr>
+                                    <th scope="row">{{ trans('Username label') }}</th>
+                                    <td>
+                                        <input type="text" name="ban_user" size="25" maxlength="25"
+                                               value="{{ ban.ban_user is defined ? ban.ban_user : '' }}" tabindex="1"/>
+                                        <span>{{ trans('Username help') }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ trans('IP label') }}</th>
+                                    <td>
+                                        <input type="text" name="ban_ip" size="45" maxlength="255"
+                                               value="{{ ban.ip is defined ? ban.ip : '' }}" tabindex="2"/>
+                                        <span>{{ trans('IP help') }} {{ ban.ban_user != '' and ban.user_id is defined ? trans(['IP help link', '<a href="' ~pathFor('usersIpStats', {'id': ban.user_id}) ~'">' ~trans('here') ~'</a>']) : '' }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ trans('E-mail label') }}</th>
+                                    <td>
+                                        <input type="text" name="ban_email" size="40" maxlength="80" value="
+                                        {{ ban.email is defined ? ban.email : '' }}" tabindex="3"/>
+                                        <span>{{ trans('E-mail help') }}</span>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p class="topspace"><strong class="warntext">{{ trans('Ban IP range info') }}</strong></p>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Message expiry subhead') }}</legend>
+                        <div class="infldset">
+                            <table class="aligntop">
+                                <tr>
+                                    <th scope="row">{{ trans('Ban message label') }}</th>
+                                    <td>
+                                        <input type="text" name="ban_message" size="50" maxlength="255" value="
+                                        {{ ban.message is defined ? ban.message : '' }}" tabindex="4"/>
+                                        <span>{{ trans('Ban message help') }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ trans('Expire date label') }}</th>
+                                    <td>
+                                        <input type="text" name="ban_expire" size="17" maxlength="10" value="
+                                        {{ ban.expire is defined ? ban.expire : '' }}" tabindex="5"/>
+                                        <span>{{ trans('Expire date help') }}</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+
+                {{ fireHook('view.admin.bans.add.form') }}
+                <p class="submitend"><input type="submit" name="add_edit_ban" value="{{ trans('Save') }}" tabindex="6"/>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    {{ fireHook('view.admin.bans.add.end') }}
+{% endblock content %}

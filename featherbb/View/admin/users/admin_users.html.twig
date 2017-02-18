@@ -1,0 +1,173 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.admin.users.admin_users.start') }}
+
+                <div class="blockform">
+                    <h2><span>{{ trans('User search head') }}</span></h2>
+                    <div class="box">
+                        <form id="find_user" method="get" action="{{ pathFor('adminUsers') }}">
+                            <p class="submittop">
+                                <input type="submit" name="find_user" value="{{ trans('Submit search') }}" tabindex="1" />
+                            </p>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('User search subhead') }}</legend>
+                                    <div class="infldset">
+                                        <p>{{ trans('User search info') }}</p>
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Username label') }}</th>
+                                                <td><input type="text" name="form[username]" size="25" maxlength="25" tabindex="2" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('E-mail address label') }}</th>
+                                                <td><input type="text" name="form[email]" size="30" maxlength="80" tabindex="3" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Title label') }}</th>
+                                                <td><input type="text" name="form[title]" size="30" maxlength="50" tabindex="4" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Real name label') }}</th>
+                                                <td><input type="text" name="form[realname]" size="30" maxlength="40" tabindex="5" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Website label') }}</th>
+                                                <td><input type="text" name="form[url]" size="35" maxlength="100" tabindex="6" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Jabber label') }}</th>
+                                                <td><input type="text" name="form[jabber]" size="30" maxlength="75" tabindex="7" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('ICQ label') }}</th>
+                                                <td><input type="text" name="form[icq]" size="12" maxlength="12" tabindex="8" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('MSN label') }}</th>
+                                                <td><input type="text" name="form[msn]" size="30" maxlength="50" tabindex="9" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('AOL label') }}</th>
+                                                <td><input type="text" name="form[aim]" size="20" maxlength="20" tabindex="10" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Yahoo label') }}</th>
+                                                <td><input type="text" name="form[yahoo]" size="20" maxlength="20" tabindex="11" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Location label') }}</th>
+                                                <td><input type="text" name="form[location]" size="30" maxlength="30" tabindex="12" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Signature label') }}</th>
+                                                <td><input type="text" name="form[signature]" size="35" maxlength="512" tabindex="13" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Admin note label') }}</th>
+                                                <td><input type="text" name="form[admin_note]" size="30" maxlength="30" tabindex="14" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Posts more than label') }}</th>
+                                                <td><input type="text" name="posts_greater" size="5" maxlength="8" tabindex="15" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Posts less than label') }}</th>
+                                                <td><input type="text" name="posts_less" size="5" maxlength="8" tabindex="16" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Last post after label') }}</th>
+                                                <td><input type="text" name="last_post_after" size="24" maxlength="19" tabindex="17" />
+                                                <span>{{ trans('Date help') }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Last post before label') }}</th>
+                                                <td><input type="text" name="last_post_before" size="24" maxlength="19" tabindex="18" />
+                                                <span>{{ trans('Date help') }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Last visit after label') }}</th>
+                                                <td><input type="text" name="last_visit_after" size="24" maxlength="19" tabindex="17" />
+                                                <span>{{ trans('Date help') }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Last visit before label') }}</th>
+                                                <td><input type="text" name="last_visit_before" size="24" maxlength="19" tabindex="18" />
+                                                <span>{{ trans('Date help') }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Registered after label') }}</th>
+                                                <td><input type="text" name="registered_after" size="24" maxlength="19" tabindex="19" />
+                                                <span>{{ trans('Date help') }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Registered before label') }}</th>
+                                                <td><input type="text" name="registered_before" size="24" maxlength="19" tabindex="20" />
+                                                <span>{{ trans('Date help') }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Order by label') }}</th>
+                                                <td>
+                                                    <select name="order_by" tabindex="21">
+                                                        <option value="username" selected="selected">{{ trans('Order by username') }}</option>
+                                                        <option value="email">{{ trans('Order by e-mail') }}</option>
+                                                        <option value="num_posts">{{ trans('Order by posts') }}</option>
+                                                        <option value="last_post">{{ trans('Order by last post') }}</option>
+                                                        <option value="last_visit">{{ trans('Order by last visit') }}</option>
+                                                        <option value="registered">{{ trans('Order by registered') }}</option>
+                                                    </select>&#160;&#160;&#160;<select name="direction" tabindex="22">
+                                                        <option value="ASC" selected="selected">{{ trans('Ascending') }}</option>
+                                                        <option value="DESC">{{ trans('Descending') }}</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('User group label') }}</th>
+                                                <td>
+                                                    <select name="user_group" tabindex="23">
+                                                        <option value="-1" selected="selected">{{ trans('All groups') }}</option>
+                                                        <option value="0">{{ trans('Unverified users') }}</option>
+                                                        {{ group_list|raw }}
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            {{ fireHook('view.admin.users.admin_users.form') }}
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <p class="submitend">
+                                <input type="submit" name="find_user" value="{{ trans('Submit search') }}" tabindex="25" />
+                            </p>
+                        </form>
+                    </div>
+
+                    <h2 class="block2"><span>{{ trans('IP search head') }}</span></h2>
+                    <div class="box">
+                        <form method="get" action="{{ pathFor('usersIpShow') }}">
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('IP search subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('IP address label') }}
+                                                    <div>
+                                                        <input type="submit" value="{{ trans('Find IP address') }}" tabindex="26" />
+                                                    </div>
+                                                </th>
+                                                <td>
+                                                    <input type="text" name="ip" size="18" maxlength="15" tabindex="24" />
+                                                    <span>{{ trans('IP address help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+    {{ fireHook('view.admin.users.admin_users.end') }}
+{% endblock content %}

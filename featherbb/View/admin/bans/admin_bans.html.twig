@@ -1,0 +1,95 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.admin.bans.admin_bans.start') }}
+                <div class="blockform">
+                    <h2><span>{{ trans('New ban head') }}</span></h2>
+                    <div class="box">
+                        <form id="bans" method="post" action="{{ pathFor('addBan') }}">
+                            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Add ban subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Username label') }}
+                                                    <div><input type="submit" name="add_ban" value="{{ trans('Add') }}" tabindex="2" /></div></th>
+                                                <td>
+                                                    <input type="text" name="new_ban_user" size="25" maxlength="25" tabindex="1" />
+                                                    <span>{{ trans('Username advanced help') }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </form>
+                    </div>
+
+                    <h2 class="block2"><span>{{ trans('Ban search head') }}</span></h2>
+                    <div class="box">
+                        <form id="find_bans" method="get" action="{{ pathFor('adminBans') }}">
+                            <p class="submittop"><input type="submit" name="find_ban" value="{{ trans('Submit search') }}" tabindex="3" /></p>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Ban search subhead') }}</legend>
+                                    <div class="infldset">
+                                        <p>{{ trans('Ban search info') }}</p>
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Username label') }}</th>
+                                                <td><input type="text" name="username" size="30" maxlength="25" tabindex="4" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('IP label') }}</th>
+                                                <td><input type="text" name="ip" size="30" maxlength="255" tabindex="5" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('E-mail label') }}</th>
+                                                <td><input type="text" name="email" size="30" maxlength="80" tabindex="6" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Message label') }}</th>
+                                                <td><input type="text" name="message" size="30" maxlength="255" tabindex="7" /></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Expire after label') }}</th>
+                                                <td><input type="text" name="expire_after" size="10" maxlength="10" tabindex="8" />
+                                                <span>{{ trans('Date help') }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Expire before label') }}</th>
+                                                <td><input type="text" name="expire_before" size="10" maxlength="10" tabindex="9" />
+                                                <span>{{ trans('Date help') }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">{{ trans('Order by label') }}</th>
+                                                <td>
+                                                    <select name="order_by" tabindex="10">
+                                                        <option value="username" selected="selected">{{ trans('Order by username') }}</option>
+                                                        <option value="ip">{{ trans('Order by ip') }}</option>
+                                                        <option value="email">{{ trans('Order by e-mail') }}</option>
+                                                        <option value="expire">{{ trans('Order by expire') }}</option>
+                                                    </select>
+                                                    &#160;&#160;&#160;
+                                                    <select name="direction" tabindex="11">
+                                                        <option value="ASC" selected="selected">{{ trans('Ascending') }}</option>
+                                                        <option value="DESC">{{ trans('Descending') }}</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            {{ fireHook('view.admin.bans.admin_bans.form') }}
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <p class="submitend">
+                                <input type="submit" name="find_ban" value="{{ trans('Submit search') }}" tabindex="12" />
+                            </p>
+                        </form>
+                    </div>
+                </div>
+    {{ fireHook('view.admin.bans.admin_bans.end') }}
+{% endblock content %}

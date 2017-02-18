@@ -1,0 +1,75 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.search.form.start') }}
+
+        <form id="search" class="panel panel-primary" method="get" action="{{ pathFor('search') }}">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{ trans('Search') }}</h3>
+            </div>
+            <div class="list-group-item">
+                <div class="inform">
+                    <legend>{{ trans('Search criteria legend') }}</legend>
+                    <input type="hidden" name="action" value="search" />
+                    <label class="conl">{{ trans('Keyword search') }}<br />
+                        <input class="form-control" type="text" name="keywords" maxlength="100" /><br />
+                    </label>
+                    <label class="conl">{{ trans('Author search') }}<br />
+                        <input class="form-control" id="author" type="text" name="author" maxlength="25" /><br />
+                    </label>
+                    <p class="clearb">{{ trans('Search info') }}</p>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <legend>{{ trans('Search in legend') }}</legend>
+                <div class="row">
+                    <div class="col-xs-4 col-sm-4">
+                        {{ forums|raw }}
+                    </div>
+                    <div class="col-xs-8 col-sm-8">
+                        <label class="conl">{{ trans('Search in') }}
+                            <br /><select class="form-control" id="search_in" name="search_in">
+                                <option value="0">{{ trans('Message and subject') }}</option>
+                                <option value="1">{{ trans('Message only') }}</option>
+                                <option value="-1">{{ trans('Topic only') }}</option>
+                            </select>
+                            <br /></label>
+                        <p class="clearl">{{ trans('Search in info') }}</p>
+                        {{ settings('o_search_all_forums') == '1' or userGet('is_admmod') ? ('<p>' ~ trans('Search multiple forums info') ~'</p>')|raw : '' }}
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <legend>{{ trans('Search results legend') }}</legend>
+                <div class="infldset">
+                    <label class="conl">{{ trans('Sort by') }}
+                        <br /><select class="form-control" name="sort_by">
+                            <option value="0">{{ trans('Sort by post time') }}</option>
+                            <option value="1">{{ trans('Sort by author') }}</option>
+                            <option value="2">{{ trans('Sort by subject') }}</option>
+                            <option value="3">{{ trans('Sort by forum') }}</option>
+                        </select>
+                        <br /></label>
+                    <label class="conl">{{ trans('Sort order') }}
+                        <br /><select class="form-control" name="sort_dir">
+                            <option value="DESC">{{ trans('Descending') }}</option>
+                            <option value="ASC">{{ trans('Ascending') }}</option>
+                        </select>
+                        <br /></label>
+                    <label class="conl">{{ trans('Show as') }}
+                        <br /><select class="form-control" name="show_as">
+                            <option value="topics">{{ trans('Show as topics') }}</option>
+                            <option value="posts">{{ trans('Show as posts') }}</option>
+                        </select>
+                        <br /></label>
+                    <p class="clearb">{{ trans('Search results info') }}</p>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <input type="submit" class="btn btn-primary" name="search" value="{{ trans('Submit') }}" accesskey="s" />
+            </div>
+        </form>
+    <br>
+
+{{ fireHook('view.search.form.end') }}
+{% endblock content %}

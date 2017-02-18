@@ -1,0 +1,90 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.admin.languages.start') }}
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Languages list
+                            <div class="pull-right">
+                                <a href="{{ pathFor('adminLanguages.repo') }}" class="btn btn-info btn-xs" role="button">
+                                    repo &nbsp; <i class="fa fa-github fa-lg"></i>
+                                </a>
+                            </div>
+                        </h3>
+                    </div>
+                    <div class="list-group">
+                        <div class="list-group-item list-group-item-info">
+                            <div class="row">
+                                <div class="col-sm-3">Name</div>
+                                <div class="col-sm-5">Author</div>
+                                <div class="col-sm-4">Actions</div>
+                            </div>
+                        </div>
+                        {% for lang in langList %}
+                        <div class="list-group-item">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <a href="#" class="btn btn-info btn-xs" onclick="RunBB.popupWindow('{{ pathFor('adminLanguages.info') }}?langinfo={{ lang.id }}'); return false;">
+                                        info &nbsp; <i class="fa fa-edit fa-lg"></i>
+                                    </a>
+                                    &nbsp;
+                                    <a href="{{ pathFor('adminLanguages.showlangfiles') }}?lng={{ lang.id }}" class="btn btn-success btn-xs">
+                                        {{ lang.name }} &nbsp; <i class="fa fa-edit fa-lg"></i>
+                                    </a>
+                                </div>
+                                <div class="col-sm-5">{{ lang.author|raw }}</div>
+                                <div class="col-sm-4">
+                                    <a href="{{ pathFor('adminLanguages.showmailtpls') }}?lng={{ lang.id }}&name={{ lang.name }}" class="btn btn-info btn-xs">
+                                        mail tpls &nbsp; <i class="fa fa-edit fa-lg"></i>
+                                    </a>
+                                    <a href="{{ pathFor('adminLanguages.export') }}?lng={{ lang.id }}" class="btn btn-warning btn-xs">
+                                        export &nbsp; <i class="fa fa-save fa-lg"></i>
+                                    </a>
+                                    &nbsp; &nbsp; &nbsp;
+                                    {% if lang.code != 'en' %}
+                                    <a href="{{ pathFor('adminLanguages.delete') }}?lng={{ lang.id }}" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure?');">
+                                        <i class="fa fa-trash-o fa-lg"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <form class="panel panel-primary" method="post" action="{{ pathFor('adminLanguages.build') }}">
+                    <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                    <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Create new translations</h3>
+                    </div>
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="row">
+                                <div class="col-sm-5 form-inline">
+                                    <input type="text" name="code" size="3" value="" maxlength="2" placeholder="code" />
+                                    <input type="text" name="locale" size="5" value="" maxlength="5" placeholder="locale" />
+                                    <input type="text" name="name" size="15" value="" maxlength="16" placeholder="LangName" />
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group form-inline">
+                                        <label for="lid">Fill from:</label>
+                                        <select name="lid" class="form-control" id="lid">
+                                    {% for lang in langList %}
+                                            <option value="{{ lang.id }}">&nbsp;{{ lang.name }}</option>
+                                    {% endfor %}
+                                            </select>
+                                        </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="checkbox" name="iknow" value="1" />
+                                    <input type="submit" href="{{ pathFor('adminLanguages.build') }}" class="btn btn-warning btn-xs" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+    {{ fireHook('view.admin.languages.end') }}
+{% endblock content %}

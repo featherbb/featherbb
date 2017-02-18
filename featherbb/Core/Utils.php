@@ -261,6 +261,47 @@ class Utils
         return $userTitle;
     }
 
+    /**
+     * Determines the correct user title
+     *
+     * @param string $title
+     * @param string $name
+     * @param string $groupTitle
+     * @param int $gid
+     * @return string
+     */
+    public static function getTitleTwig($title = '', $name = '', $groupTitle = '', $gid = 0)
+    {
+        static $ban_list;
+
+        // If not already built in a previous call, build an array of lowercase banned usernames
+        if (empty($ban_list)) {
+            $ban_list = [];
+            foreach (Container::get('bans') as $cur_ban) {
+                $ban_list[] = utf8_strtolower($cur_ban['username']);
+            }
+        }
+
+        // If the user has a custom title
+        if ($title != '') {
+            $user_title = self::escape($title);
+        } // If the user is banned
+        elseif (in_array(utf8_strtolower($name), $ban_list)) {
+            $user_title = __('Banned');
+        } // If the user group has a default user title
+        elseif ($groupTitle != '') {
+            $user_title = self::escape($groupTitle);
+        } // If the user is a guest
+        elseif ($gid == ForumEnv::get('FEATHER_GUEST')) {
+            $user_title = __('Guest');
+        } // If nothing else helps, we assign the default
+        else {
+            $user_title = __('Member');
+        }
+
+        return $user_title;
+    }
+
     //
     // Replace censored words in $text
     //

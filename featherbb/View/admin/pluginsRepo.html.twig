@@ -1,0 +1,44 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.admin.pluginsRepo.start') }}
+
+    <div class="block">
+        <h2>Plugins Repository</h2>
+        <div class="box">
+            <table class="table">
+                <caption>{{ trans('Available plugins') }}</caption>
+                {% for category, extensions in repoList %}
+                <table class="table">
+                    <tr>
+                        <td class="blockpost"><h2>Category: <strong>{{ category }}</strong></h2></td>
+                    </tr>
+                    {% for ext in extensions if ext.name is defined %}
+                    <tr>
+                        <td>
+                            <strong>{{ ext.name }}</strong> &nbsp;
+                            {% if ext.isInstalled %}
+                            <mark>installed</mark>
+                            {% else %}
+                            <mark style="background-color: lightgrey">Not installed</mark>
+                            {% endif %}
+                            <div class="pull-right">
+                                <a href="#" class="btn btn-info btn-xs" onclick="RunBB.popupWindow('{{ pathFor('downloadPlugin', {'name': ext.key}) }}'); return false;">
+                                    composer &nbsp; <i class="fa fa-play fa-lg"></i>
+                                </a>
+                            </div>
+                            <br> <small>{{  ext.package }}</small><br>
+                            <a class="fancybox" href="https://raw.githubusercontent.com/runcmf/runbb-languages/master/extimg/{{  ext.info }}.png">
+                                <img src="https://raw.githubusercontent.com/runcmf/runbb-languages/master/extimg/{{  ext.info }}.png" style="height: 100px !important; width: 200px" />
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    {{ fireHook('view.admin.pluginsRepo.end') }}
+{% endblock content %}
+

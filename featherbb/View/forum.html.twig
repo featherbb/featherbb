@@ -1,0 +1,114 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.forum.start') }}
+        <div class="linkst">
+            <div class="inbox crumbsplus">
+                <div class="panel panel-default">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <ul class="crumbs">
+                                <li><a href="{{ pathFor('home') }}">{{ trans('Index') }}</a></li>
+                                <li>
+                                    <span>»&#160;</span>
+                                    <strong><a href="{{ pathFor('Forum', {'id': id, 'name': url_forum}) }}">{{ cur_forum.forum_name }}</a></strong>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="pagepost">
+                    <p class="pagelink conl">{{ paging_links|raw }}</p>
+                    {{ post_link|raw }}
+                </div>
+            </div>
+        </div>
+
+    <div id="vf" class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-xs-7 col-sm-7">
+                    <h3 class="panel-title">{{ cur_forum.forum_name }}</h3>
+                </div>
+                <div class="hidden-xs col-sm-1 text-center text-nowrap">
+                    <span class="hidden-xs hidden-sm">{{ trans('Replies') }}</span>
+                </div>
+            {% if settings('o_topic_views') == '1' %}
+                <div class="hidden-xs col-sm-1 text-center text-nowrap">
+                    <span class="hidden-xs hidden-sm">{{ trans('Views') }}</span>
+                </div>
+            {% endif %}
+                <div class="col-sm-2 text-center text-nowrap">
+                    {{ trans('Last post') }}
+                </div>
+            </div>
+        </div>
+        <div class="list-group">
+            {% if forum_data is not empty %}
+                {% for topic in forum_data %}
+                    <div class="list-group-item {{ topic.item_status }}">
+                        <div class="row">
+                            <div class="col-xs-7 col-sm-7">
+                                <div class="media">
+                                    <div class="media-left media-top {{ topic.icon_type }}">
+                                    </div>
+                                    <div class="media-body">
+                                        {{ topic.subject_formatted|raw }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hidden-xs col-sm-1 text-center text-nowrap">
+                                {{ topic.moved_to is null ? formatNumber(topic.num_replies) : '-' }}
+                            </div>
+                            {% if settings('o_topic_views') == '1' %}
+                            <div class="hidden-xs col-sm-1 text-center text-nowrap">
+                                {{ topic.moved_to is null ? formatNumber(topic.num_views) : '-' }}
+                            </div>
+                            {% endif %}
+                            <div class="col-sm-2">
+                                {{ topic.last_post_formatted|raw }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        <strong>{{ trans('Empty forum') }}</strong>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+        <div class="linksb">
+            <div class="inbox crumbsplus">
+                <div class="pagepost">
+                    <p class="pagelink conl">{{ paging_links|raw }}</p>
+                    {{ post_link|raw }}
+                </div>
+                <div class="panel panel-default">
+                    <div class="row">
+                        <div class="col-sm-7">
+                            <ul class="crumbs">
+                                <li><a href="{{ pathFor('home') }}">{{ trans('Index') }}</a></li>
+                                <li>
+                                    <span>»&#160;</span>
+                                    <strong><a href="{{ pathFor('Forum', {'id': id, 'name': url_forum }) }}">{{ cur_forum.forum_name }}</a></strong>
+                                </li>
+                            </ul>
+                        </div>
+                    {% if forum_actions is not empty %}
+                        <div class="col-sm-5 pull-right">
+                            {{ forum_actions|join(' ')|raw }}
+                        </div>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{{ fireHook('view.forum.end') }}
+{% endblock content %}

@@ -240,11 +240,12 @@ Container::set('errorHandler', function ($c) {
             $error['html'] = $e->displayHtml();
         }
 
+
         return View::setPageInfo([
             'title' => [\FeatherBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')],
             'msg'    =>    $error['message'],
             'backlink'    => $error['back'],
             'html'    => $error['html'],
-        ])->addTemplate('error.php')->display();
+        ])->addTemplate('@forum/error')->display();
     };
 });

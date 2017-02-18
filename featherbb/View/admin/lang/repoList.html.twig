@@ -1,0 +1,43 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+    {{ fireHook('view.admin.languages.repoList.start') }}
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Repo Languages list</h3>
+            </div>
+            <div class="list-group">
+                <div class="list-group-item list-group-item-info">
+                    <div class="row">
+                        <div class="col-sm-4">Image</div>
+                        <div class="col-sm-8">Info</div>
+                    </div>
+                </div>
+                {% for lang in langList %}
+                    <div class="list-group-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="https://raw.githubusercontent.com/runcmf/runbb-languages/master/img/{{ lang.image }}" class="img-rounded" title="{{ lang.name }}" alt="{{ lang.name }}" width="300" height="250">
+                            </div>
+                            <div class="col-sm-8">
+                                Lang: {{ lang.name }}, ver: {{ lang.version }}<br>
+                                Code: {{ lang.code }}<br>
+                                Locale: {{ lang.locale }}<br>
+                                Author: {{ lang.author|raw }}<br>
+
+                                <a href="{{ pathFor('adminLanguages.import') }}?lng={{ lang.code }}" class="btn btn-success btn-xs" onclick="return confirm('Are you sure?');">
+                                    install
+                                </a>
+                                &nbsp; {% if lang.isInstalled == true %}<strong>* Installed</strong>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="panel-footer">
+                <small>TODO: check/compare version</small>
+            </div>
+        </div>
+
+    {{ fireHook('view.admin.languages.repoList.end') }}
+{% endblock content %}

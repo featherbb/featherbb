@@ -1,0 +1,82 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.admin.plugins.start') }}
+                <div class="block">
+                    <h2>Plugins
+                        <div class="pull-right">
+                            <a href="{{ pathFor('pluginsRepoList') }}" class="btn btn-info btn-xs" role="button">
+                                repo &nbsp; <i class="fa fa-github fa-lg"></i>
+                            </a>
+                        </div>
+                    </h2>
+                    <div class="box">
+                        <div class="inbox">
+                            <table class="table">
+                                <caption>{{ trans('Available plugins') }}</caption>
+                                <thead>
+                                <tr>
+                                    <th>{{ trans('Extension') }}</th>
+                                    <th><{{ trans('Description') }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for plugin in availablePlugins %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ plugin.title }}</strong> <small>{{ plugin.version }}</small>
+                                        <div class="plugin-actions">
+                                            {% if plugin.name in activePlugins %}
+                                            <a href="{{ pathFor('deactivatePlugin', {'name': plugin.name}) }}">{{ trans('Deactivate') }}</a>
+                                            {% else %}
+                                            <a href="{{ pathFor('activatePlugin', {'name': plugin.name}) }}">{{ trans('Activate') }}</a> <br>
+                                            <a href="{{ pathFor('uninstallPlugin', {'name': plugin.name}) }}">{{ trans('Uninstall') }}</a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {{ plugin.description|raw }}
+                                        <div class="plugin-details">
+                                            By {{ plugin.author.name }}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <p style="text-align:right">{{ availablePlugins|length }} éléments</p>
+                        </div>
+                        <div class="inbox">
+                            <table class="table">
+                                <caption>{{ trans('Available plugins') }}</caption>
+                                <thead>
+                                <tr>
+                                    <th>{{ trans('Extension') }}</th>
+                                    <th>{{ trans('Description') }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for plugin in officialPlugins %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ plugin.title }}</strong> <small>{{ plugin.version }}</small>
+                                        <div class="plugin-actions">
+                                            <a href="{{ pathFor('downloadPlugin', {'name': plugin.name, 'version': plugin.version}) }}">Download</a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {{ plugin.description|raw }}
+                                        <div class="plugin-details">
+                                            By {{ plugin.author.name }}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <p style="text-align:right">{{ officialPlugins|length }} éléments</p>
+                        </div>
+                    </div>
+                </div>
+{{ fireHook('view.admin.plugins.end') }}
+{% endblock content %}

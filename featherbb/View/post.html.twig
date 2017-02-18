@@ -1,0 +1,215 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+    {{ fireHook('view.post.start') }}
+
+    <div class="linkst">
+        <div class="inbox">
+            <div class="panel panel-default">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <ul class="crumbs">
+                            <li><a href="{{ pathFor('home') }}">{{ trans('Index') }}</a></li>
+                            <li>
+                                <span>»&#160;</span>
+                                <a href="{{ pathFor('Forum', {'id': cur_posting.id, 'name': url_forum}) }}">
+                                    {{ cur_posting.forum_name }}</a>
+                            </li>
+                            {% if inputPost('req_subject') %}
+                                <li><span>»&#160;</span>{{ inputPost('req_subject') }}</li>
+                            {% endif %}
+
+                            {% if cur_posting[subject] is defined %}
+                                <li><span>»&#160;</span><a href="{{ pathFor('Topic', {'id': tid, 'name': url_topic}) }}">
+                                        {{ cur_posting[subject] }}</a>
+                                </li>
+                            {% endif %}
+                            <li><span>»&#160;</span><strong>{{ action }}</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if errors is not empty %}
+
+    <div id="posterror" class="block">
+        <h2><span>{{ trans('Post errors') }}</span></h2>
+        <div class="box">
+            <div class="inbox error-info">
+                <p>{{ trans('Post errors info') }}</p>
+                <ul class="error-list">
+
+                    {% for cur_error in errors %}
+                    <li><strong>{{ cur_error }}</strong></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {#TODO delete preview section#}
+    {% elseif inputPost('preview') %}
+    $preview_message = 'bump'; {#Container::get('parser')->parseMessage($post['message'], $post['hide_smilies']);#}
+
+    <div id="postpreview" class="blockpost">
+        <h2><span>{{ trans('Post preview') }}</span></h2>
+        <div class="box">
+            <div class="inbox">
+                <div class="postbody">
+                    <div class="postright">
+                        <div class="postmsg">
+                            {{ preview_message }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ action }}</h3>
+        </div>
+        {{ form|raw }}
+            <div class="list-group">
+                <input type="hidden" name="form_sent" value="1" />
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-12">{{ trans('Write message legend') }}</div>
+                    </div>
+                </div>
+
+                {% if userGet('is_guest') %}
+                {% set email_form_name = settings('p_force_guest_email') == '1' ? 'req_email' : 'email' %}
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label class="conl required">
+                                <strong>{{ trans('Guest name') }} <span>{{ trans('Required') }}</span></strong><br />
+                            </label>
+                            <input type="text" name="req_username" value="{{ inputPost('req_username') ? post.username : '' }}" size="25" maxlength="25" tabindex="1" /><br />
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label class="conl{{ settings('p_force_guest_email') == '1' ? ' required' : '' }}">
+                                {{ settings('p_force_guest_email') == '1' ? "<strong>#{ trans('Email') } <span>#{ trans('Required') }</span></strong>" : trans('Email') }}
+                                <br />
+                            </label>
+                            <input type="text" name="{{ email_form_name }}" value="{{ inputPost( email_form_name ) ? post.email : '' }}" size="50" maxlength="80" tabindex="2" /><br />
+
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if fid %}
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label class="required">
+                                <strong>{{ trans('Subject') }} <span>{{ trans('Required') }}</span></strong><br />
+                            </label>
+                            <input class="form-control" type="text" name="req_subject" value="{{ inputPost('req_subject') ? post.subject : '' }}" maxlength="70" tabindex="3" /><br />
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label class="required">
+                                <strong>{{ trans('Message') }} <span>{{ trans('Required') }}</span></strong><br />
+                            </label>
+                            <textarea class="form-control" name="req_message" id="req_message" rows="20" tabindex="4">{{ inputPost('req_message') ? inputPost('req_message')|raw : (quote is defined ? quote|raw : '') }}</textarea><br />
+                            <div id="markitup-elfinder"></div>
+                            <ul class="bblinks list-inline">
+                                <li><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}ok</a> {{ settings('p_message_bbcode') == '1' ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#url" onclick="window.open (this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_message_bbcode') == '1' and userGet('g_post_links') == '1' ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ settings('p_message_bbcode') == '1' and settings('p_message_img_tag') == '1' ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies') == '1' ? trans('on') : trans('off') }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                {% if checkboxes is defined %}
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <ins>{{ trans('Options') }}</ins>
+                            <div class="form-inline">
+                                {{ checkboxes|join("\n\t\t\t\t\t\t\t")|raw }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+
+                {% if userGet('is_guest') %}
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <legend>{{ trans('Robot title') }}</legend>
+                            <div class="infldset">
+                                <p>{{ trans('Robot info') }}</p>
+                                <label class="required"><strong>
+                                        {% set question = lang_antispam_questions|keys %}
+                                        {% set qencoded = getHash('md5', question[index_questions]) %}
+                                        {{ trans(['Robot question', question[index_questions]]) }}
+
+                                        <span>{{ trans('Required') }}</span></strong>
+                                    <br />
+                                    <input name="captcha" id="captcha" type="text" size="10" maxlength="30" />
+                                    <input name="captcha_q" value="{{ qencoded }}" type="hidden" /><br />
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="panel-footer">
+                <input class="btn btn-primary" type="submit" name="submit" value="{{ trans('Submit') }}" tabindex="5" accesskey="s" />
+                <!--<input type="submit" name="preview" value="{{ trans('Preview') }}" tabindex="6" accesskey="p" />-->
+                <a class="btn btn-primary" href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+            </div>
+        </form>
+    </div>
+
+    {% if tid and settings('o_topic_review') != '0' %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Topic review') }}</h3>
+        </div>
+
+        {% for post in post_data %}
+        <div class="list-group-item">
+            <div class="row">
+                <div class="col-xs-3 col-sm-3">
+                    <dl>
+                        <dt><strong>{{ post.poster }}</strong></dt>
+                        <dd><span>{{ formatTime(post.posted) }}</span></dd>
+                    </dl>
+                </div>
+                <div class="col-xs-9 col-sm-9">
+                    {{ post.message|raw }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {{ fireHook('view.post.end') }}
+{% endblock content %}

@@ -1,0 +1,38 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+    {{ fireHook('view.admin.statistics.start') }}
+
+    <div class="block">
+        <h2><span>{{ trans('Server statistics head') }}</span></h2>
+        <div id="adstats" class="box">
+            <div class="inbox">
+                <dl>
+                    <dt>{{ trans('Server load label') }}</dt>
+                    <dd>
+                        {{ trans(['Server load data', server_load, num_online]) }}
+                    </dd>
+{% if userGet('g_id') == getEnv('FEATHER_ADMIN') %}
+
+                    <dt>{{ trans('Environment label') }}</dt>
+                    <dd>
+                        {{ trans(['Environment data OS', php_os]) }}<br />
+                        {{ trans(['Environment data version', phpversion, '<a href="' ~pathFor('phpInfo') ~'">' ~trans('Show info') ~'</a>']) }}<br />
+                        {{ trans(['Environment data acc', php_accelerator]) }}
+                    </dd>
+                    <dt>{{ trans('Database label') }}</dt>
+                    <dd>
+    {% if total_records is not empty and total_size is not empty %}
+
+                        {{ trans(['Database data rows', formatNumber(total_records)]) }}
+                        <br />
+                        {{ trans(['Database data size', total_size]) }}
+    {% endif %}
+                    </dd>
+{% endif %}
+                </dl>
+            </div>
+        </div>
+    </div>
+    {{ fireHook('view.admin.statistics.end') }}
+{% endblock content %}

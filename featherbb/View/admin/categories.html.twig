@@ -1,0 +1,109 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.admin.categories.start') }}
+                <div class="blockform">
+                    <h2><span>{{ trans('Add categories head') }}</span></h2>
+                    <div class="box">
+                        <form method="post" action="{{ pathFor('addCategory') }}">
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Add categories subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Add category label') }}
+                                                    <div><input type="submit" value="{{ trans('Add new submit') }}" tabindex="2" /></div>
+                                                </th>
+                                                <td>
+                                                    <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                                                    <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                                                    <input type="text" name="cat_name" size="35" maxlength="80" tabindex="1" />
+                                                    <span>
+                                                        {{ trans(['Add category help', '<a href="' ~pathFor('adminForums') ~'">' ~trans('Forums') ~'</a>']) }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </form>
+                    </div>
+
+                {% if cat_list is not empty %}
+
+                    <h2 class="block2"><span>{{ trans('Delete categories head') }}</span></h2>
+                    <div class="box">
+                        <form method="post" action="{{ pathFor('deleteCategory') }}">
+                            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Delete categories subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table class="aligntop">
+                                            <tr>
+                                                <th scope="row">{{ trans('Delete category label') }}
+                                                    <div><input type="submit" value="{{ trans('Delete') }}" tabindex="4" /></div>
+                                                </th>
+                                                <td>
+                                                    <select name="cat_to_delete" tabindex="3">
+                                            {% for cur_cat in cat_list %}
+                                                <option value="{{ cur_cat.id }}">{{ cur_cat.cat_name }}</option>
+                                            {% endfor %}
+                                                    </select>
+                                                    <span style="color: red;">
+                                                        <input type="checkbox" name="disclaimer" value="1"> {{ trans('Delete category disclaimer') }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+
+                {% if cat_list is not empty %}
+
+                    <h2 class="block2"><span>{{ trans('Edit categories head') }}</span></h2>
+                    <div class="box">
+                        <form method="post" action="{{ pathFor('editCategory') }}">
+                            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Edit categories subhead') }}</legend>
+                                    <div class="infldset">
+                                        <table id="categoryedit">
+                                        <thead>
+                                            <tr>
+                                                <th class="tcl" scope="col">{{ trans('Category name label') }}</th>
+                                                <th scope="col">{{ trans('Category position label') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+
+                                {% for cur_cat in cat_list %}
+                                    <tr>
+                                        <td class="tcl"><input type="text" name="cat[{{ cur_cat.id }}][name]" value="{{ cur_cat.cat_name }}" size="35" maxlength="80" /></td>
+                                        <td><input type="text" name="cat[{{ cur_cat.id }}][order]" value="{{ cur_cat.disp_position }}" size="3" maxlength="3" /></td>
+                                    </tr>
+                                {% endfor %}
+
+                                        </tbody>
+                                        </table>
+                                        <div class="fsetsubmit"><input type="submit" value="{{ trans('Update') }}" /></div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+
+                </div>
+    {{ fireHook('view.admin.categories.end') }}
+{% endblock content %}

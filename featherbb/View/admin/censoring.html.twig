@@ -1,0 +1,96 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.admin.censoring.start') }}
+                <div class="blockform">
+                    <h2><span>{{ trans('Censoring head') }}</span></h2>
+                    <div class="box">
+                        <form id="censoring" method="post" action="{{ pathFor('adminCensoring') }}">
+                            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Add word subhead') }}</legend>
+                                    <div class="infldset">
+                                        <p>
+                                            {{ trans(['Add word info', settings('o_censoring') == '1'
+                                            ? trans(['Censoring enabled', '<a href="' ~pathFor('adminOptions') ~'#censoring">' ~trans('Options') ~'</a>'])
+                                            : trans(['Censoring disabled', '<a href="' ~pathFor('adminOptions') ~'#censoring">' ~trans('Options') ~'</a>'])
+                                            ]) }}
+                                        </p>
+                                        <table>
+                                            <thead>
+                                            <tr>
+                                                <th class="tcl" scope="col">{{ trans('Censored word label') }}</th>
+                                                <th class="tc2" scope="col">{{ trans('Replacement label') }}</th>
+                                                <th class="hidehead" scope="col">{{ trans('Action label') }}</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td class="tcl"><input type="text" name="new_search_for" size="24" maxlength="60"
+                                                                       tabindex="1"/></td>
+                                                <td class="tc2"><input type="text" name="new_replace_with" size="24" maxlength="60"
+                                                                       tabindex="2"/></td>
+                                                <td><input type="submit" name="add_word" value="{{ trans('Add') }}" tabindex="3"/>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="inform">
+                                <fieldset>
+                                    <legend>{{ trans('Edit remove subhead') }}</legend>
+                                    <div class="infldset">
+
+                                        {% if word_data is not empty %}
+
+                                            <table>
+                                                <thead>
+                                                <tr>
+                                                    <th class="tcl" scope="col">{{ trans('Censored word label') }}</th>
+                                                    <th class="tc2" scope="col">{{ trans('Replacement label') }}</th>
+                                                    <th class="hidehead" scope="col">{{ trans('Action label') }}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+
+
+                                                {% for word in word_data %}
+                                                    <tr>
+                                                        <td class="tcl">
+                                                            <input type="text" name="search_for[{{ word.id }}]"
+                                                                   value="{{ word.search_for }}" size="24" maxlength="60"/>
+                                                        </td>
+                                                        <td class="tc2">
+                                                            <input type="text" name="replace_with[{{ word.id }}]"
+                                                                   value="{{ word.replace_with }}" size="24" maxlength="60"/>
+                                                        </td>
+                                                        <td>
+                                                            <input type="submit" name="update[{{ word.id }}]"
+                                                                   value="{{ trans('Update') }}"/>&#160;
+                                                            <input type="submit" name="remove[{{ word.id }}]"
+                                                                   value="{{ trans('Remove') }}"/>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+
+
+                                                </tbody>
+                                            </table>
+
+                                        {% else %}
+                                            <p>{{ trans('No words in list') }}</p>
+                                        {% endif %}
+
+
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+{{ fireHook('view.admin.censoring.end') }}
+{% endblock content %}
