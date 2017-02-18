@@ -266,8 +266,6 @@ class Utils
     //
     public static function censor($text)
     {
-        static $searchFor, $replaceWith;
-
         if (!Container::get('cache')->isCached('search_for')) {
             Container::get('cache')->store('search_for', Cache::getCensoring('search_for'));
         }
