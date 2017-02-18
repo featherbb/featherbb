@@ -292,9 +292,9 @@ class Email
         $message = str_replace("\n", $eOL, $message);
 
         if ($smtp) {
-            $this->smtpMail($to, $subject, $message, $headers);
+            return $this->smtpMail($to, $subject, $message, $headers);
         } else {
-            mail($to, $subject, $message, $headers);
+            return mail($to, $subject, $message, $headers);
         }
     }
 
