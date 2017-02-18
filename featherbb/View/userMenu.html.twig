@@ -18,7 +18,7 @@
                 <li class="divider"></li>
                 <li><a href="{{ pathFor('userProfile', {'id': userGet('id')}) }}" class="usercp"><i class="fa fa-fw fa-user-circle-o"></i> {{ trans('Profile') }}</a></li>
                 <li class="divider"></li>
-        {% if userGet('is_admmod') %}
+        {% if isAdminMod() %}
                 {% if settings('o_report_method')  == '0' or settings('o_report_method') == '2' %}
                     {% if has_reports %}
                     <li><a href="{{ pathFor('adminReports') }}">{{ trans('New reports') }}</a></li>

@@ -117,7 +117,7 @@
                         <label>{{ trans('Language') }}
                         <br /><select name="form_language">
                         {% for lang in languages %}
-                            <option value="{{ lang.name }}"{{ user.language == lang.name ? ' selected="selected" ' : '' }}>{{ lang.name }}</option>
+                            <option value="{{ lang }}"{{ user.language == lang ? ' selected="selected" ' : '' }}>{{ lang }}</option>
                         {% endfor %}
                         </select>
                         <br /></label>
@@ -132,12 +132,12 @@
                 <fieldset>
                     <legend>{{ trans('User activity') }}</legend>
                     <div class="infldset">
-                        {% set regIp = (userGet('is_admmod') ? ' (<a href="' ~"#{ pathFor('usersIpShow', {}, {'ip': user.registration_ip}) }" ~'">' ~"#{ user.registration_ip }" ~'</a>)' : '' ) %}
+                        {% set regIp = (isAdminMod() ? ' (<a href="' ~"#{ pathFor('usersIpShow', {}, {'ip': user.registration_ip}) }" ~'">' ~"#{ user.registration_ip }" ~'</a>)' : '' ) %}
                         <p>{{ trans(['Registered info', formatTime(user.registered, true) ~ regIp ]) }}</p>
                         <p>{{ trans(['Last post info', formatTime(user.last_post)]) }}</p>
                         <p>{{ trans('Last visit info') }} {{ formatTime(user.last_visit) }}</p>
                         {{ user_disp.posts_field|raw }}
-                    {% if userGet('is_admmod') %}
+                    {% if isAdminMod() %}
                         <label>{{ trans('Admin note') }}<br />
                         <input id="admin_note" type="text" name="admin_note" value="{{ user.admin_note }}" size="30" maxlength="30" /><br />
                         </label>

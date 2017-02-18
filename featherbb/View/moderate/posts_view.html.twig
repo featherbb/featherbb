@@ -34,7 +34,7 @@
                 <h3 class="panel-title">
                     {{ post.id != cur_topic.first_post_id ? trans('Re')  : '' }} {{ cur_topic.subject }}
                     <div class="panel-title pull-right">
-                        {{ formatTime(post.posted) }}<a href="{{ pathFor('viewPost', {'pid': post.id}) }}#p{{ post.id }}"> # {{ start_from + loop.index }}</a>
+                        {{ formatTime(post.posted) }}<a href="{{ pathFor('viewPost', {'pid': post.id, 'name': url_topic, 'id': id}) }}#p{{ post.id }}"> # {{ start_from + loop.index }}</a>
                     </div>
                 </h3>
             </div>

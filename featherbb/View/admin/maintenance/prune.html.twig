@@ -1,38 +1,46 @@
-{% extends '@forum/adminLayout.html.twig' %}
+<?php
 
-{% block content %}
-{{ fireHook('view.admin.maintenance.prune.start') }}
+/**
+ * Copyright (C) 2015-2016 FeatherBB
+ * based on code by (C) 2008-2015 FluxBB
+ * and Rickard Andersson (C) 2002-2008 PunBB
+ * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ */
 
-    <form class="panel panel-primary" method="post" action="{{ pathFor('adminMaintenance') }}">
-        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-        <input type="hidden" name="action" value="prune" />
-        <input type="hidden" name="prune_days" value="{{ prune.days }}" />
-        <input type="hidden" name="prune_sticky" value="{{ prune_sticky }}" />
-        <input type="hidden" name="prune_from" value="{{ prune_from }}" />
+use RunBB\Core\Utils;
 
-        <div class="panel-heading">
-            <h3 class="panel-title">{{ trans('Prune head') }}</h3>
-        </div>
+// Make sure no one attempts to run this script "directly"
+if (!isset($feather)) {
+    exit;
+}
 
-        <div class="list-group-item">
-            <div class="row">
-                <div class="col-sm-12">
+Container::get('hooks')->fire('view.admin.maintenance.prune.start');
+?>
+
+    <div class="blockform">
+        <h2><span><?= __('Prune head') ?></span></h2>
+        <div class="box">
+            <form method="post" action="<?= Router::pathFor('adminMaintenance') ?>">
+                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
+                <div class="inform">
+                    <input type="hidden" name="action" value="prune" />
+                    <input type="hidden" name="prune_days" value="<?= $prune['days'] ?>" />
+                    <input type="hidden" name="prune_sticky" value="<?= $prune_sticky ?>" />
+                    <input type="hidden" name="prune_from" value="<?= $prune_from ?>" />
                     <fieldset>
-                        <legend>{{ trans('Confirm prune subhead') }}</legend>
+                        <legend><?= __('Confirm prune subhead') ?></legend>
                         <div class="infldset">
-                            <p>{{ trans(['Confirm prune info', prune.days, prune.forum, formatNumber(prune.num_topics)]) }}</p>
-                            <p class="warntext">{{ trans('Confirm prune warn') }}</p>
+                            <p><?php printf(__('Confirm prune info'), $prune['days'], $prune['forum'], Utils::forum_number_format($prune['num_topics'])) ?></p>
+                            <p class="warntext"><?= __('Confirm prune warn') ?></p>
                         </div>
                     </fieldset>
                 </div>
-            </div>
+                <p class="buttons"><input type="submit" name="prune_comply" value="<?= __('Prune') ?>" /><a href="javascript:history.go(-1)"><?= __('Go back') ?></a></p>
+            </form>
         </div>
-        <div class="panel-footer">
-            <input class="btn btn-primary" type="submit" name="prune_comply" value="{{ trans('Prune') }}" />
-            <a class="btn btn-primary" href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
-        </div>
-    </form>
+    </div>
+    <div class="clearer"></div>
+</div>
 
-{{ fireHook('view.admin.maintenance.prune.end') }}
-{% endblock content %}
+<?php
+Container::get('hooks')->fire('view.admin.maintenance.prune.end');

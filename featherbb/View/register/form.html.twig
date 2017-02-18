@@ -95,7 +95,7 @@
                                 <br />
                                 <select name="language">
                                     {% for lang in languages %}
-                                        <option value="{{ lang.name }}"{{ settings('o_default_lang') == lang.name ? ' selected="selected"' }}>{{ lang.name }}</option>
+                                        <option value="{{ lang }}"{{ settings('o_default_lang') == lang ? ' selected="selected"' }}>{{ lang }}</option>
                                     {% endfor %}
                                 </select>
                                 <br />

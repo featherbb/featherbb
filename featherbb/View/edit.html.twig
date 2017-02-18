@@ -1,25 +1,21 @@
 {% extends '@forum/layout.html.twig' %}
 
 {% block content %}
-{{ fireHook('view.edit.start') }}
+
+    {{ fireHook('view.edit.start') }}
 
     <div class="linkst">
         <div class="inbox">
-            <div class="panel panel-default">
-                <div class="row">
-                    <div class="col-sm-8">
-                        <ul class="crumbs">
-                            <li><a href="{{ pathFor('home') }}">{{ trans('Index') }}</a></li>
-                            <li><span>»&#160;</span><a href="{{ pathFor('Forum', {'id': cur_post.fid, 'name': slug(cur_post.forum_name)}) }}">{{ cur_post.forum_name }}</a></li>
-                            <li><span>»&#160;</span><a href="{{ pathFor('Topic', {'id': cur_post.tid, 'name': slug(cur_post.subject)}) }}">{{ cur_post.subject }}</a></li>
-                            <li><span>»&#160;</span><strong>{{ trans('Edit post') }}</strong></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            <ul class="crumbs">
+                <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
+                <li><span>»&#160;</span><a href="{{ pathFor('Forum', {'id': cur_post.fid, 'name': slug(cur_post.forum_name)}) }}">{{ cur_post.forum_name }}</a></li>
+                <li><span>»&#160;</span><a href="{{ pathFor('Topic', {'id': cur_post.tid, 'name': slug(cur_post.subject)}) }}">{{ cur_post.subject }}</a></li>
+                <li><span>»&#160;</span><strong>{{ trans('Edit post') }}</strong></li>
+            </ul>
         </div>
     </div>
 
+{#// If there are errors, we display them#}
 {% if errors is not empty %}
 
     <div id="posterror" class="block">
@@ -35,7 +31,7 @@
             </div>
         </div>
     </div>
-{#TODO delete preview#}
+
 {% elseif inputPost('preview') is not empty %}
 
     <div id="postpreview" class="blockpost">
@@ -55,64 +51,68 @@
 
 {% endif %}
 
-    <form class="panel panel-primary" id="edit" method="post" action="{{ pathFor('editPost', {'id': id}) }}" onsubmit="return process_form(this)">
-        <div class="panel-heading">
-            <h3 class="panel-title">{{ trans('Edit post') }}</h3>
-        </div>
-        <div class="list-group">
-            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-            <input type="hidden" name="form_sent" value="1" />
+    <div id="editform" class="blockform">
+        <h2><span>{{ trans('Edit post') }}</span></h2>
+        <div class="box">
+            <form id="edit" method="post" action="{{ pathFor('editPost', {'id': id}) }}" onsubmit="return process_form(this)">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Edit post legend') }}</legend>
+                        <input type="hidden" name="form_sent" value="1" />
+                        <div class="infldset txtarea">
 
-            <div class="list-group-item">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <ins>{{ trans('Edit post legend') }}</ins>
-                    </div>
-                </div>
-            </div>
-            <div class="list-group-item">
-                <div class="row">
-                    <div class="col-sm-12">
-                        {% if can_edit_subject %}
-                        <label class="required"><strong>{{ trans('Subject') }} <span>{{ trans('Required') }}</span></strong><br />
-                        <input class="longinput" type="text" name="req_subject" size="80" maxlength="70" tabindex="1" value="{{ inputPost('req_subject') ? inputPost('req_subject') : cur_post.subject }}" /><br /></label>
-                        {% endif %}
-                        <ins class="required">{{ trans('Message') }} <span>{{ trans('Required') }}</span></ins><br />
+    {% if can_edit_subject %}
 
-                        <textarea class="form-control" name="req_message" id="req_message" rows="20" tabindex="2">{{ inputPost('req_message') ? post.message : cur_post.message }}</textarea><br />
-                        <div id="markitup-elfinder"></div>
+                            <label class="required"><strong>{{ trans('Subject') }} <span>{{ trans('Required') }}</span></strong><br />
+                            <input class="longinput" type="text" name="req_subject" size="80" maxlength="70" tabindex="<?= $cur_index++ ?>" value="{{ inputPost('req_subject') ? inputPost('req_subject') : cur_post.subject }}" /><br /></label>
 
-                        <ul class="list-inline">
-                            <li><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}</a> {{ settings('p_message_bbcode') == '1' ? trans('on') : trans('off') }}</li>
-                            <li><a href="{{ pathFor('help') }}#url" onclick="window.open(this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_message_bbcode') == '1' and userGet('g_post_links') == '1' ? trans('on') : trans('off') }}</li>
-                            <li><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ settings('p_message_bbcode') == '1' and settings('p_message_img_tag') == '1' ? trans('on') : trans('off') }}</li>
-                            <li><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies') == '1' ? trans('on') : trans('off') }}</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+    {% endif %}
 
-            {% if checkboxes is not empty %}
-            <div class="list-group-item">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <ins>{{ trans('Options') }}</ins>
-                        <div class="form-inline">
-                            {{ checkboxes|join("\n\t\t\t\t\t\t\t")|raw }}
+                            <label class="required"><strong>{{ trans('Message') }} <span>{{ trans('Required') }}</span></strong><br />
+    <!--
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function(event) {
+                                    postEditorToolbar('req_message');
+                                });
+                            </script>
+    -->
+                            <textarea name="req_message" id="req_message" rows="20" tabindex="<?= $cur_index++ ?>">{{ inputPost('req_message') ? post.message : cur_post.message }}</textarea><br /></label>
+                            <div id="markitup-elfinder"></div>
+                            <ul class="bblinks list-inline">
+                                <li><span><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}</a> {{ settings('p_message_bbcode') == '1' ? trans('on') : trans('off') }}</span></li>
+                                <li><span><a href="{{ pathFor('help') }}#url" onclick="window.open(this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_message_bbcode') == '1' and userGet('g_post_links') == '1' ? trans('on') : trans('off') }}</span></li>
+                                <li><span><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ settings('p_message_bbcode') == '1' and settings('p_message_img_tag') == '1' ? trans('on') : trans('off') }}</span></li>
+                                <li><span><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies') == '1' ? trans('on') : trans('off') }}</span></li>
+                            </ul>
                         </div>
-                    </div>
+                    </fieldset>
                 </div>
-            </div>
-            {% endif %}
-            <div class="panel-footer">
-                <input class="btn btn-primary" type="submit" name="submit" value="{{ trans('Submit') }}" tabindex="3" accesskey="s" />
-                <!--<input class="btn btn-primary" type="submit" name="preview" value="<?= __('Preview') ?>" tabindex="4" accesskey="p" />-->
-                <a class="btn btn-primary" href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
-            </div>
-        </div>
-    </form>
-    <br>
 
-{{ fireHook('view.edit.end') }}
+        {% if checkboxes is not empty %}
+
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Options') }}</legend>
+                        <div class="infldset">
+                            <div class="rbox">
+                                {{ checkboxes|join("\n\t\t\t\t\t\t\t")|raw }}
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+        {% endif %}
+
+                <p class="buttons">
+                    <input type="submit" name="submit" value="{{ trans('Submit') }}" tabindex="<?= $cur_index++ ?>" accesskey="s" />
+                    <!--<input type="submit" name="preview" value="<?= __('Preview') ?>" tabindex="<?= $cur_index++ ?>" accesskey="p" />-->
+                    <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    {{ fireHook('view.edit.end') }}
 {% endblock content %}

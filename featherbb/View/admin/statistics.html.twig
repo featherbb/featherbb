@@ -1,6 +1,9 @@
-{% extends '@forum/adminLayout.html.twig' %}
+{% extends '@forum/layout.html.twig' %}
 
 {% block content %}
+
+    {% include '@forum/admin/menu.html.twig' %}
+
     {{ fireHook('view.admin.statistics.start') }}
 
     <div class="block">
@@ -34,5 +37,8 @@
             </div>
         </div>
     </div>
+    <div class="clearer"></div>
+</div>
+
     {{ fireHook('view.admin.statistics.end') }}
 {% endblock content %}

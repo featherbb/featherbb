@@ -343,7 +343,7 @@ class View
         ];
 
         if (User::get() !== null) {
-            if (User::get()->is_admmod) {
+            if (User::isAdminMod()) {
                 $data['has_reports'] = \FeatherBB\Model\Admin\Reports::hasReports();
             }
             // check db configured

@@ -1,6 +1,9 @@
-{% extends '@forum/adminLayout.html.twig' %}
+{% extends '@forum/layout.html.twig' %}
 
 {% block content %}
+
+    {% include '@forum/admin/menu.html.twig' %}
+
     {{ fireHook('view.admin.users.ban_users.start') }}
 
     <div class="blockform">
@@ -45,5 +48,8 @@
             </form>
         </div>
     </div>
+    <div class="clearer"></div>
+</div>
+
     {{ fireHook('view.admin.users.ban_users.end') }}
 {% endblock content %}

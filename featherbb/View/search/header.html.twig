@@ -1,0 +1,36 @@
+{{ fireHook('view.search.header.start') }}
+
+<div class="linkst">
+    <div class="inbox crumbsplus">
+        <ul class="crumbs">
+            <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
+            <li><span>»&#160;</span><a href="{{ pathFor('search') }}">{{ search.crumbs_text.show_as }}</a></li>
+            <li><span>»&#160;</span><strong>{{ search.crumbs_text.search_type|raw }}</strong></li>
+        </ul>
+        <div class="pagepost">
+            <p class="pagelink">{{ search.paging_links|raw }}</p>
+        </div>
+        <div class="clearer"></div>
+    </div>
+</div>
+
+{%  if search.show_as == 'topics' %}
+
+<div id="vf" class="blocktable">
+    <h2><span>{{ trans('Search results') }}</span></h2>
+    <div class="box">
+        <div class="inbox">
+            <table>
+            <thead>
+                <tr>
+                    <th class="tcl" scope="col">{{ trans('Topic') }}</th>
+                    <th class="tc2" scope="col">{{ trans('Forum') }}</th>
+                    <th class="tc3" scope="col">{{ trans('Replies') }}</th>
+                    <th class="tcr" scope="col">{{ trans('Last post') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+
+{% endif %}
+
+{{ fireHook('view.search.header.end') }}

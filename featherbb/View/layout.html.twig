@@ -120,7 +120,7 @@
                 <li><span>{{ trans('Last visit') }} {{ formatTime( userGet('last_visit') ) }}</span></li>
 
 
-            {% if userGet('is_admmod') %}
+            {% if isAdminMod() %}
                 {% if settings('o_report_method')  == '0' or settings('o_report_method') == '2' %}
                     {% if has_reports %}
                         <li class="reportlink"><span><strong><a href="{{ pathFor('adminReports') }}">{{ trans('New reports') }}</a></strong></span></li>
@@ -137,7 +137,7 @@
             </ul>
         {% endif %}
 
-{% if userGet('g_read_board') == '1' and userGet('g_search') == '1' %}
+{% if can('board.read') and can('search.topics') %}
             <ul class="conr">
                 <li>{{ trans('Topic searches') }}
             {% if userGet('is_guest') %}
@@ -157,7 +157,7 @@
                 <div class="clear"></div>
             </div>
 
-{% if userGet('g_read_board') == '1' and settings('o_announcement') == '1' %}
+{% if can('board.read') and settings('o_announcement') == '1' %}
             <div id="announce" class="block">
                 <div class="hd"><h2><span>{{ trans('Announcement') }}</span></h2></div>
                 <div class="box">
@@ -214,17 +214,17 @@
     <h2><span>{{ trans('Board footer') }}</span></h2>
     <div class="box">
 
-        {% if (active_page == 'Forum' or active_page == 'Topic') and userGet('is_admmod') %}
+        {% if (active_page == 'Forum' or active_page == 'Topic') and isAdminMod() %}
             <div id="modcontrols" class="inbox">
                 {% if active_page == 'Forum' %}
                     <dl>
                         <dt><strong>{{ trans('Mod controls') }}</strong></dt>
-                        <dd><span><a href="{{ pathFor('moderateForum', {'fid': fid, 'page': page_number}) }}">{{ trans('Moderate forum') }}</a></span></dd>
+                        <dd><span><a href="{{ pathFor('moderateForum', {'id': fid, 'name': slug(cur_forum.forum_name), 'page': page_number}) }}">{{ trans('Moderate forum') }}</a></span></dd>
                     </dl>
                 {% elseif active_page == 'Topic' %}
                     <dl>
                         <dt><strong>{{ trans('Mod controls') }}</strong></dt>
-                        <dd><span><a href="{{ pathFor('moderateTopic', {'id': tid, 'fid': fid, 'page': page_number}) }}">{{ trans('Moderate topic') }}</a></span></dd>
+                        <dd><span><a href="{{ pathFor('moderateTopic', {'id': tid, 'fid': fid, 'name': slug(cur_topic.subject), 'page': page_number}) }}">{{ trans('Moderate topic') }}</a></span></dd>
                         <dd><span><a href="{{ pathFor('moveTopic', {'id': tid, 'fid': fid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Move topic') }}</a></span></dd>
 
                         {% if cur_topic.closed == '1' %}
@@ -276,7 +276,7 @@
                 <p id="poweredby">
                     {{ trans(
                     ['Powered by',
-                    '<a href="https://github.com/featherbb/featherbb">FeatherBB</a>'
+                    '<a href="http://featherbb.org">FeatherBB</a>'
                     ~"#{ settings('o_show_version') == '1' ? settings('o_cur_version') : '' }"
                     ]) }}
                 </p>

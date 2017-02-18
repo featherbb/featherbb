@@ -17,7 +17,7 @@
                 <fieldset>
                     <legend>{{ trans('Change pass legend') }}</legend>
                     <div class="infldset">
-        {% if userGet('is_admmod') == false %}
+        {% if isAdminMod() == false %}
                         <label class="required"><strong>{{ trans('Old pass') }} <span>
                                     {{ trans('Required') }}</span></strong><br />
                         <input type="password" name="req_old_password" size="16" /></label><br />

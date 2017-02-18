@@ -90,7 +90,8 @@
 
                     {% if can_action %}
                         <p class="conr modbuttons">
-                            <a href="#" onclick="RunBB.selectCheckboxes('search-users-form', this, '{{ trans('Unselect all') }}')">{{ trans('Select all') }}</a>
+                            <a href="#"
+                               onclick="return select_checkboxes('search-users-form', this, '{{ trans('Unselect all') }}')">{{ trans('Select all') }}</a>
 
                             {% if can_ban %}
                                 <input type="submit" name="ban_users" value="{{ trans('Ban') }}"/>

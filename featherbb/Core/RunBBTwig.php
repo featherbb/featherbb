@@ -58,15 +58,17 @@ class RunBBTwig extends \Twig_Extension
             }, ['is_safe' => ['html']]),
 
             /**
-             * Return the translation of a string in a specific domain
-             * where first argument in array must be domain name
+             * Return the status of a user
              */
-            new \Twig_SimpleFunction('transd', function ($str) {
-                if (is_array($str)) {
-                    return call_user_func_array('d__', $str);
-                } else {
-                    return $str;
-                }
+            new \Twig_SimpleFunction('isAdminMod', function () {
+                return User::isAdminMod();
+            }, ['is_safe' => ['html']]),
+
+            /**
+             * Check permissions
+             */
+            new \Twig_SimpleFunction('can', function ($str) {
+                return User::can($str);
             }, ['is_safe' => ['html']]),
 
             /**

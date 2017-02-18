@@ -1,13 +1,25 @@
-{% extends '@forum/adminLayout.html.twig' %}
+<?php
 
-{% block content %}
-{{ fireHook('view.admin.maintenance.rebuild.start') }}
+/**
+ * Copyright (C) 2015-2016 FeatherBB
+ * based on code by (C) 2008-2015 FluxBB
+ * and Rickard Andersson (C) 2002-2008 PunBB
+ * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
+ */
 
-<h1>{{ trans('Rebuilding index info') }}</h1>
+// Make sure no one attempts to run this script "directly"
+if (!isset($feather)) {
+    exit;
+}
 
-<script type="text/javascript">window.location="{{ query_str|raw }}"</script>
+Container::get('hooks')->fire('view.admin.maintenance.rebuild.start');
+?>
 
-<p>{{ trans(['Javascript redirect failed', ('<a href="' ~query_str|raw ~'">' ~trans('Click here') ~'</a>')|raw]) }}</p>
+<h1><?= __('Rebuilding index info') ?></h1>
 
-{{ fireHook('view.admin.maintenance.rebuild.end') }}
-{% endblock content %}
+<script type="text/javascript">window.location="<?= Router::pathFor('adminMaintenance').$query_str ?>"</script>
+
+<p><?= sprintf(__('Javascript redirect failed'), '<a href="'.Router::pathFor('adminMaintenance').$query_str.'">'.__('Click here').'</a>')?></p>
+
+<?php
+Container::get('hooks')->fire('view.admin.maintenance.prune.end');

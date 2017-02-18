@@ -4,7 +4,7 @@
 
     {{ fireHook('view.help.start') }}
 
-    <h2><span>{{ trans('BBCode') }} / <strong>TODO</strong> rebuild all</span></h2>
+<h2><span>{{ trans('BBCode') }}</span></h2>
 <div class="box">
     <div class="inbox">
         <p><a name="bbcode"></a>{{ trans('BBCode info 1') }}</p>
@@ -38,8 +38,8 @@
         <p><code>[email=myname@example.com]{{ trans('My email address') }}[/email]</code> {{ trans('produces') }} <samp><a href="mailto:myname@example.com">{{ trans('My email address') }}</a></samp></p>
         <p><code>[topic=1]{{ trans('Test topic') }}[/topic]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}">{{ trans('Test topic') }}</a></samp></p>
         <p><code>[topic]1[/topic]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}">{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}</a></samp></p>
-        <p><code>[post=1]{{ trans('Test post') }}[/post]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('viewPost', {'pid': '1'}) }}#1">{{ trans('Test post') }}</a></samp></p>
-        <p><code>[post]1[/post]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('viewPost', {'pid': '1'}) }}#1">{{ pathFor('viewPost', {'pid': '1'}) }}#1</a></samp></p>
+        <p><code>[post=1]{{ trans('Test post') }}[/post]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('viewPost', {'name': 'test', 'id': 1, 'pid': '1'}) }}#1">{{ trans('Test post') }}</a></samp></p>
+        <p><code>[post]1[/post]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('viewPost', {'name': 'test', 'id': 1, 'pid': '1'}) }}#1">{{ pathFor('viewPost', {'name': 'test', 'id': 1, 'pid': '1'}) }}#1</a></samp></p>
         <p><code>[forum=1]{{ trans('Test forum') }}[/forum]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}">{{ trans('Test forum') }}</a></samp></p>
         <p><code>[forum]1[/forum]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Forum', {'id': '1', 'name': 'test-name'}) }}">{{ pathFor('Forum', {'id': '1', 'name': 'test-name'}) }}</a></samp></p>
         <p><code>[user=2]{{ trans('Test user') }}[/user]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('userProfile', {'id': '2'}) }}">{{ trans('Test user') }}</a></samp></p>
@@ -47,7 +47,7 @@
     </div>
     <div class="inbox">
         <p><a name="img"></a>{{ trans('Images info') }}</p>
-        <p><code>[img={{ trans('FeatherBB bbcode test') }}]{{ urlBase(true) }}/img/logo.png[/img]</code> {{ trans('produces') }} <samp><img style="height: 21px" src="{{ urlBase(true) }}/img/logo.png" alt="{{ trans('FeatherBB bbcode test') }}" /></samp></p>
+        <p><code>[img={{ trans('FeatherBB bbcode test') }}]{{ urlBase(true) }}/style/img/logo.png[/img]</code> {{ trans('produces') }} <samp><img style="height: 21px" src="{{ urlBase(true) }}/style/img/logo.png" alt="{{ trans('FeatherBB bbcode test') }}" /></samp></p>
     </div>
 </div>
 <h2><span>{{ trans('Quotes') }}</span></h2>
@@ -111,13 +111,6 @@
 <div class="box">
     <div class="inbox">
         <p><a name="smilies"></a>{{ trans('Smilies info') }}</p>
-
-        {% for code, vars in smiliesList %}
-        <p><code>{{ code }}</code>
-            <span>{{ trans('produces') }}</span>
-            <samp>{{ vars.html|raw }}</samp>
-        </p>
-        {% endfor %}
 
     </div>
 </div>

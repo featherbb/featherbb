@@ -6,10 +6,10 @@
     <div class="linkst">
         <div class="inbox crumbsplus">
             <ul class="crumbs">
-                <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
+                <li><a href="{{ urlBase() }}/forum">{{ trans('Index') }}</a></li>
                 <li>
                     <span>»&#160;</span>
-                    <strong><a href="{{ pathFor('Forum', {'id': "#{ id }", 'name': "#{ url_forum }"}) }}">{{ cur_forum.forum_name }}</a></strong>
+                    <strong><a href="{{ pathFor('Forum', {'id': id, 'name': url_forum}) }}">{{ cur_forum.forum_name }}</a></strong>
                 </li>
             </ul>
             <div class="pagepost">
@@ -25,19 +25,19 @@
         <div class="box">
             <div class="inbox">
                 <table>
-                    <thead>
+                <thead>
                     <tr>
                         <th class="tcl" scope="col">{{ trans('Topic') }}</th>
                         <th class="tc2" scope="col">{{ trans('Replies') }}</th>
-                        {% if settings('o_topic_views') == '1' %}
-                            <th class="tc3" scope="col">{{ trans('Views') }}</th>
-                        {% endif %}
+    {% if settings('o_topic_views') == '1' %}
+                        <th class="tc3" scope="col">{{ trans('Views') }}</th>
+    {% endif %}
                         <th class="tcr" scope="col">{{ trans('Last post') }}</th>
                     </tr>
-                    </thead>
-                    <tbody>
+                </thead>
+                <tbody>
 
-                    {% for topic in forum_data %}
+                {% for topic in forum_data %}
                         <tr class="{{ topic.item_status }}">
                             <td class="tcl">
                                 <div class="{{ topic.icon_type }}">
@@ -54,17 +54,17 @@
                             <td class="tc2">
                                 {{ topic.moved_to is null ? formatNumber(topic.num_replies) : '-' }}
                             </td>
-                            {% if settings('o_topic_views') == '1' %}
-                                <td class="tc3">
-                                    {{ topic.moved_to is null ? formatNumber(topic.num_views) : '-' }}
-                                </td>
-                            {% endif %}
+        {% if settings('o_topic_views') == '1' %}
+                            <td class="tc3">
+                                {{ topic.moved_to is null ? formatNumber(topic.num_views) : '-' }}
+                            </td>
+        {% endif %}
                             <td class="tcr">{{ topic.last_post_formatted|raw }}</td>
                         </tr>
 
-                    {% endfor %}
+                {% endfor %}
 
-                    {% if forum_data is empty %}
+                {% if forum_data is empty %}
 
                         <tr class="rowodd inone">
                             <td class="tcl" colspan="{{ settings('o_topic_views') == 1 ? 4 : 3 }}">
@@ -78,9 +78,9 @@
                                 </div>
                             </td>
                         </tr>
-                    {% endif %}
+                {% endif %}
 
-                    </tbody>
+                </tbody>
                 </table>
             </div>
         </div>
@@ -93,15 +93,15 @@
                 {{ post_link|raw }}
             </div>
             <ul class="crumbs">
-                <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
+                <li><a href="{{ urlBase() }}/forum">{{ trans('Index') }}</a></li>
                 <li>
                     <span>»&#160;</span>
                     <strong><a href="{{ pathFor('Forum', {'id': "#{ id }", 'name': "#{ url_forum }"}) }}">{{ cur_forum.forum_name }}</a></strong>
                 </li>
             </ul>
             {% if forum_actions is not empty %}
-            <p class="subscribelink clearb">{{ forum_actions|join(' - ')|raw }}
-                {% endif %}
+                <p class="subscribelink clearb">{{ forum_actions|join(' - ')|raw }}
+            {% endif %}
             <div class="clearer"></div>
         </div>
     </div>

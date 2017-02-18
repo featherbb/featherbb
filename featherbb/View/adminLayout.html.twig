@@ -139,7 +139,7 @@
 
                     {% if userGet('is_guest') != false %}
                         <ul class="conl">
-                            {% if userGet('is_admmod') %}
+                            {% if isAdminMod() %}
                                 {% if settings('o_report_method')  == '0' or settings('o_report_method') == '2' %}
                                     {% if has_reports %}
                                         <li class="reportlink"><span><strong><a href="{{ pathFor('adminReports') }}">{{ trans('New reports') }}</a></strong></span></li>
@@ -156,7 +156,7 @@
                         </ul>
                     {% endif %}
 
-                    {% if userGet('g_read_board') == '1' and userGet('g_search') == '1' %}
+                    {% if can('board.read') and can('search.topics') %}
                         <ul class="conr">
                             <li>{{ trans('Topic searches') }}
                                 {% if not userGet('is_guest') %}
@@ -176,7 +176,7 @@
     </div>
 </header>
 
-{% if userGet('g_read_board') == '1' and settings('o_announcement') == '1' %}
+{% if can('board.read') and settings('o_announcement') == '1' %}
 <div class="container">
     <div id="announce" class="block">
         <div class="hd"><h2><span>{{ trans('Announcement') }}</span></h2></div>
@@ -253,7 +253,7 @@
         <div id="forumHelper" class="collapse">
             <div class="list-group-item">
 
-                {% if (active_page == 'Forum' or active_page == 'Topic') and userGet('is_admmod') %}
+                {% if (active_page == 'Forum' or active_page == 'Topic') and isAdminMod() %}
                 <div id="modcontrols" class="inbox">
                     {% if active_page == 'Forum' %}
                     <dl>
