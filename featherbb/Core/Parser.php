@@ -46,12 +46,7 @@ class Parser
         $configurator->plugins->load('Autoemail');//Fatdown & Forum default
         $configurator->plugins->load('Autolink');//Fatdown & Forum default
         $configurator->plugins->load('Escaper');//Fatdown default
-        $configurator->plugins->load('FancyPants');//Fatdown default
-        $configurator->plugins->load('HTMLComments');//Fatdown default
-        $configurator->plugins->load('HTMLElements');//Fatdown default
-        $configurator->plugins->load('HTMLEntities');//Fatdown default
         $configurator->plugins->load('Litedown');//Fatdown default
-        $configurator->plugins->load('MediaEmbed');//Fatdown & Forum default
         $configurator->plugins->load('PipeTables');//Fatdown default
 
         // Load BBCodes
