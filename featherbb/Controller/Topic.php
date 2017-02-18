@@ -112,7 +112,7 @@ class Topic
             'url_forum'        =>    $urlForum,
             'url_topic'        =>    $urlTopic,
             'is_admmod' => $isAdmmod,
-        ])->addTemplate('topic.php')->display();
+        ])->addTemplate('@forum/topic')->display();
 
         // Increment "num_views" for topic
         $this->model->incrementViews($args['id']);
@@ -200,7 +200,7 @@ class Topic
                 'topics'    =>    $args['id'],
                 'list_forums'   => $this->model->getForumListMove($args['fid']),
             ]
-        )->addTemplate('moderate/move_topics.php')->display();
+        )->addTemplate('@forum/moderate/move_topics')->display();
     }
 
     public function moderate($req, $res, $args)
@@ -227,7 +227,7 @@ class Topic
                         'active_page' => 'moderate',
                         'posts' => $posts,
                     ]
-                )->addTemplate('moderate/delete_posts.php')->display();
+                )->addTemplate('@forum/moderate/delete_posts')->display();
         } elseif (Input::post('split_posts_comply')) {
             return $this->model->splitPosts($args['id'], $args['fid'], $p);
         } elseif (Input::post('split_posts')) {
@@ -239,7 +239,7 @@ class Topic
                     'posts' => $this->model->splitPosts($args['id'], $args['fid'], $p),
                     'list_forums' => $this->model->getSplitForumList($args['fid']),
                 ]
-            )->addTemplate('moderate/split_posts.php')->display();
+            )->addTemplate('@forum/moderate/split_posts')->display();
         } else {
             // Show the moderate posts view
 
@@ -268,7 +268,7 @@ class Topic
                     'button_status' => $buttonStatus,
                     'start_from' => $startFrom,
                 ]
-            )->addTemplate('moderate/posts_view.php')->display();
+            )->addTemplate('@forum/moderate/posts_view')->display();
         }
     }
 

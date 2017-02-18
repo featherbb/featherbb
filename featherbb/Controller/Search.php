@@ -79,7 +79,7 @@ class Search
                 'active_page' => 'search',
                 'is_indexed' => true,
                 'forums' => $this->model->forumsList(),
-            ])->addTemplate('search/form.php')->display();
+            ])->addTemplate('@forum/search/form')->display();
         }
     }
 

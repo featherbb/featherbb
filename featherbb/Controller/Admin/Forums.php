@@ -120,7 +120,7 @@ class Forums
                     'cur_forum' => $this->model->getForumInfo($args['id']),
                     'forum_data' => $this->model->getForums(),
                 ]
-            )->addTemplate('admin/forums/permissions.php')->display();
+            )->addTemplate('@forum/admin/forums/permissions')->display();
         }
     }
 
@@ -149,7 +149,7 @@ class Forums
                     'admin_console'    =>    true,
                     'cur_forum' => $curForum
                 ]
-            )->addTemplate('admin/forums/delete_forum.php')->display();
+            )->addTemplate('@forum/admin/forums/delete_forum')->display();
         }
     }
 
@@ -187,6 +187,6 @@ class Forums
                 'forum_data' => $this->model->getForums(),
                 'cur_index' => 4,
             ]
-        )->addTemplate('admin/forums/admin_forums.php')->display();
+        )->addTemplate('@forum/admin/forums/admin_forums')->display();
     }
 }

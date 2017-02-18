@@ -39,7 +39,7 @@ class Statistics
                 'total_records'    =>    $total['records'],
                 'php_accelerator'    =>    $this->model->phpAccelerator(),
             ]
-        )->addTemplate('admin/statistics.php')->display();
+        )->addTemplate('@forum/admin/statistics')->display();
     }
 
 

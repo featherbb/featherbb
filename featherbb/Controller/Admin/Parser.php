@@ -104,6 +104,6 @@ class Parser
                 'smilies' =>    $smilies,
                 'urlBase' => URL::base().'/style/img/smilies/',
             ]
-        )->addTemplate('admin/parser.php')->display();
+        )->addTemplate('@forum/admin/parser')->display();
     }
 }

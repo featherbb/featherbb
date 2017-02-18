@@ -278,7 +278,7 @@ class Utils
         if (empty($ban_list)) {
             $ban_list = [];
             foreach (Container::get('bans') as $cur_ban) {
-                $ban_list[] = utf8_strtolower($cur_ban['username']);
+                $ban_list[] = \utf8\to_lower($cur_ban['username']);
             }
         }
 
@@ -286,7 +286,7 @@ class Utils
         if ($title != '') {
             $user_title = self::escape($title);
         } // If the user is banned
-        elseif (in_array(utf8_strtolower($name), $ban_list)) {
+        elseif (in_array(\utf8\to_lower($name), $ban_list)) {
             $user_title = __('Banned');
         } // If the user group has a default user title
         elseif ($groupTitle != '') {

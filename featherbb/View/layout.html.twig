@@ -11,9 +11,9 @@
     {% endif %}
 
     <title>{{ pageTitle }}</title>
-    <link rel="shortcut icon" href="{{ urlBase() }}/img/favicon.png" />
+    <link rel="shortcut icon" href="{{ urlBase() }}/style/img/favicon.ico" />
     <!-- Theme -->
-    <link rel="stylesheet" type="text/css" href="{{ urlBase() }}/styles/themes/{{ style }}/style.css">
+    <link rel="stylesheet" type="text/css" href="{{ urlBase() }}/style/themes/{{ style }}/style.css">
 
 {% for type, items in assets if type != 'js' %}
 
@@ -40,17 +40,6 @@
         var required_fields = {
             {{ required_fields|join(', ') }}
         };
-
-        {# Output a JavaScript object with localised field names #}
-//                    $tpl_temp = count($required_fields);
-//                foreach ($required_fields as $elem_orig => $elem_trans) {
-//                    echo "\"".$elem_orig.'": "'.addslashes(str_replace('&#160;', ' ', $elem_trans));
-//                    if (--$tpl_temp) {
-//                        echo "\", ";
-//                    } else {
-//                        echo "\"\n\t\t\t\t};\n";
-//                    }
-//                }
 
         if (document.all || document.getElementById)
         {
@@ -79,309 +68,275 @@
 {{ fireHook('view.header.before.head.tag') }}
 </head>
 
-<body id="pun{{ active_page }}"{% if focus_element %} onload="document.getElementById('{{ focus_element.0 }}').elements['{{ focus_element.1 }}'].focus();"{% endif %}>
+<body id="feather-body">
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-        <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/">
-                    <img src="{{ urlBase() }}/assets/img/logo.png" align="left" width="64" height="61" alt="RunCMF" title="RunCMF"/>
-                </a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <!-- navlinks -->
-                    {% for row in navlinks %}
-                        {% if row is iterable %}
-                            <li id="{{ row.id }}"{{ row.active|raw }}><a href="{{ row.href }}">{{ row.text }}</a></li>
-                        {% else %}
-                            {{ row|raw }}
-                        {% endif %}
-                    {% endfor %}
-                    <!-- /navlinks -->
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    {% include '@forum/userMenu.html.twig' %}
-
-                    <li>
-                        <form role="search" method="get" action="{{ pathFor('search') }}" class="nav-search">
-                            <input type="hidden" name="action" value="search">
-                            <input class="form-control" type="text" name="keywords" size="20" maxlength="100" placeholder="{{ trans('Search') }}">
-                        </form>
-                    </li>
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </nav><!-- /Navigation -->
 <header>
-    <div class="container">
-        <div class="container-title-status">
-            <h1 class="title-site">
-                <a href="{{ pathFor('home') }}" title="" class="site-name">
-                    <p>{{ settings('o_board_title') }}</p>
-                </a>
-                <div id="brddesc">{{ settings('o_board_desc') }}</div>
-            </h1>
-            <div class="status-avatar">
-                <div id="brdwelcome" class="inbox">
-
-                    {% if userGet('is_guest') != false %}
-                        <ul class="conl">
-                            {% if userGet('is_admmod') %}
-                                {% if settings('o_report_method')  == '0' or settings('o_report_method') == '2' %}
-                                    {% if has_reports %}
-                                        <li class="reportlink"><span><strong><a href="{{ pathFor('adminReports') }}">{{ trans('New reports') }}</a></strong></span></li>
-                                    {% endif %}
+        <nav>
+            <div class="container">
+                <div class="phone-menu" id="phone-button">
+                    <a class="button-phone"></a>
+                </div>
+                <div id="phone">
+                    <div id="brdmenu" class="inbox">
+                        <ul>
+                            <!-- navlinks -->
+                            {% for row in navlinks %}
+                                {% if row is iterable %}
+                                    <li id="{{ row.id }}"{{ row.active|raw }}><a href="{{ row.href }}">{{ row.text }}</a></li>
+                                {% else %}
+                                    {{ row|raw }}
                                 {% endif %}
-                                {% if settings('o_maintenance') == '1' %}
-                                    <li class="maintenancelink"><span><strong><a href="{{ pathFor('adminMaintenance') }}">{{ trans('Maintenance mode enabled') }}</a></strong></span></li>
-                                {% endif %}
-                            {% endif %}
-
-                            {% set headerToplist = fireHook(['header.toplist', []]) %}
-                            {{ headerToplist|join("\n") }}
-
+                            {% endfor %}
+                            <!-- /navlinks -->
                         </ul>
-                    {% endif %}
-
-                    {% if userGet('g_read_board') == '1' and userGet('g_search') == '1' %}
-                        <ul class="conr">
-                            <li>{{ trans('Topic searches') }}
-                                {% if not userGet('is_guest') %}
-                                    <a href="{{ pathFor('quickSearch', {'show': 'replies'}) }}" title="{{ trans('Show posted topics') }}">{{ trans('Posted topics') }}</a> |
-                                    <a href="{{ pathFor('quickSearch', {'show': 'new'}) }}" title="{{ trans('Show new posts') }}">{{ trans('New posts header') }}</a> |
-                                {% endif %}
-                                <a href="{{ pathFor('quickSearch', {'show': 'recent'}) }}" title="{{ trans('Show active topics') }}">{{ trans('Active topics') }}</a> |
-                                <a href="{{ pathFor('quickSearch', {'show': 'unanswered'}) }}" title="{{ trans('Show unanswered topics') }}">{{ trans('Unanswered topics') }}</a>
-                            </li>
-                        </ul>
-                    {% endif %}
-{{ fireHook('view.header.brdwelcome') }}
+                    </div>
+                    <div class="navbar-right">
+                        <form method="get" action="{{ pathFor('search') }}" class="nav-search">
+                            <input type="hidden" name="action" value="search">
+                            <input type="text" name="keywords" size="20" maxlength="100" placeholder="{{ trans('Search') }}">
+                        </form>
+                    </div>
                 </div>
             </div>
-            <div class="clear"></div>
-        </div>
-    </div>
-</header>
+        </nav>
+
+        <div class="container">
+            <div class="container-title-status">
+                <h1 class="title-site">
+                    <a href="{{ urlBase() }}" title="" class="site-name">
+                        <p>{{ settings('o_board_title') }}</p>
+                    </a>
+                    <div id="brddesc">{{ settings('o_board_desc') }}</div>
+                </h1>
+                <div class="status-avatar">
+                    <div id="brdwelcome" class="inbox">
+
+
+        {% if userGet('is_guest') %}
+                        <p class="conl">{{ trans('Not logged in') }}</p>
+        {% else %}
+            <ul class="conl">
+                <li><span>{{ trans('Logged in as') }} <strong>{{ userGet('username') }}</strong></span></li>
+                <li><span>{{ trans('Last visit') }} {{ formatTime( userGet('last_visit') ) }}</span></li>
+
+
+            {% if userGet('is_admmod') %}
+                {% if settings('o_report_method')  == '0' or settings('o_report_method') == '2' %}
+                    {% if has_reports %}
+                        <li class="reportlink"><span><strong><a href="{{ pathFor('adminReports') }}">{{ trans('New reports') }}</a></strong></span></li>
+                    {% endif %}
+                {% endif %}
+                {% if settings('o_maintenance') == '1' %}
+                    <li class="maintenancelink"><span><strong><a href="{{ pathFor('adminMaintenance') }}">{{ trans('Maintenance mode enabled') }}</a></strong></span></li>
+                {% endif %}
+            {% endif %}
+
+            {% set headerToplist = fireHook(['header.toplist', []]) %}
+            {{ headerToplist|join("\n") }}
+
+            </ul>
+        {% endif %}
+
+{% if userGet('g_read_board') == '1' and userGet('g_search') == '1' %}
+            <ul class="conr">
+                <li>{{ trans('Topic searches') }}
+            {% if userGet('is_guest') %}
+                <a href="{{ pathFor('quickSearch', {'show': 'replies'}) }}" title="{{ trans('Show posted topics') }}">{{ trans('Posted topics') }}</a> |
+                <a href="{{ pathFor('quickSearch', {'show': 'new'}) }}" title="{{ trans('Show new posts') }}">{{ trans('New posts header') }}</a> |
+            {% endif %}
+                <a href="{{ pathFor('quickSearch', {'show': 'recent'}) }}" title="{{ trans('Show active topics') }}">{{ trans('Active topics') }}</a> |
+                <a href="{{ pathFor('quickSearch', {'show': 'unanswered'}) }}" title="{{ trans('Show unanswered topics') }}">{{ trans('Unanswered topics') }}</a>
+                </li>
+            </ul>
+{% endif %}
+
+{{ fireHook('view.header.brdwelcome') }}
+                    <div class="clearer"></div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
 
 {% if userGet('g_read_board') == '1' and settings('o_announcement') == '1' %}
-<div class="container">
-    <div id="announce" class="block">
-        <div class="hd"><h2><span>{{ trans('Announcement') }}</span></h2></div>
-        <div class="box">
-            <div id="announce-block" class="inbox">
-                <div class="usercontent">{{ settings('o_announcement_message') }}</div>
+            <div id="announce" class="block">
+                <div class="hd"><h2><span>{{ trans('Announcement') }}</span></h2></div>
+                <div class="box">
+                    <div id="announce-block" class="inbox">
+                        <div class="usercontent">{{ settings('o_announcement_message') }}</div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
 {% endif %}
+
 
 {% if flashMessages is not empty %}
-<div class="container">
-    <script type="text/javascript">
-        window.onload = function() {
-            var flashMessage = document.getElementById('flashmsg');
-            flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type')+' show';
-            setTimeout(function () {
-                flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type');
-            }, 10000);
-            return false;
-        }
-    </script>
+            <script type="text/javascript">
+                window.onload = function() {
+                    var flashMessage = document.getElementById('flashmsg');
+                    flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type')+' show';
+                    setTimeout(function () {
+                        flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type');
+                    }, 10000);
+                    return false;
+                }
+            </script>
     {% for type, message in flashMessages %}
-    <div class="flashmsg info" data-type="{{ type }}" id="flashmsg">
-        <h2>{{ trans('Info') }}
-            <span style="float:right;cursor:pointer"
-                  onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;
-                    </span>
-        </h2>
-        <p>{{ message.0 }}</p>
-    </div>
+{{ dump(message) }}
+            <div class="flashmsg info" data-type="{{ type }}" id="flashmsg">
+                <h2>{{ trans('Info') }}
+                    <span style="float:right;cursor:pointer"
+                            onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;
+                            </span>
+                </h2>
+                <p>{{ message.0 }}</p>
+            </div>
     {% endfor %}
-</div>
 {% endif %}
 
-{{ fireHook('view.header.end') }}
+        </div>
+    </header>
 
-{% endif %}
+    <section class="container">
+        <div id="brdmain">
 
-<!-- Page Content -->
-<div class="container">
-{% block content %}{% endblock content %}
-</div>
-<!-- /.Page Content -->
+            {{ fireHook('view.header.end') }}
+
+            {% endif %}
+
+            {% block content %}{% endblock content %}
+        </div>
 
 
 {% if nested %}
-<!-- Page Footer -->
 {{ fireHook('view.footer.start') }}
-<div class="container">
 
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h3 class="panel-title">
-            <i class="fa fa-toggle-on fa-lg toggler pull-right" aria-hidden="true"
-            role="button" data-toggle="collapse" href="#forumHelper"
-            aria-expanded="false" aria-controls="forumHelper"></i>
-            {#{{ trans('Board footer') }}#}
-            <i class="fa fa-life-ring fa-lg" aria-hidden="true"></i>
-            </h3>
-        </div>
-        <div id="forumHelper" class="collapse">
-            <div class="list-group-item">
+<div id="brdfooter" class="block">
+    <h2><span>{{ trans('Board footer') }}</span></h2>
+    <div class="box">
 
-                {% if (active_page == 'Forum' or active_page == 'Topic') and userGet('is_admmod') %}
-                <div id="modcontrols" class="inbox">
-                    {% if active_page == 'Forum' %}
+        {% if (active_page == 'Forum' or active_page == 'Topic') and userGet('is_admmod') %}
+            <div id="modcontrols" class="inbox">
+                {% if active_page == 'Forum' %}
                     <dl>
                         <dt><strong>{{ trans('Mod controls') }}</strong></dt>
                         <dd><span><a href="{{ pathFor('moderateForum', {'fid': fid, 'page': page_number}) }}">{{ trans('Moderate forum') }}</a></span></dd>
                     </dl>
-                    {% elseif active_page == 'Topic' %}
+                {% elseif active_page == 'Topic' %}
                     <dl>
                         <dt><strong>{{ trans('Mod controls') }}</strong></dt>
                         <dd><span><a href="{{ pathFor('moderateTopic', {'id': tid, 'fid': fid, 'page': page_number}) }}">{{ trans('Moderate topic') }}</a></span></dd>
                         <dd><span><a href="{{ pathFor('moveTopic', {'id': tid, 'fid': fid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Move topic') }}</a></span></dd>
 
                         {% if cur_topic.closed == '1' %}
-                        <dd><span><a href="{{ pathFor('openTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Open topic') }}</a></span></dd>
+                            <dd><span><a href="{{ pathFor('openTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Open topic') }}</a></span></dd>
                         {% else %}
-                        <dd><span><a href="{{ pathFor('closeTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Close topic') }}</a></span></dd>
+                            <dd><span><a href="{{ pathFor('closeTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Close topic') }}</a></span></dd>
                         {% endif %}
 
                         {% if cur_topic.sticky == '1' %}
-                        <dd><span><a href="{{ pathFor('unstickTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Unstick topic') }}</a></span></dd>
+                            <dd><span><a href="{{ pathFor('unstickTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Unstick topic') }}</a></span></dd>
                         {% else %}
-                        <dd><span><a href="{{ pathFor('stickTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Stick topic') }}</a></span></dd>
+                            <dd><span><a href="{{ pathFor('stickTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Stick topic') }}</a></span></dd>
                         {% endif %}
                     </dl>
-                    {% endif %}
-
-{{ fireHook('view.footer.mod.actions') }}
-                </div>
                 {% endif %}
 
-                <div class="form-inline row">
+                {{ fireHook('view.footer.mod.actions') }}
+            </div>
+        {% endif %}
 
-                    <div class="form-inline col-sm-9">
-                        {% if settings('o_quickjump') == '1' and quickjump is not empty %}
-                        <div class="form-group col-sm-4">
-                            <form class="form-horizontal" id="qjump" method="get" action="">
-                            <label class="control-label col-sm-5" for="id">{{ trans('Jump to') }}</label>
-                            {#<div class="col-sm-7">#}
+
+        <div id="brdfooternav" class="inbox">
+
+            {# Display the "Jump to" drop list #}
+            {% if settings('o_quickjump') == '1' and quickjump is not empty %}
+                <div class="conl">
+                    <form id="qjump" method="get" action="">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" for="id">{{ trans('Jump to') }}</label>
+                            <div class="col-sm-8">
                                 <select name="id" class="form-control" onchange="window.location=(this.options[this.selectedIndex].value)">
-                        {% for cat_id, cat_data in quickjump[ userGet('g_id') ] %}
-                                    <optgroup label="{{ cat_data.cat_name }}">
-                            {% for forum in cat_data.cat_forums %}
-                                    <option value="{{ pathFor('Forum', {'id': forum.forum_id, 'name': slug(forum.forum_name)}) }}"{{ fid == 2 ? ' selected="selected"' : '' }}>{{ forum.forum_name }}</option>
-                            {% endfor %}
-                                    </optgroup>
-                        {% endfor %}
-                                </select>
-                            {#</div>#}
-                            </form>
-                        </div>
-                        {% endif %}
+                                    {% for cat_id, cat_data in quickjump["#{ userGet('g_id') }"] %}
+                                        <optgroup label="{{ cat_data.cat_name }}">
+                                            {% for forum in cat_data.cat_forums %}
+                                                <option value="{{ pathFor('Forum', {'id': "#{ forum.forum_id }", 'name': "#{ slug(forum.forum_name) }"}) }}"{{ fid == 2 ? ' selected="selected"' : '' }}>{{ forum.forum_name }}</option>
+                                            {% endfor %}
 
-                        {% if stylesQSelect|length > 1 %}
-                        <div class="form-group col-sm-4">
-                            <form method="post" class="form-horizontal" action="{{ pathFor('profileAction', {'id': 1, 'action': 'change_style'}) }}" id="theme_select">
-                                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-                                <input type="hidden" name="currentPage" value="{{ currentPage }}">
-                                <label class="control-label col-sm-3" for="styleToChange">{{ trans('Styles') }}</label>
-                                <select name="styleToChange" class="form-control" onchange="RunBB.changeTheme();">
-                                    {% for style in stylesQSelect %}
-                                        <option value="{{ style }}"{{ userGet('style') == style ? ' selected="selected"' : '' }}>
-                                            {{ style|join('_') }}
-                                        </option>
+                                        </optgroup>
                                     {% endfor %}
                                 </select>
-                            </form>
+                            </div>
                         </div>
-                        {% endif %}
-
-                        {% if languagesQSelect|length > 1 %}
-                        <div class="form-group col-sm-4">
-                            <form method="post" class="form-horizontal" action="{{ pathFor('profileAction', {'id': 1, 'action': 'change_lang'}) }}" id="lang_select">
-                                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-                                <input type="hidden" name="currentPage" value="{{ currentPage }}">
-                                <label class="control-label col-sm-5" for="languageToChange">{{ trans('Language') }}</label>
-                                <select name="languageToChange" class="form-control" onchange="RunBB.changeLanguage();">
-                                {% for lang in languagesQSelect %}
-                                    <option value="{{ lang.name }}"{{ userGet('language') == lang.name ? ' selected="selected" ' : '' }}>{{ lang.name }}</option>
-                                {% endfor %}
-                                </select>
-                            </form>
-                        </div>
-                        {% endif %}
-
-                    </div>
-                    <div class="form-inline col-sm-3 pull-right">
-
-                        {% if active_page == 'index' %}
-                            {% if settings('o_feed_type') == '1' %}
-                                <span class="rss"><a href="{{ pathFor('extern') }}?action=feed&type=rss">{{ trans('RSS active topics feed') }}</a></span>
-                            {% elseif settings('o_feed_type') == '2' %}
-                                <span class="atom"><a href="{{ pathFor('extern') }}?action=feed&type=atom">{{ trans('Atom active topics feed') }}</a></span>
-                            {% endif %}
-                        {% elseif active_page == 'Forum' or active_page == 'Topic' %}
-                            {% if settings('o_feed_type') == '1' %}
-                                <span class="rss"><a href="{{ pathFor('extern') }}?action=feed&fid={{ fid }}&type=rss">{{ trans('RSS forum feed') }}</a></span>
-                            {% elseif settings('o_feed_type') == '2' %}
-                                <span class="atom"><a href="{{ pathFor('extern') }}?action=feed&fid={{ fid }}&type=atom">{{ trans('Atom forum feed') }}</a></span>
-                            {% endif %}
-                        {% endif %}
-
-{{ fireHook('view.footer.feed.links') }}
-
-                        <small id="poweredby">
-                            {{ trans(['Powered by', '<a href="https://github.com/runcmf/runbb">RunBB</a> ' ~"#{ settings('o_show_version') == '1' ? settings('o_cur_version') : '' }"]) }}
-                            <br />
-                            Based on <a href="https://github.com/featherbb/featherbb">FeatherBB</a>
-                        </small>
-                    </div>
+                    </form>
                 </div>
-            </div>
+            {% endif %}
+            <div class="conr">
+                {{ fireHook('view.footer.feed.links') }}
 
+                <p id="poweredby">
+                    {{ trans(
+                    ['Powered by',
+                    '<a href="https://github.com/featherbb/featherbb">FeatherBB</a>'
+                    ~"#{ settings('o_show_version') == '1' ? settings('o_cur_version') : '' }"
+                    ]) }}
+                </p>
+            </div>
+            <div class="clearer"></div>
         </div>
     </div>
-
-    {% if exec_info is not empty %}
-    <p id="debugtime">[{{ trans(['Querytime', exec_info.exec_time|round(6)]) }} - {{ trans(['Memory usage', exec_info.mem_usage]) }} {{ trans(['Peak usage', exec_info.mem_peak_usage]) }}]</p>
-    {% endif %}
 </div>
+
+{# Display debug info (if enabled/defined) #}
+{% if exec_info is not empty %}
+<p id="debugtime">[
+    {{ trans(['Querytime', exec_info.exec_time|round(6), exec_info.nb_queries]) }} -
+    {{ trans(['Memory usage', exec_info.mem_usage]) }}
+    {{ trans(['Peak usage', exec_info.mem_peak_usage]) }}
+    ]</p>
+{% endif %}
+{% if queries_info is not empty %}
+<div id="debug" class="blocktable">
+    <h2><span>{{ trans('Debug table') }}</span></h2>
+    <div class="box">
+        <div class="inbox">
+            <table>
+                <thead>
+                <tr>
+                    <th class="tcl" scope="col">{{ trans('Query times') }}</th>
+                    <th class="tcr" scope="col">{{ trans('Query') }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for time, sql in queries_info.raw %}
+                    <tr>
+                        <td class="tcl">{{ time|round(8) }}</td>
+                        <td class="tcr">{{ sql }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td class="tcl" colspan="2">{{ trans('Total query time') }}
+                        {{ queries_info.total_time|round(7) }} s</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+</section>
 
 <!-- JS -->
 {% for script in assets.js %}
-<script {% for key, value in script.params %}{{ key }}="{{ value }}"{% endfor %} src="{{ urlBase() }}/{{ script.file }}" /></script>
+<script {% for key, value in script.params %}{{ key }}="{{ value }}"{% endfor %} src="{{ baseStatic() }}/{{ script.file }}" /></script>
 {% endfor %}
 <!-- JSRAW -->
 <script>
-    var baseUrl = '{{ urlBase() }}',
-        phpVars = {{ jsVars|json_encode() }};
-    {{ jsraw|raw }}
+var baseUrl = '{{ urlBase() }}',
+    phpVars = {{ jsVars|json_encode() }};
+{{ jsraw|raw }}
 </script>
-
-{% if userGet('is_guest') %}
-{% include '@forum/auth.html.twig' %}
-{% endif %}
-
 {{ fireHook('view.footer.before.html.tag') }}
 </body>
 </html>
 {{ fireHook('view.footer.end') }}
-<!-- /Page Footer -->
 {% endif %}

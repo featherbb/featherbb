@@ -83,7 +83,7 @@ class Updates
                 'core_updates' => $coreUpdates,
                 'core_updates_message' => $coreUpdatesMessage
             ]
-        )->addTemplate('admin/updates.php')->display();
+        )->addTemplate('@forum/admin/updates')->display();
     }
 
     public function upgradePlugins($req, $res, $args)
@@ -131,7 +131,7 @@ class Updates
                 'admin_console'   => true,
                 'upgrade_results' => $upgradeResults
             ]
-        )->addTemplate('admin/updates.php')->display();
+        )->addTemplate('@forum/admin/updates')->display();
     }
 
     public function upgradeCore($req, $res, $args)
@@ -170,6 +170,6 @@ class Updates
                 'admin_console'   => true,
                 'upgrade_results' => $upgradeResults
             ]
-        )->addTemplate('admin/updates.php')->display();
+        )->addTemplate('@forum/admin/updates')->display();
     }
 }

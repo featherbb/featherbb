@@ -156,7 +156,7 @@ class View
         $data['navlinks'] = $this->buildNavLinks($data['active_page']);
         $data['currentPage'] = '';
 
-        if (file_exists(ForumEnv::get('FEATHER_ROOT').'styles/themes/'.$style.'/base_admin.css')) {
+        if (file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/base_admin.css')) {
             $admStyle = '<link rel="stylesheet" type="text/css" href="/themes/'.$style.'/base_admin.css" />';
         } else {
             $admStyle = '<link rel="stylesheet" type="text/css" href="/imports/base_admin.css" />';
@@ -359,8 +359,6 @@ class View
                 $lang_antispam_questions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
                 $index_questions = rand(0, count($lang_antispam_questions) - 1);
                 $data['index_questions'] = $index_questions;
-//                $data['languages'] = \FeatherBB\Core\Lister::getLangs();
-//                $data['languages'] = Lang::getList();
                 $data['question'] = array_keys($lang_antispam_questions);
                 $data['qencoded'] = md5(array_keys($lang_antispam_questions)[$index_questions]);
                 $data['logOutLink'] = Router::pathFor(
@@ -372,9 +370,9 @@ class View
 
         if (ForumEnv::get('FEATHER_SHOW_INFO')) {
             $data['exec_info'] = \FeatherBB\Model\Debug::getInfo();
-//            if (ForumEnv::get('FEATHER_SHOW_QUERIES')) {
-//                $data['queries_info'] = \FeatherBB\Model\Debug::getQueries();
-//            }
+            if (ForumEnv::get('FEATHER_SHOW_QUERIES')) {
+                $data['queries_info'] = \FeatherBB\Model\Debug::getQueries();
+            }
         }
 
         return $data;
@@ -417,7 +415,7 @@ class View
             'text' => __('Index')
         ];
 
-        if (User::get()->g_read_board == '1' && User::get()->g_view_users == '1') {
+        if (User::can('board.read') && User::can('users.view')) {
             $navlinks[] = [
                 'id' => 'navuserlist',
                 'active' => ($active_page == 'userlist') ? ' class="isactive"' : '',
@@ -426,10 +424,7 @@ class View
             ];
         }
 
-        if (ForumSettings::get('o_rules') == '1' && (!User::get()->is_guest
-                || User::get()->g_read_board == '1'
-                || ForumSettings::get('o_regs_allow') == '1')
-        ) {
+        if (ForumSettings::get('o_rules') == '1' && (!User::get()->is_guest || User::can('board.read') || ForumSettings::get('o_regs_allow') == '1')) {
             $navlinks[] = [
                 'id' => 'navrules',
                 'active' => ($active_page == 'rules') ? ' class="isactive"' : '',
@@ -438,7 +433,7 @@ class View
             ];
         }
 
-        if (User::get()->g_read_board == '1' && User::get()->g_search == '1') {
+        if (User::can('board.read') && User::can('search.topics')) {
             $navlinks[] = [
                 'id' => 'navsearch',
                 'active' => ($active_page == 'search') ? ' class="isactive"' : '',
@@ -447,10 +442,48 @@ class View
             ];
         }
 
+        if (User::get()->is_guest) {
+            $navlinks[] = [
+                'id' => 'navregister',
+                'active' => ($active_page == 'register') ? ' class="isactive"' : '',
+                'href' => Router::pathFor('register'),
+                'text' => __('Register')
+            ];
+            $navlinks[] = [
+                'id' => 'navlogin',
+                'active' => ($active_page == 'login') ? ' class="isactive"' : '',
+                'href' => Router::pathFor('login'),
+                'text' => __('Login')
+            ];
+        } else {
+            $navlinks[] = [
+                'id' => 'navprofile',
+                'active' => ($active_page == 'profile') ? ' class="isactive"' : '',
+                'href' => Router::pathFor('userProfile', ['id' => User::get()->id]),
+                'text' => __('Profile')
+            ];
+
+            if (User::isAdminMod()) {
+                $navlinks[] = [
+                    'id' => 'navadmin',
+                    'active' => ($active_page == 'admin') ? ' class="isactive"' : '',
+                    'href' => Router::pathFor('adminIndex'),
+                    'text' => __('Admin')
+                ];
+            }
+
+            $navlinks[] = [
+                'id' => 'navlogout',
+                'active' => '',
+                'href' => Router::pathFor('logout', ['token' => Random::hash(User::get()->id.Random::hash(Utils::getIp()))]),
+                'text' => __('Logout')
+            ];
+        }
+
         // Are there any additional navlinks we should insert into the array before imploding it?
         $hooksLinks = Container::get('hooks')->fire('view.header.navlinks', []);
         $extraLinks = ForumSettings::get('o_additional_navlinks')."\n".implode("\n", $hooksLinks);
-        if (User::get()->g_read_board == '1' && ($extraLinks != '')) {
+        if (User::can('board.read') && ($extraLinks != '')) {
             if (preg_match_all('%([0-9]+)\s*=\s*(.*?)\n%s', $extraLinks."\n", $results)) {
                 // Insert any additional links into the $links array (at the correct index)
                 $num_links = count($results[1]);

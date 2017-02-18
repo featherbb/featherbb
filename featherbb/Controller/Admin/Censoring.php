@@ -51,6 +51,6 @@ class Censoring
                 'admin_console'    =>    true,
                 'word_data'    =>    $this->model->getWords(),
             ]
-        )->addTemplate('admin/censoring.php')->display();
+        )->addTemplate('@forum/admin/censoring')->display();
     }
 }

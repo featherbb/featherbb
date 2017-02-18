@@ -62,7 +62,7 @@ class Plugins
             'officialPlugins'    =>    $officialPlugins,
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')],
             ]
-        )->addTemplate('admin/plugins.php')->display();
+        )->addTemplate('@forum/admin/plugins')->display();
     }
 
     public function activate($req, $res, $args)

@@ -40,6 +40,6 @@ class Permissions
                 'active_page' => 'admin',
                 'admin_console' => true,
             ]
-        )->addTemplate('admin/permissions.php')->display();
+        )->addTemplate('@forum/admin/permissions')->display();
     }
 }

@@ -192,7 +192,7 @@ class Post
                 'quote' => $quote,
                 'errors'    =>    $errors,
             ]
-        )->addTemplate('post.php')->display();
+        )->addTemplate('@forum/post')->display();
     }
 
     public function delete($req, $res, $args)
@@ -237,7 +237,7 @@ class Post
             'cur_post' => $curPost,
             'id' => $args['id'],
             'is_topic_post' => $isTopicPost
-        ])->addTemplate('delete.php')->display();
+        ])->addTemplate('@forum/delete')->display();
     }
 
     public function editpost($req, $res, $args)
@@ -308,7 +308,7 @@ class Post
                 'can_edit_subject' => $canEditSubject,
                 'post' => $post,
             ]
-        )->addTemplate('edit.php')->display();
+        )->addTemplate('@forum/edit')->display();
     }
 
     public function report($req, $res, $args)
@@ -332,7 +332,7 @@ class Post
                 'id' => $args['id'],
                 'cur_post' => $curPost
             ]
-        )->addTemplate('misc/report.php')->display();
+        )->addTemplate('@forum/misc/report')->display();
     }
 
     public function gethost($req, $res, $args)

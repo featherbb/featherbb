@@ -51,7 +51,6 @@ class RunBBTwig extends \Twig_Extension
              */
             new \Twig_SimpleFunction('trans', function ($str) {
                 if (is_array($str)) {
-                    var_dump($str);
                     return call_user_func_array('__', $str);
                 } else {
                     return __($str);

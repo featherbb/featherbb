@@ -25,6 +25,6 @@ class Help
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Help')],
             'active_page' => 'help',
-        ])->addTemplate('help.php')->display();
+        ])->addTemplate('@forum/help')->display();
     }
 }

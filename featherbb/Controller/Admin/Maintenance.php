@@ -42,7 +42,7 @@ class Maintenance
                     'page_title'    =>    [Utils::escape(ForumSettings::get('o_board_title')), __('Rebuilding search index')],
                     'query_str' => $this->model->getQueryString()
                 ]
-            )->addTemplate('admin/maintenance/rebuild.php')->display();
+            )->addTemplate('@forum/admin/maintenance/rebuild')->display();
         }
 
         if ($action == 'prune') {
@@ -63,7 +63,7 @@ class Maintenance
                     'prune_from'    =>    $pruneFrom,
                     'prune' => $this->model->getInfoPrune($pruneSticky, $pruneFrom),
                 ]
-            )->addTemplate('admin/maintenance/prune.php')->display();
+            )->addTemplate('@forum/admin/maintenance/prune')->display();
         }
 
         AdminUtils::generateAdminMenu('maintenance');
@@ -75,6 +75,6 @@ class Maintenance
                 'first_id' => $this->model->getFirstId(),
                 'categories' => $this->model->getCategories(),
             ]
-        )->addTemplate('admin/maintenance/admin_maintenance.php')->display();
+        )->addTemplate('@forum/admin/maintenance/admin_maintenance')->display();
     }
 }

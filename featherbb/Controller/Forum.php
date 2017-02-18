@@ -84,7 +84,7 @@ class Forum
             'url_forum' => $urlForum,
             'forum_actions' => $forumActions,
             'is_admmod' => $isAdmmod,
-        ])->addTemplate('forum.php')->display();
+        ])->addTemplate('@forum/forum')->display();
     }
 
     public function moderate($req, $res, $args)
@@ -128,7 +128,7 @@ class Forum
             'topic_data' => $this->model->displayTopicsModerate($args['id'], $sortBy, $startFrom),
             'start_from' => $startFrom,
             ]
-        )->addTemplate('moderate/moderator_forum.php')->display();
+        )->addTemplate('@forum/moderate/moderator_forum')->display();
     }
 
     public function markread($req, $res, $args)
@@ -198,7 +198,7 @@ class Forum
                     'topics'    =>    implode(',', array_map('intval', array_keys($topics))),
                     'list_forums'   => $topicModel->getForumListMove($args['id']),
                 ]
-            )->addTemplate('moderate/move_topics.php')->display();
+            )->addTemplate('@forum/moderate/move_topics')->display();
         }
 
         // Merge two or more topics
@@ -219,7 +219,7 @@ class Forum
                     'id'    =>    $args['id'],
                     'topics'    =>    $topics,
                 ]
-            )->addTemplate('moderate/merge_topics.php')->display();
+            )->addTemplate('@forum/moderate/merge_topics')->display();
         }
 
         // Delete one or more topics
@@ -240,7 +240,7 @@ class Forum
                     'id'    =>    $args['id'],
                     'topics'    =>    $topics,
                 ]
-            )->addTemplate('moderate/delete_topics.php')->display();
+            )->addTemplate('@forum/moderate/delete_topics')->display();
         }
 
         // Open or close one or more topics

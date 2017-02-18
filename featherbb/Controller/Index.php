@@ -50,7 +50,7 @@ class Index
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Forum rules')],
             'active_page' => 'rules'
             ]
-        )->addTemplate('misc/rules.php')->display();
+        )->addTemplate('@forum/misc/rules')->display();
     }
 
     public function markread()

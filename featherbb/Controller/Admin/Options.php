@@ -42,6 +42,6 @@ class Options
                 'styles' => $this->model->styles(),
                 'times' => $this->model->times(),
             ]
-        )->addTemplate('admin/options.php')->display();
+        )->addTemplate('@forum/admin/options')->display();
     }
 }

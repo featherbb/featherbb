@@ -1,73 +1,64 @@
 {% extends '@forum/layout.html.twig' %}
 
 {% block content %}
-{{ fireHook('view.index.start') }}
+    {{ fireHook('view.index.start') }}
 
-{% for cat in index_data %}
+    {% for cat in index_data %}
 
-        <div class="panel-heading">
-            <div class="row">
-                <div class="col-xs-7 col-sm-7">
-                </div>
-                <div class="hidden-xs col-sm-1 text-center text-nowrap">
-                    <span class="hidden-xs hidden-sm">{{ trans('Topics') }}</span>
-                </div>
-                <div class="hidden-xs col-sm-1 text-center text-nowrap">
-                    <span class="hidden-xs hidden-sm">{{ trans('Posts') }}</span>
-                </div>
-                <div class="col-sm-2 text-center text-nowrap">
-                    {{ trans('Last post') }}
-                </div>
-            </div>
-        </div>
-    {% if cat is not empty %}
-        {% for forum in cat %}
-        <div class="list-group">
-            <div class="list-group-item {{ forum.item_status }}">
-                <div class="row">
-                    <div class="col-xs-7 col-sm-7">
-                        <div class="media">
-                            <div class="media-left media-middle {{ forum.icon_type }}">
+        <div id="idx{{ cat.0.cid }}" class="blocktable">
+            <h2><span>{{ cat.0.cat_name }}</span></h2>
+            <div class="box">
+                <div class="inbox">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th class="tcl" scope="col">{{ trans('Forum') }}</th>
+                            <th class="tc2" scope="col">{{ trans('Topics') }}</th>
+                            <th class="tc3" scope="col">{{ trans('Posts') }}</th>
+                            <th class="tcr" scope="col">{{ trans('Last post') }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% if cat is not empty %}
+                            {% for forum in cat %}
+                            <tr class="{{ forum.item_status }}">
+                                <td class="tcl">
+                                    <div class="{{ forum.icon_type }}">
+                                        <div class="nosize">{{ forum.forum_count_formatted }}</div>
+                                    </div>
+                                    <div class="tclcon">
+                                        <div>
+                                            {{ forum.forum_field|raw }}
+                                            {{ forum.moderators_formatted }}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="tc2">{{ forum.num_topics_formatted }}</td>
+                                <td class="tc3">{{ forum.num_posts_formatted }}</td>
+                                <td class="tcr">{{ forum.last_post_formatted|raw }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <div id="idx0" class="block">
+                                <div class="box">
+                                    <div class="inbox"><p>{{ trans('Empty board') }}</p></div>
+                                </div>
                             </div>
-                            <div class="media-body">
-                                {{ forum.forum_field|raw }} {{ forum.moderators_formatted|raw }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="hidden-xs col-sm-1 text-center text-nowrap">
-                        {{ formatNumber(forum.num_topics_formatted) }}
-                    </div>
-                    <div class="hidden-xs col-sm-1 text-center text-nowrap">
-                        {{ formatNumber(forum.num_posts_formatted) }}
-                    </div>
-                    <div class="col-sm-2">
-                        {{ forum.last_post_formatted|raw }}
-                    </div>
+                        {% endif %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-        {% endfor %}
-    {% else %}
-        <div class="list-group">
-            <div class="list-group-item {{ forum.item_status }}">
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12 text-center">
-                        {{ trans('Empty board') }}
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-    </div>
-
-{% endfor %}
+    {% endfor %}
 
     {% if forum_actions is not empty %}
-    <div class="linksb">
-        <div class="inbox crumbsplus">
-            <p class="subscribelink clearb">{{ forum_actions|join(' ')|raw }}</p>
+        <div class="linksb">
+            <div class="inbox crumbsplus">
+                <p class="subscribelink clearb">{{ forum_actions|join(' ')|raw }}</p>
+            </div>
         </div>
-    </div>
     {% endif %}
 
 
@@ -86,8 +77,8 @@
                     <dt><strong>{{ trans('User info') }}</strong></dt>
                     <dd><span>{{ trans(['Newest user', "#{ stats.newest_user }"]) }}</span></dd>
                     {% if settings('o_users_online') == 1 %}
-                    <dd><span>{{ trans(['Users online', "<strong>#{ online.num_users }</strong>"]) }}</span></dd>
-                    <dd><span>{{ trans(['Guests online', "<strong>#{ online.num_guests }</strong>"]) }}</span></dd>
+                        <dd><span>{{ trans(['Users online', "<strong>#{ online.num_users }</strong>"]) }}</span></dd>
+                        <dd><span>{{ trans(['Guests online', "<strong>#{ online.num_guests }</strong>"]) }}</span></dd>
                     {% endif %}
                 </dl>
 
@@ -106,5 +97,5 @@
         </div>
     </div>
 
-{{ fireHook('view.index.end') }}
+    {{ fireHook('view.index.end') }}
 {% endblock content %}

@@ -44,7 +44,7 @@ class Groups
                 'groups' => $groups,
                 'cur_index' => 5,
             ]
-        )->addTemplate('admin/groups/admin_groups.php')->display();
+        )->addTemplate('@forum/admin/groups/admin_groups')->display();
     }
 
     public function delete($req, $res, $args)
@@ -77,7 +77,7 @@ class Groups
                         'group_title'      =>  $this->model->groupTitle($args['id']),
                         'id'    => $args['id'],
                     ]
-                )->addTemplate('admin/groups/confirm_delete.php')->display();
+                )->addTemplate('@forum/admin/groups/confirm_delete')->display();
             }
         }
 
@@ -91,7 +91,7 @@ class Groups
                 'group_info'      =>  $this->model->titleMembers($args['id']),
                 'group_list_delete'      =>  $this->model->groupListDelete($args['id']),
             ]
-        )->addTemplate('admin/groups/delete_group.php')->display();
+        )->addTemplate('@forum/admin/groups/delete_group')->display();
     }
 
     public function addedit($req, $res, $args)
@@ -120,7 +120,7 @@ class Groups
                     'id'    => $id,
                     'group_list'    => $this->model->getGroupList($groups, $group),
                 ]
-            )->addTemplate('admin/groups/add_edit_group.php')->display();
+            )->addTemplate('@forum/admin/groups/add_edit_group')->display();
         }
     }
 }

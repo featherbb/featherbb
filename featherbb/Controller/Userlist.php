@@ -62,6 +62,6 @@ class Userlist
             'show_post_count' => $showPostCount,
             'dropdown_menu' => $this->model->dropdownMenu($showGroup),
             'userlist_data' => $this->model->printUsers($username, $startFrom, $sortBy, $sortDir, $showGroup),
-        ])->addTemplate('userlist.php')->display();
+        ])->addTemplate('@forum/userlist')->display();
     }
 }

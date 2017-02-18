@@ -80,7 +80,7 @@ class Auth
                     'active_page' => 'login',
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Login')],
                 ]
-            )->addTemplate('login/form.php')->display();
+            )->addTemplate('@forum/login/form')->display();
         }
     }
 
@@ -192,6 +192,6 @@ class Auth
                 'active_page' => 'login',
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Request pass')]
             ]
-        )->addTemplate('login/password_forgotten.php')->display();
+        )->addTemplate('@forum/login/password_forgotten')->display();
     }
 }

@@ -42,6 +42,6 @@ class Reports
                 'report_data'   =>  $this->model->reports(),
                 'report_zapped_data'   =>  $this->model->zappedReports(),
             ]
-        )->addTemplate('admin/reports.php')->display();
+        )->addTemplate('@forum/admin/reports')->display();
     }
 }

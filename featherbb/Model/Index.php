@@ -200,7 +200,7 @@ class Index
                 $curForum->moderators_formatted = '';
             }
 
-            $indexData[] = $curForum;
+            $indexData[$curForum->cid][] = $curForum;
             ++$i;
         }
 
