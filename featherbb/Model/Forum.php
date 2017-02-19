@@ -32,7 +32,7 @@ class Forum
 
             $curForum = DB::table('forums')->tableAlias('f')
                             ->selectMany($curForum['select'])
-                            ->leftOuterJoin('forum_subscriptions', 'f.id=s.forum_id AND s.user_id='.User::get()->g_id, 's')
+                            ->leftOuterJoin('forum_subscriptions', 'f.id=s.forum_id AND s.user_id='.User::get()->id, 's')
                             ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
                             ->whereAnyIs($curForum['where'])
                             ->where('f.id', $id);
