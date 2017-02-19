@@ -44,59 +44,59 @@
                         <label>{{ trans('Time zone') }}
                         <br />
                             <select name="form_timezone">
-                            <option value="-12"{{ user.timezone == -12 ? ' selected="selected"' : ''}}>{{ trans('UTC-12:00') }}</option>
-                            <option value="-11"{{ user.timezone == -11 ? ' selected="selected"' : ''}}>{{ trans('UTC-11:00') }}</option>
-                            <option value="-10"{{ user.timezone == -10 ? ' selected="selected"' : ''}}>{{ trans('UTC-10:00') }}</option>
-                            <option value="-9.5"{{ user.timezone == -9.5 ? ' selected="selected"' : ''}}>{{ trans('UTC-09:30') }}</option>
-                            <option value="-9"{{ user.timezone == -9 ? ' selected="selected"' : ''}}>{{ trans('UTC-09:00') }}</option>
-                            <option value="-8.5"{{ user.timezone == -8.5 ? ' selected="selected"' : ''}}>{{ trans('UTC-08:30') }}</option>
-                            <option value="-8"{{ user.timezone == -8 ? ' selected="selected"' : ''}}>{{ trans('UTC-08:00') }}</option>
-                            <option value="-7"{{ user.timezone == -7 ? ' selected="selected"' : ''}}>{{ trans('UTC-07:00') }}</option>
-                            <option value="-6"{{ user.timezone == -6 ? ' selected="selected"' : ''}}>{{ trans('UTC-06:00') }}</option>
-                            <option value="-5"{{ user.timezone == -5 ? ' selected="selected"' : ''}}>{{ trans('UTC-05:00') }}</option>
-                            <option value="-4"{{ user.timezone == -4 ? ' selected="selected"' : ''}}>{{ trans('UTC-04:00') }}</option>
-                            <option value="-3.5"{{ user.timezone == -3.5 ? ' selected="selected"' : ''}}>{{ trans('UTC-03:30') }}</option>
-                            <option value="-3"{{ user.timezone == -3 ? ' selected="selected"' : ''}}>{{ trans('UTC-03:00') }}</option>
-                            <option value="-2"{{ user.timezone == -2 ? ' selected="selected"' : ''}}>{{ trans('UTC-02:00') }}</option>
-                            <option value="-1"{{ user.timezone == -1 ? ' selected="selected"' : ''}}>{{ trans('UTC-01:00') }}</option>
-                            <option value="0"{{ user.timezone == 0 ? ' selected="selected"' : ''}}>{{ trans('UTC') }}</option>
-                            <option value="1"{{ user.timezone == 1 ? ' selected="selected"' : ''}}>{{ trans('UTC+01:00') }}</option>
-                            <option value="2"{{ user.timezone == 2 ? ' selected="selected"' : ''}}>{{ trans('UTC+02:00') }}</option>
-                            <option value="3"{{ user.timezone == 3 ? ' selected="selected"' : ''}}>{{ trans('UTC+03:00') }}</option>
-                            <option value="3.5"{{ user.timezone == 3.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+03:30') }}</option>
-                            <option value="4"{{ user.timezone == 4 ? ' selected="selected"' : ''}}>{{ trans('UTC+04:00') }}</option>
-                            <option value="4.5"{{ user.timezone == 4.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+04:30') }}</option>
-                            <option value="5"{{ user.timezone == 5 ? ' selected="selected"' : ''}}>{{ trans('UTC+05:00') }}</option>
-                            <option value="5.5"{{ user.timezone == 5.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+05:30') }}</option>
-                            <option value="5.75"{{ user.timezone == 5.75 ? ' selected="selected"' : ''}}>{{ trans('UTC+05:45') }}</option>
-                            <option value="6"{{ user.timezone == 6 ? ' selected="selected"' : ''}}>{{ trans('UTC+06:00') }}</option>
-                            <option value="6.5"{{ user.timezone == 6.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+06:30') }}</option>
-                            <option value="7"{{ user.timezone == 7 ? ' selected="selected"' : ''}}>{{ trans('UTC+07:00') }}</option>
-                            <option value="8"{{ user.timezone == 8 ? ' selected="selected"' : ''}}>{{ trans('UTC+08:00') }}</option>
-                            <option value="8.75"{{ user.timezone == 8.75 ? ' selected="selected"' : ''}}>{{ trans('UTC+08:45') }}</option>
-                            <option value="9"{{ user.timezone == 9 ? ' selected="selected"' : ''}}>{{ trans('UTC+09:00') }}</option>
-                            <option value="9.5"{{ user.timezone == 9.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+09:30') }}</option>
-                            <option value="10"{{ user.timezone == 10 ? ' selected="selected"' : ''}}>{{ trans('UTC+10:00') }}</option>
-                            <option value="10.5"{{ user.timezone == 10.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+10:30') }}</option>
-                            <option value="11"{{ user.timezone == 11 ? ' selected="selected"' : ''}}>{{ trans('UTC+11:00') }}</option>
-                            <option value="11.5"{{ user.timezone == 11.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+11:30') }}</option>
-                            <option value="12"{{ user.timezone == 12 ? ' selected="selected"' : ''}}>{{ trans('UTC+12:00') }}</option>
-                            <option value="12.75"{{ user.timezone == 12.75 ? ' selected="selected"' : ''}}>{{ trans('UTC+12:45') }}</option>
-                            <option value="13"{{ user.timezone == 13 ? ' selected="selected"' : ''}}>{{ trans('UTC+13:00') }}</option>
-                            <option value="14"{{ user.timezone == 14 ? ' selected="selected"' : ''}}>{{ trans('UTC+14:00') }}</option>
+                            <option value="-12"{{ pref('timezone', user) == -12 ? ' selected="selected"' : ''}}>{{ trans('UTC-12:00') }}</option>
+                            <option value="-11"{{ pref('timezone', user) == -11 ? ' selected="selected"' : ''}}>{{ trans('UTC-11:00') }}</option>
+                            <option value="-10"{{ pref('timezone', user) == -10 ? ' selected="selected"' : ''}}>{{ trans('UTC-10:00') }}</option>
+                            <option value="-9.5"{{ pref('timezone', user) == -9.5 ? ' selected="selected"' : ''}}>{{ trans('UTC-09:30') }}</option>
+                            <option value="-9"{{ pref('timezone', user) == -9 ? ' selected="selected"' : ''}}>{{ trans('UTC-09:00') }}</option>
+                            <option value="-8.5"{{ pref('timezone', user) == -8.5 ? ' selected="selected"' : ''}}>{{ trans('UTC-08:30') }}</option>
+                            <option value="-8"{{ pref('timezone', user) == -8 ? ' selected="selected"' : ''}}>{{ trans('UTC-08:00') }}</option>
+                            <option value="-7"{{ pref('timezone', user) == -7 ? ' selected="selected"' : ''}}>{{ trans('UTC-07:00') }}</option>
+                            <option value="-6"{{ pref('timezone', user) == -6 ? ' selected="selected"' : ''}}>{{ trans('UTC-06:00') }}</option>
+                            <option value="-5"{{ pref('timezone', user) == -5 ? ' selected="selected"' : ''}}>{{ trans('UTC-05:00') }}</option>
+                            <option value="-4"{{ pref('timezone', user) == -4 ? ' selected="selected"' : ''}}>{{ trans('UTC-04:00') }}</option>
+                            <option value="-3.5"{{ pref('timezone', user) == -3.5 ? ' selected="selected"' : ''}}>{{ trans('UTC-03:30') }}</option>
+                            <option value="-3"{{ pref('timezone', user) == -3 ? ' selected="selected"' : ''}}>{{ trans('UTC-03:00') }}</option>
+                            <option value="-2"{{ pref('timezone', user) == -2 ? ' selected="selected"' : ''}}>{{ trans('UTC-02:00') }}</option>
+                            <option value="-1"{{ pref('timezone', user) == -1 ? ' selected="selected"' : ''}}>{{ trans('UTC-01:00') }}</option>
+                            <option value="0"{{ pref('timezone', user) == 0 ? ' selected="selected"' : ''}}>{{ trans('UTC') }}</option>
+                            <option value="1"{{ pref('timezone', user) == 1 ? ' selected="selected"' : ''}}>{{ trans('UTC+01:00') }}</option>
+                            <option value="2"{{ pref('timezone', user) == 2 ? ' selected="selected"' : ''}}>{{ trans('UTC+02:00') }}</option>
+                            <option value="3"{{ pref('timezone', user) == 3 ? ' selected="selected"' : ''}}>{{ trans('UTC+03:00') }}</option>
+                            <option value="3.5"{{ pref('timezone', user) == 3.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+03:30') }}</option>
+                            <option value="4"{{ pref('timezone', user) == 4 ? ' selected="selected"' : ''}}>{{ trans('UTC+04:00') }}</option>
+                            <option value="4.5"{{ pref('timezone', user) == 4.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+04:30') }}</option>
+                            <option value="5"{{ pref('timezone', user) == 5 ? ' selected="selected"' : ''}}>{{ trans('UTC+05:00') }}</option>
+                            <option value="5.5"{{ pref('timezone', user) == 5.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+05:30') }}</option>
+                            <option value="5.75"{{ pref('timezone', user) == 5.75 ? ' selected="selected"' : ''}}>{{ trans('UTC+05:45') }}</option>
+                            <option value="6"{{ pref('timezone', user) == 6 ? ' selected="selected"' : ''}}>{{ trans('UTC+06:00') }}</option>
+                            <option value="6.5"{{ pref('timezone', user) == 6.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+06:30') }}</option>
+                            <option value="7"{{ pref('timezone', user) == 7 ? ' selected="selected"' : ''}}>{{ trans('UTC+07:00') }}</option>
+                            <option value="8"{{ pref('timezone', user) == 8 ? ' selected="selected"' : ''}}>{{ trans('UTC+08:00') }}</option>
+                            <option value="8.75"{{ pref('timezone', user) == 8.75 ? ' selected="selected"' : ''}}>{{ trans('UTC+08:45') }}</option>
+                            <option value="9"{{ pref('timezone', user) == 9 ? ' selected="selected"' : ''}}>{{ trans('UTC+09:00') }}</option>
+                            <option value="9.5"{{ pref('timezone', user) == 9.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+09:30') }}</option>
+                            <option value="10"{{ pref('timezone', user) == 10 ? ' selected="selected"' : ''}}>{{ trans('UTC+10:00') }}</option>
+                            <option value="10.5"{{ pref('timezone', user) == 10.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+10:30') }}</option>
+                            <option value="11"{{ pref('timezone', user) == 11 ? ' selected="selected"' : ''}}>{{ trans('UTC+11:00') }}</option>
+                            <option value="11.5"{{ pref('timezone', user) == 11.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+11:30') }}</option>
+                            <option value="12"{{ pref('timezone', user) == 12 ? ' selected="selected"' : ''}}>{{ trans('UTC+12:00') }}</option>
+                            <option value="12.75"{{ pref('timezone', user) == 12.75 ? ' selected="selected"' : ''}}>{{ trans('UTC+12:45') }}</option>
+                            <option value="13"{{ pref('timezone', user) == 13 ? ' selected="selected"' : ''}}>{{ trans('UTC+13:00') }}</option>
+                            <option value="14"{{ pref('timezone', user) == 14 ? ' selected="selected"' : ''}}>{{ trans('UTC+14:00') }}</option>
                         </select>
                         <br />
                         </label>
                         <div class="rbox">
                             <label>
-                                <input type="checkbox" name="form_dst" value="1"{{ user.dst == '1' ? ' checked="checked"' : ''}} />{{ trans('DST') }}<br />
+                                <input type="checkbox" name="form_dst" value="1"{{ pref('dst', user) == '1' ? ' checked="checked"' : ''}} />{{ trans('DST') }}<br />
                             </label>
                         </div>
                         <label>{{ trans('Time format') }}
                         <br />
                             <select name="form_time_format">
                 {% for key, time_format in forum_time_formats %}
-                                <option value="{{ key }}"{{ user.time_format == key ? ' selected="selected"' : '' }}>{{ formatTime(date().timestamp, false, null, time_format, true, true) }} {{ key == 0 ? trans('Default') : '' }}</option>
+                                <option value="{{ key }}"{{ pref('time_format', user) == key ? ' selected="selected"' : '' }}>{{ formatTime(date().timestamp, false, null, time_format, true, true) }} {{ key == 0 ? trans('Default') : '' }}</option>
                 {% endfor %}
                         </select>
                         <br />
@@ -105,7 +105,7 @@
                             <br />
                             <select name="form_date_format">
                 {% for key, date_format in forum_date_formats %}
-                                <option value="{{ key }}"{{ user.date_format == key ? ' selected="selected"' : '' }}>{{ formatTime(date().timestamp, true, date_format, null, false, true) }}{{ key == 0 ? ' ('~trans('Default')~')' }}</option>
+                                <option value="{{ key }}"{{ pref('date_format', user) == key ? ' selected="selected"' : '' }}>{{ formatTime(date().timestamp, true, date_format, null, false, true) }}{{ key == 0 ? ' ('~trans('Default')~')' }}</option>
                 {% endfor %}
                             </select>
                         <br />
@@ -117,7 +117,7 @@
                         <label>{{ trans('Language') }}
                         <br /><select name="form_language">
                         {% for lang in languages %}
-                            <option value="{{ lang }}"{{ user.language == lang ? ' selected="selected" ' : '' }}>{{ lang }}</option>
+                            <option value="{{ lang }}"{{ pref('language', user) == lang ? ' selected="selected" ' : '' }}>{{ lang }}</option>
                         {% endfor %}
                         </select>
                         <br /></label>

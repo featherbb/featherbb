@@ -3,8 +3,7 @@
 nbproject/
 .htaccess
 composer.lock
-cache/*.php
-cache/*.cache
+cache/
 /plugins/*
 !/plugins/test
 /style/img/avatars/*

@@ -65,10 +65,31 @@ class RunBBTwig extends \Twig_Extension
             }, ['is_safe' => ['html']]),
 
             /**
+             * Return the status of a user
+             */
+            new \Twig_SimpleFunction('isAdmin', function () {
+                return User::isAdmin();
+            }, ['is_safe' => ['html']]),
+
+            /**
+             * Return the status of a user
+             */
+            new \Twig_SimpleFunction('canGroup', function ($gId, $perm) {
+                return Container::get('perms')->getGroupPermissions($gId, $perm);
+            }, ['is_safe' => ['html']]),
+
+            /**
              * Check permissions
              */
             new \Twig_SimpleFunction('can', function ($str) {
                 return User::can($str);
+            }, ['is_safe' => ['html']]),
+
+            /**
+             * Check permissions
+             */
+            new \Twig_SimpleFunction('pref', function ($key, $user) {
+                return User::getPref($key, $user);
             }, ['is_safe' => ['html']]),
 
             /**

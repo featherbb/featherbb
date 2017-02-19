@@ -117,7 +117,7 @@
         {% else %}
             <ul class="conl">
                 <li><span>{{ trans('Logged in as') }} <strong>{{ userGet('username') }}</strong></span></li>
-                <li><span>{{ trans('Last visit') }} {{ formatTime( userGet('last_visit') ) }}</span></li>
+                <li><span>{{ trans(['Last visit', formatTime(userGet('last_visit'))]) }}</span></li>
 
 
             {% if isAdminMod() %}
@@ -181,7 +181,6 @@
                 }
             </script>
     {% for type, message in flashMessages %}
-{{ dump(message) }}
             <div class="flashmsg info" data-type="{{ type }}" id="flashmsg">
                 <h2>{{ trans('Info') }}
                     <span style="float:right;cursor:pointer"

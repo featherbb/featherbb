@@ -6,7 +6,7 @@
     <div class="linkst">
         <div class="inbox crumbsplus">
             <ul class="crumbs">
-                <li><a href="{{ urlBase() }}/forum">{{ trans('Index') }}</a></li>
+                <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
                 <li>
                     <span>»&#160;</span>
                     <strong><a href="{{ pathFor('Forum', {'id': id, 'name': url_forum}) }}">{{ cur_forum.forum_name }}</a></strong>
@@ -93,7 +93,7 @@
                 {{ post_link|raw }}
             </div>
             <ul class="crumbs">
-                <li><a href="{{ urlBase() }}/forum">{{ trans('Index') }}</a></li>
+                <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
                 <li>
                     <span>»&#160;</span>
                     <strong><a href="{{ pathFor('Forum', {'id': "#{ id }", 'name': "#{ url_forum }"}) }}">{{ cur_forum.forum_name }}</a></strong>

@@ -40,8 +40,8 @@
         <p><code>[topic]1[/topic]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}">{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}</a></samp></p>
         <p><code>[post=1]{{ trans('Test post') }}[/post]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('viewPost', {'name': 'test', 'id': 1, 'pid': '1'}) }}#1">{{ trans('Test post') }}</a></samp></p>
         <p><code>[post]1[/post]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('viewPost', {'name': 'test', 'id': 1, 'pid': '1'}) }}#1">{{ pathFor('viewPost', {'name': 'test', 'id': 1, 'pid': '1'}) }}#1</a></samp></p>
-        <p><code>[forum=1]{{ trans('Test forum') }}[/forum]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}">{{ trans('Test forum') }}</a></samp></p>
-        <p><code>[forum]1[/forum]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Forum', {'id': '1', 'name': 'test-name'}) }}">{{ pathFor('Forum', {'id': '1', 'name': 'test-name'}) }}</a></samp></p>
+        <p><code>[forum=1]{{ trans('Test forum') }}[]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}">{{ trans('Test forum') }}</a></samp></p>
+        <p><code>[forum]1[]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Forum', {'id': '1', 'name': 'test-name'}) }}">{{ pathFor('Forum', {'id': '1', 'name': 'test-name'}) }}</a></samp></p>
         <p><code>[user=2]{{ trans('Test user') }}[/user]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('userProfile', {'id': '2'}) }}">{{ trans('Test user') }}</a></samp></p>
         <p><code>[user]2[/user]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('userProfile', {'id': '2'}) }}">{{ pathFor('userProfile', {'id': '2'}) }}</a></samp></p>
     </div>

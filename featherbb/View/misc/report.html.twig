@@ -8,9 +8,9 @@
     <div class="linkst">
         <div class="inbox">
             <ul class="crumbs">
-                <li><a href="{{ urlBase() }}/forum">{{ trans('Index') }}</a></li>
+                <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
                 <li><span>»&#160;</span><a href="{{ pathFor('Forum', {'id': cur_post.fid, 'name': slug(cur_post.forum_name)}) }}">{{ cur_post.forum_name }}</a></li>
-                <li><span>»&#160;</span><a href="{{ pathFor('viewPost', {'name': slug(cur_post.forum_name), 'id': tid, 'pid': id}) }}#p{{ id }}">">{{ cur_post.subject }}</a></li>
+                <li><span>»&#160;</span><a href="{{ pathFor('viewPost', {'name': slug(cur_post.forum_name), 'id': tid, 'pid': id}) }}#p{{ id }}">{{ cur_post.subject }}</a></li>
                 <li><span>»&#160;</span><strong>{{ trans('Report post') }}</strong></li>
             </ul>
         </div>

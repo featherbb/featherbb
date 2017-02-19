@@ -17,7 +17,7 @@
                     <fieldset>
 
 
-{% if userGet('g_moderator') == '1' %}
+{% if isAdmin() == false %}
 
                 <legend>{{ trans('Delete ban legend') }}</legend>
                 <div class="infldset">
@@ -52,7 +52,7 @@
         </div>
 
 
-        {% if user.g_moderator == '1' or user.g_id == getEnv('FEATHER_ADMIN') %}
+        {% if canGroup(user.g_id, 'mod.is_mod') or isAdmin() %}
 
             <div class="inform">
                 <fieldset>
