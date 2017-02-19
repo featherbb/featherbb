@@ -17,12 +17,12 @@
 
 namespace FeatherBB\Core;
 
-class RunBBTwig extends \Twig_Extension
+class Twig extends \Twig_Extension
 {
 
     public function getName()
     {
-        return 'runBB_Twig';
+        return 'FeatherBB_Twig';
     }
 
     public function getFunctions()
@@ -226,6 +226,10 @@ class RunBBTwig extends \Twig_Extension
              */
             new \Twig_SimpleFunction('unSerialize', function ($var) {
                 return unserialize($var);
+            }, ['is_safe' => ['html']]),
+
+            new \Twig_SimpleFunction('preg_match', function ($pattern, $subject) {
+                return preg_match($pattern, $subject);
             }, ['is_safe' => ['html']]),
         ];
     }

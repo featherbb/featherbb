@@ -31,7 +31,7 @@
         "gettext/gettext": "^4.2",
         "s9e/text-formatter": "^0.9",
         "featherbb/php-utf-8": "dev-master",
-        "twig/twig": "2.*"
+        "twig/twig": "1.*|2.*"
     },
     "support": {
         "email": "admin@featherbb.org",

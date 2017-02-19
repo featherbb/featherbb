@@ -313,8 +313,7 @@
                     </tr>
                 {% endfor %}
                 <tr>
-                    <td class="tcl" colspan="2">{{ trans('Total query time') }}
-                        {{ queries_info.total_time|round(7) }} s</td>
+                    <td class="tcl" colspan="2">{{ trans(['Total query time', queries_info.total_time|round(7)]) }} s</td>
                 </tr>
                 </tbody>
             </table>

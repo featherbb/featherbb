@@ -12,13 +12,13 @@
                     <li{{ page == 'users' ? ' class="isactive"' : '' }}>
                         <a href="{{ pathFor('adminUsers') }}">{{ trans('Users') }}</a>
                     </li>
-            {% if is_admin or userGet('g_mod_ban_users') == '1' %}
+            {% if isAdmin() or userGet('g_mod_ban_users') == '1' %}
                     <li{{ page == 'bans' ? ' class="isactive"': '' }}>
                         <a href="{{ pathFor('adminBans') }}">{{ trans('Bans') }}</a>
                     </li>
             {% endif %}
 
-            {% if is_admin or settings('o_report_method') == '0' or settings('o_report_method') == '2' %}
+            {% if isAdmin() or settings('o_report_method') == '0' or settings('o_report_method') == '2' %}
                     <li{{ page == 'reports' ? ' class="isactive"' : '' }}>
                         <a href="{{ pathFor('adminReports') }}">{{ trans('Reports') }}</a>
                     </li>
@@ -28,39 +28,19 @@
             </div>
         </div>
 
-    {% if is_admin %}
+    {% if isAdmin() %}
 
         <h2 class="block2"><span>{{ trans('Admin menu') }}</span></h2>
         <div class="box">
             <div class="inbox">
                 <ul>
-                    <li{{ page == 'options' ? ' class="isactive"' : '' }}>
-                        <a href="{{ pathFor('adminOptions') }}">{{ trans('Options') }}</a>
-                    </li>
-                    <li{{ page == 'permissions' ? ' class="isactive"' : '' }}>
-                        <a href="{{ pathFor('adminPermissions') }}">{{ trans('Permissions') }}</a>
-                    </li>
-                    <li{{ page == 'categories' ? ' class="isactive"' : '' }}>
-                        <a href="{{ pathFor('adminCategories') }}">{{ trans('Categories') }}</a>
-                    </li>
-                    <li{{ page == 'forums' ? ' class="isactive"' : '' }}>
-                        <a href="{{ pathFor('adminForums') }}">{{ trans('Forums') }}</a>
-                    </li>
-                    <li{{ page == 'groups' ? ' class="isactive"' : '' }}>
-                        <a href="{{ pathFor('adminGroups') }}">{{ trans('User groups') }}</a>
-                    </li>
-                    <li{{ page == 'plugins' ? ' class="isactive"' : '' }}>
-                        <a href="{{ pathFor('adminPlugins') }}">{{ trans('Plugins') }}</a>
-                    </li>
-                    <li{{ page == 'censoring' ? ' class="isactive"' : '' }}>
-                        <a href="{{ pathFor('adminCensoring') }}">{{ trans('Censoring') }}</a>
-                    </li>
-                    <li{{ page == 'parser' ? ' class="isactive"' : '' }}>
-                        <a href="{{ pathFor('adminParser') }}">{{ trans('Parser') }}</a>
-                    </li>
-                    <li{{ page == 'maintenance' ? ' class="isactive"' : '' }}>
-                        <a href="{{ pathFor('adminMaintenance') }}">{{ trans('Maintenance') }}</a>
-                    </li>
+                    {% for perm, data in menu_items %}
+                        {% if preg_match('/^board\..*$/', perm) %}
+                            <li{{ page == data.title|lower ? ' class="isactive"' : '' }}>
+                                <a href="{{ pathFor(data.url) }}">{{ trans(data.title) }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
                 </ul>
             </div>
         </div>
@@ -70,7 +50,7 @@
     {#// Did we find any plugins?#}
     {% if plugins is not empty %}
 
-        <h2 class="block2"><span><?= __('Plugins menu') ?></span></h2>
+        <h2 class="block2"><span>{{ trans('Plugins menu') }}</span></h2>
         <div class="box">
             <div class="inbox">
                 <ul>

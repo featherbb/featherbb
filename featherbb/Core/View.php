@@ -53,7 +53,7 @@ class View
         if (ForumEnv::get('FEATHER_DEBUG')) {
             $this->twig->addExtension(new \Twig_Extension_Debug());
         }
-        $this->twig->addExtension(new \FeatherBB\Core\RunBBTwig());
+        $this->twig->addExtension(new \FeatherBB\Core\Twig());
 
         return $this;
     }
@@ -157,9 +157,9 @@ class View
         $data['currentPage'] = '';
 
         if (file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$style.'/base_admin.css')) {
-            $admStyle = '<link rel="stylesheet" type="text/css" href="/themes/'.$style.'/base_admin.css" />';
+            $admStyle = '<link rel="stylesheet" type="text/css" href="'.Url::base().'/style/themes/'.$style.'/base_admin.css" />';
         } else {
-            $admStyle = '<link rel="stylesheet" type="text/css" href="/imports/base_admin.css" />';
+            $admStyle = '<link rel="stylesheet" type="text/css" href="'.Url::base().'/style/themes/FeatherBB/base_admin.css" />';
         }
         $data['admStyle'] = $admStyle;
 
