@@ -82,12 +82,14 @@
 
                             <label class="conl required">
                                 <strong>{{ trans('Guest name') }} <span>{{ trans('Required') }}</span></strong><br />
-                                <input type="text" name="req_username" value="{{ inputPost('req_username') ? post.username : '' }}" size="25" maxlength="25" tabindex="<?= $cur_index++ ?>" /><br />
+                                <input type="text" name="req_username" value="{{ inputPost('req_username') ? post.username : '' }}" size="25" maxlength="25" tabindex="{{ cur_index }}" /><br />
+                                {% set cur_index = cur_index + 1 %}
                             </label>
                             <label class="conl{{ settings('p_force_guest_email') == '1' ? ' required' : '' }}">
                                 {{ settings('p_force_guest_email') == '1' ? "<strong>#{ trans('Email') } <span>#{ trans('Required') }</span></strong>" : trans('Email') }}
                                 <br />
-                                <input type="text" name="{{ email_form_name }}" value="{{ inputPost( email_form_name ) ? post.email : '' }}" size="50" maxlength="80" tabindex="<?= $cur_index++ ?>" /><br />
+                                <input type="text" name="{{ email_form_name }}" value="{{ inputPost( email_form_name ) ? post.email : '' }}" size="50" maxlength="80" tabindex="{{ cur_index }}" /><br />
+                                {% set cur_index = cur_index + 1 %}
                             </label>
                             <div class="clearer"></div>
 
@@ -96,16 +98,18 @@
             {% if fid %}
                             <label class="required">
                                 <strong>{{ trans('Subject') }} <span>{{ trans('Required') }}</span></strong><br />
-                                <input class="longinput" type="text" name="req_subject" value="{{ inputPost('req_subject') ? post.subject : '' }}" maxlength="70" tabindex="<?= $cur_index++ ?>" /><br />
+                                <input class="longinput" type="text" name="req_subject" value="{{ inputPost('req_subject') ? post.subject : '' }}" maxlength="70" tabindex="{{ cur_index }}" /><br />
                             </label>
+                {% set cur_index = cur_index + 1 %}
             {% endif %}
                             <label class="required"><strong>{{ trans('Message') }} <span>{{ trans('Required') }}</span></strong><br />
-                            <textarea name="req_message" id="req_message" rows="20" tabindex="<?= $cur_index++ ?>">{{ inputPost('req_message') ? inputPost('req_message')|raw : (quote is defined ? quote|raw : '') }}</textarea><br />
+                            <textarea name="req_message" id="req_message" rows="20" tabindex="{{ cur_index }}">{{ inputPost('req_message') ? inputPost('req_message')|raw : (quote is defined ? quote|raw : '') }}</textarea><br />
+                                {% set cur_index = cur_index + 1 %}
                             </label>
                             <div id="markitup-elfinder"></div>
                             <ul class="bblinks list-inline">
                                 <li><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}ok</a> {{ settings('p_message_bbcode') == '1' ? trans('on') : trans('off') }}</li>
-                                <li><a href="{{ pathFor('help') }}#url" onclick="window.open (this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_message_bbcode') == '1' and userGet('g_post_links') == '1' ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#url" onclick="window.open (this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_message_bbcode') == '1' and can('post.links') ? trans('on') : trans('off') }}</li>
                                 <li><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ settings('p_message_bbcode') == '1' and settings('p_message_img_tag') == '1' ? trans('on') : trans('off') }}</li>
                                 <li><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies') == '1' ? trans('on') : trans('off') }}</li>
                             </ul>
@@ -149,8 +153,9 @@
                 </div>
                 {% endif %}
                 <p class="buttons">
-                    <input type="submit" name="submit" value="{{ trans('Submit') }}" tabindex="<?= $cur_index++ ?>" accesskey="s" />
-                    <!--<input type="submit" name="preview" value="{{ trans('Preview') }}" tabindex="<?= $cur_index++ ?>" accesskey="p" />-->
+                    <input type="submit" name="submit" value="{{ trans('Submit') }}" tabindex="{{ cur_index }}" accesskey="s" />
+                    {% set cur_index = cur_index + 1 %}
+                    <input type="submit" name="preview" value="{{ trans('Preview') }}" tabindex="{{ cur_index }}" accesskey="p" />
                     <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
                 </p>
             </form>

@@ -11,7 +11,7 @@
                 <fieldset>
                     <legend>{{ trans('User find legend') }}</legend>
                     <div class="infldset">
-{% if userGet('g_search_users') == '1' %}
+{% if can('search.users') %}
                         <label class="conl">{{ trans('Username') }}<br />
                             <input type="text" name="username" value="{{ username }}" size="25" maxlength="25" /><br />
                         </label>
@@ -52,7 +52,7 @@
                         </select>
                         <br /></label>
                         <p class="clearb">
-                            {{ userGet('g_search_users') == '1' ? trans('User search info') : '' }}
+                            {{ can('search.users') ? trans('User search info') : '' }}
                             {{ trans('User sort info') }}
                         </p>
                     </div>

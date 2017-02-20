@@ -18,7 +18,7 @@
                     <div class="infldset">
                         <input type="hidden" name="form_sent" value="1" />
                         {{ user_disp.username_field|raw }}
-        {% if userGet('id') == id or userGet('g_id') == getEnv('FEATHER_ADMIN') or (user.g_moderator == '0' and userGet('g_mod_change_passwords') == '1') %}
+        {% if userGet('id') == id or isAdmin() or (isAdminMod() and can('mod.change_passwords')) %}
                         <p class="actions">
                             <span>
                                 <a href="{{ pathFor('profileAction', {'id': id, 'action': 'change_pass'}) }}">{{ trans('Change pass') }}</a>

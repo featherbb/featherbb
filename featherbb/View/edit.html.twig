@@ -66,23 +66,19 @@
     {% if can_edit_subject %}
 
                             <label class="required"><strong>{{ trans('Subject') }} <span>{{ trans('Required') }}</span></strong><br />
-                            <input class="longinput" type="text" name="req_subject" size="80" maxlength="70" tabindex="<?= $cur_index++ ?>" value="{{ inputPost('req_subject') ? inputPost('req_subject') : cur_post.subject }}" /><br /></label>
+                            <input class="longinput" type="text" name="req_subject" size="80" maxlength="70" tabindex="{{ cur_index }}" value="{{ inputPost('req_subject') ? inputPost('req_subject') : cur_post.subject }}" /><br /></label>
+        {% set cur_index = cur_index + 1 %}
 
     {% endif %}
 
                             <label class="required"><strong>{{ trans('Message') }} <span>{{ trans('Required') }}</span></strong><br />
-    <!--
-                            <script>
-                                document.addEventListener("DOMContentLoaded", function(event) {
-                                    postEditorToolbar('req_message');
-                                });
-                            </script>
-    -->
-                            <textarea name="req_message" id="req_message" rows="20" tabindex="<?= $cur_index++ ?>">{{ inputPost('req_message') ? post.message : cur_post.message }}</textarea><br /></label>
+
+                            <textarea name="req_message" id="req_message" rows="20" tabindex="{{ cur_index }}">{{ inputPost('req_message') ? post.message : cur_post.message }}</textarea><br /></label>
+                            {% set cur_index = cur_index + 1 %}
                             <div id="markitup-elfinder"></div>
                             <ul class="bblinks list-inline">
                                 <li><span><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}</a> {{ settings('p_message_bbcode') == '1' ? trans('on') : trans('off') }}</span></li>
-                                <li><span><a href="{{ pathFor('help') }}#url" onclick="window.open(this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_message_bbcode') == '1' and userGet('g_post_links') == '1' ? trans('on') : trans('off') }}</span></li>
+                                <li><span><a href="{{ pathFor('help') }}#url" onclick="window.open(this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_message_bbcode') == '1' and can('post.links') ? trans('on') : trans('off') }}</span></li>
                                 <li><span><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ settings('p_message_bbcode') == '1' and settings('p_message_img_tag') == '1' ? trans('on') : trans('off') }}</span></li>
                                 <li><span><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies') == '1' ? trans('on') : trans('off') }}</span></li>
                             </ul>
@@ -106,8 +102,9 @@
         {% endif %}
 
                 <p class="buttons">
-                    <input type="submit" name="submit" value="{{ trans('Submit') }}" tabindex="<?= $cur_index++ ?>" accesskey="s" />
-                    <!--<input type="submit" name="preview" value="<?= __('Preview') ?>" tabindex="<?= $cur_index++ ?>" accesskey="p" />-->
+                    <input type="submit" name="submit" value="{{ trans('Submit') }}" tabindex="{{ cur_index }}" accesskey="s" />
+                    {% set cur_index = cur_index + 1 %}
+                    <input type="submit" name="preview" value="{{ trans('Preview') }}" tabindex="{{ cur_index }}" accesskey="p" />
                     <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
                 </p>
             </form>

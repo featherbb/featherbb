@@ -26,7 +26,7 @@
                     <li{{ page == 'privacy' ? ' class="isactive"' : '' }}>
                         <a href="{{ pathFor('profileSection', {'id': "#{ id }", 'section': 'privacy'}) }}">{{ trans('Section privacy') }}</a>
                     </li>
-        {% if userGet('g_id') == getEnv('FEATHER_ADMIN') or (userGet('g_moderator') == '1' and userGet('g_mod_ban_users') == '1') %}
+        {% if isAdmin() or (isAdminMod() and can('mod.ban_users')) %}
                     <li{{ page == 'admin' ? ' class="isactive"' : '' }}>
                         <a href="{{ pathFor('profileSection', {'id': "#{ id }", 'section': 'admin'}) }}">{{ trans('Section admin') }}</a>
                     </li>

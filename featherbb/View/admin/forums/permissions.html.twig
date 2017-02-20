@@ -84,7 +84,7 @@
                                 <input type="hidden" name="read_forum_old[{{ perm.g_id }}]" value="{{ perm.read_forum ? '1' : '0' }}" />
                                 <input type="checkbox" name="read_forum_new[{{ perm.g_id }}]" value="1"
                                 {{ perm.read_forum ? ' checked="checked"' : '' }}
-                                {{ perm.g_read_board == '0' ? ' disabled="disabled"' : '' }}
+                                {{ perm['board.read'] == '0' ? ' disabled="disabled"' : '' }}
                                 tabindex="{{ getIndex() }}" />
                             </td>
                             <td{{ perm.post_replies_def == 0 and cur_forum.redirect_url == '' ? ' class="nodefault"' : '' }}>

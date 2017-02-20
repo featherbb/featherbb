@@ -15,7 +15,7 @@
                     <dd>
                         {{ trans(['Server load data', server_load, num_online]) }}
                     </dd>
-{% if userGet('g_id') == getEnv('FEATHER_ADMIN') %}
+{% if isAdmin() %}
 
                     <dt>{{ trans('Environment label') }}</dt>
                     <dd>

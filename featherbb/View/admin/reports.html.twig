@@ -27,7 +27,7 @@
                                         {{ breadcrumbsAdmin({
                                                 (report.forum_name): pathFor('Forum', {'id': report.forum_id, 'name': slug(report.forum_name)}),
                                                 (report.subject): pathFor('Forum', {'id': report.topic_id, 'name': slug(report.subject)}),
-                                                (trans(['Post ID', report.pid])): {{ pathFor('viewPost', {'name': slug(report.subject), 'id': report.topic_id, 'pid': report.pid}) }}~'#p' ~report.pid
+                                                (trans(['Post ID', report.pid])): pathFor('viewPost', {'name': slug(report.subject), 'id': report.topic_id, 'pid': report.pid})~'#p' ~report.pid
                                             })
                                         }}
                                     </td>
@@ -86,7 +86,7 @@
                                         {{ breadcrumbsAdmin({
                                         (report.forum_name): pathFor('Forum', {'id': report.forum_id, 'name': slug(report.forum_name)}),
                                         (report.subject): pathFor('Forum', {'id': report.topic_id, 'name': slug(report.subject)}),
-                                            (trans(['Post ID', report.pid])): {{ pathFor('viewPost', {'name': slug(report.subject), 'id': report.topic_id, 'pid': report.pid}) }}~'#p' ~report.pid
+                                            (trans(['Post ID', report.pid])): pathFor('viewPost', {'name': slug(report.subject), 'id': report.topic_id, 'pid': report.pid})~'#p' ~report.pid
                                         }) }}
                                     </td>
                                 </tr>

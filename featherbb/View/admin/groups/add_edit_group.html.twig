@@ -54,7 +54,7 @@
                                             <option value="0">{{ trans('Disable promotion') }}</option>
                                             {{ group_list|raw }}
                                         </select>
-                                        <input type="text" name="promote_min_posts" size="5" maxlength="10" value="{{ group.info.g_promote_min_posts }}" tabindex="4" />
+                                        <input type="text" name="promote_min_posts" size="5" maxlength="10" value="{{ group.prefs['promote.min_posts'] }}" tabindex="4" />
                                         <span>{{ trans(['Promote users help', trans('Disable promotion')]) }}</span>
                                     </td>
                                 </tr>
@@ -62,48 +62,48 @@
                                 <tr>
                                     <th scope="row"> {{ trans('Mod privileges label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="moderator" value="1"{{ group.info.g_moderator == '1' ? ' checked="checked"' : '' }} tabindex="5" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="moderator" value="0"{{ group.info.g_moderator == '0' ? ' checked="checked"' : '' }} tabindex="6" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="moderator" value="1"{{ group.perms['mod.is_mod'] is defined ? ' checked="checked"' : '' }} tabindex="5" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="moderator" value="0"{{ group.perms['mod.is_mod'] is not defined ? ' checked="checked"' : '' }} tabindex="6" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Mod privileges help') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('Edit profile label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="mod_edit_users" value="1"{{ group.info.g_mod_edit_users == '1' ? ' checked="checked"' : '' }} tabindex="7" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="mod_edit_users" value="0"{{ group.info.g_mod_edit_users == '0' ? ' checked="checked"' : '' }} tabindex="8" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="mod_edit_users" value="1"{{ group.perms['mod.edit_users'] is defined ? ' checked="checked"' : '' }} tabindex="7" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="mod_edit_users" value="0"{{ group.perms['mod.edit_users'] is not defined ? ' checked="checked"' : '' }} tabindex="8" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Edit profile help') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('Rename users label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="mod_rename_users" value="1"{{ group.info.g_mod_rename_users == '1' ? ' checked="checked"' : '' }} tabindex="9" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="mod_rename_users" value="0"{{ group.info.g_mod_rename_users == '0' ? ' checked="checked"' : '' }} tabindex="10" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="mod_rename_users" value="1"{{ group.perms['mod.rename_users'] is defined ? ' checked="checked"' : '' }} tabindex="9" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="mod_rename_users" value="0"{{ group.perms['mod.rename_users'] is not defined ? ' checked="checked"' : '' }} tabindex="10" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Rename users help') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('Change passwords label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="mod_change_passwords" value="1"{{ group.info.g_mod_change_passwords == '1' ? ' checked="checked"' : '' }} tabindex="11" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="mod_change_passwords" value="0"{{ group.info.g_mod_change_passwords == '0' ? ' checked="checked"' : '' }} tabindex="12" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="mod_change_passwords" value="1"{{ group.perms['mod.change_passwords'] is defined ? ' checked="checked"' : '' }} tabindex="11" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="mod_change_passwords" value="0"{{ group.perms['mod.change_passwords'] is not defined ? ' checked="checked"' : '' }} tabindex="12" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Change passwords help') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('Mod promote users label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="mod_promote_users" value="1"{{ group.info.g_mod_promote_users == '1' ? ' checked="checked"' : '' }} tabindex="13" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="mod_promote_users" value="0"{{ group.info.g_mod_promote_users == '0' ? ' checked="checked"' : '' }} tabindex="14" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="mod_promote_users" value="1"{{ group.perms['mod.promote_users'] is defined ? ' checked="checked"' : '' }} tabindex="13" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="mod_promote_users" value="0"{{ group.perms['mod.promote_users'] is not defined ? ' checked="checked"' : '' }} tabindex="14" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Mod promote users help') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('Ban users label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="mod_ban_users" value="1"{{ group.info.g_mod_ban_users == '1' ? ' checked="checked"' : '' }} tabindex="15" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="mod_ban_users" value="0"{{ group.info.g_mod_ban_users == '0' ? ' checked="checked"' : '' }} tabindex="16" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="mod_ban_users" value="1"{{ group.perms['mod.ban_users'] is defined ? ' checked="checked"' : '' }} tabindex="15" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="mod_ban_users" value="0"{{ group.perms['mod.ban_users'] is not defined ? ' checked="checked"' : '' }} tabindex="16" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Ban users help') }}</span>
                                     </td>
                                 </tr>
@@ -114,32 +114,32 @@
                                 <tr>
                                     <th scope="row">{{ trans('Read board label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="read_board" value="1"{{ group.info.g_read_board == '1' ? ' checked="checked"' : '' }} tabindex="17" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="read_board" value="0"{{ group.info.g_read_board == '0' ? ' checked="checked"' : '' }} tabindex="18" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="read_board" value="1"{{ group.perms['board.read'] is defined ? ' checked="checked"' : '' }} tabindex="17" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="read_board" value="0"{{ group.perms['board.read'] is not defined ? ' checked="checked"' : '' }} tabindex="18" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Read board help') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('View user info label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="view_users" value="1"{{ group.info.g_view_users == '1' ? ' checked="checked"' : '' }} tabindex="19" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="view_users" value="0"{{ group.info.g_view_users == '0' ? ' checked="checked"' : '' }} tabindex="20" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="view_users" value="1"{{ group.perms['users.view'] is defined ? ' checked="checked"' : '' }} tabindex="19" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="view_users" value="0"{{ group.perms['users.view'] is not defined ? ' checked="checked"' : '' }} tabindex="20" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('View user info help') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('Post replies label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="post_replies" value="1"{{ group.info.g_post_replies == '1' ? ' checked="checked"' : '' }} tabindex="21" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="post_replies" value="0"{{ group.info.g_post_replies == '0' ? ' checked="checked"' : '' }} tabindex="22" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="post_replies" value="1"{{ group.perms['topic.reply'] is defined ? ' checked="checked"' : '' }} tabindex="21" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="post_replies" value="0"{{ group.perms['topic.reply'] is not defined ? ' checked="checked"' : '' }} tabindex="22" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Post replies help') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('Post topics label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="post_topics" value="1"{{ group.info.g_post_topics == '1' ? ' checked="checked"' : '' }} tabindex="23" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="post_topics" value="0"{{ group.info.g_post_topics == '0' ? ' checked="checked"' : '' }} tabindex="24" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="post_topics" value="1"{{ group.perms['topic.post'] is defined ? ' checked="checked"' : '' }} tabindex="23" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="post_topics" value="0"{{ group.perms['topic.post'] is not defined ? ' checked="checked"' : '' }} tabindex="24" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Post topics help') }}</span>
                                     </td>
                                 </tr>
@@ -147,24 +147,24 @@
                                 <tr>
                                     <th scope="row">{{ trans('Edit posts label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="edit_posts" value="1"{{ group.info.g_edit_posts == '1' ? ' checked="checked"' : '' }} tabindex="25" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="edit_posts" value="0"{{ group.info.g_edit_posts == '0' ? ' checked="checked"' : '' }} tabindex="26" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="edit_posts" value="1"{{ group.perms['post.edit'] is defined ? ' checked="checked"' : '' }} tabindex="25" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="edit_posts" value="0"{{ group.perms['post.edit'] is not defined ? ' checked="checked"' : '' }} tabindex="26" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Edit posts help') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('Delete posts label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="delete_posts" value="1"{{ group.info.g_delete_posts == '1' ? ' checked="checked"' : '' }} tabindex="27" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="delete_posts" value="0"{{ group.info.g_delete_posts == '0' ? ' checked="checked"' : '' }} tabindex="28" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="delete_posts" value="1"{{ group.perms['post.delete'] is defined ? ' checked="checked"' : '' }} tabindex="27" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="delete_posts" value="0"{{ group.perms['post.delete'] is not defined ? ' checked="checked"' : '' }} tabindex="28" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Delete posts help') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('Delete topics label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="delete_topics" value="1"{{ group.info.g_delete_topics == '1' ? ' checked="checked"' : '' }} tabindex="29" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="delete_topics" value="0"{{ group.info.g_delete_topics == '0' ? ' checked="checked"' : '' }} tabindex="30" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="delete_topics" value="1"{{ group.perms['topic.delete'] is defined ? ' checked="checked"' : '' }} tabindex="29" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="delete_topics" value="0"{{ group.perms['topic.delete'] is not defined ? ' checked="checked"' : '' }} tabindex="30" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Delete topics help') }}</span>
                                     </td>
                                 </tr>
@@ -173,8 +173,8 @@
                                 <tr>
                                     <th scope="row">{{ trans('Post links label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="post_links" value="1"{{ group.info.g_post_links == '1' ? ' checked="checked"' : '' }} tabindex="31" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="post_links" value="0"{{ group.info.g_post_links == '0' ? ' checked="checked"' : '' }} tabindex="32" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="post_links" value="1"{{ group.perms['post.links'] is defined ? ' checked="checked"' : '' }} tabindex="31" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="post_links" value="0"{{ group.perms['post.links'] is not defined ? ' checked="checked"' : '' }} tabindex="32" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Post links help') }}</span>
                                     </td>
                                 </tr>
@@ -182,8 +182,8 @@
                                 <tr>
                                     <th scope="row">{{ trans('Set own title label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="set_title" value="1"{{ group.info.g_set_title == '1' ? ' checked="checked"' : '' }} tabindex="33" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="set_title" value="0"{{ group.info.g_set_title == '0' ? ' checked="checked"' : '' }} tabindex="34" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="set_title" value="1"{{ group.perms['user.set_title'] is defined ? ' checked="checked"' : '' }} tabindex="33" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="set_title" value="0"{{ group.perms['user.set_title'] is not defined ? ' checked="checked"' : '' }} tabindex="34" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Set own title help') }}</span>
                                     </td>
                                 </tr>
@@ -192,16 +192,16 @@
                                 <tr>
                                     <th scope="row">{{ trans('User search label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="search" value="1"{{ group.info.g_search == '1' ? ' checked="checked"' : '' }} tabindex="35" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="search" value="0"{{ group.info.g_search == '0' ? ' checked="checked"' : '' }} tabindex="36" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="search" value="1"{{ group.perms['search.topics'] is defined ? ' checked="checked"' : '' }} tabindex="35" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="search" value="0"{{ group.perms['search.topics'] is not defined ? ' checked="checked"' : '' }} tabindex="36" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('User search help') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('User list search label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="search_users" value="1"{{ group.info.g_search_users == '1' ? ' checked="checked"' : '' }} tabindex="37" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="search_users" value="0"{{ group.info.g_search_users == '0' ? ' checked="checked"' : '' }} tabindex="38" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="search_users" value="1"{{ group.perms['search.users'] is defined ? ' checked="checked"' : '' }} tabindex="37" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="search_users" value="0"{{ group.perms['search.users'] is not defined ? ' checked="checked"' : '' }} tabindex="38" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('User list search help') }}</span>
                                     </td>
                                 </tr>
@@ -210,8 +210,8 @@
                                 <tr>
                                     <th scope="row">{{ trans('Send e-mails label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="send_email" value="1"{{ group.info.g_send_email == '1' ? ' checked="checked"' : '' }} tabindex="39" />&#160;<strong>{{ trans('Yes') }}</strong></label>
-                                        <label class="conl"><input type="radio" name="send_email" value="0"{{ group.info.g_send_email == '0' ? ' checked="checked"' : '' }} tabindex="40" />&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="send_email" value="1"{{ group.perms['email.send'] is defined ? ' checked="checked"' : '' }} tabindex="39" />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="send_email" value="0"{{ group.perms['email.send'] is not defined ? ' checked="checked"' : '' }} tabindex="40" />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('Send e-mails help') }}</span>
                                     </td>
                                 </tr>
@@ -220,14 +220,14 @@
                                 <tr>
                                     <th scope="row">{{ trans('Post flood label') }}</th>
                                     <td>
-                                        <input type="text" name="post_flood" size="5" maxlength="4" value="{{ group.info.g_post_flood }}" tabindex="41" />
+                                        <input type="text" name="post_flood" size="5" maxlength="4" value="{{ group.prefs['post.min_interval'] }}" tabindex="41" />
                                         <span>{{ trans('Post flood help') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('Search flood label') }}</th>
                                     <td>
-                                        <input type="text" name="search_flood" size="5" maxlength="4" value="{{ group.info.g_search_flood }}" tabindex="42" />
+                                        <input type="text" name="search_flood" size="5" maxlength="4" value="{{ group.prefs['search.min_interval'] }}" tabindex="42" />
                                         <span>{{ trans('Search flood help') }}</span>
                                     </td>
                                 </tr>
@@ -236,14 +236,14 @@
                                 <tr>
                                     <th scope="row">{{ trans('E-mail flood label') }}</th>
                                     <td>
-                                        <input type="text" name="email_flood" size="5" maxlength="4" value="{{ group.info.g_email_flood }}" tabindex="43" />
+                                        <input type="text" name="email_flood" size="5" maxlength="4" value="{{ group.prefs['email.min_interval'] }}" tabindex="43" />
                                         <span>{{ trans('E-mail flood help') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('Report flood label') }}</th>
                                     <td>
-                                        <input type="text" name="report_flood" size="5" maxlength="4" value="{{ group.info.g_report_flood }}" tabindex="44" />
+                                        <input type="text" name="report_flood" size="5" maxlength="4" value="{{ group.prefs['report.min_interval'] }}" tabindex="44" />
                                         <span>{{ trans('Report flood help') }}</span>
                                     </td>
                                 </tr>
@@ -252,7 +252,7 @@
 
                             </table>
                             {{ fireHook('view.admin.groups.add_edit_group.form') }}
-            {% if group.info.g_moderator == '1' %}
+            {% if group.perms['mod.is_mod'] is defined %}
                             <p class="warntext">{{ trans('Moderator info') }}</p>
             {% endif %}
                         </div>

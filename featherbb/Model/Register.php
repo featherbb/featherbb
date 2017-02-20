@@ -21,7 +21,7 @@ class Register
     public function checkErrors()
     {
         $user = [];
-        $user['errors'] = '';
+        $user['errors'] = [];
 
         $user = Container::get('hooks')->fire('model.register.check_for_errors_start', $user);
 

@@ -12,7 +12,7 @@
                     <li{{ page == 'users' ? ' class="isactive"' : '' }}>
                         <a href="{{ pathFor('adminUsers') }}">{{ trans('Users') }}</a>
                     </li>
-            {% if isAdmin() or userGet('g_mod_ban_users') == '1' %}
+            {% if isAdmin() or can('mod.ban_users') %}
                     <li{{ page == 'bans' ? ' class="isactive"': '' }}>
                         <a href="{{ pathFor('adminBans') }}">{{ trans('Bans') }}</a>
                     </li>

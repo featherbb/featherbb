@@ -23,7 +23,7 @@
                         </label>
                         {{ title_field is defined ? title_field|raw : '' }}
                         <label>{{ trans('Location') }}<br /><input type="text" name="form_location" value="{{ user.location }}" size="30" maxlength="30" /><br /></label>
-                {% if userGet('g_post_links') == '1' or userGet('g_id') == getEnv('FEATHER_ADMIN') %}
+                {% if can('post.links') or isAdmin() %}
                         <label>{{ trans('Website') }}<br />
                         <input type="text" name="form_url" value="{{ user.url }}" size="50" maxlength="80" /><br /></label>
                 {% endif %}

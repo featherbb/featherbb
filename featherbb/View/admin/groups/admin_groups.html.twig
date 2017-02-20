@@ -60,7 +60,7 @@
 
 
                                             {% for cur_group in groups %}
-                                                {% if cur_group.g_id > getEnv('FEATHER_GUEST') and cur_group.g_moderator == 0 %}
+                                                {% if cur_group.g_id > getEnv('FEATHER_GUEST') and cur_group.is_moderator == 0 %}
 
                                                     <option value="{{ cur_group.g_id }}"{{ cur_group.g_id == settings('o_default_user_group') ? ' selected="selected"' : '' }}>{{ cur_group.g_title }}</option>
 

@@ -701,7 +701,7 @@ class Profile
                         $form['username'] = Utils::trim(Input::post('req_username'));
 
                         if ($form['username'] != $info['old_username']) {
-                            $errors = '';
+                            $errors = [];
                             $errors = $this->checkUsername($form['username'], $errors, $id);
                             if (!empty($errors)) {
                                 throw new Error($errors[0]);

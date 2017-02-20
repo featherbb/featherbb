@@ -102,6 +102,7 @@ class Parser
                 'admin_console' => true,
                 'smiley_files' => $this->model->getSmileyFiles(),
                 'smilies' =>    $smilies,
+                'file_uploads' => (ini_get('file_uploads') == 1),
                 'urlBase' => URL::base().'/style/img/smilies/',
             ]
         )->addTemplate('@forum/admin/parser')->display();
