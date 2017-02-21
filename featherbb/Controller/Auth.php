@@ -43,7 +43,7 @@ class Auth
         }
 
         if (Request::isPost()) {
-            Container::get('hooks')->fire('controller.login');
+            Hooks::fire('controller.login');
             $formUsername = Input::post('req_username');
             $formPassword = Input::post('req_password');
             $savePass = (bool)Input::post('save_pass');
@@ -73,7 +73,7 @@ class Auth
                     Track::setTrackedTopics(null);
 
                     $expire = ($savePass) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
-                    $expire = Container::get('hooks')->fire('controller.expire_login', $expire);
+                    $expire = Hooks::fire('controller.expire_login', $expire);
 
                     $jwt = ModelAuth::generateJwt($user, $expire);
                     ModelAuth::setCookie('Bearer ' . $jwt, $expire);
@@ -96,7 +96,7 @@ class Auth
 
     public function logout($req, $res, $args)
     {
-        $token = Container::get('hooks')->fire('controller.logout', $args['token']);
+        $token = Hooks::fire('controller.logout', $args['token']);
 
         if (User::get()->is_guest || !isset($token) || !Utils::hashEquals($token, Random::hash(User::get()->id.Random::hash(Utils::getIp())))) {
             return Router::redirect(Router::pathFor('home'), 'Not logged in');
@@ -110,7 +110,7 @@ class Auth
         }
 
         ModelAuth::setCookie('Bearer ', 1);
-        Container::get('hooks')->fire('controller.logout_end');
+        Hooks::fire('controller.logout_end');
 
         return Router::redirect(Router::pathFor('home'), __('Logout redirect'));
     }
@@ -133,7 +133,7 @@ class Auth
             if ($user) {
                 // Load the "activate password" template
                 $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/mail_templates/activate_password.tpl'));
-                $mailTpl = Container::get('hooks')->fire('controller.mail_tpl_password_forgotten', $mailTpl);
+                $mailTpl = Hooks::fire('controller.mail_tpl_password_forgotten', $mailTpl);
 
                 // The first row contains the subject
                 $firstCrlf = strpos($mailTpl, "\n");
@@ -144,7 +144,7 @@ class Auth
                 $mailMessage = str_replace('<base_url>', Url::base().'/', $mailMessage);
                 $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
 
-                $mailMessage = Container::get('hooks')->fire('controller.mail_message_password_forgotten', $mailMessage);
+                $mailMessage = Hooks::fire('controller.mail_message_password_forgotten', $mailMessage);
 
                 if ($user->last_email_sent != '' && (time() - $user->last_email_sent) < 3600 && (time() - $user->last_email_sent) >= 0) {
                     throw new Error(sprintf(__('Email flood'), intval((3600 - (time() - $user->last_email_sent)) / 60)), 429);
@@ -160,7 +160,7 @@ class Auth
                 $curMailMessage = str_replace('<username>', $user->username, $mailMessage);
                 $curMailMessage = str_replace('<activation_url>', Router::pathFor('resetPassword', [], ['key' => $newPasswordKey, 'user_id' => $user->id]), $curMailMessage);
                 $curMailMessage = str_replace('<new_password>', $newPassword, $curMailMessage);
-                $curMailMessage = Container::get('hooks')->fire('controller.cur_mail_message_password_forgotten', $curMailMessage);
+                $curMailMessage = Hooks::fire('controller.cur_mail_message_password_forgotten', $curMailMessage);
 
                 Container::get('email')->send($email, $mailSubject, $curMailMessage);
 
@@ -172,14 +172,14 @@ class Auth
 
         if (Input::query('key') && Input::query('user_id')) {
             $key = Input::query('key');
-            $key = Container::get('hooks')->fire('controller.auth.password_forgotten_key', $key);
+            $key = Hooks::fire('controller.auth.password_forgotten_key', $key);
 
             $id = Input::query('user_id');
-            $id = Container::get('hooks')->fire('controller.auth.password_forgotten_user_id', $id);
+            $id = Hooks::fire('controller.auth.password_forgotten_user_id', $id);
 
             $curUser = DB::table('users')
                 ->where('id', $id);
-            $curUser = Container::get('hooks')->fireDB('controller.auth.password_forgotten_user_query', $curUser);
+            $curUser = Hooks::fireDB('controller.auth.password_forgotten_user_query', $curUser);
             $curUser = $curUser->findOne();
 
             if ($key == '' || $key != $curUser['activate_key']) {
@@ -191,7 +191,7 @@ class Auth
                     ->set('password', $curUser['activate_string'])
                     ->setExpr('activate_string', 'NULL')
                     ->setExpr('activate_key', 'NULL');
-                $query = Container::get('hooks')->fireDB('controller.auth.password_forgotten_activate_query', $query);
+                $query = Hooks::fireDB('controller.auth.password_forgotten_activate_query', $query);
                 $query = $query->save();
 
                 return Router::redirect(Router::pathFor('home'), __('Pass updated'));

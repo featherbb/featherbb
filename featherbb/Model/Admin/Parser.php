@@ -21,13 +21,13 @@ class Parser
     {
         $imgfiles = [];
         $filelist = scandir(ForumEnv::get('FEATHER_ROOT').'style/img/smilies');
-        $filelist = Container::get('hooks')->fire('model.admin.parser.get_smiley_files.filelist', $filelist);
+        $filelist = Hooks::fire('model.admin.parser.get_smiley_files.filelist', $filelist);
         foreach ($filelist as $file) {
             if (preg_match('/\.(?:png|gif|jpe?g)$/', $file)) {
                 $imgfiles[] = $file;
             }
         }
-        $imgfiles = Container::get('hooks')->fire('model.admin.parser.get_smiley_files.imgfiles', $imgfiles);
+        $imgfiles = Hooks::fire('model.admin.parser.get_smiley_files.imgfiles', $imgfiles);
         return $imgfiles;
     }
 }

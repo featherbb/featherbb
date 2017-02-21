@@ -221,7 +221,7 @@ class Core
         });
 
         // This is the very first hook fired
-        \FeatherBB\Core\Interfaces\Container::get('hooks')->fire('core.start');
+        \FeatherBB\Core\Interfaces\Hooks::fire('core.start');
 
         if (!is_file(ForumEnv::get('FORUM_CONFIG_FILE'))) {
             // Reset cache

@@ -12,6 +12,7 @@ namespace FeatherBB\Core;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\Lang;
 use FeatherBB\Core\Interfaces\View;
+use FeatherBB\Core\Interfaces\Hooks;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -23,9 +24,9 @@ class AdminUtils
 
         View::setPageInfo([
             'page'        =>    $page,
-            'menu_items'  =>    Container::get('hooks')->fire('admin.menu', self::loadDefaultMenu()),
+            'menu_items'  =>    Hooks::fire('admin.menu', self::loadDefaultMenu()),
             'plugins'     =>    self::adminPluginsMenu() // See if there are any plugins that want to be displayed in the menu
-        ], 1
+        ]
         )->addTemplate('admin/menu.php');
     }
 
@@ -35,7 +36,7 @@ class AdminUtils
     public static function adminPluginsMenu()
     {
         $menuItems = [];
-        $menuItems = Container::get('hooks')->fire('admin.plugin.menu', $menuItems);
+        $menuItems = Hooks::fire('admin.plugin.menu', $menuItems);
 
         return $menuItems;
     }
@@ -45,6 +46,8 @@ class AdminUtils
      */
     public static function breadcrumbsAdmin(array $links)
     {
+        $tmp = [];
+
         foreach ($links as $name => $url) {
             if ($name != '' && $url != '') {
                 $tmp[] = '<span><a href="' . $url . '">'.Utils::escape($name).'</a></span>';

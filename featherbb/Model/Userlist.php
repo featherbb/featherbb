@@ -33,7 +33,7 @@ class Userlist
 
         $numUsers = $numUsers->count('id');
 
-        $numUsers = Container::get('hooks')->fire('model.userlist.fetch_user_count', $numUsers);
+        $numUsers = Hooks::fire('model.userlist.fetch_user_count', $numUsers);
 
         return $numUsers;
     }
@@ -41,7 +41,7 @@ class Userlist
     // Generates the dropdown menu containing groups
     public function dropdownMenu($showGroup)
     {
-        $showGroup = Container::get('hooks')->fire('model.userlist.generate_dropdown_menu_start', $showGroup);
+        $showGroup = Hooks::fire('model.userlist.generate_dropdown_menu_start', $showGroup);
 
         $dropdownMenu = '';
 
@@ -51,7 +51,7 @@ class Userlist
                         ->selectMany($result['select'])
                         ->whereNotEqual('g_id', ForumEnv::get('FEATHER_GUEST'))
                         ->orderBy('g_id');
-        $result = Container::get('hooks')->fireDB('model.userlist.generate_dropdown_menu_query', $result);
+        $result = Hooks::fireDB('model.userlist.generate_dropdown_menu_query', $result);
         $result = $result->findMany();
 
         foreach ($result as $curGroup) {
@@ -62,7 +62,7 @@ class Userlist
             }
         }
 
-        $dropdownMenu = Container::get('hooks')->fire('model.userlist.generate_dropdown_menu', $dropdownMenu);
+        $dropdownMenu = Hooks::fire('model.userlist.generate_dropdown_menu', $dropdownMenu);
 
         return $dropdownMenu;
     }
@@ -72,7 +72,7 @@ class Userlist
     {
         $userlistData = [];
 
-        $username = Container::get('hooks')->fire('model.userlist.print_users_start', $username, $startFrom, $sortBy, $sortDir, $showGroup);
+        $username = Hooks::fire('model.userlist.print_users_start', $username, $startFrom, $sortBy, $sortDir, $showGroup);
 
         // Retrieve a list of user IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
         $result = DB::table('users')
@@ -93,7 +93,7 @@ class Userlist
                          ->limit(50)
                          ->offset($startFrom);
 
-        $result = Container::get('hooks')->fireDB('model.userlist.print_users_query', $result);
+        $result = Hooks::fireDB('model.userlist.print_users_query', $result);
         $result = $result->findMany();
 
         if ($result) {
@@ -112,7 +112,7 @@ class Userlist
                           ->whereIn('u.id', $userIds)
                           ->orderBy($sortBy, $sortDir)
                           ->orderByAsc('u.id');
-            $result = Container::get('hooks')->fireDB('model.userlist.print_users_grab_query', $result);
+            $result = Hooks::fireDB('model.userlist.print_users_grab_query', $result);
             $result = $result->findMany();
 
             foreach ($result as $userData) {
@@ -120,7 +120,7 @@ class Userlist
             }
         }
 
-        $userlistData = Container::get('hooks')->fire('model.userlist.print_users', $userlistData);
+        $userlistData = Hooks::fire('model.userlist.print_users', $userlistData);
 
         return $userlistData;
     }

@@ -12,6 +12,7 @@ namespace FeatherBB\Core;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
+use FeatherBB\Core\Interfaces\User;
 
 class Permissions
 {

@@ -27,6 +27,8 @@
                         <label>{{ trans('Website') }}<br />
                         <input type="text" name="form_url" value="{{ user.url }}" size="50" maxlength="80" /><br /></label>
                 {% endif %}
+                        <label>{{ trans('API token') }}<br />
+                            <input type="text" name="api" readonly="readonly" value="{{ getToken(id) }}" size="60" maxlength="60" /><br /></label>
                     </div>
                 </fieldset>
             </div>

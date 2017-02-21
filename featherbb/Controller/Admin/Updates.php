@@ -14,6 +14,7 @@ use FeatherBB\Core\CoreAutoUpdater;
 use FeatherBB\Core\Database;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
@@ -38,7 +39,7 @@ class Updates
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.updates.display');
+        Hooks::fire('controller.admin.updates.display');
 
         $coreUpdates = false;
         $coreUpdatesMessage = __('FeatherBB core up to date');
@@ -93,7 +94,7 @@ class Updates
 
     public function upgradePlugins($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.updates.upgradePlugins');
+        Hooks::fire('controller.admin.updates.upgradePlugins');
 
         // Check submit button has been clicked
         if (!Input::post('upgrade-plugins')) {
@@ -141,7 +142,7 @@ class Updates
 
     public function upgradeCore($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.updates.upgradeCore');
+        Hooks::fire('controller.admin.updates.upgradeCore');
 
         // Check submit button has been clicked
         if (!Input::post('upgrade-core')) {

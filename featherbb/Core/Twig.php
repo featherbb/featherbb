@@ -23,6 +23,7 @@ use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
+use FeatherBB\Core\Interfaces\Hooks;
 
 class Twig extends \Twig_Extension
 {
@@ -40,9 +41,9 @@ class Twig extends \Twig_Extension
              */
             new \Twig_SimpleFunction('fireHook', function ($name) {
                 if (is_array($name)) {
-                    call_user_func_array([Container::get('hooks'), 'fire'], $name);
+                    call_user_func_array(['\FeatherBB\Core\Interfaces\Hooks', 'fire'], $name);
                 } else {
-                    Container::get('hooks')->fire($name);
+                    Hooks::fire($name);
                 }
             }, ['is_safe' => ['html']]),
 
@@ -141,8 +142,8 @@ class Twig extends \Twig_Extension
             /**
              * return token FIXME ???
              */
-            new \Twig_SimpleFunction('getToken', function () {
-                return Random::hash(User::get()->id.Random::hash(Utils::getIp()));
+            new \Twig_SimpleFunction('getToken', function ($user) {
+                return \FeatherBB\Model\Api\Api::getToken(User::get($user));
             }, ['is_safe' => ['html']]),
 
             /**
@@ -168,7 +169,7 @@ class Twig extends \Twig_Extension
                 $time_only = false,
                 $no_text = false
             ) {
-                return Container::get('utils')->formatTime(
+                return Utils::formatTime(
                     $timestamp,
                     $date_only,
                     $date_format,

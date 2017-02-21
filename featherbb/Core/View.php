@@ -16,6 +16,7 @@ use FeatherBB\Core\Interfaces\Lang;
 use FeatherBB\Core\Interfaces\Response;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
+use FeatherBB\Core\Interfaces\Hooks;
 
 class View
 {
@@ -147,7 +148,7 @@ class View
     {
         $data = [];
         $data = array_merge($this->getDefaultPageInfo(), $this->data->all(), (array) $data);
-        $data = Container::get('hooks')->fire('view.alter_data', $data);
+        $data = Hooks::fire('view.alter_data', $data);
         $data['assets'] = $this->getAssets();
 
         $templates = $this->getTemplates();
@@ -180,7 +181,7 @@ class View
     /**
      * Initialise style, load assets for given style
      * @param $style
-     * @throws FeatherBBException
+     * @throws \Exception
      */
     public function setStyle($style)
     {
@@ -486,7 +487,7 @@ class View
         }
 
         // Are there any additional navlinks we should insert into the array before imploding it?
-        $hooksLinks = Container::get('hooks')->fire('view.header.navlinks', []);
+        $hooksLinks = Hooks::fire('view.header.navlinks', []);
         $extraLinks = ForumSettings::get('o_additional_navlinks')."\n".implode("\n", $hooksLinks);
         if (User::can('board.read') && ($extraLinks != '')) {
             if (preg_match_all('%([0-9]+)\s*=\s*(.*?)\n%s', $extraLinks."\n", $results)) {

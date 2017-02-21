@@ -17,14 +17,14 @@ class Reports
 {
     public function zap($zapId)
     {
-        $zapId = Container::get('hooks')->fire('model.admin.reports.zap_report.zap_id', $zapId);
+        $zapId = Hooks::fire('model.admin.reports.zap_report.zap_id', $zapId);
 
         $result = DB::table('reports')->where('id', $zapId);
-        $result = Container::get('hooks')->fireDB('model.admin.reports.zap_report.query', $result);
+        $result = Hooks::fireDB('model.admin.reports.zap_report.query', $result);
         $result = $result->findOneCol('zapped');
 
         $setZapReport = ['zapped' => time(), 'zapped_by' => User::get()->id];
-        $setZapReport = Container::get('hooks')->fire('model.admin.reports.set_zap_report', $setZapReport);
+        $setZapReport = Hooks::fire('model.admin.reports.set_zap_report', $setZapReport);
 
         // Update report to indicate it has been zapped
         if (!$result) {
@@ -54,10 +54,10 @@ class Reports
 
     public static function hasReports()
     {
-        Container::get('hooks')->fire('get_reports_start');
+        Hooks::fire('get_reports_start');
 
         $resultHeader = DB::table('reports')->whereNull('zapped');
-        $resultHeader = Container::get('hooks')->fireDB('get_reports_query', $resultHeader);
+        $resultHeader = Hooks::fireDB('get_reports_query', $resultHeader);
 
         return (bool) $resultHeader->findOne();
     }
@@ -75,10 +75,10 @@ class Reports
             ->leftOuterJoin('users', ['r.reported_by', '=', 'u.id'], 'u')
             ->whereNull('r.zapped')
             ->orderByDesc('created');
-        $reports = Container::get('hooks')->fireDB('model.admin.reports.get_reports.query', $reports);
+        $reports = Hooks::fireDB('model.admin.reports.get_reports.query', $reports);
         $reports = $reports->findArray();
 
-        $reports = Container::get('hooks')->fire('model.admin.reports.get_reports', $reports);
+        $reports = Hooks::fire('model.admin.reports.get_reports', $reports);
         return $reports;
     }
 
@@ -97,10 +97,10 @@ class Reports
             ->whereNotNull('r.zapped')
             ->orderByDesc('zapped')
             ->limit(10);
-        $zappedReports = Container::get('hooks')->fireDB('model.admin.reports.get_zapped_reports.query', $zappedReports);
+        $zappedReports = Hooks::fireDB('model.admin.reports.get_zapped_reports.query', $zappedReports);
         $zappedReports = $zappedReports->findArray();
 
-        $zappedReports = Container::get('hooks')->fire('model.admin.reports.get_zapped_reports', $zappedReports);
+        $zappedReports = Hooks::fire('model.admin.reports.get_zapped_reports', $zappedReports);
         return $zappedReports;
     }
 }

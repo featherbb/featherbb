@@ -24,7 +24,7 @@ class Help
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.help.start');
+        Hooks::fire('controller.help.start');
 
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Help')],

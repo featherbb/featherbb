@@ -35,7 +35,7 @@ class Bans
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.bans.display');
+        Hooks::fire('controller.admin.bans.display');
 
         // Display bans
         if (Input::query('find_ban')) {
@@ -70,7 +70,7 @@ class Bans
 
     public function add($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.bans.add');
+        Hooks::fire('controller.admin.bans.add');
 
         if (Input::post('add_edit_ban')) {
             return $this->model->insertBan();
@@ -90,7 +90,7 @@ class Bans
 
     public function delete($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.bans.delete');
+        Hooks::fire('controller.admin.bans.delete');
 
         // Remove the ban
         return $this->model->removeBan($args['id']);
@@ -98,7 +98,7 @@ class Bans
 
     public function edit($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.bans.edit');
+        Hooks::fire('controller.admin.bans.edit');
 
         if (Input::post('add_edit_ban')) {
             return $this->model->insertBan();

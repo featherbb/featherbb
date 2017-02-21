@@ -32,7 +32,7 @@ class Statistics
             }
 
             $loadAverages = @explode(' ', $loadAverages);
-            $loadAverages = Container::get('hooks')->fire('model.admin.model.statistics.get_server_load.load_averages', $loadAverages);
+            $loadAverages = Hooks::fire('model.admin.model.statistics.get_server_load.load_averages', $loadAverages);
 
             $serverLoad = isset($loadAverages[2]) ? $loadAverages[0].' '.$loadAverages[1].' '.$loadAverages[2] : __('Not available');
         } elseif (!in_array(PHP_OS, ['WINNT', 'WIN32']) && preg_match('%averages?: ([0-9\.]+),?\s+([0-9\.]+),?\s+([0-9\.]+)%i', @exec('uptime'), $loadAverages)) {
@@ -41,7 +41,7 @@ class Statistics
             $serverLoad = __('Not available');
         }
 
-        $serverLoad = Container::get('hooks')->fire('model.admin.model.statistics.get_server_load.server_load', $serverLoad);
+        $serverLoad = Hooks::fire('model.admin.model.statistics.get_server_load.server_load', $serverLoad);
         return $serverLoad;
     }
 
@@ -50,7 +50,7 @@ class Statistics
         $numOnline = DB::table('online')->where('idle', 0)
                             ->count('user_id');
 
-        $numOnline = Container::get('hooks')->fire('model.admin.model.statistics.get_num_online.num_online', $numOnline);
+        $numOnline = Hooks::fire('model.admin.model.statistics.get_num_online.num_online', $numOnline);
         return $numOnline;
     }
 
@@ -61,7 +61,7 @@ class Statistics
         if (ForumSettings::get('db_type') == 'mysql' || ForumSettings::get('db_type') == 'mysqli' || ForumSettings::get('db_type') == 'mysql_innodb' || ForumSettings::get('db_type') == 'mysqli_innodb') {
             // Calculate total db size/row count
             $result = DB::table('users')->rawQuery('SHOW TABLE STATUS LIKE \''.ForumSettings::get('db_prefix').'%\'')->findMany();
-            $result = Container::get('hooks')->fire('model.admin.model.statistics.get_total_size.raw_data', $result);
+            $result = Hooks::fire('model.admin.model.statistics.get_total_size.raw_data', $result);
 
             $total['size'] = $total['records'] = 0;
             foreach ($result as $status) {
@@ -72,7 +72,7 @@ class Statistics
             $total['size'] = Utils::fileSize($total['size']);
         }
 
-        $total = Container::get('hooks')->fire('model.admin.model.statistics.get_total_size.total', $total);
+        $total = Hooks::fire('model.admin.model.statistics.get_total_size.total', $total);
         return $total;
     }
 
@@ -94,7 +94,7 @@ class Statistics
             $phpAccelerator = __('NA');
         }
 
-        $phpAccelerator = Container::get('hooks')->fire('model.admin.model.statistics.get_php_accelerator', $phpAccelerator);
+        $phpAccelerator = Hooks::fire('model.admin.model.statistics.get_php_accelerator', $phpAccelerator);
         return $phpAccelerator;
     }
 }

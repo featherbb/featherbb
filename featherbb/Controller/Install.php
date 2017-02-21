@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Lang;
@@ -48,7 +49,7 @@ class Install
     public function run()
     {
         Container::get('cache')->flush();
-        Container::get('hooks')->fire('controller.install.run_install');
+        Hooks::fire('controller.install.run_install');
 
         // First form has been submitted to change default language
         if (Input::post('choose_lang')) {
@@ -165,7 +166,7 @@ class Install
 
     public function createConfig(array $data)
     {
-        Container::get('hooks')->fire('controller.install.create_config');
+        Hooks::fire('controller.install.create_config');
 
         // Generate config ...
         $config = [];
@@ -192,7 +193,7 @@ class Install
 
     public function createDb(array $data)
     {
-        Container::get('hooks')->fire('controller.install.create_db');
+        Hooks::fire('controller.install.create_db');
 
         // Handle db prefix
         $data['db_prefix'] = (!empty($data['db_prefix'])) ? $data['db_prefix'] : '';
@@ -289,14 +290,14 @@ class Install
 
     public function writeConfig($array)
     {
-        Container::get('hooks')->fire('controller.install.write_config');
+        Hooks::fire('controller.install.write_config');
 
         return file_put_contents(ForumEnv::get('FORUM_CONFIG_FILE'), '<?php'."\n".'$featherbbConfig = '.var_export($array, true).';');
     }
 
     public function writeHtaccess()
     {
-        Container::get('hooks')->fire('controller.install.write_htaccess');
+        Hooks::fire('controller.install.write_htaccess');
 
         $data = file_get_contents(ForumEnv::get('FEATHER_ROOT').'.htaccess.dist');
         return file_put_contents(ForumEnv::get('FEATHER_ROOT').'.htaccess', $data);
@@ -304,7 +305,7 @@ class Install
 
     public function loadDefaultConfig(array $data)
     {
-        Container::get('hooks')->fire('controller.install.load_default_config');
+        Hooks::fire('controller.install.load_default_config');
 
         return [
             'o_cur_version'                => ForumEnv::get('FORUM_VERSION'),

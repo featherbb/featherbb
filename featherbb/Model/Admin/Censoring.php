@@ -32,7 +32,7 @@ class Censoring
         $setSearchWord = ['search_for' => $searchFor,
                                 'replace_with' => $replaceWith];
 
-        $setSearchWord = Container::get('hooks')->fire('model.admin.censoring.add_censoring_word_data', $setSearchWord);
+        $setSearchWord = Hooks::fire('model.admin.censoring.add_censoring_word_data', $setSearchWord);
 
         $result = DB::table('censoring')
             ->create()
@@ -60,7 +60,7 @@ class Censoring
         $setSearchWord = ['search_for' => $searchFor,
                                 'replace_with' => $replaceWith];
 
-        $setSearchWord = Container::get('hooks')->fire('model.admin.censoring.update_censoring_word_start', $setSearchWord);
+        $setSearchWord = Hooks::fire('model.admin.censoring.update_censoring_word_start', $setSearchWord);
 
         $result = DB::table('censoring')
             ->findOne($id)
@@ -77,10 +77,10 @@ class Censoring
     public function removeWord()
     {
         $id = intval(key(Input::post('remove')));
-        $id = Container::get('hooks')->fire('model.admin.censoring.remove_censoring_word_start', $id);
+        $id = Hooks::fire('model.admin.censoring.remove_censoring_word_start', $id);
 
         $result = DB::table('censoring')->findOne($id);
-        $result = Container::get('hooks')->fireDB('model.admin.censoring.remove_censoring_word', $result);
+        $result = Hooks::fireDB('model.admin.censoring.remove_censoring_word', $result);
         $result = $result->delete();
 
         // Regenerate the censoring cache
@@ -96,7 +96,7 @@ class Censoring
 
         $wordData = DB::table('censoring')
                         ->orderByAsc('id');
-        $wordData = Container::get('hooks')->fireDB('model.admin.censoring.update_censoring_word_query', $wordData);
+        $wordData = Hooks::fireDB('model.admin.censoring.update_censoring_word_query', $wordData);
         $wordData = $wordData->findArray();
 
         return $wordData;

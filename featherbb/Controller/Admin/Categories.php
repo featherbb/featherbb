@@ -35,7 +35,7 @@ class Categories
 
     public function add($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.categories.add');
+        Hooks::fire('controller.admin.categories.add');
 
         $catName = Utils::trim(Input::post('cat_name'));
         if ($catName == '') {
@@ -51,7 +51,7 @@ class Categories
 
     public function edit($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.categories.edit');
+        Hooks::fire('controller.admin.categories.edit');
 
         if (empty(Input::post('cat'))) {
             throw new Error(__('Bad request'), '400');
@@ -75,7 +75,7 @@ class Categories
 
     public function delete($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.categories.delete');
+        Hooks::fire('controller.admin.categories.delete');
 
         $catToDelete = (int) Input::post('cat_to_delete');
 
@@ -96,7 +96,7 @@ class Categories
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.categories.display');
+        Hooks::fire('controller.admin.categories.display');
 
         AdminUtils::generateAdminMenu('categories');
 

@@ -11,6 +11,7 @@ namespace FeatherBB\Core;
 
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
+use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Request;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Interfaces\View as ViewInterface;
@@ -215,7 +216,7 @@ class Utils
      * @var $crumbs: array('optionnal/url' => 'Text displayed')
      * @var $rightCrumb: array('link' => 'url/of/action', 'text' => 'Text displayed')
      *
-     * @return text
+     * @return string
      */
     public static function generateBreadcrumbs(array $crumbs = [], array $rightCrumb = [])
     {

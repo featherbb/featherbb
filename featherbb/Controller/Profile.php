@@ -22,7 +22,6 @@ use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Interfaces\View;
 use FeatherBB\Core\Utils;
-use FeatherBB\Model\Delete;
 
 class Profile
 {
@@ -41,7 +40,7 @@ class Profile
             throw new Error(__('Bad request'), 400);
         }
 
-        $args['id'] = Container::get('hooks')->fire('controller.profile.display', $args['id']);
+        $args['id'] = Hooks::fire('controller.profile.display', $args['id']);
 
         if (Input::post('update_group_membership')) {
             if (User::get()->g_id > ForumEnv::get('FEATHER_ADMIN')) {
@@ -224,7 +223,7 @@ class Profile
 
     public function action($req, $res, $args)
     {
-        $args['id'] = Container::get('hooks')->fire('controller.profile.action', $args['id']);
+        $args['id'] = Hooks::fire('controller.profile.action', $args['id']);
 
         if ($args['action'] != 'change_pass' || !Input::query('key')) {
             if (!User::can('board.read')) {
@@ -242,7 +241,7 @@ class Profile
         if ($args['action'] == 'change_pass') {
             // Make sure we are allowed to change this user's password
             if (User::get()->id != $args['id']) {
-                $args['id'] = Container::get('hooks')->fire('controller.profile.change_pass_key_not_id', $args['id']);
+                $args['id'] = Hooks::fire('controller.profile.change_pass_key_not_id', $args['id']);
 
                 if (!User::isAdminMod()) { // A regular user trying to change another user's password?
                     throw new Error(__('No permission'), 403);
@@ -268,7 +267,7 @@ class Profile
         } elseif ($args['action'] == 'change_email') {
             // Make sure we are allowed to change this user's email
             if (User::get()->id != $args['id']) {
-                $args['id'] = Container::get('hooks')->fire('controller.profile.change_email_not_id', $args['id']);
+                $args['id'] = Hooks::fire('controller.profile.change_email_not_id', $args['id']);
 
                 if (!User::isAdminMod()) { // A regular user trying to change another user's email?
                     throw new Error(__('No permission'), 403);
@@ -331,7 +330,7 @@ class Profile
 
     public function email($req, $res, $args)
     {
-        $args['id'] = Container::get('hooks')->fire('controller.profile.email', $args['id']);
+        $args['id'] = Hooks::fire('controller.profile.email', $args['id']);
 
         if (!User::can('email.send')) {
             throw new Error(__('No permission'), 403);
@@ -360,7 +359,7 @@ class Profile
 
     public function gethostip($req, $res, $args)
     {
-        $args['ip'] = Container::get('hooks')->fire('controller.profile.gethostip', $args['ip']);
+        $args['ip'] = Hooks::fire('controller.profile.gethostip', $args['ip']);
 
         $this->model->displayIpInfo($args['ip']);
     }

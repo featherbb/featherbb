@@ -12,7 +12,7 @@ class Hooks extends SlimSugar
      */
     public static function fire($name)
     {
-        return static::$slim->getContainer()['hooks']->fire($name);
+        return call_user_func_array([static::$slim->getContainer()['hooks'], 'fire'], func_get_args());
     }
 
     /**
@@ -21,9 +21,9 @@ class Hooks extends SlimSugar
      * @param  mixed  ...   Argument(s) for hooked functions, can specify multiple arguments
      * @return mixed
      */
-    public static function fireDB($name, $name2)
+    public static function fireDB($name)
     {
-        return static::$slim->getContainer()['hooks']->fireDB($name, $name2);
+        return call_user_func_array([static::$slim->getContainer()['hooks'], 'fireDB'], func_get_args());
     }
 
     /**

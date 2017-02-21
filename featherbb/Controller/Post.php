@@ -11,6 +11,7 @@ namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
@@ -38,7 +39,7 @@ class Post
 
     public function newreply($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.post.newreply');
+        Hooks::fire('controller.post.newreply');
 
         return $this->newPost($req, $res, $args);
     }
@@ -57,7 +58,7 @@ class Post
             $args['qid'] = null;
         }
 
-        Container::get('hooks')->fire('controller.post.create', $args['fid'], $args['tid'], $args['qid']);
+        Hooks::fire('controller.post.create', $args['fid'], $args['tid'], $args['qid']);
 
         // Antispam feature
         $langAntispamQuestions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
@@ -184,7 +185,7 @@ class Post
 
         if (Input::post('preview')) {
             $previewMessage = Container::get('parser')->parseMessage($post['message'], $post['hide_smilies']);
-            $previewMessage = Container::get('hooks')->fire('controller.post.edit.preview', $previewMessage);
+            $previewMessage = Hooks::fire('controller.post.edit.preview', $previewMessage);
         } else {
             $previewMessage = '';
         }
@@ -213,7 +214,7 @@ class Post
 
     public function delete($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.post.delete');
+        Hooks::fire('controller.post.delete');
 
         // Fetch some information about the post, the topic and the forum
         $curPost = $this->model->getInfoDelete($args['id']);
@@ -258,7 +259,7 @@ class Post
 
     public function editpost($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.post.edit');
+        Hooks::fire('controller.post.edit');
 
         // Fetch some information about the post, the topic and the forum
         $curPost = $this->model->getInfoEdit($args['id']);
@@ -287,7 +288,7 @@ class Post
         $errors = [];
 
         if (Request::isPost()) {
-            Container::get('hooks')->fire('controller.post.edit.submit', $args['id']);
+            Hooks::fire('controller.post.edit.submit', $args['id']);
 
             // Let's see if everything went right
             $errors = $this->model->checkErrorsEdit($canEditSubject, $errors, $isAdmmod);
@@ -297,7 +298,7 @@ class Post
 
             // Did everything go according to plan?
             if (empty($errors) && !Input::post('preview')) {
-                Container::get('hooks')->fire('controller.post.edit.valid', $args['id']);
+                Hooks::fire('controller.post.edit.valid', $args['id']);
                 // Edit the post
                 $this->model->editPost($args['id'], $canEditSubject, $post, $curPost, $isAdmmod);
 
@@ -309,7 +310,7 @@ class Post
 
         if (Input::post('preview')) {
             $previewMessage = Container::get('parser')->parseMessage($post['message'], $post['hide_smilies']);
-            $previewMessage = Container::get('hooks')->fire('controller.post.edit.preview', $previewMessage);
+            $previewMessage = Hooks::fire('controller.post.edit.preview', $previewMessage);
         } else {
             $previewMessage = '';
         }
@@ -329,7 +330,7 @@ class Post
 
     public function report($req, $res, $args)
     {
-        $args['id'] = Container::get('hooks')->fire('controller.post.report', $args['id']);
+        $args['id'] = Hooks::fire('controller.post.report', $args['id']);
 
         if (Request::isPost()) {
             return $this->model->report($args['id']);
@@ -353,7 +354,7 @@ class Post
 
     public function gethost($req, $res, $args)
     {
-        $args['pid'] = Container::get('hooks')->fire('controller.post.gethost', $args['pid']);
+        $args['pid'] = Hooks::fire('controller.post.gethost', $args['pid']);
 
         $this->model->displayIpAddress($args['pid']);
     }

@@ -37,7 +37,7 @@ class Forums
 
     public function add()
     {
-        Container::get('hooks')->fire('controller.admin.forums.add');
+        Hooks::fire('controller.admin.forums.add');
 
         $catId = (int) Input::post('cat');
 
@@ -57,7 +57,7 @@ class Forums
 
     public function edit($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.forums.edit');
+        Hooks::fire('controller.admin.forums.edit');
 
         if (Request::isPost()) {
             if (Input::post('save') && Input::post('read_forum_old')) {
@@ -135,7 +135,7 @@ class Forums
 
     public function delete($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.forums.delete');
+        Hooks::fire('controller.admin.forums.delete');
 
         if (!$curForum = $this->model->getForumInfo($args['id'])) {
             $notFoundHandler = Container::get('notFoundHandler');
@@ -164,7 +164,7 @@ class Forums
 
     public function editPositions($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.forums.edit_positions');
+        Hooks::fire('controller.admin.forums.edit_positions');
 
         foreach (Input::post('position') as $args['forum_id'] => $position) {
             $position = (int) Utils::trim($position);
@@ -179,7 +179,7 @@ class Forums
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.forums.display');
+        Hooks::fire('controller.admin.forums.display');
 
         if (Input::post('update_positions')) {
             return $this->editPositions($req, $res, $args);

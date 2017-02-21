@@ -16,7 +16,7 @@ class Categories
 {
     public function addCategory($catName)
     {
-        $catName = Container::get('hooks')->fire('model.admin.categories.add_category', $catName);
+        $catName = Hooks::fire('model.admin.categories.add_category', $catName);
 
         $setAddCategory = ['cat_name' => $catName];
 
@@ -28,7 +28,7 @@ class Categories
 
     public function updateCategory(array $category)
     {
-        $category = Container::get('hooks')->fire('model.admin.categories.update_category', $category);
+        $category = Hooks::fire('model.admin.categories.update_category', $category);
 
         $setUpdateCategory = ['cat_name' => $category['name'],
                                     'disp_position' => $category['order']];
@@ -41,12 +41,12 @@ class Categories
 
     public function deleteCategory($catToDelete)
     {
-        $catToDelete = Container::get('hooks')->fire('model.admin.categories.delete_category_start', $catToDelete);
+        $catToDelete = Hooks::fire('model.admin.categories.delete_category_start', $catToDelete);
 
         $forumsInCat = DB::table('forums')
                             ->select('id')
                             ->where('cat_id', $catToDelete);
-        $forumsInCat = Container::get('hooks')->fireDB('model.admin.categories.delete_forums_in_cat_query', $forumsInCat);
+        $forumsInCat = Hooks::fireDB('model.admin.categories.delete_forums_in_cat_query', $forumsInCat);
         $forumsInCat = $forumsInCat->findMany();
 
         foreach ($forumsInCat as $forum) {
@@ -66,7 +66,7 @@ class Categories
                     ->leftOuterJoin('topics', ['t1.moved_to', '=', 't2.id'], 't2')
                     ->whereNull('t2.id')
                     ->whereNotNull('t1.moved_to');
-        $orphans = Container::get('hooks')->fireDB('model.admin.categories.delete_orphan_forums_query', $orphans);
+        $orphans = Hooks::fireDB('model.admin.categories.delete_orphan_forums_query', $orphans);
         $orphans = $orphans->findMany();
 
         if (count($orphans) > 0) {
@@ -75,7 +75,7 @@ class Categories
 
         // Delete category
         $result = DB::table('categories');
-        $result = Container::get('hooks')->fireDB('model.admin.categories.find_forums_in_cat', $result);
+        $result = Hooks::fireDB('model.admin.categories.find_forums_in_cat', $result);
         $result = $result->findOne($catToDelete)->delete();
 
         return true;
@@ -89,7 +89,7 @@ class Categories
         $catList = DB::table('categories')
             ->select($selectGetCatList)
             ->orderByAsc('disp_position');
-        $catList = Container::get('hooks')->fireDB('model.admin.categories.get_cat_list', $catList);
+        $catList = Hooks::fireDB('model.admin.categories.get_cat_list', $catList);
         $catList = $catList->findArray();
 
         return $catList;

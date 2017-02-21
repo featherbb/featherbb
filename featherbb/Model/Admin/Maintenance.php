@@ -27,7 +27,7 @@ class Maintenance
     public function rebuild()
     {
         $perPage = Input::query('i_per_page') ? intval(Input::query('i_per_page')) : 0;
-        $perPage = Container::get('hooks')->fire('model.admin.maintenance.rebuild.per_page', $perPage);
+        $perPage = Hooks::fire('model.admin.maintenance.rebuild.per_page', $perPage);
 
         // Check per page is > 0
         if ($perPage < 1) {
@@ -61,9 +61,9 @@ class Maintenance
         $queryStr = [];
 
         $perPage = Input::query('i_per_page') ? intval(Input::query('i_per_page')) : 0;
-        $perPage = Container::get('hooks')->fire('model.admin.maintenance.get_query_str.per_page', $perPage);
+        $perPage = Hooks::fire('model.admin.maintenance.get_query_str.per_page', $perPage);
         $startAt = Input::query('i_start_at') ? intval(Input::query('i_start_at')) : 0;
-        $startAt = Container::get('hooks')->fire('model.admin.maintenance.get_query_str.start_at', $startAt);
+        $startAt = Hooks::fire('model.admin.maintenance.get_query_str.start_at', $startAt);
 
         // Fetch posts to process this cycle
         $result['select'] = ['p.id', 'p.message', 't.subject', 't.first_post_id'];
@@ -74,7 +74,7 @@ class Maintenance
                         ->whereGte('p.id', $startAt)
                         ->orderByAsc('p.id')
                         ->limit($perPage);
-        $result = Container::get('hooks')->fireDB('model.admin.maintenance.get_query_str.query', $result);
+        $result = Hooks::fireDB('model.admin.maintenance.get_query_str.query', $result);
         $result = $result->findMany();
 
         $endAt = 0;
@@ -104,7 +104,7 @@ class Maintenance
         $pdo = DB::getDb();
         $pdo = null;
 
-        $queryStr = Container::get('hooks')->fire('model.admin.maintenance.get_query_str', $queryStr);
+        $queryStr = Hooks::fire('model.admin.maintenance.get_query_str', $queryStr);
         return $queryStr;
     }
 
@@ -131,7 +131,7 @@ class Maintenance
         foreach ($topicsId as $row) {
             $topicIds[] = $row['id'];
         }
-        $topicIds = Container::get('hooks')->fire('model.admin.maintenance.prune.topic_ids', $topicIds);
+        $topicIds = Hooks::fire('model.admin.maintenance.prune.topic_ids', $topicIds);
 
         if (!empty($topicIds)) {
             // Fetch posts to prune
@@ -143,7 +143,7 @@ class Maintenance
             foreach ($postsId as $row) {
                 $postIds[] = $row['id'];
             }
-            $postIds = Container::get('hooks')->fire('model.admin.maintenance.prune.post_ids', $postIds);
+            $postIds = Hooks::fire('model.admin.maintenance.prune.post_ids', $postIds);
 
             if ($postIds != '') {
                 // Delete topics
@@ -168,14 +168,14 @@ class Maintenance
     public function pruneComply($pruneFrom, $pruneSticky)
     {
         $pruneDays = intval(Input::post('prune_days'));
-        $pruneDays = Container::get('hooks')->fire('model.admin.maintenance.prune_comply.prune_days', $pruneDays);
+        $pruneDays = Hooks::fire('model.admin.maintenance.prune_comply.prune_days', $pruneDays);
         $pruneDate = ($pruneDays) ? time() - ($pruneDays * 86400) : -1;
 
         @set_time_limit(0);
 
         if ($pruneFrom == 'all') {
             $result = DB::table('forums')->select('id');
-            $result = Container::get('hooks')->fireDB('model.admin.maintenance.prune_comply.query', $result);
+            $result = Hooks::fireDB('model.admin.maintenance.prune_comply.query', $result);
             $result = $result->findArray();
 
             if (!empty($result)) {
@@ -196,7 +196,7 @@ class Maintenance
                         ->leftOuterJoin('topics', ['t1.moved_to', '=', 't2.id'], 't2')
                         ->whereNull('t2.id')
                         ->whereNotNull('t1.moved_to');
-        $result = Container::get('hooks')->fireDB('model.admin.maintenance.prune_comply.orphans_query', $result);
+        $result = Hooks::fireDB('model.admin.maintenance.prune_comply.orphans_query', $result);
         $result = $result->findArray();
 
         $orphans = [];
@@ -204,7 +204,7 @@ class Maintenance
             foreach ($result as $row) {
                 $orphans[] = $row['id'];
             }
-            $orphans = Container::get('hooks')->fire('model.admin.maintenance.prune_comply.orphans', $orphans);
+            $orphans = Hooks::fire('model.admin.maintenance.prune_comply.orphans', $orphans);
 
             DB::table('topics')
                     ->whereIn('id', $orphans)
@@ -225,7 +225,7 @@ class Maintenance
 
         $prune['date'] = time() - ($prune['days'] * 86400);
 
-        $prune = Container::get('hooks')->fire('model.admin.maintenance.get_info_prune.prune_dates', $prune);
+        $prune = Hooks::fire('model.admin.maintenance.get_info_prune.prune_dates', $prune);
 
         // Concatenate together the query for counting number of topics to prune
         $query = DB::table('topics')->whereLt('last_post', $prune['date'])
@@ -240,7 +240,7 @@ class Maintenance
 
             // Fetch the forum name (just for cosmetic reasons)
             $forum = DB::table('forums')->where('id', $pruneFrom);
-            $forum = Container::get('hooks')->fireDB('model.admin.maintenance.get_info_prune.forum_query', $forum);
+            $forum = Hooks::fireDB('model.admin.maintenance.get_info_prune.forum_query', $forum);
             $forum = $forum->findOneCol('forum_name');
 
             $prune['forum'] = '"'.Utils::escape($forum).'"';
@@ -254,7 +254,7 @@ class Maintenance
             throw new Error(sprintf(__('No old topics message'), $prune['days']), 404);
         }
 
-        $prune = Container::get('hooks')->fire('model.admin.maintenance.get_info_prune.prune', $prune);
+        $prune = Hooks::fire('model.admin.maintenance.get_info_prune.prune', $prune);
         return $prune;
     }
 
@@ -271,7 +271,7 @@ class Maintenance
                     ->innerJoin('forums', ['c.id', '=', 'f.cat_id'], 'f')
                     ->whereNull('f.redirect_url')
                     ->orderByMany($orderByGetCategories);
-        $result = Container::get('hooks')->fireDB('model.admin.maintenance.get_categories.query', $result);
+        $result = Hooks::fireDB('model.admin.maintenance.get_categories.query', $result);
         $result = $result->findMany();
 
         $curCategory = 0;
@@ -290,7 +290,7 @@ class Maintenance
             $output .=  "\t\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$forum['fid'].'">'.Utils::escape($forum['forum_name']).'</option>'."\n";
         }
 
-        $output = Container::get('hooks')->fire('model.admin.maintenance.get_categories.output', $output);
+        $output = Hooks::fire('model.admin.maintenance.get_categories.output', $output);
         return $output;
     }
 
@@ -303,7 +303,7 @@ class Maintenance
             $firstId = $firstIdSql;
         }
 
-        $firstId = Container::get('hooks')->fire('model.admin.maintenance.get_first_id', $firstId);
+        $firstId = Hooks::fire('model.admin.maintenance.get_first_id', $firstId);
         return $firstId;
     }
 }

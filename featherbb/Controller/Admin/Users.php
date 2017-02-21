@@ -30,7 +30,7 @@ class Users
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.users.display');
+        Hooks::fire('controller.admin.users.display');
 
         // Move multiple users to other user groups
         if (Input::post('move_users') || Input::post('move_users_comply')) {
@@ -131,7 +131,7 @@ class Users
     // Show IP statistics for a certain user ID
     public function ipstats($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.users.ipstats');
+        Hooks::fire('controller.admin.users.ipstats');
 
         // Fetch ip count
         $numIps = $this->model->getNumIp($args['id']);
@@ -157,7 +157,7 @@ class Users
     // Show IP statistics for a certain user IP
     public function showusers($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.users.showusers');
+        Hooks::fire('controller.admin.users.showusers');
 
         $searchIp = Input::query('ip');
 

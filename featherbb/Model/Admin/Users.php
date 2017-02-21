@@ -12,6 +12,7 @@ namespace FeatherBB\Model\Admin;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
@@ -27,7 +28,7 @@ class Users
     public function getNumIp($ipStats)
     {
         $numIps = DB::table('posts')->where('poster_id', $ipStats)->groupBy('poster_ip');
-        $numIps = Container::get('hooks')->fireDB('model.admin.model.admin.users.get_num_ip', $numIps);
+        $numIps = Hooks::fireDB('model.admin.model.admin.users.get_num_ip', $numIps);
         $numIps = $numIps->count('poster_ip');
 
         return $numIps;
@@ -46,7 +47,7 @@ class Users
                     ->orderByDesc('last_used')
                     ->offset($startFrom)
                     ->limit(50);
-        $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.get_ip_stats.query', $result);
+        $result = Hooks::fireDB('model.admin.model.admin.users.get_ip_stats.query', $result);
         $result = $result->findMany();
 
         if ($result) {
@@ -55,14 +56,14 @@ class Users
             }
         }
 
-        $ipData = Container::get('hooks')->fire('model.admin.model.users.get_ip_stats.ip_data', $ipData);
+        $ipData = Hooks::fire('model.admin.model.users.get_ip_stats.ip_data', $ipData);
         return $ipData;
     }
 
     public function getNumUsersIp($ip)
     {
         $numUsers = DB::table('posts')->where('poster_ip', $ip)->distinct();
-        $numUsers = Container::get('hooks')->fireDB('model.admin.model.admin.users.get_num_users_ip.query', $numUsers);
+        $numUsers = Hooks::fireDB('model.admin.model.admin.users.get_num_users_ip.query', $numUsers);
         $numUsers = $numUsers->count('poster_id');
 
         return $numUsers;
@@ -70,12 +71,12 @@ class Users
 
     public function getNumUsersSearch($conditions)
     {
-        $conditions = Container::get('hooks')->fire('model.admin.model.users.get_num_users_search.conditions', $conditions);
+        $conditions = Hooks::fire('model.admin.model.users.get_num_users_search.conditions', $conditions);
 
         $numUsers = DB::table('users')->tableAlias('u')
                         ->leftOuterJoin('groups', ['g.g_id', '=', 'u.group_id'], 'g')
                         ->whereRaw('u.id>1'.(!empty($conditions) ? ' AND '.implode(' AND ', $conditions) : ''));
-        $numUsers = Container::get('hooks')->fireDB('model.admin.model.admin.users.get_num_users_search.query', $numUsers);
+        $numUsers = Hooks::fireDB('model.admin.model.admin.users.get_num_users_search.query', $numUsers);
         $numUsers = $numUsers->count('id');
 
         return $numUsers;
@@ -83,7 +84,7 @@ class Users
 
     public function getInfoPoster($ip, $startFrom)
     {
-        $ip = Container::get('hooks')->fire('model.admin.model.users.get_info_poster.ip', $ip);
+        $ip = Hooks::fire('model.admin.model.users.get_info_poster.ip', $ip);
 
         $info = [];
 
@@ -95,7 +96,7 @@ class Users
                         ->orderByAsc('poster')
                         ->offset($startFrom)
                         ->limit(50);
-        $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.get_info_poster.select_info_get_info_poster', $result);
+        $result = Hooks::fireDB('model.admin.model.admin.users.get_info_poster.select_info_get_info_poster', $result);
         $result = $result->findMany();
 
         $info['num_posts'] = count($result);
@@ -114,7 +115,7 @@ class Users
                 ->innerJoin('groups', ['g.g_id', '=', 'u.group_id'], 'g')
                 ->whereGt('u.id', 1)
                 ->whereIn('u.id', $posterIds);
-            $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.get_info_poster.select_get_info_poster', $result);
+            $result = Hooks::fireDB('model.admin.model.admin.users.get_info_poster.select_get_info_poster', $result);
             $result = $result->findMany();
 
             foreach ($result as $curUser) {
@@ -122,7 +123,7 @@ class Users
             }
         }
 
-        $info = Container::get('hooks')->fire('model.admin.model.users.get_info_poster.info', $info);
+        $info = Hooks::fire('model.admin.model.users.get_info_poster.info', $info);
         return $info;
     }
 
@@ -140,7 +141,7 @@ class Users
             $move['user_ids'] = [];
         }
 
-        $move['user_ids'] = Container::get('hooks')->fire('model.admin.model.users.move_users.user_ids', $move['user_ids']);
+        $move['user_ids'] = Hooks::fire('model.admin.model.users.move_users.user_ids', $move['user_ids']);
 
         if (empty($move['user_ids'])) {
             throw new Error(__('No users selected'), 404);
@@ -161,7 +162,7 @@ class Users
         $result = DB::table('groups')->selectMany($selectUserGroups)
             ->whereNotIn('g_id', $whereNotIn)
             ->orderByAsc('g_title');
-        $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.move_users.all_user_groups_query', $result);
+        $result = Hooks::fireDB('model.admin.model.admin.users.move_users.all_user_groups_query', $result);
         $result = $result->findMany();
 
         foreach ($result as $row) {
@@ -174,7 +175,7 @@ class Users
             } else {
                 throw new Error(__('Invalid group message'), 400);
             }
-            $newGroup = Container::get('hooks')->fire('model.admin.model.users.move_users.new_group', $newGroup);
+            $newGroup = Hooks::fire('model.admin.model.users.move_users.new_group', $newGroup);
 
             // Is the new group a moderator group?
             $newGroupMod = Container::get('perms')->getGroupPermissions($newGroup, 'mod.is_mod');
@@ -184,7 +185,7 @@ class Users
             $selectFetchUserGroups = ['id', 'group_id'];
             $result = DB::table('users')->selectMany($selectFetchUserGroups)
                 ->whereIn('id', $move['user_ids']);
-            $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.move_users.user_groups_query', $result);
+            $result = Hooks::fireDB('model.admin.model.admin.users.move_users.user_groups_query', $result);
             $result = $result->findMany();
 
             foreach ($result as $curUser) {
@@ -203,7 +204,7 @@ class Users
                 }
             }
 
-            $userGroups = Container::get('hooks')->fire('model.admin.model.users.move_users.user_groups', $userGroups);
+            $userGroups = Hooks::fire('model.admin.model.users.move_users.user_groups', $userGroups);
 
             if (!empty($userGroups) && $newGroup != ForumEnv::get('FEATHER_ADMIN') && !$newGroupMod) {
                 // Fetch forum list and clean up their moderator list
@@ -240,7 +241,7 @@ class Users
             return Router::redirect(Router::pathFor('adminUsers'), __('Users move redirect'));
         }
 
-        $move = Container::get('hooks')->fire('model.admin.model.users.move_users.move', $move);
+        $move = Hooks::fire('model.admin.model.users.move_users.move', $move);
         return $move;
     }
 
@@ -256,7 +257,7 @@ class Users
             $userIds = [];
         }
 
-        $userIds = Container::get('hooks')->fire('model.admin.model.users.delete_users.user_ids', $userIds);
+        $userIds = Hooks::fire('model.admin.model.users.delete_users.user_ids', $userIds);
 
         if (empty($userIds)) {
             throw new Error(__('No users selected'), 404);
@@ -277,7 +278,7 @@ class Users
             $result = DB::table('users')
                         ->selectMany($result['select'])
                         ->whereIn('id', $userIds);
-            $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.delete_users.user_groups_query', $result);
+            $result = Hooks::fireDB('model.admin.model.admin.users.delete_users.user_groups_query', $result);
             $result = $result->findMany();
 
             foreach ($result as $curUser) {
@@ -296,7 +297,7 @@ class Users
                 }
             }
 
-            $userGroups = Container::get('hooks')->fire('model.admin.model.users.delete_users.user_groups', $userGroups);
+            $userGroups = Hooks::fire('model.admin.model.users.delete_users.user_groups', $userGroups);
 
             // Fetch forum list and clean up their moderator list
             $selectMods = ['id', 'moderators'];
@@ -351,7 +352,7 @@ class Users
                     ->innerJoin('topics', ['t.id', '=', 'p.topic_id'], 't')
                     ->innerJoin('forums', ['f.id', '=', 't.forum_id'], 'f')
                     ->where('p.poster_id', $userIds);
-                $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.delete_users.user_posts_query', $result);
+                $result = Hooks::fireDB('model.admin.model.admin.users.delete_users.user_posts_query', $result);
                 $result = $result->findMany();
 
                 if ($result) {
@@ -415,7 +416,7 @@ class Users
             $userIds = [];
         }
 
-        $userIds = Container::get('hooks')->fire('model.admin.model.users.ban_users.user_ids', $userIds);
+        $userIds = Hooks::fire('model.admin.model.users.ban_users.user_ids', $userIds);
 
         if (empty($userIds)) {
             throw new Error(__('No users selected'), 404);
@@ -445,7 +446,7 @@ class Users
             $banExpire = Utils::trim(Input::post('ban_expire'));
             $banTheIp = Input::post('ban_the_ip') ? intval(Input::post('ban_the_ip')) : 0;
 
-            Container::get('hooks')->fire('model.admin.model.users.ban_users.comply', $banMessage, $banExpire, $banTheIp);
+            Hooks::fire('model.admin.model.users.ban_users.comply', $banMessage, $banExpire, $banTheIp);
 
             if ($banExpire != '' && $banExpire != 'Never') {
                 $banExpire = strtotime($banExpire . ' GMT');
@@ -471,7 +472,7 @@ class Users
             $selectFetchUserInformation = ['id', 'username', 'email', 'registration_ip'];
             $result = DB::table('users')->selectMany($selectFetchUserInformation)
                 ->whereIn('id', $userIds);
-            $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.ban_users.user_info_query', $result);
+            $result = Hooks::fireDB('model.admin.model.admin.users.ban_users.user_info_query', $result);
             $result = $result->findMany();
 
             foreach ($result as $curUser) {
@@ -486,7 +487,7 @@ class Users
                 }
             }
 
-            $userInfo = Container::get('hooks')->fire('model.admin.model.users.ban_users.user_info', $userInfo);
+            $userInfo = Hooks::fire('model.admin.model.users.ban_users.user_info', $userInfo);
 
             // And insert the bans!
             foreach ($userIds as $userId) {
@@ -503,7 +504,7 @@ class Users
                     'ban_creator' => User::get()->id,
                 ];
 
-                $insertUpdateBan = Container::get('hooks')->fire('model.admin.model.users.ban_users.ban_data', $insertUpdateBan);
+                $insertUpdateBan = Hooks::fire('model.admin.model.users.ban_users.ban_data', $insertUpdateBan);
 
                 if (Input::post('mode') == 'add') {
                     $insertUpdateBan['ban_creator'] = User::get()->id;
@@ -526,7 +527,7 @@ class Users
     public function getUserSearch()
     {
         $form = Input::query('form', [], false);
-        $form = Container::get('hooks')->fire('model.admin.model.users.get_user_search.form', $form);
+        $form = Hooks::fire('model.admin.model.users.get_user_search.form', $form);
 
         $search = [];
 
@@ -638,7 +639,7 @@ class Users
             $search['conditions'][] = 'u.group_id='.$userGroup;
         }
 
-        $search = Container::get('hooks')->fire('model.admin.model.users.get_user_search.search', $search);
+        $search = Hooks::fire('model.admin.model.users.get_user_search.search', $search);
         return $search;
     }
 
@@ -654,7 +655,7 @@ class Users
             ->offset($startFrom)
             ->limit(50)
             ->orderBy($orderBy, $direction);
-        $result = Container::get('hooks')->fireDB('model.admin.model.admin.users.print_users.query', $result);
+        $result = Hooks::fireDB('model.admin.model.admin.users.print_users.query', $result);
         $result = $result->findMany();
 
         if ($result) {
@@ -670,7 +671,7 @@ class Users
             }
         }
 
-        $userData = Container::get('hooks')->fire('model.admin.model.users.print_users.user_data', $userData);
+        $userData = Hooks::fire('model.admin.model.users.print_users.user_data', $userData);
         return $userData;
     }
 
@@ -687,7 +688,7 @@ class Users
             $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$curGroup['g_id'].'">'.Utils::escape($curGroup['g_title']).'</option>'."\n";
         }
 
-        $output = Container::get('hooks')->fire('model.admin.model.users.get_group_list.output', $output);
+        $output = Hooks::fire('model.admin.model.users.get_group_list.output', $output);
         return $output;
     }
 }

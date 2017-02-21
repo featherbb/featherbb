@@ -33,7 +33,7 @@ class Groups
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.groups.display');
+        Hooks::fire('controller.admin.groups.display');
 
         $groups = $this->model->groups();
 
@@ -56,7 +56,7 @@ class Groups
 
     public function delete($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.groups.delete');
+        Hooks::fire('controller.admin.groups.delete');
 
         if ($args['id'] < 5) {
             throw new Error(__('Bad request'), 403);
@@ -103,7 +103,7 @@ class Groups
 
     public function addedit($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.groups.addedit');
+        Hooks::fire('controller.admin.groups.addedit');
 
         $groups = $this->model->groups();
 

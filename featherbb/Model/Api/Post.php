@@ -104,7 +104,7 @@ class Post extends Api
 
     public function getInfoDelete($id)
     {
-        $id = Container::get('hooks')->fire('model.post.get_info_delete_start', $id);
+        $id = Hooks::fire('model.post.get_info_delete_start', $id);
 
         $query['select'] = ['fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies'];
         $query['where'] = [
@@ -121,7 +121,7 @@ class Post extends Api
             ->whereAnyIs($query['where'])
             ->where('p.id', $id);
 
-        $query = Container::get('hooks')->fireDB('model.post.get_info_delete_query', $query);
+        $query = Hooks::fireDB('model.post.get_info_delete_query', $query);
 
         $query = $query->findOne();
 

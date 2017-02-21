@@ -32,7 +32,7 @@ class Search
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.search.display');
+        Hooks::fire('controller.search.display');
 
         if (!User::can('search.topics')) {
             throw new Error(__('No search permission'), 403);
@@ -86,7 +86,7 @@ class Search
 
     public function quicksearches($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.search.quicksearches');
+        Hooks::fire('controller.search.quicksearches');
 
         return Router::redirect(Router::pathFor('search').'?action=show_'.$args['show']);
     }

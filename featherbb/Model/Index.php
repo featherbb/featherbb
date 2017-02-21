@@ -23,7 +23,7 @@ class Index
     // Returns forum action
     public function forumActions()
     {
-        Container::get('hooks')->fire('model.index.get_forum_actions_start');
+        Hooks::fire('model.index.get_forum_actions_start');
 
         $forumActions = [];
 
@@ -32,7 +32,7 @@ class Index
             $forumActions[] = '<a href="'.Router::pathFor('markRead').'">'.__('Mark all as read').'</a>';
         }
 
-        $forumActions = Container::get('hooks')->fire('model.index.get_forum_actions', $forumActions);
+        $forumActions = Hooks::fire('model.index.get_forum_actions', $forumActions);
 
         return $forumActions;
     }
@@ -40,7 +40,7 @@ class Index
     // Detects if a "new" icon has to be displayed
     protected function getNewPosts()
     {
-        Container::get('hooks')->fire('model.index.get_new_posts_start');
+        Hooks::fire('model.index.get_new_posts_start');
 
         $query['select'] = ['f.id', 'f.last_post'];
         $query['where'] = [
@@ -55,7 +55,7 @@ class Index
             ->whereAnyIs($query['where'])
             ->whereGt('f.last_post', User::get()->last_visit);
 
-        $query = Container::get('hooks')->fireDB('model.index.query_get_new_posts', $query);
+        $query = Hooks::fireDB('model.index.query_get_new_posts', $query);
 
         $query = $query->findResultSet();
 
@@ -80,7 +80,7 @@ class Index
                     ->whereGt('last_post', User::get()->last_visit)
                     ->whereNull('moved_to');
 
-                $query = Container::get('hooks')->fireDB('model.index.get_new_posts_query', $query);
+                $query = Hooks::fireDB('model.index.get_new_posts_query', $query);
 
                 $query = $query->findResultSet();
 
@@ -92,7 +92,7 @@ class Index
             }
         }
 
-        $newTopics = Container::get('hooks')->fire('model.index.get_new_posts', $newTopics);
+        $newTopics = Hooks::fire('model.index.get_new_posts', $newTopics);
 
         return $newTopics;
     }
@@ -100,7 +100,7 @@ class Index
     // Returns the elements needed to display categories and their forums
     public function printCategoriesForums()
     {
-        Container::get('hooks')->fire('model.index.print_categories_forums_start');
+        Hooks::fire('model.index.print_categories_forums_start');
 
         // Get list of forums and topics with new posts since last visit
         if (!User::get()->is_guest) {
@@ -124,7 +124,7 @@ class Index
             ->whereNull('t.moved_to')
             ->orderByMany($query['order_by']);
 
-        $query = Container::get('hooks')->fireDB('model.index.query_print_categories_forums', $query);
+        $query = Hooks::fireDB('model.index.query_print_categories_forums', $query);
 
         $query = $query->findResultSet();
 
@@ -180,7 +180,7 @@ class Index
 
             // If there is a last_post/last_poster
             if ($curForum->last_post != '') {
-                $curForum->last_post_formatted = '<a href="'.Router::pathFor('viewPost', ['id' => $curForum->last_post_tid, 'name' => Url::slug($curForum->last_post_subject), 'pid' => $curForum->last_post_id]).'#p'.$curForum->last_postId.'">'.Container::get('utils')->formatTime($curForum->last_post).'</a> <span class="byuser">'.__('by').' '.Utils::escape($curForum->last_poster).'</span>';
+                $curForum->last_post_formatted = '<a href="'.Router::pathFor('viewPost', ['id' => $curForum->last_post_tid, 'name' => Url::slug($curForum->last_post_subject), 'pid' => $curForum->last_post_id]).'#p'.$curForum->last_postId.'">'.Utils::formatTime($curForum->last_post).'</a> <span class="byuser">'.__('by').' '.Utils::escape($curForum->last_poster).'</span>';
             } elseif ($curForum->redirect_url != '') {
                 $curForum->last_post_formatted = '- - -';
             } else {
@@ -208,7 +208,7 @@ class Index
             ++$i;
         }
 
-        $indexData = Container::get('hooks')->fire('model.index.print_categories_forums', $indexData);
+        $indexData = Hooks::fire('model.index.print_categories_forums', $indexData);
 
         return $indexData;
     }
@@ -216,7 +216,7 @@ class Index
     // Returns the elements needed to display stats
     public function stats()
     {
-        Container::get('hooks')->fire('model.index.collect_stats_start');
+        Hooks::fire('model.index.collect_stats_start');
 
         // Collect some statistics from the database
         if (!Container::get('cache')->isCached('users_info')) {
@@ -229,7 +229,7 @@ class Index
             ->selectExpr('SUM(num_topics)', 'total_topics')
             ->selectExpr('SUM(num_posts)', 'total_posts');
 
-        $query = Container::get('hooks')->fireDB('model.index.collect_stats_query', $query);
+        $query = Hooks::fireDB('model.index.collect_stats_query', $query);
 
         $query = $query->findOne();
 
@@ -242,7 +242,7 @@ class Index
             $stats['newest_user'] = Utils::escape($stats['last_user']['username']);
         }
 
-        $stats = Container::get('hooks')->fire('model.index.collect_stats', $stats);
+        $stats = Hooks::fire('model.index.collect_stats', $stats);
 
         return $stats;
     }
@@ -250,7 +250,7 @@ class Index
     // Returns the elements needed to display users online
     public function usersOnline()
     {
-        Container::get('hooks')->fire('model.index.fetch_users_online_start');
+        Hooks::fire('model.index.fetch_users_online_start');
 
         // Fetch users online info and generate strings for output
         $online = [];
@@ -265,7 +265,7 @@ class Index
             ->where($query['where'])
             ->orderByMany($query['order_by']);
 
-        $query = Container::get('hooks')->fireDB('model.index.query_fetch_users_online', $query);
+        $query = Hooks::fireDB('model.index.query_fetch_users_online', $query);
 
         $query = $query->findResultSet();
 
@@ -287,7 +287,7 @@ class Index
             $online['num_users'] = 0;
         }
 
-        $online = Container::get('hooks')->fire('model.index.fetch_users_online', $online);
+        $online = Hooks::fire('model.index.fetch_users_online', $online);
 
         return $online;
     }

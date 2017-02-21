@@ -12,6 +12,7 @@ namespace FeatherBB\Model\Admin;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Router;
@@ -23,14 +24,14 @@ class Groups
     public function groups()
     {
         $result = DB::table('groups')->orderBy('g_id')->findMany();
-        Container::get('hooks')->fireDB('model.admin.groups.fetch_groups_query', $result);
+        Hooks::fireDB('model.admin.groups.fetch_groups_query', $result);
         $groups = [];
         foreach ($result as $curGroup) {
             $groups[$curGroup['g_id']] = $curGroup;
             $groups[$curGroup['g_id']]['is_moderator'] = Container::get('perms')->getGroupPermissions($curGroup['g_id'], 'mod.is_mod');
         }
 
-        $groups = Container::get('hooks')->fire('model.admin.groups.fetch_groups', $groups);
+        $groups = Hooks::fire('model.admin.groups.fetch_groups', $groups);
 
         return $groups;
     }
@@ -41,7 +42,7 @@ class Groups
 
         if (Input::post('add_group')) {
             $group['base_group'] = $id; // Equals intval(Input::post('base_group'))
-            $group['base_group'] = Container::get('hooks')->fire('model.admin.groups.add_user_group', $group['base_group']);
+            $group['base_group'] = Hooks::fire('model.admin.groups.add_user_group', $group['base_group']);
 
             $group['mode'] = 'add';
         } else {
@@ -49,7 +50,7 @@ class Groups
             if (!isset($groups[$id])) {
                 throw new Error(__('Bad request'), 404);
             }
-            $groups[$id] = Container::get('hooks')->fire('model.admin.groups.update_user_group', $groups[$id]);
+            $groups[$id] = Hooks::fire('model.admin.groups.update_user_group', $groups[$id]);
 
             $group['mode'] = 'edit';
         }
@@ -58,7 +59,7 @@ class Groups
         $group['prefs'] = Container::get('prefs')->getGroupPreferences($id);
         $group['perms'] = Container::get('perms')->getGroupPermissions($id);
 
-        $group = Container::get('hooks')->fire('model.admin.groups.info_add_group', $group);
+        $group = Hooks::fire('model.admin.groups.info_add_group', $group);
         return $group;
     }
 
@@ -76,20 +77,20 @@ class Groups
             }
         }
 
-        $output = Container::get('hooks')->fire('model.admin.groups.get_group_list', $output);
+        $output = Hooks::fire('model.admin.groups.get_group_list', $output);
         return $output;
     }
 
     public function groupListDelete($groupId)
     {
-        $groupId = Container::get('hooks')->fire('model.admin.groups.get_group_list_delete_start', $groupId);
+        $groupId = Hooks::fire('model.admin.groups.get_group_list_delete_start', $groupId);
 
         $selectGetGroupListDelete = ['g_id', 'g_title'];
         $result = DB::table('groups')->selectMany($selectGetGroupListDelete)
                         ->whereNotEqual('g_id', ForumEnv::get('FEATHER_GUEST'))
                         ->whereNotEqual('g_id', $groupId)
                         ->orderBy('g_title');
-        $result = Container::get('hooks')->fireDB('model.admin.groups.get_group_list_delete', $result);
+        $result = Hooks::fireDB('model.admin.groups.get_group_list_delete', $result);
         $result = $result->findMany();
 
         $output = '';
@@ -103,7 +104,7 @@ class Groups
             }
         }
 
-        $output = Container::get('hooks')->fire('model.admin.groups.get_group_list.output', $output);
+        $output = Hooks::fire('model.admin.groups.get_group_list.output', $output);
         return $output;
     }
 
@@ -115,7 +116,7 @@ class Groups
             $groupId = 0;
         }
 
-        $groupId = Container::get('hooks')->fire('model.admin.groups.add_edit_group_start', $groupId);
+        $groupId = Hooks::fire('model.admin.groups.add_edit_group_start', $groupId);
 
         // Is this the admin group? (special rules apply)
         $isAdminGroup = (Input::post('group_id') && Input::post('group_id') == ForumEnv::get('FEATHER_ADMIN')) ? true : false;
@@ -125,11 +126,11 @@ class Groups
         if ($title == '') {
             throw new Error(__('Must enter title message'), 400);
         }
-        $title = Container::get('hooks')->fire('model.admin.groups.add_edit_group_set_title', $title);
+        $title = Hooks::fire('model.admin.groups.add_edit_group_set_title', $title);
         // Set user title
         $userTitle = Utils::trim(Input::post('user_title'));
         $userTitle = ($userTitle != '') ? $userTitle : 'NULL';
-        $userTitle = Container::get('hooks')->fire('model.admin.groups.add_edit_group.set_user_title', $userTitle);
+        $userTitle = Hooks::fire('model.admin.groups.add_edit_group.set_user_title', $userTitle);
 
         $promoteMinPosts = Input::post('promote_min_posts') ? intval(Input::post('promote_min_posts')) : '0';
         if (Input::post('promote_next_group') &&
@@ -199,9 +200,9 @@ class Groups
             'email.send'            => (int) $sendEmail,
         ];
 
-        $insertUpdateGroup = Container::get('hooks')->fire('model.admin.groups.add_edit_group.data', $insertUpdateGroup);
-        $groupPreferences = Container::get('hooks')->fire('model.admin.groups.add_edit_group.preferences', $groupPreferences);
-        $groupPermissions = Container::get('hooks')->fire('model.admin.groups.add_edit_group.permissions', $groupPermissions);
+        $insertUpdateGroup = Hooks::fire('model.admin.groups.add_edit_group.data', $insertUpdateGroup);
+        $groupPreferences = Hooks::fire('model.admin.groups.add_edit_group.preferences', $groupPreferences);
+        $groupPermissions = Hooks::fire('model.admin.groups.add_edit_group.permissions', $groupPermissions);
 
         if (Input::post('mode') == 'add') {
             // Creating a new group
@@ -213,7 +214,7 @@ class Groups
             $add = DB::table('groups')
                         ->create();
             $add->set($insertUpdateGroup)->save();
-            $newGroupId = Container::get('hooks')->fire('model.admin.groups.add_edit_group.new_group_id', (int) $add->id());
+            $newGroupId = Hooks::fire('model.admin.groups.add_edit_group.new_group_id', (int) $add->id());
 
             // Set new group preferences
             Container::get('prefs')->setGroup($newGroupId, $groupPreferences);
@@ -222,7 +223,7 @@ class Groups
             $selectForumPerms = ['forum_id', 'read_forum', 'post_replies', 'post_topics'];
             $result = DB::table('forum_perms')->selectMany($selectForumPerms)
                             ->where('group_id', Input::post('base_group'));
-            $result = Container::get('hooks')->fireDB('model.admin.groups.add_edit_group.select_forum_perms_query', $result);
+            $result = Hooks::fireDB('model.admin.groups.add_edit_group.select_forum_perms_query', $result);
             $result = $result->findMany();
 
             foreach ($result as $curForumPerm) {
@@ -262,7 +263,7 @@ class Groups
         }
 
         $groupId = Input::post('mode') == 'add' ? $newGroupId : Input::post('group_id');
-        $groupId = Container::get('hooks')->fire('model.admin.groups.add_edit_group.group_id', $groupId);
+        $groupId = Hooks::fire('model.admin.groups.add_edit_group.group_id', $groupId);
 
         // Update group permissions
         $allowedPerms = array_filter($groupPermissions);
@@ -286,7 +287,7 @@ class Groups
     public function setDefaultGroup($groups)
     {
         $groupId = intval(Input::post('default_group'));
-        $groupId = Container::get('hooks')->fire('model.admin.groups.set_default_group.group_id', $groupId);
+        $groupId = Hooks::fire('model.admin.groups.set_default_group.group_id', $groupId);
 
         // Make sure it's not the admin or guest groups
         if ($groupId == ForumEnv::get('FEATHER_ADMIN') || $groupId == ForumEnv::get('FEATHER_GUEST')) {
@@ -310,7 +311,7 @@ class Groups
 
     public function checkMembers($groupId)
     {
-        $groupId = Container::get('hooks')->fire('model.admin.groups.check_members_start', $groupId);
+        $groupId = Hooks::fire('model.admin.groups.check_members_start', $groupId);
 
         $isMember = DB::table('groups')->tableAlias('g')
             ->select('g.g_title')
@@ -319,7 +320,7 @@ class Groups
             ->where('g.g_id', $groupId)
             ->groupBy('g.g_id')
             ->groupBy('g_title');
-        $isMember = Container::get('hooks')->fireDB('model.admin.groups.check_members', $isMember);
+        $isMember = Hooks::fireDB('model.admin.groups.check_members', $isMember);
         $isMember = $isMember->findOne();
 
         return (bool) $isMember;
@@ -327,11 +328,11 @@ class Groups
 
     public function deleteGroup($groupId)
     {
-        $groupId = Container::get('hooks')->fire('model.admin.groups.delete_group.group_id', $groupId);
+        $groupId = Hooks::fire('model.admin.groups.delete_group.group_id', $groupId);
 
         if (Input::post('del_group')) {
             $moveToGroup = intval(Input::post('move_to_group'));
-            $moveToGroup = Container::get('hooks')->fire('model.admin.groups.delete_group.move_to_group', $moveToGroup);
+            $moveToGroup = Hooks::fire('model.admin.groups.delete_group.move_to_group', $moveToGroup);
             DB::table('users')->where('group_id', $groupId)
                                                       ->updateMany('group_id', $moveToGroup);
         }
@@ -358,10 +359,10 @@ class Groups
 
     public function groupTitle($groupId)
     {
-        $groupId = Container::get('hooks')->fireDB('model.admin.groups.get_group_title.group_id', $groupId);
+        $groupId = Hooks::fireDB('model.admin.groups.get_group_title.group_id', $groupId);
 
         $groupTitle = DB::table('groups')->where('g_id', $groupId);
-        $groupTitle = Container::get('hooks')->fireDB('model.admin.groups.get_group_title.query', $groupTitle);
+        $groupTitle = Hooks::fireDB('model.admin.groups.get_group_title.query', $groupTitle);
         $groupTitle = $groupTitle->findOneCol('g_title');
 
         return $groupTitle;
@@ -369,7 +370,7 @@ class Groups
 
     public function titleMembers($groupId)
     {
-        $groupId = Container::get('hooks')->fire('model.admin.groups.get_title_members.group_id', $groupId);
+        $groupId = Hooks::fire('model.admin.groups.get_title_members.group_id', $groupId);
 
         $group = DB::table('groups')->tableAlias('g')
                     ->select('g.g_title')
@@ -378,13 +379,13 @@ class Groups
                     ->where('g.g_id', $groupId)
                     ->groupBy('g.g_id')
                     ->groupBy('g_title');
-        $group = Container::get('hooks')->fireDB('model.admin.groups.get_title_members.query', $group);
+        $group = Hooks::fireDB('model.admin.groups.get_title_members.query', $group);
         $group = $group->findOne();
 
         $groupInfo['title'] = $group['g_title'];
         $groupInfo['members'] = $group['members'];
 
-        $groupInfo = Container::get('hooks')->fire('model.admin.groups.get_title_members.group_info', $groupInfo);
+        $groupInfo = Hooks::fire('model.admin.groups.get_title_members.group_info', $groupInfo);
         return $groupInfo;
     }
 }

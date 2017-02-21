@@ -32,7 +32,7 @@ class Censoring
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.censoring.display');
+        Hooks::fire('controller.admin.censoring.display');
 
         // Add a censor word
         if (Input::post('add_word')) {

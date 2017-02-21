@@ -33,7 +33,7 @@ class Register
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.register.display');
+        Hooks::fire('controller.register.display');
 
         if (!User::get()->is_guest) {
             return Router::redirect(Router::pathFor('home'));
@@ -75,14 +75,14 @@ class Register
 
     public function cancel($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.register.cancel');
+        Hooks::fire('controller.register.cancel');
 
         return Router::redirect(Router::pathFor('home'));
     }
 
     public function rules($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.register.rules');
+        Hooks::fire('controller.register.rules');
 
         // If we are logged in, we shouldn't be here
         if (!User::get()->is_guest) {

@@ -30,7 +30,7 @@ class Userlist
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.userlist.display');
+        Hooks::fire('controller.userlist.display');
 
         if (!User::can('users.view')) {
             throw new Error(__('No permission'), 403);

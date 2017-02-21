@@ -12,6 +12,7 @@ namespace FeatherBB\Controller\Admin;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
@@ -19,6 +20,7 @@ use FeatherBB\Core\Interfaces\Lang;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Interfaces\View;
+use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
 
@@ -39,7 +41,7 @@ class Parser
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.parser.display');
+        Hooks::fire('controller.admin.parser.display');
 
         $smilies = Container::get('cache')->retrieve('smilies');
 

@@ -2,6 +2,7 @@
 
 namespace FeatherBB;
 
+use FeatherBB\Core\Interfaces\Feather;
 use FeatherBB\Core\Interfaces\SlimStatic;
 
 /**

@@ -46,7 +46,7 @@ class Topic
             $args['name'] = null;
         }
 
-        Container::get('hooks')->fire('controller.topic.display', $args['id'], $args['name'], $args['page'], $args['pid']);
+        Hooks::fire('controller.topic.display', $args['id'], $args['name'], $args['page'], $args['pid']);
 
         // Antispam feature
         $langAntispamQuestions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
@@ -127,7 +127,7 @@ class Topic
 
     public function viewpost($req, $res, $args)
     {
-        $args['pid'] = Container::get('hooks')->fire('controller.topic.viewpost', $args['pid']);
+        $args['pid'] = Hooks::fire('controller.topic.viewpost', $args['pid']);
 
         $post = $this->model->redirectToPost($args['pid']);
 
@@ -139,7 +139,7 @@ class Topic
 
     public function subscribe($req, $res, $args)
     {
-        $args['id'] = Container::get('hooks')->fire('controller.topic.subscribe', $args['id']);
+        $args['id'] = Hooks::fire('controller.topic.subscribe', $args['id']);
 
         $this->model->subscribe($args['id']);
         return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => $args['name']]), __('Subscribe redirect'));
@@ -147,7 +147,7 @@ class Topic
 
     public function unsubscribe($req, $res, $args)
     {
-        $args['id'] = Container::get('hooks')->fire('controller.topic.unsubscribe', $args['id']);
+        $args['id'] = Hooks::fire('controller.topic.unsubscribe', $args['id']);
 
         $this->model->unsubscribe($args['id']);
         return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => $args['name']]), __('Unsubscribe redirect'));
@@ -155,7 +155,7 @@ class Topic
 
     public function close($req, $res, $args)
     {
-        $args['id'] = Container::get('hooks')->fire('controller.topic.close', $args['id']);
+        $args['id'] = Hooks::fire('controller.topic.close', $args['id']);
 
         $topic = $this->model->setClosed($args['id'], 1);
         return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => Url::slug($topic['subject'])]), __('Close topic redirect'));
@@ -163,7 +163,7 @@ class Topic
 
     public function open($req, $res, $args)
     {
-        $args['id'] = Container::get('hooks')->fire('controller.topic.open', $args['id']);
+        $args['id'] = Hooks::fire('controller.topic.open', $args['id']);
 
         $topic = $this->model->setClosed($args['id'], 0);
         return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => Url::slug($topic['subject'])]), __('Open topic redirect'));
@@ -171,7 +171,7 @@ class Topic
 
     public function stick($req, $res, $args)
     {
-        $args['id'] = Container::get('hooks')->fire('controller.topic.stick', $args['id']);
+        $args['id'] = Hooks::fire('controller.topic.stick', $args['id']);
 
         $topic = $this->model->setSticky($args['id'], 1);
         return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => Url::slug($topic['subject'])]), __('Stick topic redirect'));
@@ -179,7 +179,7 @@ class Topic
 
     public function unstick($req, $res, $args)
     {
-        $args['id'] = Container::get('hooks')->fire('controller.topic.unstick', $args['id']);
+        $args['id'] = Hooks::fire('controller.topic.unstick', $args['id']);
 
         $topic = $this->model->setSticky($args['id'], 0);
         return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'], 'name' => Url::slug($topic['subject'])]), __('Unstick topic redirect'));
@@ -188,7 +188,7 @@ class Topic
     // Move a single topic
     public function move($req, $res, $args)
     {
-        $args['id'] = Container::get('hooks')->fire('controller.topic.move', $args['id']);
+        $args['id'] = Hooks::fire('controller.topic.move', $args['id']);
 
         if ($newFid = Input::post('move_to_forum')) {
             $this->model->moveTo($args['fid'], $newFid, $args['id']);
@@ -212,7 +212,7 @@ class Topic
 
     public function moderate($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.topic.moderate');
+        Hooks::fire('controller.topic.moderate');
 
         $curTopic = $this->model->getTopicInfo($args['fid'], $args['id']);
 
@@ -281,7 +281,7 @@ class Topic
 
     public function action($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.topic.action');
+        Hooks::fire('controller.topic.action');
 
         return $this->model->handleActions($args['id'], $args['name'], $args['action']);
     }

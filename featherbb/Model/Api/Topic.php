@@ -12,6 +12,7 @@ namespace FeatherBB\Model\Api;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
@@ -388,7 +389,7 @@ class Topic extends Api
                         $mailMessageFull = str_replace('<poster>', $post['username'], $mailMessageFull);
                         $mailMessageFull = str_replace('<message>', $cleanedMessage, $mailMessageFull);
                         $mailMessageFull = str_replace('<topic_url>', Router::pathFor('Topic', ['id' => $newTid, 'name' => Url::slug($post['subject'])]), $mailMessageFull);
-                        $mailMessageFull = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $tid, 'name' => Url::slug($post['subject'])]), $mailMessageFull);
+                        $mailMessageFull = str_replace('<unsubscribe_url>', Router::pathFor('unsubscribeTopic', ['id' => $newTid, 'name' => Url::slug($post['subject'])]), $mailMessageFull);
                         $mailMessageFull = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessageFull);
 
                         $notificationEmails[$curSubscriber['language']][0] = $mailSubject;
@@ -452,7 +453,7 @@ class Topic extends Api
     {
         $new = [];
 
-        $new = Container::get('hooks')->fireDB('model.post.insert_reply_start', $new, $post, $tid, $curPosting, $isSubscribed);
+        $new = Hooks::fireDB('model.post.insert_reply_start', $new, $post, $tid, $curPosting, $isSubscribed);
 
         if (!$this->user->is_guest) {
             $new['tid'] = $tid;
@@ -471,7 +472,7 @@ class Topic extends Api
             $query = DB::table('posts')
                 ->create()
                 ->set($query['insert']);
-            $query = Container::get('hooks')->fireDB('model.post.insert_reply_guest_query', $query);
+            $query = Hooks::fireDB('model.post.insert_reply_guest_query', $query);
             $query = $query->save();
 
             $new['pid'] = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'posts');
@@ -489,7 +490,7 @@ class Topic extends Api
                     $subscription = DB::table('topic_subscriptions')
                         ->create()
                         ->set($subscription['insert']);
-                    $subscription = Container::get('hooks')->fireDB('model.post.insert_reply_subscription', $subscription);
+                    $subscription = Hooks::fireDB('model.post.insert_reply_subscription', $subscription);
                     $subscription = $subscription->save();
 
                     // We reply and we don't want to be subscribed anymore
@@ -497,7 +498,7 @@ class Topic extends Api
                     $unsubscription = DB::table('topic_subscriptions')
                         ->where('user_id', $this->user->id)
                         ->where('topic_id', $tid);
-                    $unsubscription = Container::get('hooks')->fireDB('model.post.insert_reply_unsubscription', $unsubscription);
+                    $unsubscription = Hooks::fireDB('model.post.insert_reply_unsubscription', $unsubscription);
                     $unsubscription = $unsubscription->deleteMany();
                 }
             }
@@ -519,7 +520,7 @@ class Topic extends Api
             $query = DB::table('posts')
                 ->create()
                 ->set($query['insert']);
-            $query = Container::get('hooks')->fireDB('model.post.insert_reply_member_query', $query);
+            $query = Hooks::fireDB('model.post.insert_reply_member_query', $query);
             $query = $query->save();
 
             $new['pid'] = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'posts');
@@ -537,7 +538,7 @@ class Topic extends Api
             ->findOne()
             ->set($topic['update'])
             ->setExpr('num_replies', 'num_replies+1');
-        $topic = Container::get('hooks')->fireDB('model.post.insert_reply_update_query', $topic);
+        $topic = Hooks::fireDB('model.post.insert_reply_update_query', $topic);
 
         // Get topic subject to redirect
         $new['topic_subject'] = Url::slug($topic->subject);
@@ -550,7 +551,7 @@ class Topic extends Api
 
         \FeatherBB\Model\Forum::update($curPosting['id']);
 
-        $new = Container::get('hooks')->fireDB('model.post.insert_reply', $new);
+        $new = Hooks::fireDB('model.post.insert_reply', $new);
 
         return $new;
     }

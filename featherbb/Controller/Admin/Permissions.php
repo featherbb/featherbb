@@ -32,7 +32,7 @@ class Permissions
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.permissions.display');
+        Hooks::fire('controller.admin.permissions.display');
 
         // Update permissions
         if (Request::isPost()) {

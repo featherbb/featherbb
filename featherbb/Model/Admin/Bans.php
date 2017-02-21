@@ -12,6 +12,7 @@ namespace FeatherBB\Model\Admin;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Router;
@@ -25,7 +26,7 @@ class Bans
     {
         $ban = [];
 
-        $id = Container::get('hooks')->fire('model.admin.bans.add_ban_info_start', $id);
+        $id = Hooks::fire('model.admin.bans.add_ban_info_start', $id);
 
         // If the ID of the user to ban was provided through GET (a link from profile.php)
         if (is_numeric($id)) {
@@ -38,7 +39,7 @@ class Bans
             $result = DB::table('users')->selectMany($selectAddBanInfo)
                         ->where('id', $ban['user_id']);
 
-            $result = Container::get('hooks')->fireDB('model.admin.bans.add_ban_info_query', $result);
+            $result = Hooks::fireDB('model.admin.bans.add_ban_info_query', $result);
             $result = $result->findOne();
 
             if ($result) {
@@ -59,7 +60,7 @@ class Bans
                     ->where('username', $ban['ban_user'])
                     ->whereGt('id', 1);
 
-                $result = Container::get('hooks')->fireDB('model.admin.bans.add_ban_info_query', $result);
+                $result = Hooks::fireDB('model.admin.bans.add_ban_info_query', $result);
                 $result = $result->findOne();
 
                 if ($result) {
@@ -100,7 +101,7 @@ class Bans
 
         $ban['mode'] = 'add';
 
-        $ban = Container::get('hooks')->fire('model.admin.bans.add_ban_info', $ban);
+        $ban = Hooks::fire('model.admin.bans.add_ban_info', $ban);
 
         return $ban;
     }
@@ -109,7 +110,7 @@ class Bans
     {
         $ban = [];
 
-        $id = Container::get('hooks')->fire('model.admin.bans.edit_ban_info_start', $id);
+        $id = Hooks::fire('model.admin.bans.edit_ban_info_start', $id);
 
         $ban['id'] = $id;
 
@@ -117,7 +118,7 @@ class Bans
         $result = DB::table('bans')->selectMany($selectEditBanInfo)
             ->where('id', $ban['id']);
 
-        $result = Container::get('hooks')->fireDB('model.admin.bans.edit_ban_info_query', $result);
+        $result = Hooks::fireDB('model.admin.bans.edit_ban_info_query', $result);
         $result = $result->findOne();
 
         if ($result) {
@@ -135,7 +136,7 @@ class Bans
 
         $ban['mode'] = 'edit';
 
-        $ban = Container::get('hooks')->fire('model.admin.bans.edit_ban_info', $ban);
+        $ban = Hooks::fire('model.admin.bans.edit_ban_info', $ban);
 
         return $ban;
     }
@@ -148,7 +149,7 @@ class Bans
         $banMessage = Utils::trim(Input::post('ban_message'));
         $banExpire = Utils::trim(Input::post('ban_expire'));
 
-        Container::get('hooks')->fire('model.admin.bans.insert_ban_start', $banUser, $banIp, $banEmail, $banMessage, $banExpire);
+        Hooks::fire('model.admin.bans.insert_ban_start', $banUser, $banIp, $banEmail, $banMessage, $banExpire);
 
         if ($banUser == '' && $banIp == '' && $banEmail == '') {
             throw new Error(__('Must enter message'), 400);
@@ -250,7 +251,7 @@ class Bans
             'expire'    =>  $banExpire,
         ];
 
-        $insertUpdateBan = Container::get('hooks')->fire('model.admin.bans.insert_ban_data', $insertUpdateBan);
+        $insertUpdateBan = Hooks::fire('model.admin.bans.insert_ban_data', $insertUpdateBan);
 
         if (Input::post('mode') == 'add') {
             $insertUpdateBan['ban_creator'] = User::get()->id;
@@ -275,11 +276,11 @@ class Bans
 
     public function removeBan($banId)
     {
-        $banId = Container::get('hooks')->fire('model.admin.bans.remove_ban', $banId);
+        $banId = Hooks::fire('model.admin.bans.remove_ban', $banId);
 
         $result = DB::table('bans')->where('id', $banId)
                     ->findOne();
-        $result = Container::get('hooks')->fireDB('model.admin.bans.remove_ban_query', $result);
+        $result = Hooks::fireDB('model.admin.bans.remove_ban_query', $result);
         $result = $result->delete();
 
         // Regenerate the bans cache
@@ -292,7 +293,7 @@ class Bans
     {
         $banInfo = [];
 
-        Container::get('hooks')->fire('model.admin.bans.find_ban_start');
+        Hooks::fire('model.admin.bans.find_ban_start');
 
         // trim() all elements in $form
         $banInfo['conditions'] = $banInfo['query_str'] = [];
@@ -370,7 +371,7 @@ class Bans
             $banInfo['num_bans'] = $result->count('id');
         }
 
-        Container::get('hooks')->fire('model.admin.bans.find_ban', $banInfo);
+        Hooks::fire('model.admin.bans.find_ban', $banInfo);
 
         return $banInfo;
     }

@@ -31,7 +31,7 @@ class Index
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.index.index');
+        Hooks::fire('controller.index.index');
         return View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title'))],
             'active_page' => 'index',
@@ -46,7 +46,7 @@ class Index
 
     public function rules()
     {
-        Container::get('hooks')->fire('controller.index.rules');
+        Hooks::fire('controller.index.rules');
 
         if (ForumSettings::get('o_rules') == '0' || (User::get()->is_guest && !User::can('board.read') && ForumSettings::get('o_regs_allow') == '0')) {
             throw new Error(__('Bad request'), 404);
@@ -61,7 +61,7 @@ class Index
 
     public function markread()
     {
-        Container::get('hooks')->fire('controller.index.markread');
+        Hooks::fire('controller.index.markread');
 
         Auth::setLastVisit(User::get()->id, User::get()->logged);
         // Reset tracked topics

@@ -32,7 +32,7 @@ class Forum
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.forum.display');
+        Hooks::fire('controller.forum.display');
         // Fetch some information about the forum
         $curForum = $this->model->getForumInfo($args['id']);
 
@@ -96,7 +96,7 @@ class Forum
 
     public function moderate($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.forum.moderate');
+        Hooks::fire('controller.forum.moderate');
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->getModerators($args['id']);
@@ -140,7 +140,7 @@ class Forum
 
     public function markread($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.forum.markread');
+        Hooks::fire('controller.forum.markread');
 
         $trackedTopics = Track::getTrackedTopics();
         $trackedTopics['forums'][$args['id']] = time();
@@ -151,7 +151,7 @@ class Forum
 
     public function subscribe($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.forum.subscribe');
+        Hooks::fire('controller.forum.subscribe');
 
         $this->model->subscribe($args['id']);
         return Router::redirect(Router::pathFor('Forum', ['id' => $args['id'], 'name' => $args['name']]), __('Subscribe redirect'));
@@ -159,7 +159,7 @@ class Forum
 
     public function unsubscribe($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.forum.unsubscribe');
+        Hooks::fire('controller.forum.unsubscribe');
 
         $this->model->unsubscribe($args['id']);
         return Router::redirect(Router::pathFor('Forum', ['id' => $args['id'], 'name' => $args['name']]), __('Unsubscribe redirect'));
@@ -167,7 +167,7 @@ class Forum
 
     public function dealposts($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.forum.dealposts');
+        Hooks::fire('controller.forum.dealposts');
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->getModerators($args['id']);

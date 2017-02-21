@@ -12,6 +12,7 @@ namespace FeatherBB\Model;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
@@ -28,7 +29,7 @@ class Profile
 {
     public function changePass($id)
     {
-        $id = Container::get('hooks')->fire('model.profile.change_pass_start', $id);
+        $id = Hooks::fire('model.profile.change_pass_start', $id);
 
         $oldPassword = Input::post('req_old_password');
         $newPassword1 = Input::post('req_new_password1');
@@ -43,7 +44,7 @@ class Profile
 
         $curUser = DB::table('users')
             ->where('id', $id);
-        $curUser = Container::get('hooks')->fireDB('model.profile.change_pass_find_user', $curUser);
+        $curUser = Hooks::fireDB('model.profile.change_pass_find_user', $curUser);
         $curUser = $curUser->findOne();
 
         $authorized = false;
@@ -66,7 +67,7 @@ class Profile
             ->where('id', $id)
             ->findOne()
             ->set('password', $newPasswordHash);
-        $updatePassword = Container::get('hooks')->fireDB('model.profile.change_pass_query', $updatePassword);
+        $updatePassword = Hooks::fireDB('model.profile.change_pass_query', $updatePassword);
         $updatePassword = $updatePassword->save();
 
         if (User::get()->id == $id) {
@@ -75,21 +76,21 @@ class Profile
             AuthModel::setCookie('Bearer '.$jwt, $expire);
         }
 
-        Container::get('hooks')->fire('model.profile.change_pass');
+        Hooks::fire('model.profile.change_pass');
         return Router::redirect(Router::pathFor('profileSection', ['id' => $id, 'section' => 'essentials']), __('Pass updated redirect'));
     }
 
     public function changeEmail($id)
     {
-        $id = Container::get('hooks')->fire('model.profile.change_email_start', $id);
+        $id = Hooks::fire('model.profile.change_email_start', $id);
 
         if (Input::query('key')) {
             $key = Input::query('key');
-            $key = Container::get('hooks')->fire('model.profile.change_email_key', $key);
+            $key = Hooks::fire('model.profile.change_email_key', $key);
 
             $newEmailKey = DB::table('users')
                 ->where('id', $id);
-            $newEmailKey = Container::get('hooks')->fireDB('model.profile.change_email_key_query', $newEmailKey);
+            $newEmailKey = Hooks::fireDB('model.profile.change_email_key_query', $newEmailKey);
             $newEmailKey = $newEmailKey->findOneCol('activate_key');
 
             if ($key == '' || $key != $newEmailKey) {
@@ -101,15 +102,15 @@ class Profile
                     ->setExpr('email', 'activate_string')
                     ->setExpr('activate_string', 'NULL')
                     ->setExpr('activate_key', 'NULL');
-                $updateMail = Container::get('hooks')->fireDB('model.profile.change_email_query', $updateMail);
+                $updateMail = Hooks::fireDB('model.profile.change_email_query', $updateMail);
                 $updateMail = $updateMail->save();
 
-                Container::get('hooks')->fire('model.profile.change_email_updated');
+                Hooks::fire('model.profile.change_email_updated');
 
                 return Router::redirect(Router::pathFor('home'), __('Email updated'));
             }
         } elseif (Request::isPost()) {
-            Container::get('hooks')->fire('model.profile.change_email_post');
+            Hooks::fire('model.profile.change_email_post');
 
             if (!Utils::passwordVerify(Input::post('req_password'), User::get()->password)) {
                 throw new Error(__('Wrong pass'));
@@ -117,7 +118,7 @@ class Profile
 
             // Validate the email address
             $newEmail = strtolower(Utils::trim(Input::post('req_new_email')));
-            $newEmail = Container::get('hooks')->fire('model.profile.change_email_new_email', $newEmail);
+            $newEmail = Hooks::fire('model.profile.change_email_new_email', $newEmail);
             if (!Container::get('email')->isValidEmail($newEmail)) {
                 throw new Error(__('Invalid email'), 400);
             }
@@ -129,19 +130,19 @@ class Profile
                 } elseif (ForumSettings::get('o_mailing_list') != '') {
                     // Load the "banned email change" template
                     $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/mail_templates/banned_email_change.tpl'));
-                    $mailTpl = Container::get('hooks')->fire('model.profile.change_email_mail_tpl', $mailTpl);
+                    $mailTpl = Hooks::fire('model.profile.change_email_mail_tpl', $mailTpl);
 
                     // The first row contains the subject
                     $firstCrlf = strpos($mailTpl, "\n");
                     $mailSubject = trim(substr($mailTpl, 8, $firstCrlf-8));
-                    $mailSubject = Container::get('hooks')->fire('model.profile.change_email_mail_subject', $mailSubject);
+                    $mailSubject = Hooks::fire('model.profile.change_email_mail_subject', $mailSubject);
 
                     $mailMessage = trim(substr($mailTpl, $firstCrlf));
                     $mailMessage = str_replace('<username>', User::get()->username, $mailMessage);
                     $mailMessage = str_replace('<email>', $newEmail, $mailMessage);
                     $mailMessage = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $id]), $mailMessage);
                     $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
-                    $mailMessage = Container::get('hooks')->fire('model.profile.change_email_mail_message', $mailMessage);
+                    $mailMessage = Hooks::fire('model.profile.change_email_mail_message', $mailMessage);
 
                     Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
                 }
@@ -153,7 +154,7 @@ class Profile
             $result = DB::table('users')
                 ->selectMany($result['select'])
                 ->where('email', $newEmail);
-            $result = Container::get('hooks')->fireDB('model.profile.change_email_check_mail', $result);
+            $result = Hooks::fireDB('model.profile.change_email_check_mail', $result);
             $result = $result->findMany();
 
             if ($result) {
@@ -166,19 +167,19 @@ class Profile
 
                     // Load the "dupe email change" template
                     $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/mail_templates/dupe_email_change.tpl'));
-                    $mailTpl = Container::get('hooks')->fire('model.profile.change_email_mail_dupe_tpl', $mailTpl);
+                    $mailTpl = Hooks::fire('model.profile.change_email_mail_dupe_tpl', $mailTpl);
 
                     // The first row contains the subject
                     $firstCrlf = strpos($mailTpl, "\n");
                     $mailSubject = trim(substr($mailTpl, 8, $firstCrlf-8));
-                    $mailSubject = Container::get('hooks')->fire('model.profile.change_email_mail_dupe_subject', $mailSubject);
+                    $mailSubject = Hooks::fire('model.profile.change_email_mail_dupe_subject', $mailSubject);
 
                     $mailMessage = trim(substr($mailTpl, $firstCrlf));
                     $mailMessage = str_replace('<username>', User::get()->username, $mailMessage);
                     $mailMessage = str_replace('<dupe_list>', implode(', ', $dupeList), $mailMessage);
                     $mailMessage = str_replace('<profile_url>', Router::pathFor('userProfile', ['id' => $id]), $mailMessage);
                     $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
-                    $mailMessage = Container::get('hooks')->fire('model.profile.change_email_mail_dupe_message', $mailMessage);
+                    $mailMessage = Hooks::fire('model.profile.change_email_mail_dupe_message', $mailMessage);
 
                     Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
                 }
@@ -186,7 +187,7 @@ class Profile
 
 
             $newEmailKey = Random::pass(8);
-            $newEmailKey = Container::get('hooks')->fire('model.profile.change_email_new_email_key', $newEmailKey);
+            $newEmailKey = Hooks::fire('model.profile.change_email_new_email_key', $newEmailKey);
 
             // Update the user
             unset($user);
@@ -198,28 +199,28 @@ class Profile
                 ->where('id', $id)
                 ->findOne()
                 ->set($user['update']);
-            $user = Container::get('hooks')->fireDB('model.profile.change_email_user_query', $user);
+            $user = Hooks::fireDB('model.profile.change_email_user_query', $user);
             $user = $user->save();
 
             // Load the "activate email" template
             $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/mail_templates/activate_email.tpl'));
-            $mailTpl = Container::get('hooks')->fire('model.profile.change_email_mail_activate_tpl', $mailTpl);
+            $mailTpl = Hooks::fire('model.profile.change_email_mail_activate_tpl', $mailTpl);
 
             // The first row contains the subject
             $firstCrlf = strpos($mailTpl, "\n");
             $mailSubject = trim(substr($mailTpl, 8, $firstCrlf-8));
-            $mailSubject = Container::get('hooks')->fire('model.profile.change_email_mail_activate_subject', $mailSubject);
+            $mailSubject = Hooks::fire('model.profile.change_email_mail_activate_subject', $mailSubject);
 
             $mailMessage = trim(substr($mailTpl, $firstCrlf));
             $mailMessage = str_replace('<username>', User::get()->username, $mailMessage);
             $mailMessage = str_replace('<base_url>', Url::base(), $mailMessage);
             $mailMessage = str_replace('<activation_url>', Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_email'], ['key' => $newEmailKey]), $mailMessage);
             $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
-            $mailMessage = Container::get('hooks')->fire('model.profile.change_email_mail_activate_message', $mailMessage);
+            $mailMessage = Hooks::fire('model.profile.change_email_mail_activate_message', $mailMessage);
 
             Container::get('email')->send($newEmail, $mailSubject, $mailMessage);
 
-            Container::get('hooks')->fire('model.profile.change_email_sent');
+            Hooks::fire('model.profile.change_email_sent');
 
             $message = __('Activate email sent').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.';
             return Router::redirect(Router::pathFor('userProfile', ['id' => $id]), $message);
@@ -228,7 +229,7 @@ class Profile
 
     public function uploadAvatar($id, $filesData)
     {
-        $filesData = Container::get('hooks')->fire('model.profile.upload_avatar_start', $filesData, $id);
+        $filesData = Hooks::fire('model.profile.upload_avatar_start', $filesData, $id);
 
         if (!isset($filesData['req_file'])) {
             throw new Error(__('No file'));
@@ -266,7 +267,7 @@ class Profile
         }
 
         if (is_uploaded_file($uploadedFile['tmp_name'])) {
-            $uploadedFile = Container::get('hooks')->fire('model.profile.upload_avatar_is_uploaded_file', $uploadedFile);
+            $uploadedFile = Hooks::fire('model.profile.upload_avatar_is_uploaded_file', $uploadedFile);
 
             // Preliminary file check, adequate in most cases
             $allowedTypes = ['image/gif', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png'];
@@ -313,7 +314,7 @@ class Profile
             throw new Error(__('Unknown failure'));
         }
 
-        $uploadedFile = Container::get('hooks')->fire('model.profile.upload_avatar', $uploadedFile);
+        $uploadedFile = Hooks::fire('model.profile.upload_avatar', $uploadedFile);
 
         return Router::redirect(Router::pathFor('profileSection', ['id' => $id, 'section' => 'personality']), __('Avatar upload redirect'));
     }
@@ -335,20 +336,20 @@ class Profile
 
     public function updateGroupMembership($id)
     {
-        $id = Container::get('hooks')->fire('model.profile.update_group_membership_start', $id);
+        $id = Hooks::fire('model.profile.update_group_membership_start', $id);
 
         $newGroupId = intval(Input::post('group_id'));
 
         $oldGroupId = DB::table('users')
             ->where('id', $id);
-        $oldGroupId = Container::get('hooks')->fireDB('model.profile.update_group_membership_old_group', $oldGroupId);
+        $oldGroupId = Hooks::fireDB('model.profile.update_group_membership_old_group', $oldGroupId);
         $oldGroupId = $oldGroupId->findOneCol('group_id');
 
         $updateGroup = DB::table('users')
             ->where('id', $id)
             ->findOne()
             ->set('group_id', $newGroupId);
-        $updateGroup = Container::get('hooks')->fireDB('model.profile.update_group_membership_update_group', $updateGroup);
+        $updateGroup = Hooks::fireDB('model.profile.update_group_membership_update_group', $updateGroup);
         $updateGroup = $updateGroup->save();
 
         // Regenerate the users info cache
@@ -384,13 +385,13 @@ class Profile
                     } else {
                         $updateForums = $updateForums->setExpr('moderators', 'NULL');
                     }
-                    $updateForums = Container::get('hooks')->fireDB('model.profile.update_group_membership_mod_forums', $updateForums);
+                    $updateForums = Hooks::fireDB('model.profile.update_group_membership_mod_forums', $updateForums);
                     $updateForums = $updateForums->save();
                 }
             }
         }
 
-        $id = Container::get('hooks')->fire('model.profile.update_group_membership', $id);
+        $id = Hooks::fire('model.profile.update_group_membership', $id);
 
         return Router::redirect(Router::pathFor('profileSection', ['id' => $id, 'section' => 'admin']), __('Group membership redirect'));
     }
@@ -402,7 +403,7 @@ class Profile
             ->where('id', $id)
             ->findOneCol('username');
 
-        $username = Container::get('hooks')->fire('model.profile.get_username', $username);
+        $username = Hooks::fire('model.profile.get_username', $username);
 
         return $username;
     }
@@ -413,7 +414,7 @@ class Profile
 
         $result = DB::table('forums')
             ->selectMany($result['select']);
-        $result = Container::get('hooks')->fireDB('model.profile.loop_mod_forums', $result);
+        $result = Hooks::fireDB('model.profile.loop_mod_forums', $result);
         $result = $result->findMany();
 
         return $result;
@@ -439,7 +440,7 @@ class Profile
                     ->where('id', $curForum['id'])
                     ->findOne()
                     ->set('moderators', serialize($curModerators));
-                $updateForums = Container::get('hooks')->fireDB('model.profile.update_mod_forums_query', $updateForums);
+                $updateForums = Hooks::fireDB('model.profile.update_mod_forums_query', $updateForums);
                 $updateForums = $updateForums->save();
             }
             // If the user shouldn't have moderator access (and he/she already has it)
@@ -455,19 +456,19 @@ class Profile
                 } else {
                     $updateForums = $updateForums->setExpr('moderators', 'NULL');
                 }
-                $updateForums = Container::get('hooks')->fireDB('model.profile.update_mod_forums_query', $updateForums);
+                $updateForums = Hooks::fireDB('model.profile.update_mod_forums_query', $updateForums);
                 $updateForums = $updateForums->save();
             }
         }
 
-        $id = Container::get('hooks')->fire('model.profile.update_mod_forums', $id);
+        $id = Hooks::fire('model.profile.update_mod_forums', $id);
 
         return Router::redirect(Router::pathFor('profileSection', ['id' => $id, 'section' => 'admin']), __('Update forums redirect'));
     }
 
     public function banUser($id)
     {
-        $id = Container::get('hooks')->fire('model.profile.ban_user_start', $id);
+        $id = Hooks::fire('model.profile.ban_user_start', $id);
 
         // Get the username of the user we are banning
         $username = $this->getUsername($id);
@@ -477,7 +478,7 @@ class Profile
             ->where('username', $username)
             ->orderByExpr('expire IS NULL DESC')
             ->orderByDesc('expire');
-        $banId = Container::get('hooks')->fireDB('model.profile.ban_user_query', $banId);
+        $banId = Hooks::fireDB('model.profile.ban_user_query', $banId);
         $banId = $banId->findOneCol('id');
 
         if ($banId) {
@@ -489,11 +490,11 @@ class Profile
 
     public function promoteUser($id, $pid)
     {
-        $id = Container::get('hooks')->fire('model.profile.promote_user.user_id', $id);
-        $pid = Container::get('hooks')->fire('model.profile.promote_user.post_id', $pid);
+        $id = Hooks::fire('model.profile.promote_user.user_id', $id);
+        $pid = Hooks::fire('model.profile.promote_user.post_id', $pid);
 
         // Find the group ID to promote the user to
-        $nextGroupId = Container::get('hooks')->fire('model.profile.promote_user.next_group_id', User::getPref('promote.next_group', $id));
+        $nextGroupId = Hooks::fire('model.profile.promote_user.next_group_id', User::getPref('promote.next_group', $id));
 
         if (!$nextGroupId) {
             throw new Error(__('Bad request'), 404);
@@ -504,7 +505,7 @@ class Profile
             ->where('id', $id)
             ->findOne()
             ->set('group_id', $nextGroupId);
-        $updateUser = Container::get('hooks')->fireDB('model.profile.promote_user_query', $updateUser);
+        $updateUser = Hooks::fireDB('model.profile.promote_user_query', $updateUser);
         $updateUser = $updateUser->save();
 
         // Get topic infos to redirect to
@@ -520,7 +521,7 @@ class Profile
 
     public function deleteUser($id)
     {
-        $id = Container::get('hooks')->fire('model.profile.delete_user_start', $id);
+        $id = Hooks::fire('model.profile.delete_user_start', $id);
 
         // Get the username and group of the user we are deleting
         $result['select'] = ['group_id', 'username'];
@@ -528,7 +529,7 @@ class Profile
         $result = DB::table('users')
             ->where('id', $id)
             ->selectMany($result['select']);
-        $result = Container::get('hooks')->fireDB('model.profile.delete_user_username', $result);
+        $result = Hooks::fireDB('model.profile.delete_user_username', $result);
         $result = $result->findOne();
 
         $groupId = $result['group_id'];
@@ -560,7 +561,7 @@ class Profile
                         } else {
                             $updateForums = $updateForums->setExpr('moderators', 'NULL');
                         }
-                        $updateForums = Container::get('hooks')->fireDB('model.profile.update_mod_forums_query', $updateForums);
+                        $updateForums = Hooks::fireDB('model.profile.update_mod_forums_query', $updateForums);
                         $updateForums = $updateForums->save();
                     }
                 }
@@ -569,18 +570,18 @@ class Profile
             // Delete any subscriptions
             $deleteSubscriptions = DB::table('topic_subscriptions')
                 ->where('user_id', $id);
-            $deleteSubscriptions = Container::get('hooks')->fireDB('model.profile.delete_user_subscriptions_topic', $deleteSubscriptions);
+            $deleteSubscriptions = Hooks::fireDB('model.profile.delete_user_subscriptions_topic', $deleteSubscriptions);
             $deleteSubscriptions = $deleteSubscriptions->deleteMany();
             unset($deleteSubscriptions);
             $deleteSubscriptions = DB::table('forum_subscriptions')
                 ->where('user_id', $id);
-            $deleteSubscriptions = Container::get('hooks')->fireDB('model.profile.delete_user_subscriptions_forum', $deleteSubscriptions);
+            $deleteSubscriptions = Hooks::fireDB('model.profile.delete_user_subscriptions_forum', $deleteSubscriptions);
             $deleteSubscriptions = $deleteSubscriptions->deleteMany();
 
             // Remove him/her from the online list (if they happen to be logged in)
             $deleteOnline = DB::table('online')
                 ->where('user_id', $id);
-            $deleteOnline = Container::get('hooks')->fireDB('model.profile.delete_user_online', $deleteOnline);
+            $deleteOnline = Hooks::fireDB('model.profile.delete_user_online', $deleteOnline);
             $deleteOnline = $deleteOnline->deleteMany();
 
             // Should we delete all posts made by this user?
@@ -588,7 +589,7 @@ class Profile
                 // Hold on, this could take some time!
                 @set_time_limit(0);
 
-                Container::get('hooks')->fire('model.profile.delete_user_posts');
+                Hooks::fire('model.profile.delete_user_posts');
 
                 // Find all posts made by this user
                 unset($result);
@@ -600,7 +601,7 @@ class Profile
                     ->innerJoin('topics', ['t.id', '=', 'p.topic_id'], 't')
                     ->innerJoin('forums', ['f.id', '=', 't.forum_id'], 'f')
                     ->where('p.poster_id', $id);
-                $result = Container::get('hooks')->fireDB('model.profile.delete_user_posts_first_query', $result);
+                $result = Hooks::fireDB('model.profile.delete_user_posts_first_query', $result);
                 $result = $result->findMany();
 
                 if ($result) {
@@ -609,13 +610,13 @@ class Profile
                         $result2 = DB::table('posts')
                             ->where('topic_id', $curPost['topic_id'])
                             ->orderBy('posted');
-                        $result2 = Container::get('hooks')->fireDB('model.profile.delete_user_posts_second_query', $result2);
+                        $result2 = Hooks::fireDB('model.profile.delete_user_posts_second_query', $result2);
                         $result2 = $result2->findOneCol('id');
 
                         if ($result2 == $curPost['id']) {
-                            Delete::topic($curPost['topic_id']);
+                            Topic::delete($curPost['topic_id']);
                         } else {
-                            Delete::post($curPost['id'], $curPost['topic_id']);
+                            Post::delete($curPost['id'], $curPost['topic_id']);
                         }
 
                         Forum::update($curPost['forum_id']);
@@ -625,7 +626,7 @@ class Profile
                 // Set all his/her posts to guest
                 $updateGuest = DB::table('posts')
                     ->whereIn('poster_id', '1');
-                $updateGuest = Container::get('hooks')->fireDB('model.profile.delete_user_posts_guest_query', $updateGuest);
+                $updateGuest = Hooks::fireDB('model.profile.delete_user_posts_guest_query', $updateGuest);
                 $updateGuest = $updateGuest->updateMany('poster_id', $id);
             }
 
@@ -646,7 +647,7 @@ class Profile
                 Container::get('cache')->store('admin_ids', Cache::getAdminIds());
             }
 
-            Container::get('hooks')->fire('model.profile.delete_user');
+            Hooks::fire('model.profile.delete_user');
 
             return Router::redirect(Router::pathFor('home'), __('User delete redirect'));
         }
@@ -663,7 +664,7 @@ class Profile
             ->selectMany($info['select'])
             ->leftOuterJoin('groups', ['g.g_id', '=', 'u.group_id'], 'g')
             ->where('u.id', $id);
-        $info = Container::get('hooks')->fireDB('model.profile.fetch_user_group', $info);
+        $info = Hooks::fireDB('model.profile.fetch_user_group', $info);
         $info = $info->findOne();
 
         if (!$info) {
@@ -675,8 +676,8 @@ class Profile
 
     public function updateProfile($id, $info, $section)
     {
-        $info = Container::get('hooks')->fire('model.profile.update_profile_start', $info, $id, $section);
-        $section = Container::get('hooks')->fire('model.profile.update_profile_section', $section, $id, $info);
+        $info = Hooks::fire('model.profile.update_profile_start', $info, $id, $section);
+        $section = Hooks::fire('model.profile.update_profile_section', $section, $id, $info);
 
         $usernameUpdated = false;
         $form = $prefs = [];
@@ -879,7 +880,7 @@ class Profile
                 throw new Error(__('Bad request'), 404);
         }
 
-        $form = Container::get('hooks')->fire('model.profile.update_profile_form', $form, $section, $id, $info);
+        $form = Hooks::fire('model.profile.update_profile_form', $form, $section, $id, $info);
 
         // Single quotes around non-empty values and nothing for empty values
         $temp = [];
@@ -896,7 +897,7 @@ class Profile
             ->where('id', $id)
             ->findOne()
             ->set($temp);
-        $updateUser = Container::get('hooks')->fireDB('model.profile.update_profile_query', $updateUser);
+        $updateUser = Hooks::fireDB('model.profile.update_profile_query', $updateUser);
         $updateUser = $updateUser->save();
 
         // Update user prefs
@@ -908,43 +909,43 @@ class Profile
         if ($usernameUpdated) {
             $bansUpdated = DB::table('bans')
                 ->where('username', $info['old_username']);
-            $bansUpdated = Container::get('hooks')->fireDB('model.profile.update_profile_bans_updated', $bansUpdated);
+            $bansUpdated = Hooks::fireDB('model.profile.update_profile_bans_updated', $bansUpdated);
             $bansUpdated = $bansUpdated->updateMany('username', $form['username']);
 
             $updatePosterId = DB::table('posts')
                 ->where('poster_id', $id);
-            $updatePosterId = Container::get('hooks')->fireDB('model.profile.update_profile_poster_id', $updatePosterId);
+            $updatePosterId = Hooks::fireDB('model.profile.update_profile_poster_id', $updatePosterId);
             $updatePosterId = $updatePosterId->updateMany('poster', $form['username']);
 
             $updatePosts = DB::table('posts')
                 ->where('edited_by', $info['old_username']);
-            $updatePosts = Container::get('hooks')->fireDB('model.profile.update_profile_posts', $updatePosts);
+            $updatePosts = Hooks::fireDB('model.profile.update_profile_posts', $updatePosts);
             $updatePosts = $updatePosts->updateMany('edited_by', $form['username']);
 
             $updateTopicsPoster = DB::table('topics')
                 ->where('poster', $info['old_username']);
-            $updateTopicsPoster = Container::get('hooks')->fireDB('model.profile.update_profile_topics_poster', $updateTopicsPoster);
+            $updateTopicsPoster = Hooks::fireDB('model.profile.update_profile_topics_poster', $updateTopicsPoster);
             $updateTopicsPoster = $updateTopicsPoster->updateMany('poster', $form['username']);
 
             $updateTopicsLastPoster = DB::table('topics')
                 ->where('last_poster', $info['old_username']);
-            $updateTopicsLastPoster = Container::get('hooks')->fireDB('model.profile.update_profile_topics_last_poster', $updateTopicsLastPoster);
+            $updateTopicsLastPoster = Hooks::fireDB('model.profile.update_profile_topics_last_poster', $updateTopicsLastPoster);
             $updateTopicsLastPoster = $updateTopicsLastPoster->updateMany('last_poster', $form['username']);
 
             $updateForums = DB::table('forums')
                 ->where('last_poster', $info['old_username']);
-            $updateForums = Container::get('hooks')->fireDB('model.profile.update_profile_forums', $updateForums);
+            $updateForums = Hooks::fireDB('model.profile.update_profile_forums', $updateForums);
             $updateForums = $updateForums->updateMany('last_poster', $form['username']);
 
             $updateOnline = DB::table('online')
                 ->where('ident', $info['old_username']);
-            $updateOnline = Container::get('hooks')->fireDB('model.profile.update_profile_online', $updateOnline);
+            $updateOnline = Hooks::fireDB('model.profile.update_profile_online', $updateOnline);
             $updateOnline = $updateOnline->updateMany('ident', $form['username']);
 
             // If the user is a moderator or an administrator we have to update the moderator lists
             $groupId = DB::table('users')
                 ->where('id', $id);
-            $groupId = Container::get('hooks')->fireDB('model.profile.update_profile_group_id', $groupId);
+            $groupId = Hooks::fireDB('model.profile.update_profile_group_id', $groupId);
             $groupId = $groupId->findOneCol('group_id');
 
             if ($groupId == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->getGroupPermissions($groupId, 'mod.is_mod')) {
@@ -964,7 +965,7 @@ class Profile
                             ->where('id', $curForum['id'])
                             ->findOne()
                             ->set('moderators', serialize($curModerators));
-                        $updateMods = Container::get('hooks')->fireDB('model.profile.update_profile_mods', $updateMods);
+                        $updateMods = Hooks::fireDB('model.profile.update_profile_mods', $updateMods);
                         $updateMods = $updateMods->save();
                     }
                 }
@@ -983,7 +984,7 @@ class Profile
             }
         }
 
-        $section = Container::get('hooks')->fireDB('model.profile.update_profile', $section, $id);
+        $section = Hooks::fireDB('model.profile.update_profile', $section, $id);
 
         return Router::redirect(Router::pathFor('profileSection', ['id' => $id, 'section' => $section]), __('Profile redirect'));
     }
@@ -997,7 +998,7 @@ class Profile
             ->selectMany($user['select'])
             ->leftOuterJoin('groups', ['g.g_id', '=', 'u.group_id'], 'g')
             ->where('u.id', $id);
-        $user = Container::get('hooks')->fireDB('model.profile.get_user_info', $user);
+        $user = Hooks::fireDB('model.profile.get_user_info', $user);
         $user = $user->findOne();
 
         if (!$user) {
@@ -1013,7 +1014,7 @@ class Profile
     {
         $userInfo = [];
 
-        $userInfo = Container::get('hooks')->fire('model.profile.parse_user_info_start', $userInfo, $user);
+        $userInfo = Hooks::fire('model.profile.parse_user_info_start', $userInfo, $user);
 
         $userInfo['personal'][] = '<dt>'.__('Username').'</dt>';
         $userInfo['personal'][] = '<dd>'.Utils::escape($user['username']).'</dd>';
@@ -1096,7 +1097,7 @@ class Profile
         $userInfo['activity'][] = '<dt>'.__('Registered').'</dt>';
         $userInfo['activity'][] = '<dd>'.Utils::formatTime($user['registered'], true).'</dd>';
 
-        $userInfo = Container::get('hooks')->fire('model.profile.parse_user_info', $userInfo);
+        $userInfo = Hooks::fire('model.profile.parse_user_info', $userInfo);
 
         return $userInfo;
     }
@@ -1105,7 +1106,7 @@ class Profile
     {
         $userDisp = [];
 
-        $userDisp = Container::get('hooks')->fire('model.profile.edit_essentials_start', $userDisp, $id, $user);
+        $userDisp = Hooks::fire('model.profile.edit_essentials_start', $userDisp, $id, $user);
 
         if (User::isAdminMod()) {
             if (User::isAdmin() || User::can('mod.rename_users')) {
@@ -1145,7 +1146,7 @@ class Profile
 
         $userDisp['posts_field'] .= (!empty($postsActions) ? '<p class="actions">'.implode(' - ', $postsActions).'</p>' : '')."\n";
 
-        $userDisp = Container::get('hooks')->fire('model.profile.edit_essentials', $userDisp);
+        $userDisp = Hooks::fire('model.profile.edit_essentials', $userDisp);
 
         return $userDisp;
     }
@@ -1154,7 +1155,7 @@ class Profile
     {
         $output = '';
 
-        $user = Container::get('hooks')->fire('model.profile.get_group_list_start', $user);
+        $user = Hooks::fire('model.profile.get_group_list_start', $user);
 
         $result['select'] = ['g_id', 'g_title'];
 
@@ -1162,7 +1163,7 @@ class Profile
             ->selectMany($result['select'])
             ->whereNotEqual('g_id', ForumEnv::get('FEATHER_GUEST'))
             ->orderBy('g_title');
-        $result = Container::get('hooks')->fireDB('model.profile.get_group_list_query', $result);
+        $result = Hooks::fireDB('model.profile.get_group_list_query', $result);
         $result = $result->findMany();
 
         foreach ($result as $curGroup) {
@@ -1173,7 +1174,7 @@ class Profile
             }
         }
 
-        $output = Container::get('hooks')->fire('model.profile.get_group_list', $output);
+        $output = Hooks::fire('model.profile.get_group_list', $output);
 
         return $output;
     }
@@ -1182,7 +1183,7 @@ class Profile
     {
         $output = '';
 
-        $id = Container::get('hooks')->fire('model.profile.get_forum_list_start', $id);
+        $id = Hooks::fire('model.profile.get_forum_list_start', $id);
 
         $result['select'] = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.moderators'];
         $result['order_by'] = ['c.disp_position', 'c.id', 'f.disp_position'];
@@ -1193,7 +1194,7 @@ class Profile
             ->innerJoin('forums', ['c.id', '=', 'f.cat_id'], 'f')
             ->whereNull('f.redirect_url')
             ->orderByMany($result['order_by']);
-        $result = Container::get('hooks')->fireDB('model.profile.get_forum_list', $result);
+        $result = Hooks::fireDB('model.profile.get_forum_list', $result);
         $result = $result->findMany();
 
         $curCategory = 0;
@@ -1217,7 +1218,7 @@ class Profile
             $output .= "\n\t\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="moderator_in['.$curForum['fid'].']" value="1"'.((in_array($id, $moderators)) ? ' checked="checked"' : '').' />'.Utils::escape($curForum['forum_name']).'<br /></label>'."\n";
         }
 
-        $output = Container::get('hooks')->fire('model.profile.get_forum_list', $output);
+        $output = Hooks::fire('model.profile.get_forum_list', $output);
 
         return $output;
     }
@@ -1284,7 +1285,7 @@ class Profile
 
     public function getInfoMail($recipientId)
     {
-        $recipientId = Container::get('hooks')->fire('model.profile.get_info_mail_start', $recipientId);
+        $recipientId = Hooks::fire('model.profile.get_info_mail_start', $recipientId);
 
         $mail = DB::table('users')
                 ->select('username', 'recipient')
@@ -1292,7 +1293,7 @@ class Profile
                 ->select('id')
                 ->select('group_id')
                 ->where('id', $recipientId);
-        $mail = Container::get('hooks')->fireDB('model.profile.get_info_mail_query', $mail);
+        $mail = Hooks::fireDB('model.profile.get_info_mail_query', $mail);
         $mail = $mail->findOne();
 
         if (!$mail) {
@@ -1302,14 +1303,14 @@ class Profile
         $mail['recipient_id'] = $mail['id'];
         $mail['email_setting'] = User::getPref('email.setting', $mail);
 
-        $mail = Container::get('hooks')->fireDB('model.profile.get_info_mail', $mail);
+        $mail = Hooks::fireDB('model.profile.get_info_mail', $mail);
 
         return $mail;
     }
 
     public function sendEmail($mail)
     {
-        $mail = Container::get('hooks')->fire('model.profile.send_email_start', $mail);
+        $mail = Hooks::fire('model.profile.send_email_start', $mail);
 
         // Clean up message and subject from POST
         $subject = Utils::trim(Input::post('req_subject'));
@@ -1331,7 +1332,7 @@ class Profile
 
         // Load the "form email" template
         $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language', $mail['recipient_id']).'/mail_templates/form_email.tpl'));
-        $mailTpl = Container::get('hooks')->fire('model.profile.send_email_mail_tpl', $mailTpl);
+        $mailTpl = Hooks::fire('model.profile.send_email_mail_tpl', $mailTpl);
 
         // The first row contains the subject
         $firstCrlf = strpos($mailTpl, "\n");
@@ -1344,14 +1345,14 @@ class Profile
         $mailMessage = str_replace('<mail_message>', $message, $mailMessage);
         $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
 
-        $mailMessage = Container::get('hooks')->fire('model.profile.send_email_mail_message', $mailMessage);
+        $mailMessage = Hooks::fire('model.profile.send_email_mail_message', $mailMessage);
 
         Container::get('email')->send($mail['recipient_email'], $mailSubject, $mailMessage, User::get()->email, User::get()->username);
 
         $updateLastMailSent = DB::table('users')->where('id', User::get()->id)
                                                   ->findOne()
                                                   ->set('last_email_sent', time());
-        $updateLastMailSent = Container::get('hooks')->fireDB('model.profile.send_email_update_last_mail_sent', $updateLastMailSent);
+        $updateLastMailSent = Hooks::fireDB('model.profile.send_email_update_last_mail_sent', $updateLastMailSent);
         $updateLastMailSent = $updateLastMailSent->save();
 
         return Router::redirect(Router::pathFor('userProfile', ['id' => $mail['recipient_id']]), __('Email sent redirect'));
@@ -1359,7 +1360,7 @@ class Profile
 
     public function displayIpInfo($ip)
     {
-        $ip = Container::get('hooks')->fire('model.profile.display_ip_info', $ip);
+        $ip = Hooks::fire('model.profile.display_ip_info', $ip);
         throw new Error(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(__('Host info 2'), @gethostbyaddr($ip)).'<br /><br /><a href="'.Router::pathFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>', 400, true, true);
     }
 }

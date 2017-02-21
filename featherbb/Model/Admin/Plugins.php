@@ -12,6 +12,7 @@ namespace FeatherBB\Model\Admin;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Plugin as PluginManager;
@@ -28,7 +29,7 @@ class Plugins
 
     public function activate($name)
     {
-        $name = Container::get('hooks')->fire('model.plugin.activate.name', $name);
+        $name = Hooks::fire('model.plugin.activate.name', $name);
 
         // Check if plugin name is valid
         if ($class = $this->manager->load($name)) {
@@ -52,7 +53,7 @@ class Plugins
 
                 // ... Save in DB ...
                 $plugin->set('active', 1);
-                $plugin = Container::get('hooks')->fireDB('model.plugin.activate', $plugin);
+                $plugin = Hooks::fireDB('model.plugin.activate', $plugin);
                 $plugin->save();
 
                 // ... And regenerate cache.
@@ -70,7 +71,7 @@ class Plugins
      */
     public function deactivate($name)
     {
-        $name = Container::get('hooks')->fire('model.plugin.deactivate.name', $name);
+        $name = Hooks::fire('model.plugin.deactivate.name', $name);
 
         // Check if plugin name is valid
         if ($class = $this->manager->load($name)) {
@@ -89,7 +90,7 @@ class Plugins
                 }
 
                 $plugin->set('active', 0);
-                $plugin = Container::get('hooks')->fireDB('model.plugin.deactivate', $plugin);
+                $plugin = Hooks::fireDB('model.plugin.deactivate', $plugin);
                 $plugin->save();
 
                 // Regenerate cache
@@ -107,7 +108,7 @@ class Plugins
      */
     public function uninstall($name)
     {
-        $name = Container::get('hooks')->fire('model.plugin.uninstall.name', $name);
+        $name = Hooks::fire('model.plugin.uninstall.name', $name);
 
         // Check if plugin name is valid
         if ($class = $this->manager->load($name)) {

@@ -29,7 +29,7 @@ class Reports
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.reports.display');
+        Hooks::fire('controller.admin.reports.display');
 
         // Zap a report
         if (Request::isPost()) {

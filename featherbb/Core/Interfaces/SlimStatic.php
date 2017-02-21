@@ -22,7 +22,7 @@ class SlimStatic
         static::addInstances($aliases, $manager, $slim);
 
         // Add special-case Slim container instance
-        $aliases = ['Container', 'Hooks'];
+        $aliases = ['Container'];
         static::addInstances($aliases, $manager, $slim->getContainer());
 
         // Add services that are resolved out of the Slim container

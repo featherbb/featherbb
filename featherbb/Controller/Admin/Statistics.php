@@ -27,7 +27,7 @@ class Statistics
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.statistics.display');
+        Hooks::fire('controller.admin.statistics.display');
 
         AdminUtils::generateAdminMenu('index');
 
@@ -51,7 +51,7 @@ class Statistics
 
     public function phpinfo($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.statistics.phpinfo');
+        Hooks::fire('controller.admin.statistics.phpinfo');
 
         // Show phpinfo() output
         // Is phpinfo() a disabled function?

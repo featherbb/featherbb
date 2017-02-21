@@ -12,6 +12,7 @@ namespace FeatherBB\Controller\Admin;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Lang;
@@ -38,14 +39,14 @@ class Plugins
      */
     public function download($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.plugins.download');
+        Hooks::fire('controller.admin.plugins.download');
 
         return $this->model->download($args);
     }
 
     public function index($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.plugins.index');
+        Hooks::fire('controller.admin.plugins.index');
 
         if (Request::isPost()) {
             return $this->model->uploadPlugin($_fILES);
@@ -73,7 +74,7 @@ class Plugins
 
     public function activate($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.plugins.activate');
+        Hooks::fire('controller.admin.plugins.activate');
 
         if (!$args['name'] || !is_dir(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name'])) {
             throw new Error(__('Bad request'), 400);
@@ -86,7 +87,7 @@ class Plugins
 
     public function deactivate($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.plugins.deactivate');
+        Hooks::fire('controller.admin.plugins.deactivate');
 
         if (!$args['name'] || !is_dir(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name'])) {
             throw new Error(__('Bad request'), 400);
@@ -99,7 +100,7 @@ class Plugins
 
     public function uninstall($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.plugins.uninstall');
+        Hooks::fire('controller.admin.plugins.uninstall');
 
         if (!$args['name'] || !is_dir(ForumEnv::get('FEATHER_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name'])) {
             throw new Error(__('Bad request'), 400);

@@ -22,7 +22,7 @@ class Permissions
     public function update()
     {
         $form = array_map('intval', Input::post('form'));
-        $form = Container::get('hooks')->fire('model.admin.permissions.update_permissions.form', $form);
+        $form = Hooks::fire('model.admin.permissions.update_permissions.form', $form);
 
         foreach ($form as $key => $input) {
             // Make sure the input is never a negative value

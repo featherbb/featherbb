@@ -96,8 +96,8 @@ class Options
             'email.setting'    => intval(Input::post('form_default_email_setting')),
         ];
 
-        $form = Container::get('hooks')->fire('model.admin.options.update_options.form', $form);
-        $prefs = Container::get('hooks')->fire('model.admin.options.update_options.prefs', $prefs);
+        $form = Hooks::fire('model.admin.options.update_options.form', $form);
+        $prefs = Hooks::fire('model.admin.options.update_options.prefs', $prefs);
 
         if ($form['board_title'] == '') {
             throw new Error(__('Must enter title message'), 400);
@@ -239,7 +239,7 @@ class Options
     public function styles()
     {
         $styles = \FeatherBB\Core\Lister::getStyles();
-        $styles = Container::get('hooks')->fire('model.admin.options.get_styles.styles', $styles);
+        $styles = Hooks::fire('model.admin.options.get_styles.styles', $styles);
 
         $output = '';
 
@@ -251,14 +251,14 @@ class Options
             }
         }
 
-        $output = Container::get('hooks')->fire('model.admin.options.get_styles.output', $output);
+        $output = Hooks::fire('model.admin.options.get_styles.output', $output);
         return $output;
     }
 
     public function languages()
     {
         $langs = \FeatherBB\Core\Lister::getLangs();
-        $langs = Container::get('hooks')->fire('model.admin.options.get_langs.langs', $langs);
+        $langs = Hooks::fire('model.admin.options.get_langs.langs', $langs);
 
         $output = '';
 
@@ -270,14 +270,14 @@ class Options
             }
         }
 
-        $output = Container::get('hooks')->fire('model.admin.options.get_langs.output', $output);
+        $output = Hooks::fire('model.admin.options.get_langs.output', $output);
         return $output;
     }
 
     public function times()
     {
         $times = [5, 15, 30, 60];
-        $times = Container::get('hooks')->fire('model.admin.options.get_times.times', $times);
+        $times = Hooks::fire('model.admin.options.get_times.times', $times);
 
         $output = '';
 
@@ -285,7 +285,7 @@ class Options
             $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'>'.sprintf(__('Minutes'), $time).'</option>'."\n";
         }
 
-        $output = Container::get('hooks')->fire('model.admin.options.get_times.output', $output);
+        $output = Hooks::fire('model.admin.options.get_times.output', $output);
         return $output;
     }
 }

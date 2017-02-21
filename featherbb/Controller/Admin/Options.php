@@ -32,7 +32,7 @@ class Options
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.options.display');
+        Hooks::fire('controller.admin.options.display');
 
         if (Request::isPost()) {
             return $this->model->update();

@@ -31,7 +31,7 @@ class Index
             $args['action'] = null;
         }
 
-        Container::get('hooks')->fire('controller.admin.index.display');
+        Hooks::fire('controller.admin.index.display');
 
         // Check for upgrade
         if ($args['action'] == 'check_upgrade') {

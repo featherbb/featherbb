@@ -18,7 +18,7 @@ class Forum extends Api
     {
         $forum = new \FeatherBB\Model\Forum();
 
-        Container::get('hooks')->bind('model.forum.get_info_forum_query', function ($curForum) {
+        Hooks::bind('model.forum.get_info_forum_query', function ($curForum) {
             $curForum = $curForum->select('f.num_posts');
             return $curForum;
         });

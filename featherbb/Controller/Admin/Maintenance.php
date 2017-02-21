@@ -33,7 +33,7 @@ class Maintenance
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.maintenance.display');
+        Hooks::fire('controller.admin.maintenance.display');
 
         $action = '';
         if (Input::post('action')) {
