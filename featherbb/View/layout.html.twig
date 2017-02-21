@@ -251,21 +251,19 @@
             {% if settings('o_quickjump') == '1' and quickjump is not empty %}
                 <div class="conl">
                     <form id="qjump" method="get" action="">
-                        <div class="form-group">
-                            <label class="control-label col-sm-4" for="id">{{ trans('Jump to') }}</label>
-                            <div class="col-sm-8">
-                                <select name="id" class="form-control" onchange="window.location=(this.options[this.selectedIndex].value)">
-                                    {% for cat_id, cat_data in quickjump["#{ userGet('g_id') }"] %}
-                                        <optgroup label="{{ cat_data.cat_name }}">
-                                            {% for forum in cat_data.cat_forums %}
-                                                <option value="{{ pathFor('Forum', {'id': "#{ forum.forum_id }", 'name': "#{ slug(forum.forum_name) }"}) }}"{{ fid == 2 ? ' selected="selected"' : '' }}>{{ forum.forum_name }}</option>
-                                            {% endfor %}
+                            <div>
+                                <label><span>Jump to<br /></span></label>
+                                    <select name="id" onchange="window.location=(this.options[this.selectedIndex].value)">
+                                        {% for cat_id, cat_data in quickjump["#{ userGet('g_id') }"] %}
+                                            <optgroup label="{{ cat_data.cat_name }}">
+                                                {% for forum in cat_data.cat_forums %}
+                                                    <option value="{{ pathFor('Forum', {'id': "#{ forum.forum_id }", 'name': "#{ slug(forum.forum_name) }"}) }}"{{ fid == 2 ? ' selected="selected"' : '' }}>{{ forum.forum_name }}</option>
+                                                {% endfor %}
 
-                                        </optgroup>
-                                    {% endfor %}
-                                </select>
+                                            </optgroup>
+                                        {% endfor %}
+                                    </select>
                             </div>
-                        </div>
                     </form>
                 </div>
             {% endif %}
@@ -325,7 +323,7 @@
 
 <!-- JS -->
 {% for script in assets.js %}
-<script {% for key, value in script.params %}{{ key }}="{{ value }}"{% endfor %} src="{{ baseStatic() }}/{{ script.file }}" /></script>
+<script {% for key, value in script.params %}{{ key }}="{{ value }}"{% endfor %} src="{{ urlBase() }}/{{ script.file }}" /></script>
 {% endfor %}
 <!-- JSRAW -->
 <script>

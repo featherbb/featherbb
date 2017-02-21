@@ -35,21 +35,27 @@ class Maintenance
             $action = Input::query('action');
         }
 
+        AdminUtils::generateAdminMenu('maintenance');
+
         if ($action == 'rebuild') {
             $this->model->rebuild();
 
+            $queryStr = $this->model->getQueryString();
+
             View::setPageInfo([
                     'page_title'    =>    [Utils::escape(ForumSettings::get('o_board_title')), __('Rebuilding search index')],
-                    'query_str' => $this->model->getQueryString()
+                    'query_str' => $queryStr['str'],
+                    'id'        =>  $queryStr['id'],
+                    'active_page' => 'admin',
+                    'admin_console' => true,
+                    'link'      => '<a href="'. Router::pathFor('adminMaintenance').$queryStr['str'].'">'.__('Click here').'</a>'
                 ]
             )->addTemplate('@forum/admin/maintenance/rebuild')->display();
         }
 
-        if ($action == 'prune') {
+        else if ($action == 'prune') {
             $pruneFrom = Utils::trim(Input::post('prune_from'));
             $pruneSticky = intval(Input::post('prune_sticky'));
-
-            AdminUtils::generateAdminMenu('maintenance');
 
             if (Input::post('prune_comply')) {
                 $this->model->pruneComply($pruneFrom, $pruneSticky);
@@ -66,15 +72,15 @@ class Maintenance
             )->addTemplate('@forum/admin/maintenance/prune')->display();
         }
 
-        AdminUtils::generateAdminMenu('maintenance');
-
-        View::setPageInfo([
-                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Maintenance')],
-                'active_page' => 'admin',
-                'admin_console' => true,
-                'first_id' => $this->model->getFirstId(),
-                'categories' => $this->model->getCategories(),
-            ]
-        )->addTemplate('@forum/admin/maintenance/admin_maintenance')->display();
+        else {
+            View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Maintenance')],
+                    'active_page' => 'admin',
+                    'admin_console' => true,
+                    'first_id' => $this->model->getFirstId(),
+                    'categories' => $this->model->getCategories(),
+                ]
+            )->addTemplate('@forum/admin/maintenance/admin_maintenance')->display();
+        }
     }
 }

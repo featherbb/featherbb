@@ -38,7 +38,6 @@ class Plugin
     public function loadPlugins()
     {
         $activePlugins = $this->getActivePlugins();
-        // var_dump($activePlugins);
 
         foreach ($activePlugins as $plugin) {
             if ($class = $this->load($plugin)) {

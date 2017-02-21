@@ -20,7 +20,7 @@
                     <dt>{{ trans('Environment label') }}</dt>
                     <dd>
                         {{ trans(['Environment data OS', php_os]) }}<br />
-                        {{ trans(['Environment data version', phpversion, '<a href="' ~pathFor('phpInfo') ~'">' ~trans('Show info') ~'</a>']) }}<br />
+                        {{ trans(['Environment data version', php_version, '<a href="' ~pathFor('phpInfo') ~'">' ~trans('Show info') ~'</a>']) }}<br />
                         {{ trans(['Environment data acc', php_accelerator]) }}
                     </dd>
                     <dt>{{ trans('Database label') }}</dt>

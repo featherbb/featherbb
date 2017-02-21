@@ -34,7 +34,7 @@ class Post
                             ->selectMany($curPosting['select'])
                             ->innerJoin('forums', ['f.id', '=', 't.forum_id'], 'f')
                             ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
-                            ->leftOuterJoin('topic_subscriptions', 't.id=s.topic_id AND s.user_id='.User::get()->g_id, 's')
+                            ->leftOuterJoin('topic_subscriptions', 't.id=s.topic_id AND s.user_id='.User::get()->id, 's')
                             ->whereAnyIs($curPosting['where'])
                             ->where('t.id', $tid);
         } else {

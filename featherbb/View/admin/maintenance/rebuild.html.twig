@@ -1,25 +1,29 @@
-<?php
+{% extends '@forum/layout.html.twig' %}
 
-/**
- * Copyright (C) 2015-2016 FeatherBB
- * based on code by (C) 2008-2015 FluxBB
- * and Rickard Andersson (C) 2002-2008 PunBB
- * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
- */
+{% block content %}
 
-// Make sure no one attempts to run this script "directly"
-if (!isset($feather)) {
-    exit;
-}
+    {% include '@forum/admin/menu.html.twig' %}
 
-Container::get('hooks')->fire('view.admin.maintenance.rebuild.start');
-?>
+    {{ fireHook('view.admin.maintenance.rebuild.start') }}
 
-<h1><?= __('Rebuilding index info') ?></h1>
+    <div class="blockform">
+        <h2><span>{{ trans('Rebuilding search index') }}</span></h2>
+        <div class="box">
+            <div class="inform">
+                <fieldset>
+                    <legend>{{ trans('Rebuilding index info') }}</legend>
+                    <div class="infldset">
+                        <p>{{ trans(['Processing post', id]) }}</p>
+                        <p>{{ trans(['Javascript redirect failed', link]) }}</p>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+    <div class="clearer"></div>
+    </div>
 
-<script type="text/javascript">window.location="<?= Router::pathFor('adminMaintenance').$query_str ?>"</script>
+    <script type="text/javascript">window.location="{{ pathFor('adminMaintenance')~query_str|raw }}"</script>
 
-<p><?= sprintf(__('Javascript redirect failed'), '<a href="'.Router::pathFor('adminMaintenance').$query_str.'">'.__('Click here').'</a>')?></p>
-
-<?php
-Container::get('hooks')->fire('view.admin.maintenance.prune.end');
+    {{ fireHook('view.admin.maintenance.rebuild.end') }}
+{% endblock content %}

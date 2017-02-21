@@ -44,9 +44,7 @@
         </div>
     </div>
 
-    {#TODO delete preview section#}
     {% elseif inputPost('preview') %}
-    $preview_message = 'bump'; {#Container::get('parser')->parseMessage($post['message'], $post['hide_smilies']);#}
 
     <div id="postpreview" class="blockpost">
         <h2><span>{{ trans('Post preview') }}</span></h2>
@@ -55,7 +53,7 @@
                 <div class="postbody">
                     <div class="postright">
                         <div class="postmsg">
-                            {{ preview_message }}
+                            {{ preview_message|raw }}
                         </div>
                     </div>
                 </div>
@@ -106,7 +104,6 @@
                             <textarea name="req_message" id="req_message" rows="20" tabindex="{{ cur_index }}">{{ inputPost('req_message') ? inputPost('req_message')|raw : (quote is defined ? quote|raw : '') }}</textarea><br />
                                 {% set cur_index = cur_index + 1 %}
                             </label>
-                            <div id="markitup-elfinder"></div>
                             <ul class="bblinks list-inline">
                                 <li><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}ok</a> {{ settings('p_message_bbcode') == '1' ? trans('on') : trans('off') }}</li>
                                 <li><a href="{{ pathFor('help') }}#url" onclick="window.open (this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_message_bbcode') == '1' and can('post.links') ? trans('on') : trans('off') }}</li>

@@ -127,7 +127,6 @@ class Post
                 if (!User::get()->is_guest) {
                     $this->model->incrementPostCount($post, $new['tid']);
                 }
-                // return var_dump($post, $new);
 
                 return Router::redirect(Router::pathFor('viewPost', ['id' => $new['tid'], 'name' => $new['topic_subject'], 'pid' => $new['pid']]).'#p'.$new['pid'], __('Post redirect'));
             }
@@ -174,6 +173,13 @@ class Post
             $postData = '';
         }
 
+        if (Input::post('preview')) {
+            $previewMessage = Container::get('parser')->parseMessage($post['message'], $post['hide_smilies']);
+            $previewMessage = Container::get('hooks')->fire('controller.post.edit.preview', $previewMessage);
+        } else {
+            $previewMessage = '';
+        }
+
         return View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), $action],
                 'active_page' => 'post',
@@ -187,6 +193,7 @@ class Post
                 'action' => $action,
                 'form' => $form,
                 'post_data' => $postData,
+                'preview_message' => $previewMessage,
                 'url_forum' => $urlForum,
                 'url_topic' => $urlTopic,
                 'quote' => $quote,

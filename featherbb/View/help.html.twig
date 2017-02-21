@@ -31,7 +31,7 @@
 <div class="box">
     <div class="inbox">
         <p><{{ trans('Links info') }}</p>
-        <p><a name="url"></a><code>[url={{ urlBase(true) ~'/' }}]{{ settings('o_board_title') }}[/url]</code> <?= __('produces') ?> <samp><a href="{{ urlBase(true) ~'/' }}">{{ settings('o_board_title') }}</a></samp></p>
+        <p><a name="url"></a><code>[url={{ urlBase(true) ~'/' }}]{{ settings('o_board_title') }}[/url]</code> {{ trans('produces') }} <samp><a href="{{ urlBase(true) ~'/' }}">{{ settings('o_board_title') }}</a></samp></p>
         <p><code>[url]{{ urlBase(true) ~'/' }}[/url]</code> {{ trans('produces') }} <samp><a href="{{ urlBase(true) ~'/' }}">{{ urlBase(true) ~'/' }}</a></samp></p>
         <p><code>[url=/help/]{{ trans('This help page') }}[/url]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('help') }}">{{ trans('This help page') }}</a></samp></p>
         <p><code>[email]myname@example.com[/email]</code> {{ trans('produces') }} <samp><a href="mailto:myname@example.com">myname@example.com</a></samp></p>

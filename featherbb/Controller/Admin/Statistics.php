@@ -38,6 +38,8 @@ class Statistics
                 'total_size'    =>    $total['size'],
                 'total_records'    =>    $total['records'],
                 'php_accelerator'    =>    $this->model->phpAccelerator(),
+                'php_os'        =>      PHP_OS,
+                'php_version'        =>      phpversion(),
             ]
         )->addTemplate('@forum/admin/statistics')->display();
     }

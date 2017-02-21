@@ -84,12 +84,15 @@
         
                         {% for forum in cat_data.cat_forums %}
                                     <tr>
-                                        <td class="tcl"><a href="{{ pathFor('editForum', {'id': forum.forum_id}) }}" tabindex="<?= $cur_index++ ?>">
+                                        <td class="tcl"><a href="{{ pathFor('editForum', {'id': forum.forum_id}) }}" tabindex="{{ cur_index }}">
+                                            {% set cur_index = cur_index + 1 %}
                                         {{ trans('Edit link') }}</a> |
-                                        <a href="{{ pathFor('deleteForum', {'id': forum.forum_id}) }}" tabindex="<?= $cur_index++ ?>">{{ trans('Delete link') }}</a>
+                                        <a href="{{ pathFor('deleteForum', {'id': forum.forum_id}) }}" tabindex="{{ cur_index }}">{{ trans('Delete link') }}</a>
+                                            {% set cur_index = cur_index + 1 %}
                                         </td>
                                         <td class="tc2">
-                                            <input type="text" name="position[{{ forum.forum_id }}]" size="3" maxlength="3" value="{{ forum.position }}" tabindex="<?= $cur_index++ ?>" />
+                                            <input type="text" name="position[{{ forum.forum_id }}]" size="3" maxlength="3" value="{{ forum.position }}" tabindex="{{ cur_index }}" />
+                                            {% set cur_index = cur_index + 1 %}
                                         </td>
                                         <td class="tcr"><strong>{{ forum.forum_name }}</strong></td>
                                     </tr>
@@ -104,7 +107,7 @@
             {% endfor %}
 
                 <p class="submitend">
-                    <input type="submit" name="update_positions" value="{{ trans('Update positions') }}" tabindex="<?= $cur_index++ ?>" />
+                    <input type="submit" name="update_positions" value="{{ trans('Update positions') }}" tabindex="{{ cur_index }}" />
                 </p>
             </form>
         </div>

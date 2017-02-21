@@ -3,43 +3,33 @@
 {% block content %}
 {{ fireHook('view.moderate.split_posts.start') }}
 
-    <form class="panel panel-primary" id="subject" method="post" action="">
-        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-
-        <div class="panel-heading">
-            <h3 class="panel-title">{{ trans('Split posts') }}</h3>
-        </div>
-
-        <div class="list-group-item">
-                <div class="row">
-                    <div class="col-xs-3 col-sm-3">
+    <div class="blockform">
+        <h2><span>{{ trans('Split posts') }}</span></h2>
+        <div class="box">
+            <form id="subject" method="post" action="">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <div class="inform">
                     <fieldset>
                         <legend>{{ trans('Confirm split legend') }}</legend>
                         <div class="infldset">
                             <input type="hidden" name="posts" value="{{ posts|keys|join(',') }}" />
-                            <label class="required">
-                                <strong>{{ trans('New subject') }} <span>{{ trans('Required') }}</span></strong><br />
-                                <input type="text" name="new_subject" size="80" maxlength="70" /><br />
-                            </label>
+                            <label class="required"><strong>{{ trans('New subject') }} <span>{{ trans('Required') }}</span></strong><br /><input type="text" name="new_subject" size="80" maxlength="70" autofocus /><br /></label>
                             <label>{{ trans('Move to') }}
-                            <br /><select name="move_to_forum">
+                                <br />
+                                <select name="move_to_forum">
                                     {{ list_forums|raw }}
-                                </optgroup>
-                            </select>
-                            <br /></label>
+                                </select>
+                                <br />
+                            </label>
                             <p>{{ trans('Split posts comply') }}</p>
                         </div>
                     </fieldset>
-                    </div>
                 </div>
-
+                <p class="buttons"><input type="submit" name="split_posts_comply" value="{{ trans('Split') }}" /> <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a></p>
+            </form>
         </div>
-        <div class="panel-footer">
-            <input class="btn btn-primary" type="submit" name="split_posts_comply" value="{{ trans('Split') }}" />
-            <a class="btn btn-primary" href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
-        </div>
-    </form>
+    </div>
 
     {{ fireHook('view.moderate.split_posts.end') }}
 {% endblock content %}

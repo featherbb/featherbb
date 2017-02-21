@@ -147,12 +147,11 @@
         {% endif %}
 
 
-        <textarea name="req_message" id="req_message" data-provide="markdown-editable" rows="7" cols="75" tabindex="1"></textarea>
+        <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="1"></textarea>
         </div>
-        <div id="markitup-elfinder"></div>
                             <ul class="bblinks list-inline">
                                 <li><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}</a> {{ settings('p_message_bbcode') == '1' ? trans('on') : trans('off') }}</li>
-                                <li><a href="{{ pathFor('help') }}#url" onclick="window.open(this.href); return false;">{{ trans('url tag') }}</a> {{ (settings('p_message_bbcode') == '1' and can('post.links') ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#url" onclick="window.open(this.href); return false;">{{ trans('url tag') }}</a> {{ (settings('p_message_bbcode') == '1' and can('post.links')) ? trans('on') : trans('off') }}</li>
                                 <li><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ (settings('p_message_bbcode') == '1' and settings('p_message_img_tag') == '1') ? trans('on') : trans('off') }}</li>
                                 <li><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies') == '1' ? trans('on') : trans('off') }}</li>
                             </ul>
@@ -165,7 +164,7 @@
                         <legend>{{ trans('Robot title') }}</legend>
                         <div class="infldset">
                             <p>{{ trans('Robot info') }}</p>
-                            <label class="required"><strong><?php
+                            <label class="required"><strong>
                                 {% set question = lang_antispam_questions|keys %}
                                 {% set qencoded = getHash('md5', question[index_questions]) %}
                                 {{ trans(['Robot question', question[index_questions]]) }}
@@ -182,7 +181,7 @@
 
                 <p class="buttons">
                     <input type="submit" name="submit" tabindex="2" value="{{ trans('Submit') }}" accesskey="s" />
-                    <!--<input type="submit" name="preview" value="<?= __('Preview') ?>" tabindex="3" accesskey="p" />-->
+                    <input type="submit" name="preview" value="{{ trans('Preview') }}" tabindex="3" accesskey="p" />
                 </p>
             </form>
         </div>

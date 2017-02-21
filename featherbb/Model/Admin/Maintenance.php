@@ -55,7 +55,7 @@ class Maintenance
 
     public function getQueryString()
     {
-        $queryStr = '';
+        $queryStr = [];
 
         $perPage = Input::query('i_per_page') ? intval(Input::query('i_per_page')) : 0;
         $perPage = Container::get('hooks')->fire('model.admin.maintenance.get_query_str.per_page', $perPage);
@@ -76,7 +76,7 @@ class Maintenance
 
         $endAt = 0;
         foreach ($result as $curItem) {
-            echo '<p><span>'.sprintf(__('Processing post'), $curItem['id']).'</span></p>'."\n";
+            $queryStr['id'] = $curItem['id'];
 
             if ($curItem['id'] == $curItem['first_post_id']) {
                 $this->search->updateSearchIndex('post', $curItem['id'], $curItem['message'], $curItem['subject']);
@@ -94,7 +94,7 @@ class Maintenance
                         ->findOneCol('id');
 
             if ($id) {
-                $queryStr = '?action=rebuild&i_per_page='.$perPage.'&i_start_at='.intval($id);
+                $queryStr['str'] = '?action=rebuild&i_per_page='.$perPage.'&i_start_at='.intval($id);
             }
         }
 

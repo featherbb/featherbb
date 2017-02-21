@@ -3,18 +3,13 @@
 {% block content %}
 {{ fireHook('view.moderate.delete_posts.start') }}
 
-    <form class="panel panel-primary" method="post" action="">
-        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-        <input type="hidden" name="posts" value="{{ posts|keys|join(',') }}" />
-
-        <div class="panel-heading">
-            <h3 class="panel-title">
-                {{ trans('Delete posts') }}
-            </h3>
-        </div>
-        <div class="list-group">
-            <div class="list-group-item">
+    <div class="blockform">
+        <h2><span>{{ trans('Delete posts') }}</span></h2>
+        <div class="box">
+            <form method="post" action="">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <input type="hidden" name="posts" value="{{ posts|keys|join(',') }}" />
                 <div class="inform">
                     <fieldset>
                         <legend>{{ trans('Confirm delete legend') }}</legend>
@@ -23,13 +18,13 @@
                         </div>
                     </fieldset>
                 </div>
-            </div>
+                <p class="buttons">
+                    <input class="btn btn-primary" type="submit" name="delete_posts_comply" value="{{ trans('Delete') }}" />
+                    <a class="btn btn-primary" href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+                </p>
+            </form>
         </div>
-        <div class="panel-footer">
-            <input class="btn btn-primary" type="submit" name="delete_posts_comply" value="{{ trans('Delete') }}" />
-            <a class="btn btn-primary" href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
-        </div>
-    </form>
+    </div>
 
 {{ fireHook('view.moderate.delete_posts.end') }}
 {% endblock content %}
