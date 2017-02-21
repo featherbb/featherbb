@@ -12,8 +12,9 @@ namespace FeatherBB\Model\Admin;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Plugin as PluginManager;
-use FeatherBB\Core\Utils;
 use ZipArchive;
 
 class Plugins

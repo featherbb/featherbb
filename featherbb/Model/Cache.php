@@ -10,6 +10,7 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\ForumEnv;
 
 class Cache
 {

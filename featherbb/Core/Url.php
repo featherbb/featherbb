@@ -9,6 +9,8 @@
 
 namespace FeatherBB\Core;
 
+use FeatherBB\Core\Interfaces\Request;
+
 class Url
 {
     protected static $urlReplace = [

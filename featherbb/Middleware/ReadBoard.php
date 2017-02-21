@@ -14,6 +14,7 @@
 namespace FeatherBB\Middleware;
 
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\User;
 
 /**
  * Middleware to check if user is allowed to read the board

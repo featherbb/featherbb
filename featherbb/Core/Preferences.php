@@ -10,6 +10,9 @@
 namespace FeatherBB\Core;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\User;
 
 class Preferences
 {

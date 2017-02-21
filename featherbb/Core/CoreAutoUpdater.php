@@ -8,6 +8,8 @@
 
 namespace FeatherBB\Core;
 
+use FeatherBB\Core\Interfaces\ForumEnv;
+
 class CoreAutoUpdater extends AutoUpdater
 {
     public function __construct()

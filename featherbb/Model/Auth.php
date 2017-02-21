@@ -10,9 +10,11 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Random;
-use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 use Firebase\JWT\JWT;
 
 class Auth

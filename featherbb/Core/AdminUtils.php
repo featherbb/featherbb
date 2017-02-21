@@ -9,6 +9,9 @@
 
 namespace FeatherBB\Core;
 
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\View;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -18,7 +21,7 @@ class AdminUtils
     {
         Lang::load('admin/common');
 
-        \View::setPageInfo([
+        View::setPageInfo([
             'page'        =>    $page,
             'menu_items'  =>    Container::get('hooks')->fire('admin.menu', self::loadDefaultMenu()),
             'plugins'     =>    self::adminPluginsMenu() // See if there are any plugins that want to be displayed in the menu

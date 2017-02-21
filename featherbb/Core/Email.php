@@ -9,6 +9,9 @@
 
 namespace FeatherBB\Core;
 
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumSettings;
+
 class Email
 {
     //

@@ -9,10 +9,19 @@
 
 namespace FeatherBB\Controller;
 
-use FeatherBB\Core\Error;
-use FeatherBB\Core\Url;
-use FeatherBB\Core\Utils;
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Request;
+use FeatherBB\Core\Interfaces\Router;
+use FeatherBB\Core\Interfaces\User;
+use FeatherBB\Core\Interfaces\View;
+use FeatherBB\Core\Utils;
 use FeatherBB\Model\Delete;
 
 class Profile

@@ -9,6 +9,10 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\View;
 use FeatherBB\Core\Utils;
 
 class Help

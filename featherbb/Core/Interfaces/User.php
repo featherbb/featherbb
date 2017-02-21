@@ -2,7 +2,6 @@
 namespace FeatherBB\Core\Interfaces;
 
 use FeatherBB\Model\Auth as AuthModel;
-use FeatherBB\Core\Database as DB;
 
 class User extends \Statical\BaseProxy
 {

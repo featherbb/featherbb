@@ -10,7 +10,13 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Url;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Router;
+use FeatherBB\Core\Interfaces\User;
+use FeatherBB\Core\Interfaces\View;
 use FeatherBB\Core\Utils;
 
 class Search

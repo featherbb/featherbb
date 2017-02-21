@@ -47,7 +47,7 @@ use IteratorAggregate;
 use PDO;
 use Serializable;
 
-{
+    {
     class Database implements ArrayAccess
     {
         // ----------------------- //

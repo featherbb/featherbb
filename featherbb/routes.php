@@ -7,13 +7,18 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-use \FeatherBB\Middleware\Logged as IsLogged;
-use \FeatherBB\Middleware\ModeratePermission;
-use \FeatherBB\Middleware\ReadBoard as CanReadBoard;
-use \FeatherBB\Middleware\Admin as IsAdmin;
-use \FeatherBB\Middleware\AdminMod as IsAdmMod;
-use \FeatherBB\Middleware\JsonHeader;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Route;
+use FeatherBB\Core\Interfaces\View;
+use FeatherBB\Middleware\Admin as IsAdmin;
+use FeatherBB\Middleware\AdminMod as IsAdmMod;
+use FeatherBB\Middleware\JsonHeader;
+use FeatherBB\Middleware\Logged as IsLogged;
+use FeatherBB\Middleware\ModeratePermission;
+use FeatherBB\Middleware\ReadBoard as CanReadBoard;
 
 Route::map(['GET', 'POST'], '/install', '\FeatherBB\Controller\Install:run')->setName('install');
 

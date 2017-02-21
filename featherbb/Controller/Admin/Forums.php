@@ -7,12 +7,21 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace FeatherBB\Controller\Admin;
+namespace FeatherBB\Controller;
 
 use FeatherBB\Core\AdminUtils;
+use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Request;
+use FeatherBB\Core\Interfaces\Router;
+use FeatherBB\Core\Interfaces\User;
+use FeatherBB\Core\Interfaces\View;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
-use FeatherBB\Core\Error;
 use FeatherBB\Model\Cache;
 
 class Forums

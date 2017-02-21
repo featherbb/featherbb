@@ -15,11 +15,15 @@ namespace FeatherBB\Middleware;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Random;
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Utils;
-use FeatherBB\Model\Cache;
 use FeatherBB\Model\Auth as AuthModel;
+use FeatherBB\Model\Cache;
 use Firebase\JWT\JWT;
 
 class Auth

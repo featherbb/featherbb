@@ -10,6 +10,7 @@
 namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\Hooks;
 
 class Categories
 {

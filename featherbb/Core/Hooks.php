@@ -16,13 +16,8 @@ class Hooks
      * @var array
      */
     protected $hooks = [
-        // 'slim.before' => array(array()),
-        // 'slim.before.router' => array(array()),
-        // 'slim.before.dispatch' => array(array()),
-        // 'slim.after.dispatch' => array(array()),
-        // 'slim.after.router' => array(array()),
-        // 'slim.after' => array(array())
     ];
+
     /**
      * Assign hook
      * @param  string   $name       The hook name
@@ -43,6 +38,7 @@ class Hooks
      * Invoke hook
      * @param  string $name The hook name
      * @param  mixed  ...   (Optional) Argument(s) for hooked functions, can specify multiple arguments
+     * @return mixed data
      */
     public function fire($name)
     {
@@ -96,6 +92,7 @@ class Hooks
      * Invoke hook for DB
      * @param  string $name The hook name
      * @param  mixed  ...   Argument(s) for hooked functions, can specify multiple arguments
+     * @return mixed
      */
     public function fireDB($name)
     {

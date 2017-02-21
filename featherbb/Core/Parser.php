@@ -8,6 +8,11 @@
 
 namespace FeatherBB\Core;
 
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\User;
+
 class Parser
 {
     private $parser;

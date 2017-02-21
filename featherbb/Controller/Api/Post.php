@@ -7,8 +7,9 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace FeatherBB\Controller\Api;
+namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Utils;
 
 class Post extends Api

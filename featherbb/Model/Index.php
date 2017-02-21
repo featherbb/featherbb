@@ -10,6 +10,10 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Router;
+use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;

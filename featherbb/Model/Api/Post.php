@@ -9,10 +9,12 @@
 
 namespace FeatherBB\Model\Api;
 
-use FeatherBB\Core\Error;
 use FeatherBB\Core\Database as DB;
-use FeatherBB\Core\Utils;
+use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\User;
+use FeatherBB\Core\Interfaces\User;
+use FeatherBB\Core\Utils;
 
 class Post extends Api
 {

@@ -11,6 +11,14 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Request;
+use FeatherBB\Core\Interfaces\Router;
+use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;

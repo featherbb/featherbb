@@ -11,7 +11,11 @@ namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Url;
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
 

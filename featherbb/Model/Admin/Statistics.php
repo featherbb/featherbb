@@ -10,6 +10,8 @@
 namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Utils;
 
 class Statistics

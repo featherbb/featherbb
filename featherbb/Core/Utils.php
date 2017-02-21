@@ -9,6 +9,11 @@
 
 namespace FeatherBB\Core;
 
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
+use FeatherBB\Core\Interfaces\Request;
+use FeatherBB\Core\Interfaces\User;
+use FeatherBB\Core\Interfaces\View as ViewInterface;
 use FeatherBB\Model\Cache;
 
 class Utils
@@ -214,7 +219,7 @@ class Utils
      */
     public static function generateBreadcrumbs(array $crumbs = [], array $rightCrumb = [])
     {
-        \View::setPageInfo([
+        ViewInterface::setPageInfo([
             'rightCrumb'    =>    $rightCrumb,
             'crumbs'    =>    $crumbs,
         ], 1

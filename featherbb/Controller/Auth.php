@@ -9,14 +9,24 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Request;
+use FeatherBB\Core\Interfaces\Router;
+use FeatherBB\Core\Interfaces\User;
+use FeatherBB\Core\Interfaces\View;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Auth as ModelAuth;
 use FeatherBB\Model\Cache;
-use FeatherBB\Core\Database as DB;
 
 class Auth
 {

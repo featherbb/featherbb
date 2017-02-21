@@ -10,8 +10,6 @@ namespace FeatherBB\Core;
  */
 
 use vierbergenlars\SemVer\version;
-use FeatherBB\Core\Lister;
-use FeatherBB\Core\AdminUtils;
 
 /**
  * Auto update class.

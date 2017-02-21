@@ -9,10 +9,17 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Request;
+use FeatherBB\Core\Interfaces\Router;
+use FeatherBB\Core\Interfaces\View;
 use FeatherBB\Core\Lister;
 use FeatherBB\Core\Random;
-use FeatherBB\Core\Utils;
 use FeatherBB\Core\Url;
+use FeatherBB\Core\Utils;
 use FeatherBB\Middleware\Core;
 
 class Install

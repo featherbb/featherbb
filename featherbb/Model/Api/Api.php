@@ -9,8 +9,8 @@
 
 namespace FeatherBB\Model\Api;
 
-use FeatherBB\Core\Error;
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Utils;

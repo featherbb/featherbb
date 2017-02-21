@@ -7,10 +7,16 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace FeatherBB\Controller\Admin;
+namespace FeatherBB\Controller;
 
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\User;
+use FeatherBB\Core\Interfaces\View;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 
@@ -35,7 +41,7 @@ class Bans
         if (Input::query('find_ban')) {
             $banInfo = $this->model->findBan();
 
-            // Determine the ban offset (based on $_gET['p'])
+            // Determine the ban offset (based on $_GET['p'])
             $numPages = ceil($banInfo['num_bans'] / 50);
 
             $p = (!Input::query('p') || Input::query('p') <= 1 || Input::query('p') > $numPages) ? 1 : intval(Input::query('p'));

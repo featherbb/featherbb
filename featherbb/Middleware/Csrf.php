@@ -3,13 +3,12 @@ namespace FeatherBB\Middleware;
 
 use ArrayAccess;
 use Countable;
-use Traversable;
-use IteratorAggregate;
-use RuntimeException;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Random;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
+use Traversable;
 
 /**
  * CSRF protection middleware.

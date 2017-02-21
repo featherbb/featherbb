@@ -10,6 +10,7 @@
 namespace FeatherBB\Model\Api;
 
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Hooks;
 
 class Forum extends Api
 {

@@ -10,7 +10,12 @@
 namespace FeatherBB\Core;
 
 use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
+use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Response;
+use FeatherBB\Core\Interfaces\Router;
+use FeatherBB\Core\Interfaces\User;
 
 class View
 {
@@ -320,7 +325,7 @@ class View
     {
         // Check if config file exists to avoid error when installing forum
         if (!Container::get('cache')->isCached('quickjump') && is_file(ForumEnv::get('FORUM_CONFIG_FILE'))) {
-            Container::get('cache')->store('quickjump', \FeatherBB\Model\Cache::getQuickjump());
+            Container::get('cache')->store('quickjump', \FeatherBB\Model\Cache::quickjump());
         }
 
         $title = Container::get('forum_settings') ? ForumSettings::get('o_board_title') : 'FeatherBB';

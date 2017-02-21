@@ -10,7 +10,15 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Url;
+use FeatherBB\Core\Interfaces\ForumEnv;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Request;
+use FeatherBB\Core\Interfaces\Router;
+use FeatherBB\Core\Interfaces\User;
+use FeatherBB\Core\Interfaces\View;
 use FeatherBB\Core\Utils;
 
 class Register
@@ -36,7 +44,7 @@ class Register
         $indexQuestions = rand(0, count($langAntispamQuestions)-1);
 
         // Display an error message if new registrations are disabled
-        // If $_rEQUEST['username'] or $_rEQUEST['password'] are filled, we are facing a bot
+        // If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
         if (ForumSettings::get('o_regs_allow') == '0' || Input::post('username') || Input::post('password')) {
             throw new Error(__('No new regs'), 403);
         }

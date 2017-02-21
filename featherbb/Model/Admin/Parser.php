@@ -10,6 +10,9 @@
 
 namespace FeatherBB\Model\Admin;
 
+use FeatherBB\Core\Interfaces\ForumEnv;
+use FeatherBB\Core\Interfaces\Hooks;
+
 class Parser
 {
     // Helper public function returns array of smiley image files

@@ -10,6 +10,8 @@
 namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\Hooks;
 
 class Forums
 {

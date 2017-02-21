@@ -7,7 +7,10 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace FeatherBB\Controller\Api;
+namespace FeatherBB\Controller;
+
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Router;
 
 class Topic extends Api
 {

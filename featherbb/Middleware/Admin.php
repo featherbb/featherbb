@@ -12,6 +12,9 @@
  */
 
 namespace FeatherBB\Middleware;
+use FeatherBB\Core\Interfaces\ForumEnv;
+use FeatherBB\Core\Interfaces\Router;
+use FeatherBB\Core\Interfaces\User;
 
 /**
  * Middleware to check if user is logged and admin

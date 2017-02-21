@@ -13,17 +13,20 @@
 
 namespace FeatherBB\Middleware;
 
-use FeatherBB\Controller\Install;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Email;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Hooks;
+use FeatherBB\Core\Interfaces\Config;
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumEnv;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Lang;
 use FeatherBB\Core\Parser;
 use FeatherBB\Core\Plugin as PluginManager;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 use FeatherBB\Core\View;
-use FeatherBB\Core\Interfaces\Lang;
 
 class Core
 {
@@ -218,7 +221,7 @@ class Core
         });
 
         // This is the very first hook fired
-        Container::get('hooks')->fire('core.start');
+        \FeatherBB\Core\Interfaces\Container::get('hooks')->fire('core.start');
 
         if (!is_file(ForumEnv::get('FORUM_CONFIG_FILE'))) {
             // Reset cache
