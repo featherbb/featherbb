@@ -72,10 +72,12 @@ class Bans
 
         AdminUtils::generateAdminMenu('bans');
 
+        $banId = (isset($args['id'])) ? $args['id'] : null;
+
         View::setPageInfo([
                 'admin_console' => true,
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')],
-                'ban' => $this->model->addBanInfo($args['id']),
+                'ban' => $this->model->addBanInfo($banId),
             ]
         )->addTemplate('@forum/admin/bans/add_ban')->display();
     }
