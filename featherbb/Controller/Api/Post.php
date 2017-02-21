@@ -7,7 +7,7 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-namespace FeatherBB\Controller;
+namespace FeatherBB\Controller\Api;
 
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Utils;
