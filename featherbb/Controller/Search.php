@@ -57,19 +57,14 @@ class Search
                 $display = $this->model->displaySearchResults($search);
 
                 View::setPageInfo([
-                        'display' => $display,
-                    ]
-                );
-
-                View::addTemplate('search/header.php', 1);
+                    'display' => $display,
+                ]);
 
                 if ($search['show_as'] == 'posts') {
-                    View::addTemplate('search/posts.php', 5);
+                    View::addTemplate('@forum/search/posts', 5)->display();
                 } else {
-                    View::addTemplate('search/topics.php', 5);
+                    View::addTemplate('@forum/search/topics', 5)->display();
                 }
-
-                View::addTemplate('search/footer.php', 10)->display();
             }
         }
         // Display the form

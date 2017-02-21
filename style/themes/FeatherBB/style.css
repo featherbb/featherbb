@@ -827,9 +827,9 @@ footer .footer-link {
 }
 #editform .box fieldset .bblinks,
 #postform .box fieldset .bblinks,
-#punsearch .linksb .pagepost .pagelink .pages-label,
-#punsearch .linkst .pagepost .pagelink .pages-label,
-#punsearch .postlinksb .pagepost .pagelink .pages-label,
+#feathersearch .linksb .pagepost .pagelink .pages-label,
+#feathersearch .linkst .pagepost .pagelink .pages-label,
+#feathersearch .postlinksb .pagepost .pagelink .pages-label,
 #quickpost .box fieldset .bblinks,
 #reportform .box fieldset .bblinks {
     display: none
@@ -976,24 +976,24 @@ footer .footer-link {
     width: 100%;
     float: none
 }
-#punsearch .blockpost h2 {
+#feathersearch .blockpost h2 {
     color: #fff
 }
-#punsearch .linksb .pagepost,
-#punsearch .linkst .pagepost,
-#punsearch .postlinksb .pagepost {
+#feathersearch .linksb .pagepost,
+#feathersearch .linkst .pagepost,
+#feathersearch .postlinksb .pagepost {
     margin: 10px 0;
     padding: 10px 1px
 }
-#punsearch .linksb .pagepost .pagelink a,
-#punsearch .linksb .pagepost .pagelink span,
-#punsearch .linksb .pagepost .pagelink strong,
-#punsearch .linkst .pagepost .pagelink a,
-#punsearch .linkst .pagepost .pagelink span,
-#punsearch .linkst .pagepost .pagelink strong,
-#punsearch .postlinksb .pagepost .pagelink a,
-#punsearch .postlinksb .pagepost .pagelink span,
-#punsearch .postlinksb .pagepost .pagelink strong {
+#feathersearch .linksb .pagepost .pagelink a,
+#feathersearch .linksb .pagepost .pagelink span,
+#feathersearch .linksb .pagepost .pagelink strong,
+#feathersearch .linkst .pagepost .pagelink a,
+#feathersearch .linkst .pagepost .pagelink span,
+#feathersearch .linkst .pagepost .pagelink strong,
+#feathersearch .postlinksb .pagepost .pagelink a,
+#feathersearch .postlinksb .pagepost .pagelink span,
+#feathersearch .postlinksb .pagepost .pagelink strong {
     position: relative;
     float: left;
     margin: 0 0 0 -1px;
@@ -1001,33 +1001,33 @@ footer .footer-link {
     border: 1px solid #ddd;
     background-color: #fff
 }
-#punsearch .linksb .pagepost .pagelink a:hover,
-#punsearch .linksb .pagepost .pagelink span:hover,
-#punsearch .linksb .pagepost .pagelink strong:hover,
-#punsearch .linkst .pagepost .pagelink a:hover,
-#punsearch .linkst .pagepost .pagelink span:hover,
-#punsearch .linkst .pagepost .pagelink strong:hover,
-#punsearch .postlinksb .pagepost .pagelink a:hover,
-#punsearch .postlinksb .pagepost .pagelink span:hover,
-#punsearch .postlinksb .pagepost .pagelink strong:hover {
+#feathersearch .linksb .pagepost .pagelink a:hover,
+#feathersearch .linksb .pagepost .pagelink span:hover,
+#feathersearch .linksb .pagepost .pagelink strong:hover,
+#feathersearch .linkst .pagepost .pagelink a:hover,
+#feathersearch .linkst .pagepost .pagelink span:hover,
+#feathersearch .linkst .pagepost .pagelink strong:hover,
+#feathersearch .postlinksb .pagepost .pagelink a:hover,
+#feathersearch .postlinksb .pagepost .pagelink span:hover,
+#feathersearch .postlinksb .pagepost .pagelink strong:hover {
     text-decoration: none;
     background-color: #fafafa
 }
-#punsearch .linksb .pagepost .pagelink .spacer,
-#punsearch .linkst .pagepost .pagelink .spacer,
-#punsearch .postlinksb .pagepost .pagelink .spacer {
+#feathersearch .linksb .pagepost .pagelink .spacer,
+#feathersearch .linkst .pagepost .pagelink .spacer,
+#feathersearch .postlinksb .pagepost .pagelink .spacer {
     background-color: #fafafa;
     cursor: default;
     color: #d3d3d3
 }
-#punsearch .linksb .pagepost .pagelink .spacer:hover,
-#punsearch .linkst .pagepost .pagelink .spacer:hover,
-#punsearch .postlinksb .pagepost .pagelink .spacer:hover {
+#feathersearch .linksb .pagepost .pagelink .spacer:hover,
+#feathersearch .linkst .pagepost .pagelink .spacer:hover,
+#feathersearch .postlinksb .pagepost .pagelink .spacer:hover {
     background-color: #fafafa
 }
-#punsearch .linksb .pagepost .pagelink strong,
-#punsearch .linkst .pagepost .pagelink strong,
-#punsearch .postlinksb .pagepost .pagelink strong {
+#feathersearch .linksb .pagepost .pagelink strong,
+#feathersearch .linkst .pagepost .pagelink strong,
+#feathersearch .postlinksb .pagepost .pagelink strong {
     font-weight: 400;
     background-color: #fafafa;
     cursor: default
@@ -1157,7 +1157,7 @@ footer .footer-link a {
     display: block;
     padding: 10px
 }
-#punuserlist .pagelink .pages-label,
+#featheruserlist .pagelink .pages-label,
 .blockform .box .inform fieldset .bblinks {
     display: none
 }
@@ -1425,23 +1425,23 @@ input[type=submit]:focus {
 #regform .forminfo p {
     margin: 4px 0
 }
-#punuserlist .blocktable {
+#featheruserlist .blocktable {
     margin: 0
 }
-#punuserlist .blocktable table thead .tc2,
-#punuserlist .blocktable table thead .tc3,
-#punuserlist .blocktable table thead .tcl,
-#punuserlist .blocktable table thead .tcr {
+#featheruserlist .blocktable table thead .tc2,
+#featheruserlist .blocktable table thead .tc3,
+#featheruserlist .blocktable table thead .tcl,
+#featheruserlist .blocktable table thead .tcr {
     width: 25%
 }
-#punuserlist .pagelink {
+#featheruserlist .pagelink {
     overflow: auto;
     margin: 10px 0;
     padding: 10px 0 10px 1px
 }
-#punuserlist .pagelink a,
-#punuserlist .pagelink span,
-#punuserlist .pagelink strong {
+#featheruserlist .pagelink a,
+#featheruserlist .pagelink span,
+#featheruserlist .pagelink strong {
     position: relative;
     float: left;
     margin: 0 0 0 -1px;
@@ -1449,21 +1449,21 @@ input[type=submit]:focus {
     border: 1px solid #ddd;
     background-color: #fff
 }
-#punuserlist .pagelink a:hover,
-#punuserlist .pagelink span:hover,
-#punuserlist .pagelink strong:hover {
+#featheruserlist .pagelink a:hover,
+#featheruserlist .pagelink span:hover,
+#featheruserlist .pagelink strong:hover {
     text-decoration: none;
     background-color: #fafafa
 }
-#punuserlist .pagelink .spacer {
+#featheruserlist .pagelink .spacer {
     background-color: #fafafa;
     cursor: default;
     color: #d3d3d3
 }
-#punuserlist .pagelink .spacer:hover {
+#featheruserlist .pagelink .spacer:hover {
     background-color: #fafafa
 }
-#punuserlist .pagelink strong {
+#featheruserlist .pagelink strong {
     font-weight: 400;
     background-color: #fafafa;
     cursor: default
@@ -1649,8 +1649,8 @@ img {
         float: none;
         width: 100%
     }
-    #punsearch .blockpost h2 span:nth-child(2),
-    #punsearch .blockpost h2 span:nth-child(3),
+    #feathersearch .blockpost h2 span:nth-child(2),
+    #feathersearch .blockpost h2 span:nth-child(3),
     .blockpost .box .postleft dl dd {
         display: none
     }
@@ -1813,29 +1813,29 @@ img {
 #searchform.blockform div.box form#search div.inform fieldset div.infldset label.conl select#search_in {
     margin-top: 7px;
 }
-body #puninstall {
+body #featherinstall {
     padding-bottom: 60px;
 }
-#puninstall .blockform .box .inform fieldset {
+#featherinstall .blockform .box .inform fieldset {
     margin-top: 15px;
 }
-#puninstall h3 {
+#featherinstall h3 {
     font-size: 22px;
     text-align: center;
 }
-.forminfo p, #install p.buttons, html body div#puninstall.pun div.punwrap section.container div#brdheader.block div.box div#brdtitle.inbox {
+.forminfo p, #install p.buttons, html body div#featherinstall.pun div.punwrap section.container div#brdheader.block div.box div#brdtitle.inbox {
     text-align: center;
 }
 #install p.buttons {
     font-size: 22px;
 }
-#puninstall .blockform .box .inform fieldset label {
+#featherinstall .blockform .box .inform fieldset label {
     display: block;
 }
-#puninstall .blockform .box .inform fieldset legend {
+#featherinstall .blockform .box .inform fieldset legend {
     margin-bottom: 0;
 }
-#puninstall.pun div.punwrap section.container div#brdmain div.blockform div.box form#install div.inform fieldset div.infldset p{
+#featherinstall.pun div.punwrap section.container div#brdmain div.blockform div.box form#install div.inform fieldset div.infldset p{
     margin-bottom: 12px;
 }
 

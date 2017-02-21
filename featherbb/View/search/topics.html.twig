@@ -22,7 +22,7 @@
         </td>
         <td class="tc2">{{ search.forum|raw }}</td>
         <td class="tc3">{{ formatNumber(search.num_replies) }}</td>
-        <td class="tcr"><a href="{{ pathFor('viewPost', {'pid': search.last_post_id}) ~'#p' ~search.last_post_id }}">{{ formatTime(search.last_post) }}</a> <span class="byuser">{{ trans('by') }} {{ search.last_poster }}</span></td>
+        <td class="tcr"><a href="{{ pathFor('viewPost', {'id': search.tid, 'name': search.url_topic, 'pid': search.last_post_id}) ~'#p' ~search.last_post_id }}">{{ formatTime(search.last_post) }}</a> <span class="byuser">{{ trans('by') }} {{ search.last_poster }}</span></td>
     </tr>
 
 
