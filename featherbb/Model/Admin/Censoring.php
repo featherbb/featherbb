@@ -11,7 +11,7 @@ namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Router;
@@ -40,8 +40,8 @@ class Censoring
             ->save();
 
         // Regenerate the censoring cache
-        Container::get('cache')->store('search_for', Cache::getCensoring('search_for'));
-        Container::get('cache')->store('replace_with', Cache::getCensoring('replace_with'));
+        CacheInterface::store('search_for', Cache::getCensoring('search_for'));
+        CacheInterface::store('replace_with', Cache::getCensoring('replace_with'));
 
         return Router::redirect(Router::pathFor('adminCensoring'), __('Word added redirect'));
     }
@@ -68,8 +68,8 @@ class Censoring
             ->save();
 
         // Regenerate the censoring cache
-        Container::get('cache')->store('search_for', Cache::getCensoring('search_for'));
-        Container::get('cache')->store('replace_with', Cache::getCensoring('replace_with'));
+        CacheInterface::store('search_for', Cache::getCensoring('search_for'));
+        CacheInterface::store('replace_with', Cache::getCensoring('replace_with'));
 
         return Router::redirect(Router::pathFor('adminCensoring'), __('Word updated redirect'));
     }
@@ -84,8 +84,8 @@ class Censoring
         $result = $result->delete();
 
         // Regenerate the censoring cache
-        Container::get('cache')->store('search_for', Cache::getCensoring('search_for'));
-        Container::get('cache')->store('replace_with', Cache::getCensoring('replace_with'));
+        CacheInterface::store('search_for', Cache::getCensoring('search_for'));
+        CacheInterface::store('replace_with', Cache::getCensoring('replace_with'));
 
         return Router::redirect(Router::pathFor('adminCensoring'), __('Word removed redirect'));
     }

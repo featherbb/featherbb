@@ -12,6 +12,7 @@ namespace FeatherBB\Controller;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
@@ -63,8 +64,8 @@ class Auth
 
                     if ($user->group_id == ForumEnv::get('FEATHER_UNVERIFIED')) {
                         ModelAuth::updateGroup($user->id, ForumSettings::get('o_default_user_group'));
-                        if (!Container::get('cache')->isCached('users_info')) {
-                            Container::get('cache')->store('users_info', Cache::getUsersInfo());
+                        if (!CacheInterface::isCached('users_info')) {
+                            CacheInterface::store('users_info', Cache::getUsersInfo());
                         }
                     }
 
@@ -164,7 +165,7 @@ class Auth
 
                 Container::get('email')->send($email, $mailSubject, $curMailMessage);
 
-                return Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 200, true, true);
+                return Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 200);
             } else {
                 throw new Error(__('No email match').' '.Utils::escape($email).'.', 400);
             }

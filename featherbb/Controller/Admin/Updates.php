@@ -13,6 +13,7 @@ use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\CoreAutoUpdater;
 use FeatherBB\Core\Database;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
@@ -126,7 +127,7 @@ class Updates
         }
 
         // Reset cache
-        Container::get('cache')->flush();
+        Cache::flush();
 
         // Display upgrade results
         AdminUtils::generateAdminMenu('updates');
@@ -159,7 +160,7 @@ class Updates
         } else {
             $upgradeResults[$key]['message'] = sprintf(__('Successful upgrade message'), ForumEnv::get('FORUM_VERSION'), $coreUpdater->getLatestVersion());
             // Reset cache and update core version in database
-            Container::get('cache')->flush();
+            Cache::flush();
             if (!Database::table('config')->rawExecute('UPDATE `'.ForumSettings::get('db_prefix').'config` SET `conf_value` = :value WHERE `conf_name` = "o_cur_version"', ['value' => ForumEnv::get('FORUM_VERSION')])) {
                 $coreUpdater->addWarning(__('Could not update core version in database'));
             }

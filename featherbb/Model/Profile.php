@@ -11,6 +11,7 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
@@ -353,14 +354,14 @@ class Profile
         $updateGroup = $updateGroup->save();
 
         // Regenerate the users info cache
-        if (!Container::get('cache')->isCached('users_info')) {
-            Container::get('cache')->store('users_info', Cache::getUsersInfo());
+        if (!CacheInterface::isCached('users_info')) {
+            CacheInterface::store('users_info', Cache::getUsersInfo());
         }
 
-        $stats = Container::get('cache')->retrieve('users_info');
+        $stats = CacheInterface::retrieve('users_info');
 
         if ($oldGroupId == ForumEnv::get('FEATHER_ADMIN') || $newGroupId == ForumEnv::get('FEATHER_ADMIN')) {
-            Container::get('cache')->store('admin_ids', Cache::getAdminIds());
+            CacheInterface::store('admin_ids', Cache::getAdminIds());
         }
 
         // If the user was a moderator or an administrator, we remove him/her from the moderator list in all forums as well
@@ -639,12 +640,12 @@ class Profile
             $this->deleteAvatar($id);
 
             // Regenerate the users info cache
-            Container::get('cache')->store('users_info', Cache::getUsersInfo());
+            CacheInterface::store('users_info', Cache::getUsersInfo());
 
-            $stats = Container::get('cache')->retrieve('users_info');
+            $stats = CacheInterface::retrieve('users_info');
 
             if ($groupId == ForumEnv::get('FEATHER_ADMIN')) {
-                Container::get('cache')->store('admin_ids', Cache::getAdminIds());
+                CacheInterface::store('admin_ids', Cache::getAdminIds());
             }
 
             Hooks::fire('model.profile.delete_user');
@@ -972,15 +973,15 @@ class Profile
             }
 
             // Regenerate the users info cache
-            if (!Container::get('cache')->isCached('users_info')) {
-                Container::get('cache')->store('users_info', Cache::getUsersInfo());
+            if (!CacheInterface::isCached('users_info')) {
+                CacheInterface::store('users_info', Cache::getUsersInfo());
             }
 
-            $stats = Container::get('cache')->retrieve('users_info');
+            $stats = CacheInterface::retrieve('users_info');
 
             // Check if the bans table was updated and regenerate the bans cache when needed
             if ($bansUpdated) {
-                Container::get('cache')->store('bans', Cache::getBans());
+                CacheInterface::store('bans', Cache::getBans());
             }
         }
 

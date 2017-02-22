@@ -11,6 +11,7 @@ namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
@@ -34,8 +35,8 @@ class Parser
             throw new Error(__('No permission'), '403');
         }
 
-        if (!Container::get('cache')->isCached('smilies')) {
-            Container::get('cache')->store('smilies', Cache::getSmilies());
+        if (!CacheInterface::isCached('smilies')) {
+            CacheInterface::store('smilies', Cache::getSmilies());
         }
     }
 
@@ -43,7 +44,7 @@ class Parser
     {
         Hooks::fire('controller.admin.parser.display');
 
-        $smilies = Container::get('cache')->retrieve('smilies');
+        $smilies = CacheInterface::retrieve('smilies');
 
         if (Input::post('form_sent')) {
             // Upload new smiley image to style/img/smilies
@@ -97,7 +98,7 @@ class Parser
                     }
                 }
 
-                Container::get('cache')->store('smilies', $smilies);
+                CacheInterface::store('smilies', $smilies);
             }
 
             return Router::redirect(Router::pathFor('adminParser'), __('save_success'));

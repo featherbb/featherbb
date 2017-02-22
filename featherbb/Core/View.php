@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Core;
 
+use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
@@ -325,8 +326,8 @@ class View
     protected function getDefaultPageInfo()
     {
         // Check if config file exists to avoid error when installing forum
-        if (!Container::get('cache')->isCached('quickjump') && is_file(ForumEnv::get('FORUM_CONFIG_FILE'))) {
-            Container::get('cache')->store('quickjump', \FeatherBB\Model\Cache::quickjump());
+        if (!Cache::isCached('quickjump') && is_file(ForumEnv::get('FORUM_CONFIG_FILE'))) {
+            Cache::store('quickjump', \FeatherBB\Model\Cache::quickjump());
         }
 
         $title = Container::get('forum_settings') ? ForumSettings::get('o_board_title') : 'FeatherBB';
@@ -342,7 +343,7 @@ class View
             'paging_links' => null,
             'required_fields' => null,
             'footer_style' => null,
-            'quickjump' => Container::get('cache')->retrieve('quickjump'),
+            'quickjump' => Cache::retrieve('quickjump'),
             'fid' => null,
             'pid' => null,
             'tid' => null,

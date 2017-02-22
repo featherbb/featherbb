@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Core;
 
+use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\Lang;
 use FeatherBB\Core\Interfaces\View;
@@ -83,11 +84,11 @@ class AdminUtils
      */
     public static function getAdminIds()
     {
-        if (!Container::get('cache')->isCached('admin_ids')) {
-            Container::get('cache')->store('admin_ids', \FeatherBB\Model\Cache::getAdminIds());
+        if (!Cache::isCached('admin_ids')) {
+            Cache::store('admin_ids', \FeatherBB\Model\Cache::getAdminIds());
         }
 
-        return Container::get('cache')->retrieve('admin_ids');
+        return Cache::retrieve('admin_ids');
     }
 
     /**

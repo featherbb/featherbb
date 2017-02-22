@@ -10,6 +10,7 @@
 namespace FeatherBB\Core;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 
@@ -17,7 +18,7 @@ class Plugin
 {
     public static function getActivePlugins()
     {
-        $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : [];
+        $activePlugins = Cache::isCached('activePlugins') ? Cache::retrieve('activePlugins') : [];
 
         return $activePlugins;
     }
@@ -29,7 +30,7 @@ class Plugin
         foreach ($results as $plugin) {
             $activePlugins[] = $plugin['name'];
         }
-        Container::get('cache')->store('activePlugins', $activePlugins);
+        Cache::store('activePlugins', $activePlugins);
 
         return $activePlugins;
     }

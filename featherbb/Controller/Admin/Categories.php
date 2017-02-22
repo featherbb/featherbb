@@ -12,6 +12,7 @@ namespace FeatherBB\Controller\Admin;
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
@@ -68,7 +69,7 @@ class Categories
         }
 
         // Regenerate the quick jump cache
-        Container::get('cache')->store('quickjump', Cache::quickjump());
+        CacheInterface::store('quickjump', Cache::quickjump());
 
         return Router::redirect(Router::pathFor('adminCategories'), __('Categories updated redirect'));
     }

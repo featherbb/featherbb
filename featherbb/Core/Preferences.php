@@ -10,6 +10,7 @@
 namespace FeatherBB\Core;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\User;
@@ -270,7 +271,7 @@ class Preferences
 
     public function getGroupPreferences($groupId = null, $preference = null)
     {
-        $preferences = Container::get('cache')->retrieve('group_preferences');
+        $preferences = Cache::retrieve('group_preferences');
         if (empty($preference)) {
             return (array) $preferences[$groupId];
         }

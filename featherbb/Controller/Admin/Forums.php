@@ -11,6 +11,7 @@ namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
@@ -47,7 +48,7 @@ class Forums
 
         if ($fid = $this->model->addForum($catId, __('New forum'))) {
             // Regenerate the quick jump cache
-            Container::get('cache')->store('quickjump', Cache::quickjump());
+            CacheInterface::store('quickjump', Cache::quickjump());
 
             return Router::redirect(Router::pathFor('editForum', ['id' => $fid]), __('Forum added redirect'));
         } else {
@@ -106,14 +107,14 @@ class Forums
                 }
 
                 // Regenerate the quick jump cache
-                Container::get('cache')->store('quickjump', Cache::quickjump());
+               CacheInterface::store('quickjump', Cache::quickjump());
 
                 return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Forum updated redirect'));
             } elseif (Input::post('revert_perms')) {
                 $this->model->deletePermissions($args['id']);
 
                 // Regenerate the quick jump cache
-                Container::get('cache')->store('quickjump', Cache::quickjump());
+               CacheInterface::store('quickjump', Cache::quickjump());
 
                 return Router::redirect(Router::pathFor('editForum', ['id' => $args['id']]), __('Perms reverted redirect'));
             }
@@ -145,7 +146,7 @@ class Forums
         if (Request::isPost()) {
             $this->model->deleteForum($args['id']);
             // Regenerate the quick jump cache
-            Container::get('cache')->store('quickjump', Cache::quickjump());
+           CacheInterface::store('quickjump', Cache::quickjump());
 
             return Router::redirect(Router::pathFor('adminForums'), __('Forum deleted redirect'));
         } else { // If the user hasn't confirmed
@@ -172,7 +173,7 @@ class Forums
         }
 
         // Regenerate the quick jump cache
-        Container::get('cache')->store('quickjump', Cache::quickjump());
+       CacheInterface::store('quickjump', Cache::quickjump());
 
         return Router::redirect(Router::pathFor('adminForums'), __('Forums updated redirect'));
     }

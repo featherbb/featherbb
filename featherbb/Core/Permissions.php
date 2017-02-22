@@ -10,6 +10,7 @@
 namespace FeatherBB\Core;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\User;
@@ -131,7 +132,7 @@ class Permissions
             }
         }
         // Reload permissions cache
-        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::getPermissions());
+        Cache::store('permissions', \FeatherBB\Model\Cache::getPermissions());
         return $this;
     }
 
@@ -173,7 +174,7 @@ class Permissions
                         ->save();
         }
         // Reload permissions cache
-        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::getPermissions());
+        Cache::store('permissions', \FeatherBB\Model\Cache::getPermissions());
         return $this;
     }
 
@@ -295,7 +296,7 @@ class Permissions
         if ($gid == ForumEnv::get('FEATHER_ADMIN')) {
             $userPerms = ['*' => true];
         } else { // Regular user
-            $allPermissions = Container::get('cache')->retrieve('permissions');
+            $allPermissions = Cache::retrieve('permissions');
             if (isset($allPermissions[$gid][0])) {
                 $groupPerms = $allPermissions[$gid];
             } else {
@@ -381,7 +382,7 @@ class Permissions
     public function getGroupPermissions($groupId = null, $perm = null)
     {
         $groupId = (int) $groupId;
-        $permissions = Container::get('cache')->retrieve('permissions');
+        $permissions = Cache::retrieve('permissions');
         // Return empty perms array if group id doesn't exist in cache
         if (!isset($permissions[$groupId]) || !isset($permissions[$groupId][0])) {
             return [];

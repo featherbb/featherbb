@@ -11,6 +11,7 @@ namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\Hooks;
@@ -271,11 +272,11 @@ class Groups
         Container::get('perms')->allowGroup($groupId, array_keys($allowedPerms));
         Container::get('perms')->denyGroup($groupId, array_keys($deniedPerms));
         // Reload cache
-        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::getPermissions());
-        Container::get('cache')->store('group_preferences', \FeatherBB\Model\Cache::getGroupPreferences());
+        CacheInterface::store('permissions', Cache::getPermissions());
+        CacheInterface::store('group_preferences', Cache::getGroupPreferences());
 
         // Regenerate the quick jump cache
-        Container::get('cache')->store('quickjump', Cache::quickjump());
+        CacheInterface::store('quickjump', Cache::quickjump());
 
         if (Input::post('mode') == 'edit') {
             return Router::redirect(Router::pathFor('adminGroups'), __('Group edited redirect'));
@@ -304,7 +305,7 @@ class Groups
 
         // Regenerate the config cache
         $config = array_merge(Cache::getConfig(), Cache::getPreferences());
-        Container::get('cache')->store('config', $config);
+        CacheInterface::store('config', $config);
 
         return Router::redirect(Router::pathFor('adminGroups'), __('Default group redirect'));
     }

@@ -10,6 +10,7 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Router;
@@ -219,11 +220,11 @@ class Index
         Hooks::fire('model.index.collect_stats_start');
 
         // Collect some statistics from the database
-        if (!Container::get('cache')->isCached('users_info')) {
-            Container::get('cache')->store('users_info', Cache::getUsersInfo());
+        if (!Cache::isCached('users_info')) {
+            Cache::store('users_info', \FeatherBB\Model\Cache::getUsersInfo());
         }
 
-        $stats = Container::get('cache')->retrieve('users_info');
+        $stats = Cache::retrieve('users_info');
 
         $query = DB::table('forums')
             ->selectExpr('SUM(num_topics)', 'total_topics')

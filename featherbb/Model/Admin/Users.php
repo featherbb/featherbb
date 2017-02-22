@@ -11,6 +11,7 @@ namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
@@ -20,8 +21,6 @@ use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
-
-// use FeatherBB\Model\Delete;
 
 class Users
 {
@@ -392,11 +391,11 @@ class Users
             }
 
             // Regenerate the users info cache
-            if (!Container::get('cache')->isCached('users_info')) {
-                Container::get('cache')->store('users_info', Cache::getUsersInfo());
+            if (!CacheInterface::isCached('users_info')) {
+                CacheInterface::store('users_info', Cache::getUsersInfo());
             }
 
-            $stats = Container::get('cache')->retrieve('users_info');
+            $stats = CacheInterface::retrieve('users_info');
 
             return Router::redirect(Router::pathFor('adminUsers'), __('Users delete redirect'));
         }
@@ -516,7 +515,7 @@ class Users
                 }
 
                 // Regenerate the bans cache
-                Container::get('cache')->store('bans', Cache::getBans());
+                CacheInterface::store('bans', Cache::getBans());
 
                 return Router::redirect(Router::pathFor('adminUsers'), __('Users banned redirect'));
             }

@@ -17,6 +17,7 @@ use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Email;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Hooks;
+use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\Config;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
@@ -225,7 +226,7 @@ class Core
 
         if (!is_file(ForumEnv::get('FORUM_CONFIG_FILE'))) {
             // Reset cache
-            Container::get('cache')->flush();
+            Cache::flush();
             $installer = new \FeatherBB\Controller\Install();
             return $installer->run();
         }
@@ -246,19 +247,19 @@ class Core
         Config::set('displayErrorDetails', ForumEnv::get('FEATHER_DEBUG'));
 
         // Ensure cached forum data exist
-        if (!Container::get('cache')->isCached('config')) {
+        if (!Cache::isCached('config')) {
             $config = array_merge(\FeatherBB\Model\Cache::getConfig(), \FeatherBB\Model\Cache::getPreferences());
-            Container::get('cache')->store('config', $config);
+            Cache::store('config', $config);
         }
-        if (!Container::get('cache')->isCached('permissions')) {
-            Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::getPermissions());
+        if (!Cache::isCached('permissions')) {
+            Cache::store('permissions', \FeatherBB\Model\Cache::getPermissions());
         }
-        if (!Container::get('cache')->isCached('group_preferences')) {
-            Container::get('cache')->store('group_preferences', \FeatherBB\Model\Cache::getGroupPreferences());
+        if (!Cache::isCached('group_preferences')) {
+            Cache::store('group_preferences', \FeatherBB\Model\Cache::getGroupPreferences());
         }
 
         // Finalize forum_settings array
-        $this->forumSettings = array_merge(Container::get('cache')->retrieve('config'), $this->forumSettings);
+        $this->forumSettings = array_merge(Cache::retrieve('config'), $this->forumSettings);
         Container::set('forum_settings', $this->forumSettings);
 
         Lang::construct();

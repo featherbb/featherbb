@@ -8,7 +8,7 @@
 
 namespace FeatherBB\Core;
 
-use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\User;
@@ -28,14 +28,14 @@ class Parser
         $this->cacheDir = ForumEnv::get('FORUM_CACHE_DIR').'/parser';
 
         // Load smilies
-        if (!Container::get('cache')->isCached('smilies')) {
-            Container::get('cache')->store('smilies', \FeatherBB\Model\Cache::getSmilies());
+        if (!Cache::isCached('smilies')) {
+            Cache::store('smilies', \FeatherBB\Model\Cache::getSmilies());
         }
-        $this->smilies = Container::get('cache')->retrieve('smilies');
+        $this->smilies = Cache::retrieve('smilies');
 
-        if (Container::get('cache')->isCached('s9eparser') && Container::get('cache')->isCached('s9erenderer')) {
-            $this->parser = unserialize(Container::get('cache')->retrieve('s9eparser'));
-            $this->renderer = unserialize(Container::get('cache')->retrieve('s9erenderer'));
+        if (Cache::isCached('s9eparser') && Cache::isCached('s9erenderer')) {
+            $this->parser = unserialize(Cache::retrieve('s9eparser'));
+            $this->renderer = unserialize(Cache::retrieve('s9erenderer'));
         } else {
             $this->configureParser();
         }
@@ -88,8 +88,8 @@ class Parser
         extract($configurator->finalize());
 
         // We save the parser and the renderer to the disk for easy reuse
-        Container::get('cache')->store('s9eparser', serialize($parser));
-        Container::get('cache')->store('s9erenderer', serialize($renderer));
+        Cache::store('s9eparser', serialize($parser));
+        Cache::store('s9erenderer', serialize($renderer));
 
         $this->parser = $parser;
         $this->renderer = $renderer;
@@ -213,8 +213,9 @@ class Parser
         $text = ' '.$text.' ';
         foreach ($this->smilies as $smileyText => $smileyImg)
         {
-            if (strpos($text, $smileyText) !== false)
+            if (strpos($text, $smileyText) !== false) {
                 $text = Utils::ucpPregReplace('%(?<=[>\s])'.preg_quote($smileyText, '%').'(?=[^\p{L}\p{N}])%um', '<img src="'.Utils::escape(URL::base().'/style/img/smilies/'.$smileyImg).'" alt="'.substr($smileyImg, 0, strrpos($smileyImg, '.')).'" />', $text);
+            }
         }
         return substr($text, 1, -1);
     }

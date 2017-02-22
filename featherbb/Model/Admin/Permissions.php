@@ -10,6 +10,7 @@
 namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
@@ -39,8 +40,7 @@ class Permissions
 
         // Regenerate the config cache
         $config = array_merge(Cache::getConfig(), Cache::getPreferences());
-        Container::get('cache')->store('config', $config);
-        // $this->clearFeedCache();
+        CacheInterface::store('config', $config);
 
         return Router::redirect(Router::pathFor('adminPermissions'), __('Perms updated redirect'));
     }

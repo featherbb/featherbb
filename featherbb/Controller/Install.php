@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Controller;
 
+use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\Hooks;
@@ -48,7 +49,7 @@ class Install
 
     public function run()
     {
-        Container::get('cache')->flush();
+        Cache::flush();
         Hooks::fire('controller.install.run_install');
 
         // First form has been submitted to change default language
@@ -228,7 +229,7 @@ class Install
         Container::get('perms')->allowGroup(4, ['board.read', 'users.view', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send']);
         Container::get('perms')->allowGroup(2, ['board.read', 'users.view', 'user.set_title', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send', 'mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users']);
         Container::get('perms')->allowGroup(1, ['*']);
-        Container::get('cache')->store('permissions', \FeatherBB\Model\Cache::getPermissions());
+        Cache::store('permissions', \FeatherBB\Model\Cache::getPermissions());
         // Init preferences
         Container::get('prefs')->set([
             'disp.topics' => 30,

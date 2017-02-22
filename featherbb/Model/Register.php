@@ -11,6 +11,7 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
@@ -264,7 +265,7 @@ class Register
         }
 
         // Refresh cache
-        Container::get('cache')->store('users_info', Cache::getUsersInfo());
+        CacheInterface::store('users_info', Cache::getUsersInfo());
 
         Hooks::fire('model.register.insert_user');
 

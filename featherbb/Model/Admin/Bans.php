@@ -11,6 +11,7 @@ namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\Hooks;
@@ -269,7 +270,7 @@ class Bans
         }
 
         // Regenerate the bans cache
-        Container::get('cache')->store('bans', Cache::getBans());
+        CacheInterface::store('bans', Cache::getBans());
 
         return Router::redirect(Router::pathFor('adminBans'), __('Ban edited redirect'));
     }
@@ -284,7 +285,7 @@ class Bans
         $result = $result->delete();
 
         // Regenerate the bans cache
-        Container::get('cache')->store('bans', Cache::getBans());
+        CacheInterface::store('bans', Cache::getBans());
 
         return Router::redirect(Router::pathFor('adminBans'), __('Ban removed redirect'));
     }

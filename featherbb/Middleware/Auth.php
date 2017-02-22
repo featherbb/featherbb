@@ -15,6 +15,7 @@ namespace FeatherBB\Middleware;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
@@ -204,7 +205,7 @@ class Auth
 
         // If we removed any expired bans during our run-through, we need to regenerate the bans cache
         if ($bans_altered) {
-            Container::get('cache')->store('bans', Cache::getBans());
+            CacheInterface::store('bans', Cache::getBans());
         }
     }
 
@@ -312,12 +313,12 @@ class Auth
 
         Lang::load('common');
         // Load bans from cache
-        if (!Container::get('cache')->isCached('bans')) {
-            Container::get('cache')->store('bans', Cache::getBans());
+        if (!CacheInterface::isCached('bans')) {
+            CacheInterface::store('bans', Cache::getBans());
         }
 
         // Add bans to the container
-        Container::set('bans', Container::get('cache')->retrieve('bans'));
+        Container::set('bans', CacheInterface::retrieve('bans'));
 
         // load theme assets, also set setStyle, also init template engine, also load template config
         Container::get('template')->setStyle($user->prefs['style']);

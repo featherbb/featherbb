@@ -11,6 +11,7 @@ namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
@@ -55,7 +56,7 @@ class Plugins
         View::addAsset('js', 'style/imports/common.js', ['type' => 'text/javascript']);
 
         $availablePlugins = Lister::getPlugins();
-        $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : [];
+        $activePlugins = Cache::isCached('activePlugins') ? Cache::retrieve('activePlugins') : [];
 
         $officialPlugins = Lister::getOfficialPlugins();
 

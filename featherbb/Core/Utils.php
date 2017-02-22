@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Core;
 
+use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
@@ -313,15 +314,15 @@ class Utils
     //
     public static function censor($text)
     {
-        if (!Container::get('cache')->isCached('search_for')) {
-            Container::get('cache')->store('search_for', Cache::getCensoring('search_for'));
+        if (!CacheInterface::isCached('search_for')) {
+            CacheInterface::store('search_for', Cache::getCensoring('search_for'));
         }
-        $searchFor = Container::get('cache')->retrieve('search_for');
+        $searchFor = CacheInterface::retrieve('search_for');
 
-        if (!Container::get('cache')->isCached('replace_with')) {
-            Container::get('cache')->store('replace_with', Cache::getCensoring('replace_with'));
+        if (!CacheInterface::isCached('replace_with')) {
+            CacheInterface::store('replace_with', Cache::getCensoring('replace_with'));
         }
-        $replaceWith = Container::get('cache')->retrieve('replace_with');
+        $replaceWith = CacheInterface::retrieve('replace_with');
 
         if (!empty($searchFor) && !empty($replaceWith)) {
             return substr(self::ucpPregReplace($searchFor, $replaceWith, ' '.$text.' '), 1, -1);
@@ -336,11 +337,11 @@ class Utils
     public static function getAdminIds()
     {
         // Get Slim current session
-        if (!Container::get('cache')->isCached('admin_ids')) {
-            Container::get('cache')->store('admin_ids', Cache::getAdminIds());
+        if (!CacheInterface::isCached('admin_ids')) {
+            CacheInterface::store('admin_ids', Cache::getAdminIds());
         }
 
-        return Container::get('cache')->retrieve('admin_ids');
+        return CacheInterface::retrieve('admin_ids');
     }
 
     //

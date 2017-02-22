@@ -13,7 +13,7 @@
 namespace FeatherBB\Core;
 
 use FeatherBB\Core\Database as DB;
-use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 
@@ -65,10 +65,10 @@ class Search
         }
 
         if (!isset($stopwords)) {
-            if (!Container::get('cache')->isCached('stopwords')) {
-                Container::get('cache')->store('stopwords', \FeatherBB\Model\Cache::getStopwords(), '+1 week');
+            if (!Cache::isCached('stopwords')) {
+                Cache::store('stopwords', \FeatherBB\Model\Cache::getStopwords(), '+1 week');
             }
-            $stopwords = Container::get('cache')->retrieve('stopwords');
+            $stopwords = Cache::retrieve('stopwords');
         }
 
         // If it is a stopword it isn't valid
