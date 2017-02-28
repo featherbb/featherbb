@@ -125,6 +125,8 @@ class Email
     {
         static $baseUrl;
 
+        $replacement = null;
+
         if (!isset($baseUrl)) {
             $baseUrl = Url::base();
         }
