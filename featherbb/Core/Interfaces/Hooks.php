@@ -32,7 +32,7 @@ class Hooks extends SlimSugar
      * @param  mixed    $callable   A callable object
      * @param  int      $priority   The hook priority; 0 = high, 10 = low
      */
-    public function bind($name, $callable, $priority = 10)
+    public static function bind($name, $callable, $priority = 10)
     {
         return static::$slim->getContainer()['hooks']->bind($name, $callable, $priority);
     }
