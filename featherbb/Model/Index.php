@@ -180,7 +180,7 @@ class Index
 
             // If there is a last_post/last_poster
             if ($curForum->last_post != '') {
-                $curForum->last_post_formatted = '<a href="'.Router::pathFor('viewPost', ['id' => $curForum->last_post_tid, 'name' => Url::slug($curForum->last_post_subject), 'pid' => $curForum->last_post_id]).'#p'.$curForum->last_postId.'">'.Utils::formatTime($curForum->last_post).'</a> <span class="byuser">'.__('by').' '.Utils::escape($curForum->last_poster).'</span>';
+                $curForum->last_post_formatted = '<a href="'.Router::pathFor('viewPost', ['id' => $curForum->last_post_tid, 'name' => Url::slug($curForum->last_post_subject), 'pid' => $curForum->last_post_id]).'#p'.$curForum->last_post_id.'">'.Utils::formatTime($curForum->last_post).'</a> <span class="byuser">'.__('by').' '.Utils::escape($curForum->last_poster).'</span>';
             } elseif ($curForum->redirect_url != '') {
                 $curForum->last_post_formatted = '- - -';
             } else {
