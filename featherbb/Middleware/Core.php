@@ -205,10 +205,6 @@ class Core
         Container::set('hooks', function ($container) {
             return new Hooks();
         });
-        // Load FeatherBB email class
-        Container::set('email', function ($container) {
-            return new Email();
-        });
         Container::set('parser', function ($container) {
             return new Parser();
         });

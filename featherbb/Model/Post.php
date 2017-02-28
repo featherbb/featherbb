@@ -10,6 +10,7 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Email;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
@@ -163,13 +164,13 @@ class Post
             if (ForumSettings::get('p_force_guest_email') == '1' || $email != '') {
                 $errors = Hooks::fire('model.post.check_errors_before_post_email', $errors, $email);
 
-                if (!Container::get('email')->isValidEmail($email)) {
+                if (!Email::isValidEmail($email)) {
                     $errors[] = __('Invalid email');
                 }
 
                 // Check if it's a banned email address
                 // we should only check guests because members' addresses are already verified
-                if (User::get()->is_guest && Container::get('email')->isBannedEmail($email)) {
+                if (User::get()->is_guest && Email::isBannedEmail($email)) {
                     if (ForumSettings::get('p_allow_banned_email') == '0') {
                         $errors[] = __('Banned email');
                     }
@@ -615,7 +616,7 @@ class Post
 
                 $mailMessage = Hooks::fire('model.post.insert_report_mail_message', $mailMessage);
 
-                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
+                Email::send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
             }
         }
 
@@ -807,9 +808,9 @@ class Post
             $censoredMessage = Utils::trim(Utils::censor($post['message']));
 
             if (ForumSettings::get('o_censoring') == '1') {
-                $cleanedMessage = Container::get('email')->bbcode2email($censoredMessage, -1);
+                $cleanedMessage = Email::bbcode2email($censoredMessage, -1);
             } else {
-                $cleanedMessage = Container::get('email')->bbcode2email($post['message'], -1);
+                $cleanedMessage = Email::bbcode2email($post['message'], -1);
             }
 
             // Loop through subscribed users and send emails
@@ -865,9 +866,9 @@ class Post
                 // We have to double check here because the templates could be missing
                 if (isset($notificationEmails[$curSubscriber['prefs']['language']])) {
                     if ($curSubscriber['prefs']['notify_with_post'] == '0') {
-                        Container::get('email')->send($curSubscriber['email'], $notificationEmails[$curSubscriber['prefs']['language']][0], $notificationEmails[$curSubscriber['prefs']['language']][1]);
+                        Email::send($curSubscriber['email'], $notificationEmails[$curSubscriber['prefs']['language']][0], $notificationEmails[$curSubscriber['prefs']['language']][1]);
                     } else {
-                        Container::get('email')->send($curSubscriber['email'], $notificationEmails[$curSubscriber['prefs']['language']][2], $notificationEmails[$curSubscriber['prefs']['language']][3]);
+                        Email::send($curSubscriber['email'], $notificationEmails[$curSubscriber['prefs']['language']][2], $notificationEmails[$curSubscriber['prefs']['language']][3]);
                     }
                 }
             }
@@ -1015,9 +1016,9 @@ class Post
             $censoredSubject = Utils::trim(Utils::censor($post['subject']));
 
             if (ForumSettings::get('o_censoring') == '1') {
-                $cleanedMessage = Container::get('email')->bbcode2email($censoredMessage, -1);
+                $cleanedMessage = Email::bbcode2email($censoredMessage, -1);
             } else {
-                $cleanedMessage = Container::get('email')->bbcode2email($post['message'], -1);
+                $cleanedMessage = Email::bbcode2email($post['message'], -1);
             }
 
             $cleanedSubject = ForumSettings::get('o_censoring') == '1' ? $censoredSubject : $post['subject'];
@@ -1073,9 +1074,9 @@ class Post
                 // We have to double check here because the templates could be missing
                 if (isset($notificationEmails[$curSubscriber['prefs']['language']])) {
                     if ($curSubscriber['prefs']['notify_with_post'] == '0') {
-                        Container::get('email')->send($curSubscriber['email'], $notificationEmails[$curSubscriber['prefs']['language']][0], $notificationEmails[$curSubscriber['prefs']['language']][1]);
+                        Email::send($curSubscriber['email'], $notificationEmails[$curSubscriber['prefs']['language']][0], $notificationEmails[$curSubscriber['prefs']['language']][1]);
                     } else {
-                        Container::get('email')->send($curSubscriber['email'], $notificationEmails[$curSubscriber['prefs']['language']][2], $notificationEmails[$curSubscriber['prefs']['language']][3]);
+                        Email::send($curSubscriber['email'], $notificationEmails[$curSubscriber['prefs']['language']][2], $notificationEmails[$curSubscriber['prefs']['language']][3]);
                     }
                 }
             }
@@ -1106,7 +1107,7 @@ class Post
         $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
         $mailMessage = Hooks::fire('model.post.warn_banned_user_mail_message', $mailMessage);
 
-        Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
+        Email::send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
     }
 
     // Increment post count, change group if needed

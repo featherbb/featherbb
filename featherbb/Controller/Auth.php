@@ -10,6 +10,7 @@
 namespace FeatherBB\Controller;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Email;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\Cache as CacheInterface;
@@ -126,7 +127,7 @@ class Auth
         if (Request::isPost()) {
             // Validate the email address
             $email = strtolower(Utils::trim(Input::post('req_email')));
-            if (!Container::get('email')->isValidEmail($email)) {
+            if (!Email::isValidEmail($email)) {
                 throw new Error(__('Invalid email'), 400);
             }
             $user = ModelAuth::getUserFromEmail($email);
@@ -163,7 +164,7 @@ class Auth
                 $curMailMessage = str_replace('<new_password>', $newPassword, $curMailMessage);
                 $curMailMessage = Hooks::fire('controller.cur_mail_message_password_forgotten', $curMailMessage);
 
-                Container::get('email')->send($email, $mailSubject, $curMailMessage);
+                Email::send($email, $mailSubject, $curMailMessage);
 
                 return Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 200);
             } else {

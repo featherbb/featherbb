@@ -10,6 +10,7 @@
 namespace FeatherBB\Model\Api;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Email;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
@@ -137,13 +138,13 @@ class Topic extends Api
             $email = strtolower(Utils::trim((ForumSettings::get('p_force_guest_email') == '1') ? Input::post('req_email') : Input::post('email')));
 
             if (ForumSettings::get('p_force_guest_email') == '1' || $email != '') {
-                if (!Container::get('email')->isValidEmail($email)) {
+                if (!Email::isValidEmail($email)) {
                     $errors[] = __('Invalid email');
                 }
 
                 // Check if it's a banned email address
                 // we should only check guests because members' addresses are already verified
-                if ($this->user->is_guest && Container::get('email')->isBannedEmail($email)) {
+                if ($this->user->is_guest && Email::isBannedEmail($email)) {
                     if (ForumSettings::get('p_allow_banned_email') == '0') {
                         $errors[] = __('Banned email');
                     }
@@ -348,9 +349,9 @@ class Topic extends Api
             $censoredSubject = Utils::trim(Utils::censor($post['subject']));
 
             if (ForumSettings::get('o_censoring') == '1') {
-                $cleanedMessage = Container::get('email')->bbcode2email($censoredMessage, -1);
+                $cleanedMessage = Email::bbcode2email($censoredMessage, -1);
             } else {
-                $cleanedMessage = Container::get('email')->bbcode2email($post['message'], -1);
+                $cleanedMessage = Email::bbcode2email($post['message'], -1);
             }
 
             $cleanedSubject = ForumSettings::get('o_censoring') == '1' ? $censoredSubject : $post['subject'];
@@ -402,9 +403,9 @@ class Topic extends Api
                 // We have to double check here because the templates could be missing
                 if (isset($notificationEmails[$curSubscriber['language']])) {
                     if ($curSubscriber['notify_with_post'] == '0') {
-                        Container::get('email')->send($curSubscriber['email'], $notificationEmails[$curSubscriber['language']][0], $notificationEmails[$curSubscriber['language']][1]);
+                        Email::send($curSubscriber['email'], $notificationEmails[$curSubscriber['language']][0], $notificationEmails[$curSubscriber['language']][1]);
                     } else {
-                        Container::get('email')->send($curSubscriber['email'], $notificationEmails[$curSubscriber['language']][2], $notificationEmails[$curSubscriber['language']][3]);
+                        Email::send($curSubscriber['email'], $notificationEmails[$curSubscriber['language']][2], $notificationEmails[$curSubscriber['language']][3]);
                     }
                 }
             }

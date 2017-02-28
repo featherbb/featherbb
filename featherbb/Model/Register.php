@@ -10,6 +10,7 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Email;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\Container;
@@ -82,14 +83,14 @@ class Register
         }
 
         // Validate email
-        if (!Container::get('email')->isValidEmail($user['email1'])) {
+        if (!Email::isValidEmail($user['email1'])) {
             $user['errors'][] = __('Invalid email');
         } elseif (ForumSettings::get('o_regs_verify') == '1' && $user['email1'] != $email2) {
             $user['errors'][] = __('Email not match');
         }
 
         // Check if it's a banned email address
-        if (Container::get('email')->isBannedEmail($user['email1'])) {
+        if (Email::isBannedEmail($user['email1'])) {
             if (ForumSettings::get('p_allow_banned_email') == '0') {
                 $user['errors'][] = __('Banned email');
             }
@@ -185,7 +186,7 @@ class Register
                 $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
                 $mailMessage = Hooks::fire('model.register.insert_user_banned_mail_message', $mailMessage);
 
-                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
+                Email::send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
             }
 
             // If we previously found out that the email was a dupe
@@ -206,7 +207,7 @@ class Register
                 $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
                 $mailMessage = Hooks::fire('model.register.insert_user_dupe_mail_message', $mailMessage);
 
-                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
+                Email::send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
             }
 
             // Should we alert people on the admin mailing list that a new user has registered?
@@ -228,7 +229,7 @@ class Register
                 $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
                 $mailMessage = Hooks::fire('model.register.insert_user_new_mail_message', $mailMessage);
 
-                Container::get('email')->send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
+                Email::send(ForumSettings::get('o_mailing_list'), $mailSubject, $mailMessage);
             }
         }
 
@@ -252,7 +253,7 @@ class Register
             $mailMessage = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mailMessage);
             $mailMessage = Hooks::fire('model.register.insert_user_welcome_mail_message', $mailMessage);
 
-            Container::get('email')->send($user['email1'], $mailSubject, $mailMessage);
+            Email::send($user['email1'], $mailSubject, $mailMessage);
 
             return Router::redirect(Router::pathFor('home'), __('Reg email').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.');
         } else {

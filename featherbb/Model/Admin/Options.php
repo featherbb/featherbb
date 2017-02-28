@@ -10,6 +10,7 @@
 namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Email;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\Container;
@@ -137,11 +138,11 @@ class Options
             $prefs['date_format'] = 'Y-m-d';
         }
 
-        if (!Container::get('email')->isValidEmail($form['admin_email'])) {
+        if (!Email::isValidEmail($form['admin_email'])) {
             throw new Error(__('Invalid e-mail message'), 400);
         }
 
-        if (!Container::get('email')->isValidEmail($form['webmaster_email'])) {
+        if (!Email::isValidEmail($form['webmaster_email'])) {
             throw new Error(__('Invalid webmaster e-mail message'), 400);
         }
 

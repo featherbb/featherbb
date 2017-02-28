@@ -10,6 +10,7 @@
 namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Email;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Cache as CacheInterface;
 use FeatherBB\Core\Interfaces\Container;
@@ -217,7 +218,7 @@ class Bans
             $banIp = implode(' ', $addresses);
         }
 
-        if ($banEmail != '' && !Container::get('email')->isValidEmail($banEmail)) {
+        if ($banEmail != '' && !Email::isValidEmail($banEmail)) {
             if (!preg_match('%^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,63})$%', $banEmail)) {
                 throw new Error(__('Invalid e-mail message'), 400);
             }
