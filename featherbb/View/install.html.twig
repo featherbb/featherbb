@@ -4,11 +4,11 @@
 <head>
     <meta charset="utf-8">
     <title>{{ trans('FeatherBB Installation') }}</title>
-    <link rel="stylesheet" type="text/css" href="/style/themes/FeatherBB/style.css" />
+    <link rel="stylesheet" type="text/css" href="{{ urlBase() }}/style/themes/FeatherBB/style.css" />
 </head>
 
 <body>
-<div id="puninstall" class="pun">
+<div id="featherinstall" class="pun">
     <div class="top-box"><div><!-- Top Corners --></div></div>
     <div class="punwrap">
 
@@ -179,7 +179,7 @@
                                     <label class="required"><strong>{{ trans('Base URL') }} <span>{{ trans('Required') }}</span></strong></label>
                                     <input type="text" name="install[base_url]" value="{{ data.base_url }}" size="60" maxlength="100" required />
                                     <label class="required"><strong>{{ trans('Default language') }} <span>{{ trans('Required') }}</span></strong></label>
-                                    <select name="install[default_lang]" required />
+                                    <select name="install[language]" required />
                                     {% for lang in languages %}
                                         <option value="{{ lang }}" {{ data.default_lang == lang ? 'selected' : '' }}>{{ lang }}</option>
                                     {% endfor %}

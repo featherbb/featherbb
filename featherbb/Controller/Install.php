@@ -146,7 +146,7 @@ class Install
                     'supported_dbs' => $this->supportedDbs,
                     'data' => $data,
                     'errors' => $this->errors,
-                ])->addTemplate('@forum/install.php')->display(false);
+                ])->addTemplate('@forum/install')->display(false);
             } else {
                 $data['style'] = $this->defaultStyle;
                 $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), ['on', 'true', '1']) ? 1 : 0;
@@ -163,7 +163,7 @@ class Install
                 'supported_dbs' => $this->supportedDbs,
                 'data' => $data,
                 'alerts' => [],
-            ])->addTemplate('@forum/install.php')->display(false);
+            ])->addTemplate('@forum/install')->display(false);
         }
     }
 
