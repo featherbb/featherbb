@@ -16,6 +16,7 @@ use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Prefs;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
@@ -228,7 +229,7 @@ class Options
             }
         }
 
-        Container::get('prefs')->set($prefs);
+        Prefs::set($prefs);
 
         // Regenerate the config cache
         $config = array_merge(Cache::getConfig(), Cache::getPreferences());

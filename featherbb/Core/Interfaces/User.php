@@ -48,7 +48,7 @@ class User extends \Statical\BaseProxy
     public static function getPref($pref = null, $user = null)
     {
         $user = self::getBasic($user);
-        return Container::get('prefs')->get($user, $pref);
+        return Prefs::get($user, $pref);
     }
 
     /**

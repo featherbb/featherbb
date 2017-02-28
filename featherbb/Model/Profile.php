@@ -19,6 +19,7 @@ use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Lang;
 use FeatherBB\Core\Interfaces\Perms;
+use FeatherBB\Core\Interfaces\Prefs;
 use FeatherBB\Core\Interfaces\Request;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
@@ -904,7 +905,7 @@ class Profile
 
         // Update user prefs
         if (!empty($prefs)) {
-            Container::get('prefs')->setUser($id, $prefs);
+            Prefs::setUser($id, $prefs);
         }
 
         // If we changed the username we have to update some stuff
@@ -1007,7 +1008,7 @@ class Profile
             throw new Error(__('Bad request'), 404);
         }
 
-        $user['prefs'] = ($id == User::get()->id) ? User::get()->prefs : Container::get('prefs')->loadPrefs($user);
+        $user['prefs'] = ($id == User::get()->id) ? User::get()->prefs : Prefs::loadPrefs($user);
 
         return $user;
     }

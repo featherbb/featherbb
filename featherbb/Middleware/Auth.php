@@ -21,6 +21,7 @@ use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Lang;
 use FeatherBB\Core\Interfaces\Perms;
+use FeatherBB\Core\Interfaces\Prefs;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Utils;
@@ -262,17 +263,17 @@ class Auth
 
             // Load permissions and preferences for logged user
             Perms::getUserPermissions($user);
-            $user->prefs = Container::get('prefs')->loadPrefs($user);
+            $user->prefs = Prefs::loadPrefs($user);
 
             $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
 
             $user->is_guest = false;
 
             if (!is_dir(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user->prefs['language'])) {
-                Container::get('prefs')->setUser($user, ['language' => ForumSettings::get('language')]);
+                Prefs::setUser($user, ['language' => ForumSettings::get('language')]);
             }
             if (!file_exists(ForumEnv::get('FEATHER_ROOT').'style/themes/'.$user->prefs['style'].'/style.css')) {
-                Container::get('prefs')->setUser($user, ['style' => ForumSettings::get('style')]);
+                Prefs::setUser($user, ['style' => ForumSettings::get('style')]);
             }
 
             // Add user to DIC
@@ -312,7 +313,7 @@ class Auth
 
             // Load permissions and preferences for guest user
             Perms::getUserPermissions($user);
-            $user->prefs = Container::get('prefs')->loadPrefs($user);
+            $user->prefs = Prefs::loadPrefs($user);
 
             // Add $user as guest to DIC
             Container::set('user', $user);

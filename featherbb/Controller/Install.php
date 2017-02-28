@@ -16,6 +16,7 @@ use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Lang;
 use FeatherBB\Core\Interfaces\Perms;
+use FeatherBB\Core\Interfaces\Prefs;
 use FeatherBB\Core\Interfaces\Request;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\View;
@@ -232,7 +233,7 @@ class Install
         Perms::allowGroup(1, ['*']);
         Cache::store('permissions', \FeatherBB\Model\Cache::getPermissions());
         // Init preferences
-        Container::get('prefs')->set([
+        Prefs::set([
             'disp.topics' => 30,
             'disp.posts' => 25,
             'post.min_interval' => 60,
@@ -257,13 +258,13 @@ class Install
             'notify_with_post' => 0,
             'auto_notify' => 0,
         ]);
-        Container::get('prefs')->setGroup(2, [
+        Prefs::setGroup(2, [
             'post.min_interval' => 0,
             'search.min_interval' => 0,
             'email.min_interval' => 0,
             'report.min_interval' => 0
         ]);
-        Container::get('prefs')->setGroup(1, [
+        Prefs::setGroup(1, [
             'post.min_interval' => 0,
             'search.min_interval' => 0,
             'email.min_interval' => 0,

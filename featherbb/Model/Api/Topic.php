@@ -16,8 +16,8 @@ use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Prefs;
 use FeatherBB\Core\Interfaces\Router;
-use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Url;
@@ -110,7 +110,7 @@ class Topic extends Api
     public function checkErrorsBeforePost($fid, $errors)
     {
         // Flood protection
-        if (Input::post('preview') != '' && $this->user->last_post != '' && (time() - $this->user->last_post) < Container::get('prefs')->get($this->user, 'post.min_interval')) {
+        if (Input::post('preview') != '' && $this->user->last_post != '' && (time() - $this->user->last_post) < Prefs::get($this->user, 'post.min_interval')) {
             $errors[] = sprintf(__('Flood start'), User::getPref('post.min_interval', $this->user), User::getPref('post.min_interval', $this->user) - (time() - $this->user->last_post));
         }
 

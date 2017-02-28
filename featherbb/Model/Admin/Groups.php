@@ -17,6 +17,7 @@ use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Perms;
+use FeatherBB\Core\Interfaces\Prefs;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
@@ -58,7 +59,7 @@ class Groups
         }
 
         $group['info'] = $groups[$id];
-        $group['prefs'] = Container::get('prefs')->getGroupPreferences($id);
+        $group['prefs'] = Prefs::getGroupPreferences($id);
         $group['perms'] = Perms::getGroupPermissions($id);
 
         $group = Hooks::fire('model.admin.groups.info_add_group', $group);
@@ -219,7 +220,7 @@ class Groups
             $newGroupId = Hooks::fire('model.admin.groups.add_edit_group.new_group_id', (int) $add->id());
 
             // Set new group preferences
-            Container::get('prefs')->setGroup($newGroupId, $groupPreferences);
+            Prefs::setGroup($newGroupId, $groupPreferences);
 
             // Now lets copy the forum specific permissions from the group which this group is based on
             $selectForumPerms = ['forum_id', 'read_forum', 'post_replies', 'post_topics'];
@@ -254,7 +255,7 @@ class Groups
                     ->save();
 
             // Update group preferences
-            Container::get('prefs')->setGroup(Input::post('group_id'), $groupPreferences);
+            Prefs::setGroup(Input::post('group_id'), $groupPreferences);
 
             // Promote all users who would be promoted to this group on their next post
             if ($promoteNextGroup) {

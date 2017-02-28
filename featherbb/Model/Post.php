@@ -16,6 +16,7 @@ use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Prefs;
 use FeatherBB\Core\Interfaces\Request;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
@@ -813,7 +814,7 @@ class Post
 
             // Loop through subscribed users and send emails
             foreach ($result as $curSubscriber) {
-                $curSubscriber['prefs'] = Container::get('prefs')->loadPrefs($curSubscriber);
+                $curSubscriber['prefs'] = Prefs::loadPrefs($curSubscriber);
                 // Is the subscription email for User::getPref('language', $curSubscriber['id']) cached or not?
                 if (!isset($notificationEmails[$curSubscriber['prefs']['language']])) {
                     if (file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$curSubscriber['prefs']['language'].'/mail_templates/new_reply.tpl')) {
@@ -1023,7 +1024,7 @@ class Post
 
             // Loop through subscribed users and send emails
             foreach ($result as $curSubscriber) {
-                $curSubscriber['prefs'] = Container::get('prefs')->loadPrefs($curSubscriber);
+                $curSubscriber['prefs'] = Prefs::loadPrefs($curSubscriber);
                 // Is the subscription email for User::getPref('language', $curSubscriber['id']) cached or not?
                 if (!isset($notificationEmails[$curSubscriber['prefs']['language']])) {
                     if (file_exists(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$curSubscriber['prefs']['language'].'/mail_templates/new_topic.tpl')) {

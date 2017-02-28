@@ -17,6 +17,7 @@ use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Prefs;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Random;
@@ -159,9 +160,9 @@ class Register
         $newUid = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'users');
 
         if (ForumSettings::get('o_regs_verify') == '1') {
-            Container::get('prefs')->setUser($newUid, ['language' => $user['language']], ForumEnv::get('FEATHER_UNVERIFIED'));
+            Prefs::setUser($newUid, ['language' => $user['language']], ForumEnv::get('FEATHER_UNVERIFIED'));
         } else {
-            Container::get('prefs')->setUser($newUid, ['language' => $user['language']]);
+            Prefs::setUser($newUid, ['language' => $user['language']]);
         }
 
         // If the mailing list isn't empty, we may need to send out some alerts

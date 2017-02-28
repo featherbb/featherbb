@@ -16,6 +16,7 @@ use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Prefs;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Track;
@@ -856,7 +857,7 @@ class Topic
             $curPost['post_actions'] = [];
             $curPost['is_online_formatted'] = '';
             $curPost['signature_formatted'] = '';
-            $curPost['promote.next_group'] = Container::get('prefs')->getGroupPreferences($curPost['g_id'], 'promote.next_group');
+            $curPost['promote.next_group'] = Prefs::getGroupPreferences($curPost['g_id'], 'promote.next_group');
 
             // If the poster is a registered user
             if ($curPost['poster_id'] > 1) {
