@@ -17,6 +17,7 @@ use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Parser;
 use FeatherBB\Core\Interfaces\Prefs;
 use FeatherBB\Core\Interfaces\Request;
 use FeatherBB\Core\Interfaces\Router;
@@ -193,7 +194,7 @@ class Post
 
         // Validate BBCode syntax
         if (ForumSettings::get('p_message_bbcode') == '1') {
-            $message = Container::get('parser')->preparseBbcode($message, $errors);
+            $message = Parser::preparseBbcode($message, $errors);
             $message = Hooks::fire('model.post.check_errors_before_post_bbcode', $message);
         }
 
@@ -251,7 +252,7 @@ class Post
 
         // Validate BBCode syntax
         if (ForumSettings::get('p_message_bbcode') == '1') {
-            $message = Container::get('parser')->preparseBbcode($message, $errors);
+            $message = Parser::preparseBbcode($message, $errors);
         }
 
         if (empty($errors)) {
@@ -301,7 +302,7 @@ class Post
 
         // Validate BBCode syntax
         if (ForumSettings::get('p_message_bbcode') == '1') {
-            $post['message']  = Container::get('parser')->preparseBbcode($post['message'], $errors);
+            $post['message']  = Parser::preparseBbcode($post['message'], $errors);
         }
 
         // Replace four-byte characters (MySQL cannot handle them)
@@ -332,7 +333,7 @@ class Post
 
         // Validate BBCode syntax
         if (ForumSettings::get('p_message_bbcode') == '1') {
-            $post['message'] = Container::get('parser')->preparseBbcode($post['message'], $errors);
+            $post['message'] = Parser::preparseBbcode($post['message'], $errors);
         }
 
         // Replace four-byte characters (MySQL cannot handle them)
@@ -1350,7 +1351,7 @@ class Post
         $result = $result->findMany();
 
         foreach ($result as $curPost) {
-            $curPost['message'] = Container::get('parser')->parseMessage($curPost['message'], $curPost['hide_smilies']);
+            $curPost['message'] = Parser::parseMessage($curPost['message'], $curPost['hide_smilies']);
             $postData[] = $curPost;
         }
 

@@ -16,6 +16,7 @@ use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Parser;
 use FeatherBB\Core\Interfaces\Prefs;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
@@ -977,14 +978,14 @@ class Topic
             }
 
             // Perform the main parsing of the message (BBCode, smilies, censor words etc)
-            $curPost['message'] = Container::get('parser')->parseMessage($curPost['message'], $curPost['hide_smilies']);
+            $curPost['message'] = Parser::parseMessage($curPost['message'], $curPost['hide_smilies']);
 
             // Do signature parsing/caching
             if (ForumSettings::get('o_signatures') == '1' && $curPost['signature'] != '' && User::getPref('show.sig') != '0') {
                 // if (isset($avatarCache[$curPost['poster_id']])) {
                 //     $curPost['signature_formatted'] = $avatarCache[$curPost['poster_id']];
                 // } else {
-                    $curPost['signature_formatted'] = Container::get('parser')->parseSignature($curPost['signature']);
+                    $curPost['signature_formatted'] = Parser::parseSignature($curPost['signature']);
                 //     $avatarCache[$curPost['poster_id']] = $curPost['signature_formatted'];
                 // }
             }
@@ -1057,7 +1058,7 @@ class Topic
             }
 
             // Perform the main parsing of the message (BBCode, smilies, censor words etc)
-            $curPost->message = Container::get('parser')->parseMessage($curPost->message, $curPost->hideSmilies);
+            $curPost->message = Parser::parseMessage($curPost->message, $curPost->hideSmilies);
 
             $postData[] = $curPost;
         }

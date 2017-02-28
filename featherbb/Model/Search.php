@@ -16,6 +16,7 @@ use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Parser;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Track;
@@ -727,7 +728,7 @@ class Search
                     $curSearch['message'] = Utils::censor($curSearch['message']);
                 }
 
-                $curSearch['message'] = Container::get('parser')->parseMessage($curSearch['message'], $curSearch['hide_smilies']);
+                $curSearch['message'] = Parser::parseMessage($curSearch['message'], $curSearch['hide_smilies']);
                 $pposter = Utils::escape($curSearch['pposter']);
 
                 if ($curSearch['poster_id'] > 1 && User::can('users.view')) {

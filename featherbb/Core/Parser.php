@@ -210,7 +210,7 @@ class Parser
      * @param $text string containing smilies to parse
      * @return string text "smilied" :-)
      */
-    function doSmilies($text)
+    private function doSmilies($text)
     {
         $text = ' '.$text.' ';
         foreach ($this->smilies as $smileyText => $smileyImg)

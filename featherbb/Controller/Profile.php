@@ -17,6 +17,7 @@ use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Parser;
 use FeatherBB\Core\Interfaces\Perms;
 use FeatherBB\Core\Interfaces\Request;
 use FeatherBB\Core\Interfaces\Router;
@@ -96,7 +97,7 @@ class Profile
         $user = $this->model->getUserInfo($args['id']);
 
         if ($user['signature'] != '') {
-            $parsedSignature = Container::get('parser')->parseSignature($user['signature']);
+            $parsedSignature = Parser::parseSignature($user['signature']);
         }
 
         // View or edit?

@@ -19,6 +19,7 @@ use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Parser;
 use FeatherBB\Core\Interfaces\Perms;
 use FeatherBB\Core\Interfaces\Prefs;
 use FeatherBB\Core\Interfaces\Request;
@@ -808,7 +809,7 @@ class Profile
                     if (ForumSettings::get('p_sig_bbcode') == '1') {
                         $errors = [];
 
-                        $form['signature'] = Container::get('parser')->preparseBbcode($form['signature'], $errors, true);
+                        $form['signature'] = Parser::preparseBbcode($form['signature'], $errors, true);
 
                         if (count($errors) > 0) {
                             throw new Error('<ul><li>'.implode('</li><li>', $errors).'</li></ul>');

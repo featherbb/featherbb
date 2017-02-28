@@ -16,6 +16,7 @@ use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Parser;
 use FeatherBB\Core\Interfaces\Request;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
@@ -184,7 +185,7 @@ class Post
         }
 
         if (Input::post('preview')) {
-            $previewMessage = Container::get('parser')->parseMessage($post['message'], $post['hide_smilies']);
+            $previewMessage = Parser::parseMessage($post['message'], $post['hide_smilies']);
             $previewMessage = Hooks::fire('controller.post.edit.preview', $previewMessage);
         } else {
             $previewMessage = '';
@@ -246,7 +247,7 @@ class Post
             return $this->model->handleDeletion($isTopicPost, $args['id'], $curPost);
         }
 
-        $curPost['message'] = Container::get('parser')->parseMessage($curPost['message'], $curPost['hide_smilies']);
+        $curPost['message'] = Parser::parseMessage($curPost['message'], $curPost['hide_smilies']);
 
         return View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Delete post')],
@@ -309,7 +310,7 @@ class Post
         }
 
         if (Input::post('preview')) {
-            $previewMessage = Container::get('parser')->parseMessage($post['message'], $post['hide_smilies']);
+            $previewMessage = Parser::parseMessage($post['message'], $post['hide_smilies']);
             $previewMessage = Hooks::fire('controller.post.edit.preview', $previewMessage);
         } else {
             $previewMessage = '';

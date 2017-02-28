@@ -17,6 +17,7 @@ use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Parser;
 use FeatherBB\Core\Interfaces\Prefs;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
@@ -166,7 +167,7 @@ class Topic extends Api
 
         // Validate BBCode syntax
         if (ForumSettings::get('p_message_bbcode') == '1') {
-            $message = Container::get('parser')->preparseBbcode($message, $errors);
+            $message = Parser::preparseBbcode($message, $errors);
         }
 
         if (empty($errors)) {
@@ -212,7 +213,7 @@ class Topic extends Api
 
         // Validate BBCode syntax
         if (ForumSettings::get('p_message_bbcode') == '1') {
-            $post['message']  = Container::get('parser')->preparseBbcode($post['message'], $errors);
+            $post['message']  = Parser::preparseBbcode($post['message'], $errors);
         }
 
         // Replace four-byte characters (MySQL cannot handle them)
