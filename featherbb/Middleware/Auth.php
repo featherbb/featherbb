@@ -49,7 +49,7 @@ class Auth
 
                     return $token;
                 } catch (\Firebase\JWT\ExpiredException $e) {
-                    // TODO: (Optionnal) add flash message to say token has expired
+                    // TODO: (Optional) add flash message to say token has expired
                     return false;
                 } catch (\Firebase\JWT\SignatureInvalidException $e) {
                     // If token secret has changed (config.php file removed then regenerated)
