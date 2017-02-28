@@ -321,16 +321,16 @@
 {% endif %}
 </section>
 
+<!-- JSRAW -->
+<script>
+    var baseUrl = '{{ urlBase() }}',
+        phpVars = {{ jsVars|json_encode()|raw }};
+    {{ jsraw|raw }}
+</script>
 <!-- JS -->
 {% for script in assets.js %}
 <script {% for key, value in script.params %}{{ key }}="{{ value }}"{% endfor %} src="{{ urlBase() }}/{{ script.file }}" /></script>
 {% endfor %}
-<!-- JSRAW -->
-<script>
-var baseUrl = '{{ urlBase() }}',
-    phpVars = {{ jsVars|json_encode() }};
-{{ jsraw|raw }}
-</script>
 {{ fireHook('view.footer.before.html.tag') }}
 </body>
 </html>

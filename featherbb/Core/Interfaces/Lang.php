@@ -20,7 +20,7 @@ class Lang extends \Statical\BaseProxy
     public static function load($file, $domain = 'FeatherBB', $path = false, $language = false)
     {
         // Set default path to forum core translations
-        $path = $path ? $path :  ForumEnv::get('FEATHER_ROOT').'featherbb/lang';
+        $path = $path ? $path : ForumEnv::get('FEATHER_ROOT').'featherbb/lang';
         // Set default language to current user
         if (!$language) {
             $language = (!User::get(null)) ? 'English' : User::getPref('language');
