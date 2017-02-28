@@ -16,6 +16,7 @@ use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Perms;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Utils;
@@ -81,7 +82,7 @@ class Bans
                 throw new Error(sprintf(__('User is admin message'), Utils::escape($ban['ban_user'])), 403);
             }
 
-            $isModeratorGroup = Container::get('perms')->getGroupPermissions($groupId, 'mod.is_mod');
+            $isModeratorGroup = Perms::getGroupPermissions($groupId, 'mod.is_mod');
 
             if ($isModeratorGroup) {
                 throw new Error(sprintf(__('User is mod message'), Utils::escape($ban['ban_user'])), 403);
@@ -169,7 +170,7 @@ class Bans
                     throw new Error(sprintf(__('User is admin message'), Utils::escape($banUser)), 403);
                 }
 
-                $isModeratorGroup = Container::get('perms')->getGroupPermissions($groupId, 'mod.is_mod');
+                $isModeratorGroup = Perms::getGroupPermissions($groupId, 'mod.is_mod');
 
                 if ($isModeratorGroup) {
                     throw new Error(sprintf(__('User is mod message'), Utils::escape($banUser)), 403);

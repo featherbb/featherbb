@@ -13,6 +13,7 @@ use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Perms;
 
 class Forums
 {
@@ -148,7 +149,7 @@ class Forums
         $permissions = $permissions->findMany();
 
         foreach ($permissions as $curPerm) {
-            $groupPermissions = Container::get('perms')->getGroupPermissions($curPerm['g_id']);
+            $groupPermissions = Perms::getGroupPermissions($curPerm['g_id']);
 
             $curPerm['board.read'] = isset($groupPermissions['board.read']);
             $curPerm['read_forum'] = ($curPerm['read_forum'] != '0') ? true : false;
@@ -182,7 +183,7 @@ class Forums
         $result = $result->findArray();
 
         foreach ($result as $curPerm) {
-            $groupPermissions = Container::get('perms')->getGroupPermissions($curPerm['g_id']);
+            $groupPermissions = Perms::getGroupPermissions($curPerm['g_id']);
             $curPerm['board.read'] = $groupPermissions['board.read'];
             $curPerm['topic.reply'] = $groupPermissions['topic.reply'];
             $curPerm['topic.post'] = $groupPermissions['topic.post'];

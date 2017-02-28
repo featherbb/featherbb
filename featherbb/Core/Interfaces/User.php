@@ -60,7 +60,7 @@ class User extends \Statical\BaseProxy
     public static function can($permission = null, $id = null)
     {
         $user = self::getBasic($id);
-        return Container::get('perms')->can($user, $permission);
+        return Perms::can($user, $permission);
     }
 
     /**
@@ -81,6 +81,6 @@ class User extends \Statical\BaseProxy
     public static function isAdminMod($id = null)
     {
         $user = self::getBasic($id);
-        return $user->group_id == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->getGroupPermissions($user->group_id, 'mod.is_mod');
+        return $user->group_id == ForumEnv::get('FEATHER_ADMIN') || Perms::getGroupPermissions($user->group_id, 'mod.is_mod');
     }
 }

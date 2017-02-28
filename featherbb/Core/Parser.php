@@ -12,6 +12,8 @@ use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\User;
+use s9e\TextFormatter\Configurator;
+use s9e\TextFormatter\Unparser;
 
 class Parser
 {
@@ -47,7 +49,7 @@ class Parser
     private function configureParser()
     {
         $renderer = $parser = null;
-        $configurator = new \s9e\TextFormatter\Configurator;
+        $configurator = new Configurator;
         $configurator->plugins->load('Autoemail');//Fatdown & Forum default
         $configurator->plugins->load('Autolink');//Fatdown & Forum default
         $configurator->plugins->load('Escaper');//Fatdown default
@@ -183,7 +185,7 @@ class Parser
     {
         $xml  = $this->parser->parse($text);
 
-        return \s9e\TextFormatter\Unparser::unparse($xml);
+        return Unparser::unparse($xml);
     }
 
     /**
@@ -199,7 +201,7 @@ class Parser
     public function preparseBbcode($text, &$errors, $isSignature = false)
     {
         $xml  = $this->parser->parse($text);
-        return \s9e\TextFormatter\Unparser::unparse($xml);
+        return Unparser::unparse($xml);
     }
 
     /**

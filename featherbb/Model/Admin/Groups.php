@@ -16,6 +16,7 @@ use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Perms;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
@@ -29,7 +30,7 @@ class Groups
         $groups = [];
         foreach ($result as $curGroup) {
             $groups[$curGroup['g_id']] = $curGroup;
-            $groups[$curGroup['g_id']]['is_moderator'] = Container::get('perms')->getGroupPermissions($curGroup['g_id'], 'mod.is_mod');
+            $groups[$curGroup['g_id']]['is_moderator'] = Perms::getGroupPermissions($curGroup['g_id'], 'mod.is_mod');
         }
 
         $groups = Hooks::fire('model.admin.groups.fetch_groups', $groups);
@@ -58,7 +59,7 @@ class Groups
 
         $group['info'] = $groups[$id];
         $group['prefs'] = Container::get('prefs')->getGroupPreferences($id);
-        $group['perms'] = Container::get('perms')->getGroupPermissions($id);
+        $group['perms'] = Perms::getGroupPermissions($id);
 
         $group = Hooks::fire('model.admin.groups.info_add_group', $group);
         return $group;
@@ -269,8 +270,8 @@ class Groups
         // Update group permissions
         $allowedPerms = array_filter($groupPermissions);
         $deniedPerms = array_diff($groupPermissions, $allowedPerms);
-        Container::get('perms')->allowGroup($groupId, array_keys($allowedPerms));
-        Container::get('perms')->denyGroup($groupId, array_keys($deniedPerms));
+        Perms::allowGroup($groupId, array_keys($allowedPerms));
+        Perms::denyGroup($groupId, array_keys($deniedPerms));
         // Reload cache
         CacheInterface::store('permissions', Cache::getPermissions());
         CacheInterface::store('group_preferences', Cache::getGroupPreferences());
@@ -296,7 +297,7 @@ class Groups
         }
 
         // Make sure it's not a moderator group
-        if (Container::get('perms')->getGroupPermissions($groupId, 'mod.is_mod')) {
+        if (Perms::getGroupPermissions($groupId, 'mod.is_mod')) {
             throw new Error(__('Bad request'), 404);
         }
 

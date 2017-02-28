@@ -17,6 +17,7 @@ use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Perms;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Utils;
@@ -177,7 +178,7 @@ class Users
             $newGroup = Hooks::fire('model.admin.model.users.move_users.new_group', $newGroup);
 
             // Is the new group a moderator group?
-            $newGroupMod = Container::get('perms')->getGroupPermissions($newGroup, 'mod.is_mod');
+            $newGroupMod = Perms::getGroupPermissions($newGroup, 'mod.is_mod');
 
             // Fetch user groups
             $userGroups = [];
@@ -198,7 +199,7 @@ class Users
             // Are any users moderators?
             $groupIds = array_keys($userGroups);
             foreach ($groupIds as $groupId) {
-                if (!Container::get('perms')->getGroupPermissions($groupId, 'mod.is_mod')) {
+                if (!Perms::getGroupPermissions($groupId, 'mod.is_mod')) {
                     unset($userGroups[$groupId]);
                 }
             }
@@ -291,7 +292,7 @@ class Users
             // Are any users moderators?
             $groupIds = array_keys($userGroups);
             foreach ($groupIds as $groupId) {
-                if (!Container::get('perms')->getGroupPermissions($groupId, 'mod.is_mod')) {
+                if (!Perms::getGroupPermissions($groupId, 'mod.is_mod')) {
                     unset($userGroups[$groupId]);
                 }
             }

@@ -20,6 +20,7 @@ use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Perms;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Utils;
@@ -236,6 +237,12 @@ class Auth
         return $user;
     }
 
+    /**
+     * @param $req
+     * @param $res
+     * @param $next
+     * @return mixed
+     */
     public function __invoke($req, $res, $next)
     {
         $authCookie = Container::get('cookie')->get(ForumSettings::get('cookie_name'));
@@ -254,7 +261,7 @@ class Auth
         if ($jwt && $user = AuthModel::loadUser($jwt->data->userId)) {
 
             // Load permissions and preferences for logged user
-            Container::get('perms')->getUserPermissions($user);
+            Perms::getUserPermissions($user);
             $user->prefs = Container::get('prefs')->loadPrefs($user);
 
             $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
@@ -304,7 +311,7 @@ class Auth
             }
 
             // Load permissions and preferences for guest user
-            Container::get('perms')->getUserPermissions($user);
+            Perms::getUserPermissions($user);
             $user->prefs = Container::get('prefs')->loadPrefs($user);
 
             // Add $user as guest to DIC

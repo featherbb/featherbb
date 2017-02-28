@@ -21,6 +21,7 @@ use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Perms;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Interfaces\Hooks;
@@ -83,7 +84,7 @@ class Twig extends \Twig_Extension
              * Return the status of a user
              */
             new \Twig_SimpleFunction('canGroup', function ($gId, $perm) {
-                return Container::get('perms')->getGroupPermissions($gId, $perm);
+                return Perms::getGroupPermissions($gId, $perm);
             }, ['is_safe' => ['html']]),
 
             /**

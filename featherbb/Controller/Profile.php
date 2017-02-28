@@ -17,6 +17,7 @@ use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Perms;
 use FeatherBB\Core\Interfaces\Request;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
@@ -85,7 +86,7 @@ class Profile
                                     (!User::isAdmin() &&                           // or we aren't an admin and ...
                                     (!User::can('mod.edit_users') ||                         // mods aren't allowed to edit users
                                     $info['group_id'] == ForumEnv::get('FEATHER_ADMIN') ||                            // or the user is an admin
-                                    Container::get('perms')->getGroupPermissions($info['group_id'], 'mod.is_mod'))))) {                                      // or the user is another mod
+                                    Perms::getGroupPermissions($info['group_id'], 'mod.is_mod'))))) {                                      // or the user is another mod
                                     throw new Error(__('No permission'), 403);
             }
 

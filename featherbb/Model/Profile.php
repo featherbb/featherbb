@@ -18,6 +18,7 @@ use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Perms;
 use FeatherBB\Core\Interfaces\Request;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
@@ -365,7 +366,7 @@ class Profile
         }
 
         // If the user was a moderator or an administrator, we remove him/her from the moderator list in all forums as well
-        if ($newGroupId != ForumEnv::get('FEATHER_ADMIN') && !Container::get('perms')->getGroupPermissions($newGroupId, 'mod.is_mod')) {
+        if ($newGroupId != ForumEnv::get('FEATHER_ADMIN') && !Perms::getGroupPermissions($newGroupId, 'mod.is_mod')) {
 
             // Loop through all forums
             $result = $this->loopModForums();
@@ -542,7 +543,7 @@ class Profile
 
         if (Input::post('delete_user_comply')) {
             // If the user is a moderator or an administrator, we remove him/her from the moderator list in all forums as well
-            if ($groupId == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->getGroupPermissions($groupId, 'mod.is_mod')) {
+            if ($groupId == ForumEnv::get('FEATHER_ADMIN') || Perms::getGroupPermissions($groupId, 'mod.is_mod')) {
 
                 // Loop through all forums
                 $result = $this->loopModForums();
@@ -949,7 +950,7 @@ class Profile
             $groupId = Hooks::fireDB('model.profile.update_profile_group_id', $groupId);
             $groupId = $groupId->findOneCol('group_id');
 
-            if ($groupId == ForumEnv::get('FEATHER_ADMIN') || Container::get('perms')->getGroupPermissions($groupId, 'mod.is_mod')) {
+            if ($groupId == ForumEnv::get('FEATHER_ADMIN') || Perms::getGroupPermissions($groupId, 'mod.is_mod')) {
 
                 // Loop through all forums
                 $result = $this->loopModForums();
