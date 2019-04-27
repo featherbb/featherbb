@@ -52,38 +52,34 @@ class Auth
 
             $user = ModelAuth::getUserFromName($formUsername);
 
-            if ($user && !empty($user->password)) {
-                // Convert old password to BCrypt if needed
-                $oldPasswordHash = Random::hash($formPassword);
-                $passwordToConvert = Utils::hashEquals($oldPasswordHash, $user->password);
-                
-                if (Utils::passwordVerify($formPassword, $user->password) || $passwordToConvert) {
-                    if ($passwordToConvert) {
-                        ModelAuth::updatePassword($user->id, $formPassword);
-                        $user = ModelAuth::getUserFromName($formUsername);
-                    }
+            $passwordVerified = Utils::passwordVerify($formPassword, $user->password);
 
-                    if ($user->group_id == ForumEnv::get('FEATHER_UNVERIFIED')) {
-                        ModelAuth::updateGroup($user->id, ForumSettings::get('o_default_user_group'));
-                        if (!CacheInterface::isCached('users_info')) {
-                            CacheInterface::store('users_info', Cache::getUsersInfo());
-                        }
-                    }
-
-                    ModelAuth::deleteOnlineByIP(Utils::getIp());
-                    // Reset tracked topics
-                    Track::setTrackedTopics(null);
-
-                    $expire = ($savePass) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
-                    $expire = Hooks::fire('controller.expire_login', $expire);
-
-                    $jwt = ModelAuth::generateJwt($user, $expire);
-                    ModelAuth::setCookie('Bearer ' . $jwt, $expire);
-
-                    return Router::redirect(Router::pathFor('home'), __('Login redirect'));
-                } else {
-                    throw new Error(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403, true, true);
+            if ($user && !empty($user->password) && $passwordVerified) {
+                // Update the password hash if need be
+                $passwordNeedsRehash = Utils::passwordNeedsRehash($user->password);
+                if ($passwordNeedsRehash) {
+                    ModelAuth::updatePassword($user->id, $formPassword);
+                    $user = ModelAuth::getUserFromName($formUsername);
                 }
+
+                if ($user->group_id == ForumEnv::get('FEATHER_UNVERIFIED')) {
+                    ModelAuth::updateGroup($user->id, ForumSettings::get('o_default_user_group'));
+                    if (!CacheInterface::isCached('users_info')) {
+                        CacheInterface::store('users_info', Cache::getUsersInfo());
+                    }
+                }
+
+                ModelAuth::deleteOnlineByIP(Utils::getIp());
+                // Reset tracked topics
+                Track::setTrackedTopics(null);
+
+                $expire = ($savePass) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
+                $expire = Hooks::fire('controller.expire_login', $expire);
+
+                $jwt = ModelAuth::generateJwt($user, $expire);
+                ModelAuth::setCookie('Bearer ' . $jwt, $expire);
+
+                return Router::redirect(Router::pathFor('home'), __('Login redirect'));
             } else {
                 throw new Error(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403, true, true);
             }

@@ -19,7 +19,7 @@ class Error extends \Exception
 
     public function __construct($message, $code = 400, $backlink = true, $html = false, $simpleError = false)
     {
-        parent::__construct(Utils::escape($message), $code);
+        parent::__construct($message, $code);
         $this->backlink = (bool) $backlink;
         $this->html = (bool) $html;
         $this->simpleError = (bool) $simpleError;

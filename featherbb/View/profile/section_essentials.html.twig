@@ -135,7 +135,7 @@
                         {% set regIp = (isAdminMod() ? ' (<a href="' ~"#{ pathFor('usersIpShow', {}, {'ip': user.registration_ip}) }" ~'">' ~"#{ user.registration_ip }" ~'</a>)' : '' ) %}
                         <p>{{ trans(['Registered info', formatTime(user.registered, true) ~ regIp ]) }}</p>
                         <p>{{ trans(['Last post info', formatTime(user.last_post)]) }}</p>
-                        <p>{{ trans('Last visit info') }} {{ formatTime(user.last_visit) }}</p>
+                        <p>{{ trans(['Last visit info', formatTime(user.last_visit)]) }}</p>
                         {{ user_disp.posts_field|raw }}
                     {% if isAdminMod() %}
                         <label>{{ trans('Admin note') }}<br />

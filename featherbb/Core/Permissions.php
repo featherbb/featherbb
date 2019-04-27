@@ -32,7 +32,7 @@ class Permissions
                 $group = DB::table('groups')->findOne($gid);
 
                 if (!$group) {
-                    throw new \ErrorException('Internal error : Unknown group ID', 500);
+                    throw new \ErrorException('Internal error: Unknown group ID', 500);
                 }
 
                 if (!empty($group['inherit'])) {
@@ -54,7 +54,7 @@ class Permissions
 
         foreach ($newParents as $id => $parent) {
             if ($gid == $parent) {
-                throw new \ErrorException('Internal error : A group cannot be a parent of itself', 500);
+                throw new \ErrorException('Internal error: A group cannot be a parent of itself', 500);
             }
             if (!in_array($parent, $oldParents)) {
                 $this->parents[$gid][] = $parent;
@@ -74,7 +74,7 @@ class Permissions
         $parent =  (int) $parent;
 
         if ($gid == $parent) {
-            throw new \ErrorException('Internal error : A group cannot be a parent of itself', 500);
+            throw new \ErrorException('Internal error: A group cannot be a parent of itself', 500);
         }
 
         $parents = ($this->getParents($gid)) ? $this->getParents($gid) : [];
@@ -86,7 +86,7 @@ class Permissions
                         ->set('inherit', serialize($this->parents[$gid]))
                         ->save();
         } else {
-            throw new \ErrorException('Internal error : Group '.$parent.' is not a parent of group '.$gid, 500);
+            throw new \ErrorException('Internal error: Group '.$parent.' is not a parent of group '.$gid, 500);
         }
         return $this;
     }
@@ -128,7 +128,7 @@ class Permissions
                 $this->permissions[$gid][$uid][$permission] = true;
                 $this->buildRegex($uid, $gid);
             } else {
-                throw new \ErrorException('Internal error : Unable to add new permission to user', 500);
+                throw new \ErrorException('Internal error: Unable to add new permission to user', 500);
             }
         }
         // Reload permissions cache
@@ -191,7 +191,7 @@ class Permissions
         if ($gid > 0) {
             $group = DB::table('groups')->findOne($gid);
             if (!$group) {
-                throw new \ErrorException('Internal error : Unknown group ID', 500);
+                throw new \ErrorException('Internal error: Unknown group ID', 500);
             }
         }
 
@@ -233,7 +233,7 @@ class Permissions
         if ($gid > 0) {
             $group = DB::table('groups')->findOne($gid);
             if (!$group) {
-                throw new \ErrorException('Internal error : Unknown user ID', 500);
+                throw new \ErrorException('Internal error: Unknown user ID', 500);
             }
         }
 
@@ -369,12 +369,12 @@ class Permissions
         } elseif ((int) $user > 0) {
             $data = User::getBasic((int) $user);
             if (!$data) {
-                throw new \ErrorException('Internal error : Unknown user ID', 500);
+                throw new \ErrorException('Internal error: Unknown user ID', 500);
             }
             $uid = $data['id'];
             $gid = $data['group_id'];
         } else {
-            throw new \ErrorException('Internal error : wrong user object type', 500);
+            throw new \ErrorException('Internal error: wrong user object type', 500);
         }
         return [(int) $uid, (int) $gid];
     }

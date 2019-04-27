@@ -20,22 +20,25 @@ use FeatherBB\Model\Cache;
 
 class Utils
 {
-    //
-    // Return current timestamp (with microseconds) as a float
-    //
+    /**
+     * Return current timestamp (with microseconds) as a float
+     * @return float
+     */
     public static function getMicrotime()
     {
         list($usec, $sec) = explode(' ', microtime());
         return ((float)$usec + (float)$sec);
     }
 
-    //
-    // Replace four-byte characters with a question mark
-    //
-    // As MySQL cannot properly handle four-byte characters with the default utf-8
-    // charset up until version 5.5.3 (where a special charset has to be used), they
-    // need to be replaced, by question marks in this case.
-    //
+    /**
+     * Replace four-byte characters with a question mark
+     *
+     * As MySQL cannot properly handle four-byte characters with the default utf-8
+     * charset up until version 5.5.3 (where a special charset has to be used), they
+     * need to be replaced, by question marks in this case.
+     * @param $str
+     * @return string
+     */
     public static function stripBadMultibyteChars($str)
     {
         $result = '';
@@ -55,17 +58,27 @@ class Utils
         return $result;
     }
 
-    //
-    // A wrapper for PHP's number_format function
-    //
+    /**
+     *  A wrapper for PHP's number_format function
+     * @param $number
+     * @param int $decimals
+     * @return string
+     */
     public static function forumNumberFormat($number, $decimals = 0)
     {
         return is_numeric($number) ? number_format($number, $decimals, __('lang_decimal_point'), __('lang_thousands_sep')) : $number;
     }
 
-    //
-    // Format a time string according to $timeFormat and time zones
-    //
+    /**
+     *  Format a time string according to $timeFormat and time zones
+     * @param $timestamp
+     * @param bool $dateOnly
+     * @param null $dateFormat
+     * @param null $timeFormat
+     * @param bool $timeOnly
+     * @param bool $noText
+     * @return false|string
+     */
     public static function formatTime($timestamp, $dateOnly = false, $dateFormat = null, $timeFormat = null, $timeOnly = false, $noText = false)
     {
         if ($timestamp == '') {
@@ -106,58 +119,75 @@ class Utils
     }
 
 
-    //
-    // Calls htmlspecialchars with a few options already set
-    //
+    /**
+     * Calls htmlspecialchars with a few options already set
+     * @param $str
+     * @return string
+     */
     public static function escape($str)
     {
         return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
     }
 
 
-    //
-    // A wrapper for utf8_strlen for compatibility
-    //
+    /**
+     * A wrapper for utf8_strlen for compatibility
+     * @param $str
+     * @return int
+     */
     public static function strlen($str)
     {
         return \utf8\len($str);
     }
 
 
-    //
-    // Convert \r\n and \r to \n
-    //
+    /**
+     * Convert \r\n and \r to \n
+     * @param $str
+     * @return mixed
+     */
     public static function linebreaks($str)
     {
         return str_replace(["\r\n", "\r"], "\n", $str);
     }
 
 
-    //
-    // A wrapper for utf8_trim for compatibility
-    //
+    /**
+     * A wrapper for utf8_trim for compatibility
+     * @param $str
+     * @param bool $charlist
+     * @return string
+     */
     public static function trim($str, $charlist = false)
     {
         return is_string($str) ? \utf8\trim($str, $charlist) : '';
     }
 
-    //
-    // Checks if a string is in all uppercase
-    //
+    /**
+     * Checks if a string is in all uppercase
+     * @param $string
+     * @return bool
+     */
     public static function isAllUppercase($string)
     {
         return \utf8\to_upper($string) == $string && \utf8\to_lower($string) != $string;
     }
 
-    //
-    // Replace string matching regular expression
-    //
-    // This function takes care of possibly disabled unicode properties in PCRE builds
-    //
+
+    /**
+     * Replace string matching regular expression
+     *
+     * This function takes care of possibly disabled unicode properties in PCRE builds
+     * @param $pattern
+     * @param $replace
+     * @param $subject
+     * @param bool $callback
+     * @return string|string[]|null
+     */
     public static function ucpPregReplace($pattern, $replace, $subject, $callback = false)
     {
         if ($callback) {
-            $replaced = preg_replace_callback($pattern, create_function('$matches', 'return '.$replace.';'), $subject);
+            $replaced = preg_replace_callback($pattern, $replace, $subject);
         } else {
             $replaced = preg_replace($pattern, $replace, $subject);
         }
@@ -178,9 +208,11 @@ class Utils
         return $replaced;
     }
 
-    //
-    // Converts the file size in bytes to a human readable file size
-    //
+    /**
+     * Converts the file size in bytes to a human readable file size
+     * @param $size
+     * @return string
+     */
     public static function fileSize($size)
     {
         $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB'];
@@ -192,9 +224,12 @@ class Utils
         return sprintf(__('Size unit '.$units[$i]), round($size, 2));
     }
 
-    //
-    // Generate browser's title
-    //
+    /**
+     * Generate browser's title
+     * @param $pageTitle
+     * @param null $p
+     * @return string
+     */
     public static function generatePageTitle($pageTitle, $p = null)
     {
         if (!is_array($pageTitle)) {
@@ -228,10 +263,12 @@ class Utils
         )->addTemplate('breadcrumbs.php');
     }
 
-    //
-    // Determines the correct title for $user
-    // $user must contain the elements 'username', 'title', 'posts', 'g_id' and 'g_user_title'
-    //
+    /**
+     * Determines the correct title for $user
+     * $user must contain the elements 'username', 'title', 'posts', 'g_id' and 'g_user_title'
+     * @param $user
+     * @return string
+     */
     public static function getTitle($user)
     {
         static $banList;
@@ -309,9 +346,11 @@ class Utils
         return $user_title;
     }
 
-    //
-    // Replace censored words in $text
-    //
+    /**
+     * Replace censored words in $text
+     * @param $text
+     * @return bool|string
+     */
     public static function censor($text)
     {
         if (!CacheInterface::isCached('search_for')) {
@@ -331,9 +370,10 @@ class Utils
         }
     }
 
-    //
-    // Fetch admin IDs
-    //
+    /**
+     * Fetch admin IDs
+     * @return string
+     */
     public static function getAdminIds()
     {
         // Get Slim current session
@@ -344,9 +384,11 @@ class Utils
         return CacheInterface::retrieve('admin_ids');
     }
 
-    //
-    // Outputs markup to display a user's avatar
-    //
+    /**
+     * Outputs markup to display a user's avatar
+     * @param $userId
+     * @return string
+     */
     public static function generateAvatarMarkup($userId)
     {
         $filetypes = ['jpg', 'gif', 'png'];
@@ -364,9 +406,10 @@ class Utils
         return $avatarMarkup;
     }
 
-    //
-    // Get IP Address
-    //
+    /**
+     * Get IP Address
+     * @return mixed\
+     */
     public static function getIp()
     {
         if (isset(Request::getServerParams()['HTTP_CLIENT_IP'])) {
@@ -446,5 +489,15 @@ class Utils
     public static function passwordVerify($password, $hash)
     {
         return password_verify($password, $hash);
+    }
+
+    /**
+     * Check if the password needs rehash because PHP's default algorithm has changed
+     * @param $hash
+     * @return bool
+     */
+    public static function passwordNeedsRehash($hash)
+    {
+        return password_needs_rehash($hash, PASSWORD_DEFAULT);
     }
 }

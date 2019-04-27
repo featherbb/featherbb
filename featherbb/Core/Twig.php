@@ -67,6 +67,17 @@ class Twig extends \Twig_Extension
             }, ['is_safe' => ['html']]),
 
             /**
+             * Return the translation of a string for a domain with or without arguments
+             */
+            new \Twig_SimpleFunction('transd', function ($str) {
+                if (is_array($str)) {
+                    return call_user_func_array('d__', $str);
+                } else {
+                    return $str;
+                }
+            }, ['is_safe' => ['html']]),
+
+            /**
              * Return the status of a user
              */
             new \Twig_SimpleFunction('isAdminMod', function () {

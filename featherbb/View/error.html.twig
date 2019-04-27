@@ -8,7 +8,7 @@
         <div class="box">
             <div class="inbox">
                 <p>
-                    {% if html is defined %}
+                    {% if html %}
                         {{ msg|raw }}
                     {% else %}
                         {{ msg }}

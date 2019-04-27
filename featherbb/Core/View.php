@@ -53,10 +53,6 @@ class View
             'cache' => ForumEnv::get('FEATHER_ROOT') . 'cache',
             'debug' => true,
         ]);
-        // load extensions
-        /*$this->twig->addExtension(new \Twig_Extension_Profiler(
-            Container::get('twig_profile')
-        ));*/
         if (ForumEnv::get('FEATHER_DEBUG')) {
             $this->twig->addExtension(new \Twig_Extension_Debug());
         }

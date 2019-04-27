@@ -202,7 +202,7 @@ class Install
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `group_id` int(10) unsigned NOT NULL DEFAULT '3',
             `username` varchar(200) NOT NULL DEFAULT '',
-            `password` char(72) NOT NULL DEFAULT '',
+            `password` varchar(255) NOT NULL DEFAULT '',
             `email` varchar(80) NOT NULL DEFAULT '',
             `title` varchar(50) DEFAULT NULL,
             `realname` varchar(40) DEFAULT NULL,

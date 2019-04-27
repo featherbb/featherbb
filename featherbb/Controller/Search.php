@@ -67,9 +67,9 @@ class Search
                 ]);
 
                 if ($search['show_as'] == 'posts') {
-                    View::addTemplate('@forum/search/posts', 5)->display();
+                    View::addTemplate('@forum/search/posts')->display();
                 } else {
-                    View::addTemplate('@forum/search/topics', 5)->display();
+                    View::addTemplate('@forum/search/topics')->display();
                 }
             }
         }
