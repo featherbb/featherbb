@@ -418,8 +418,8 @@ class AutoUpdater
 
         // Check for latest version
         foreach ($releases as $releaseContent) {
-            $versionRaw = $releaseContent->tagName;
-            $updateUrl = $releaseContent->zipballUrl;
+            $versionRaw = $releaseContent->tag_name;
+            $updateUrl = $releaseContent->zipball_url;
             $version = new version($versionRaw);
             if ($version->valid() === null) {
                 $this->_errors[] = sprintf(__('Could not parse version'), $versionRaw, $updateFile);

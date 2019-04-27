@@ -1,0 +1,170 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {% include '@forum/admin/menu.html.twig' %}
+
+    {{ fireHook('view.admin.updates.start') }}
+
+    {% if upgrade_results is empty %}
+        <div class="blockform">
+            <h2><span>{{ trans('Available updates') }}</span></h2>
+            <div class="box">
+                <form id="upgrade-core" method="post" action="{{ pathFor('adminUpgradeCore') }}">
+                    <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                    <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                    <div class="inform">
+                        <fieldset>
+                            <legend>{{ trans('FeatherBB core') }}</legend>
+                            <div class="infldset">
+                                <p>
+                                {{ core_updates_message }}
+                                </p>
+                            </div>
+                        </fieldset>
+                        {% if core_updates %}
+                            <p class="buttons"><input type="submit" name="upgrade-core" value="{{ trans('Upgrade core') }}" /></p>
+                        {% endif %}
+                    </div>
+                </form>
+                <form id="upgrade-plugins" method="post" action="{{ pathFor('adminUpgradePlugins') }}">
+                    <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                    <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                    <div class="inform">
+                        <fieldset>
+                            <legend>{{ trans('Plugins') }}</legend>
+                            <div class="infldset">
+                                {% if plugin_updates is not empty %}
+                                    {% set valid_plugin_updates = 0 %}
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th class="tcl" scope="col"></th>
+                                        <th class="tcr" scope="col"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for plugin in plugin_updates %}
+                                    <tr>
+                                        <td class="tcl">
+                                            {% if plugin.errors is empty %}
+                                                <input type="checkbox" name="plugin_updates[{{ plugin.name }}]" value="{{ plugin.version }}" checked />
+                                            {% endif %}
+                                            <strong>{{ plugin.title }}</strong> <small>{{ plugin.version }}</small>
+                                        </td>
+                                        <td class="tcr">
+                                            {% if plugin.errors is empty %}
+                                                {% set valid_plugin_updates =+ 1 %}
+                                                <a href="https://github.com/featherbb/{{ plugin.name }}/releases/tag/{{ plugin.last_version }}" target="_blank">{{ plugin.last_version }}</a>
+                                                <a href="http://marketplace.featherbb.org/plugins/view/{{ plugin.name }}/changelog" target="_blank">{{ trans('View changelog') }}</a>
+                                            {% else %}
+                                                {{ plugin.errors }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% else %}
+                                    <p>{{ trans('All plugins up to date') }}</p>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                        {% if valid_plugin_updates > 0 %}
+                            <p class="buttons"><input type="submit" name="upgrade-plugins" value="{{ trans('Upgrade plugins') }}" /></p>
+                        {% endif %}
+                    </div>
+                </form>
+                <form id="upgrade-themes" method="post" action="{{ pathFor('adminUpgradeThemes') }}">
+                    <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                    <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                    <div class="inform">
+                        <fieldset>
+                            <legend>{{ trans('Themes') }}</legend>
+                            <div class="infldset">
+                                {% if themes_updates is not empty %}
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th class="tcl" scope="col">{{ trans('Theme') }}</th>
+                                        <th class="tcr" scope="col">{{ trans('Latest version label') }}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for theme in theme_updates %}
+                                    <tr>
+                                        <td class="tcl">
+                                            <input type="checkbox" name="theme_updates[{{ theme.name }}]" value="{{ theme.version }}" checked />
+                                            <strong>{{ theme.title }}</strong> <small>{{ theme.version }}</small>
+                                        </td>
+                                        <td>
+                                            <a href="https://github.com/featherbb/{{ theme.name }}/releases/tag/{{ theme.last_version }}" target="_blank">{{ theme.last_version }}</a>
+                                            <a href="http://marketplace.featherbb.org/themes/view/{{ theme.name }}/changelog" target="_blank">{{ trans('View changelog') }}</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% else %}
+                                    <p>{{ trans('All themes up to date') }}</p>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                    </div>
+                    {% if themes_updates is not empty %}
+                        <p class="buttons"><input type="submit" name="upgrade-themes" value="{{ trans('Upgrade themes') }}" /></p>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div class="blockform">
+            <h2><span>{{ trans('Upgrade results') }}</span></h2>
+            <div class="box">
+                <div class="fakeform">
+                    <div class="inform">
+                        <fieldset>
+                            <legend>{{ trans('Upgrade results') }}</legend>
+                            <div class="infldset">
+                                <table>
+                                    {% for key, result in upgrade_results %}
+                                    <tr>
+                                        <th scope="row">{{ key }}</th>
+                                        <td>
+                                            <span>{{ result.message }}</span>
+                                            {% if result.errors is not empty %}
+                                                <span class="clearb">
+                                                    {{ trans('Errors label') }}
+                                                    <br />
+                                                    {% for error in result.errors %}
+                                                        {{ error }}
+                                                        <br />
+                                                    {% endfor %}
+                                                </span>
+                                            {% endif %}
+                                            {% if result.warnings is not empty %}
+                                                <span class="clearb">
+                                                    {{ trans('Warnings label') }}
+                                                     <br />
+                                                    {% for warning in result.warnings %}
+                                                        {{ warning }}
+                                                        <br />
+                                                    {% endfor %}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <div class="clearer"></div>
+    </div>
+
+    {{ fireHook('view.admin.updates.end') }}
+{% endblock content %}
