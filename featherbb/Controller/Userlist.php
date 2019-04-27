@@ -47,10 +47,10 @@ class Userlist
         $numUsers = $this->model->userCount($username, $showGroup);
 
         // Determine the user offset (based on $page)
-        $numPages = ceil($numUsers / 50);
+        $numPages = ceil($numUsers / User::getPref('disp.topics'));
 
-        $p = (!Input::query('p') || !Input::query('p') <= 1 || !Input::query('p') > $numPages) ? 1 : intval(!Input::query('p'));
-        $startFrom = 50 * ($p - 1);
+        $p = (!Input::query('p') || Input::query('p') <= 1 || Input::query('p') > $numPages) ? 1 : intval(Input::query('p'));
+        $startFrom = User::getPref('disp.topics') * ($p - 1);
 
         // Generate paging links
         $pagingLinks = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginateOld($numPages, $p, '?username='.urlencode($username).'&amp;show_group='.$showGroup.'&amp;sort_by='.$sortBy.'&amp;sort_dir='.$sortDir);

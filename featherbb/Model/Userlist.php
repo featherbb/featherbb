@@ -12,6 +12,7 @@ namespace FeatherBB\Model;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Utils;
 
 class Userlist
@@ -90,7 +91,7 @@ class Userlist
 
         $result = $result->orderBy($sortBy, $sortDir)
                          ->orderByAsc('u.id')
-                         ->limit(50)
+                         ->limit(User::getPref('disp.topics'))
                          ->offset($startFrom);
 
         $result = Hooks::fireDB('model.userlist.print_users_query', $result);
