@@ -355,6 +355,7 @@ class Profile
         return View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Send email to').' '.Utils::escape($mail['recipient'])],
             'active_page' => 'email',
+            'id' => $args['id'],
             'mail' => $mail
         ])->addTemplate('@forum/misc/email')->display();
     }

@@ -7,7 +7,7 @@
     <div id="emailform" class="blockform">
         <h2><span>{{ trans('Send email to') }} {{ recipient }}</span></h2>
         <div class="box">
-            <form id="email" method="post" action="misc.php?email={{ recipient_id }}" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+            <form id="email" method="post" action="{{ pathFor('email', {'id': id}) }}" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
                 <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
                 <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
                 <div class="inform">
