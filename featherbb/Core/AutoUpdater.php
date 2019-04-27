@@ -3,7 +3,7 @@
 namespace FeatherBB\Core;
 
 /**
- * Copyright (C) 2015-2017 FeatherBB
+ * Copyright (C) 2015-2019 FeatherBB
  * based on code "VisualAppeal/PHP-Auto-Update" by Tim Helfensdörfer
  * https://github.com/VisualAppeal/PHP-Auto-Update
  * License: https://github.com/VisualAppeal/PHP-Auto-Update/blob/master/LICENSE.md Apache-2.0
