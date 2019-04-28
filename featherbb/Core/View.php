@@ -427,7 +427,7 @@ class View
             ];
         }
 
-        if (ForumSettings::get('o_rules') == '1' && (!User::get()->is_guest || User::can('board.read') || ForumSettings::get('o_regs_allow') == '1')) {
+        if (ForumSettings::get('o_rules') == 1 && (!User::get()->is_guest || User::can('board.read') || ForumSettings::get('o_regs_allow') == 1)) {
             $navlinks[] = [
                 'id' => 'navrules',
                 'active' => ($active_page == 'rules') ? ' class="isactive"' : '',

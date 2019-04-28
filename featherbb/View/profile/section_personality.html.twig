@@ -13,7 +13,7 @@
             <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
             <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
             <div><input type="hidden" name="form_sent" value="1" /></div>
-    {% if settings('o_avatars') == '1' %}
+    {% if settings('o_avatars') == 1 %}
             <div class="inform">
                 <fieldset id="profileavatar">
                     <legend>{{ trans('Avatar legend') }}</legend>
@@ -28,7 +28,7 @@
             </div>
     {% endif %}
 
-    {% if settings('o_signatures') == '1' %}
+    {% if settings('o_signatures') == 1 %}
 
             <div class="inform">
                 <fieldset>
@@ -41,10 +41,10 @@
                             <textarea id="req_message" name="signature" rows="10" cols="65">{{ user.signature }}</textarea><br />
                         </div>
                         <ul class="bblinks list-inline">
-                            <li><span><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}</a> {{ settings('p_sig_bbcode') == '1' ? trans('on') : trans('off') }}</span></li>
-                            <li><span><a href="{{ pathFor('help') }}#url" onclick="window.open(this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_sig_bbcode') == '1' and can('post.links') ? trans('on') : trans('off') }}</span></li>
-                            <li><span><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ settings('p_sig_bbcode') == '1' and settings('p_sig_img_tag') == '1' ? trans('on') : trans('off') }}</span></li>
-                            <li><span><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies_sig') == '1' ? trans('on') : trans('off') }}</span></li>
+                            <li><span><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}</a> {{ settings('p_sig_bbcode') == 1 ? trans('on') : trans('off') }}</span></li>
+                            <li><span><a href="{{ pathFor('help') }}#url" onclick="window.open(this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_sig_bbcode') == 1 and can('post.links') ? trans('on') : trans('off') }}</span></li>
+                            <li><span><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ settings('p_sig_bbcode') == 1 and settings('p_sig_img_tag') == 1 ? trans('on') : trans('off') }}</span></li>
+                            <li><span><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies_sig') == 1 ? trans('on') : trans('off') }}</span></li>
                         </ul>
                         {{ signature_preview|raw }}
                     </div>

@@ -38,7 +38,7 @@ class Hooks
      * Invoke hook
      * @param  string $name The hook name
      * @param  mixed  ...   (Optional) Argument(s) for hooked functions, can specify multiple arguments
-     * @return mixed data
+     * @return mixed|void
      */
     public function fire($name)
     {

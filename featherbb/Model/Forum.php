@@ -30,7 +30,7 @@ class Forum
 
         $curForum['where'] = [
             ['fp.read_forum' => 'IS NULL'],
-            ['fp.read_forum' => '1']
+            ['fp.read_forum' => 1]
         ];
 
         if (!User::get()->is_guest) {
@@ -167,7 +167,7 @@ class Forum
             }
 
             // Fetch list of topics to display on this page
-            if (User::get()->is_guest || ForumSettings::get('o_show_dot') == '0') {
+            if (User::get()->is_guest || ForumSettings::get('o_show_dot') == 0) {
                 // Without "the dot"
                 $result['select'] = ['id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to'];
 
@@ -210,7 +210,7 @@ class Forum
                     $curTopic['last_post_formatted'] = '- - -';
                 }
 
-                if (ForumSettings::get('o_censoring') == '1') { // TODO: correct ?
+                if (ForumSettings::get('o_censoring') == 1) { // TODO: correct ?
                     $curTopic['subject'] = Utils::censor($curTopic['subject']);
                 }
 
@@ -223,16 +223,16 @@ class Forum
                 }
 
                 // Include separate icon, label and background for sticky and closed topics
-                if ($curTopic['sticky'] == '1') {
+                if ($curTopic['sticky'] == 1) {
                     $curTopic['item_status'] .= ' isticky';
-                    if ($curTopic['closed'] == '1') {
+                    if ($curTopic['closed'] == 1) {
                         $statusText[] = '<span class="stickytext">'.__('Sticky and closed').'</span>';
                         $curTopic['icon_type'] = 'icon icon-closed';
                     } else {
                         $statusText[] = '<span class="stickytext">'.__('Sticky').'</span>';
                         $curTopic['icon_type'] = 'icon icon-sticky';
                     }
-                } elseif ($curTopic['closed'] == '1') {
+                } elseif ($curTopic['closed'] == 1) {
                     $statusText[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $curTopic['item_status'] .= ' iclosed';
                     $curTopic['icon_type'] = 'icon icon-closed';
@@ -251,7 +251,7 @@ class Forum
                 $curTopic['subject_formatted'] = implode(' ', $statusText).' '.$curTopic['subject_formatted'];
 
                 // Should we display the dot or not? :)
-                if (!User::get()->is_guest && ForumSettings::get('o_show_dot') == '1') {
+                if (!User::get()->is_guest && ForumSettings::get('o_show_dot') == 1) {
                     if ($curTopic['has_posted'] == User::get()->id) {
                         $curTopic['subject_formatted'] = '<strong class="ipost">·&#160;</strong>'.$curTopic['subject_formatted'];
                         $curTopic['item_status'] .= ' iposted';
@@ -334,7 +334,7 @@ class Forum
                     $curTopic['ghost_topic'] = true;
                 }
 
-                if (ForumSettings::get('o_censoring') == '1') {
+                if (ForumSettings::get('o_censoring') == 1) {
                     $curTopic['subject'] = Utils::censor($curTopic['subject']);
                 }
 
@@ -347,16 +347,16 @@ class Forum
                 }
 
                 // Include separate icon, label and background for sticky and closed topics
-                if ($curTopic['sticky'] == '1') {
+                if ($curTopic['sticky'] == 1) {
                     $curTopic['item_status'] .= ' isticky';
-                    if ($curTopic['closed'] == '1') {
+                    if ($curTopic['closed'] == 1) {
                         $statusText[] = '<span class="stickytext">'.__('Sticky and closed').'</span>';
                         $curTopic['icon_type'] = 'icon icon-closed';
                     } else {
                         $statusText[] = '<span class="stickytext">'.__('Sticky').'</span>';
                         $curTopic['icon_type'] = 'icon icon-sticky';
                     }
-                } elseif ($curTopic['closed'] == '1') {
+                } elseif ($curTopic['closed'] == 1) {
                     $statusText[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $curTopic['item_status'] .= ' iclosed';
                     $curTopic['icon_type'] = 'icon icon-closed';
@@ -451,7 +451,7 @@ class Forum
     {
         $forumId = Hooks::fire('model.forum.unsubscribe_forum_start', $forumId);
 
-        if (ForumSettings::get('o_forum_subscriptions') != '1') {
+        if (ForumSettings::get('o_forum_subscriptions') != 1) {
             throw new Error(__('No permission'), 403);
         }
 
@@ -477,14 +477,14 @@ class Forum
     {
         $forumId = Hooks::fire('model.forum.subscribe_forum_start', $forumId);
 
-        if (ForumSettings::get('o_forum_subscriptions') != '1') {
+        if (ForumSettings::get('o_forum_subscriptions') != 1) {
             throw new Error(__('No permission'), 403);
         }
 
         // Make sure the user can view the forum
         $authorized['where'] = [
             ['fp.read_forum' => 'IS NULL'],
-            ['fp.read_forum' => '1']
+            ['fp.read_forum' => 1]
         ];
 
         $authorized = DB::table('forums')

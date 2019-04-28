@@ -29,7 +29,7 @@
                     <tr>
                         <th class="tcl" scope="col">{{ trans('Topic') }}</th>
                         <th class="tc2" scope="col">{{ trans('Replies') }}</th>
-    {% if settings('o_topic_views') == '1' %}
+    {% if settings('o_topic_views') == 1 %}
                         <th class="tc3" scope="col">{{ trans('Views') }}</th>
     {% endif %}
                         <th class="tcr" scope="col">{{ trans('Last post') }}</th>
@@ -54,7 +54,7 @@
                             <td class="tc2">
                                 {{ topic.moved_to is null ? formatNumber(topic.num_replies) : '-' }}
                             </td>
-        {% if settings('o_topic_views') == '1' %}
+        {% if settings('o_topic_views') == 1 %}
                             <td class="tc3">
                                 {{ topic.moved_to is null ? formatNumber(topic.num_views) : '-' }}
                             </td>

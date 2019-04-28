@@ -152,12 +152,12 @@ class Forums
             $groupPermissions = Perms::getGroupPermissions($curPerm['g_id']);
 
             $curPerm['board.read'] = isset($groupPermissions['board.read']);
-            $curPerm['read_forum'] = ($curPerm['read_forum'] != '0') ? true : false;
-            $curPerm['post_replies'] = ((!isset($groupPermissions['topic.reply']) && $curPerm['post_replies'] == '1') || (isset($groupPermissions['topic.reply']) && $curPerm['post_replies'] != '0')) ? true : false;
-            $curPerm['post_topics'] = ((!isset($groupPermissions['topic.post']) && $curPerm['post_topics'] == '1') || (isset($groupPermissions['topic.post']) && $curPerm['post_topics'] != '0')) ? true : false;
+            $curPerm['read_forum'] = ($curPerm['read_forum'] != 0) ? true : false;
+            $curPerm['post_replies'] = ((!isset($groupPermissions['topic.reply']) && $curPerm['post_replies'] == 1) || (isset($groupPermissions['topic.reply']) && $curPerm['post_replies'] != 0)) ? true : false;
+            $curPerm['post_topics'] = ((!isset($groupPermissions['topic.post']) && $curPerm['post_topics'] == 1) || (isset($groupPermissions['topic.post']) && $curPerm['post_topics'] != 0)) ? true : false;
 
             // Determine if the current settings differ from the default or not
-            $curPerm['read_forum_def'] = ($curPerm['read_forum'] == '0') ? false : true;
+            $curPerm['read_forum_def'] = ($curPerm['read_forum'] == 0) ? false : true;
             $curPerm['post_replies_def'] = (($curPerm['post_replies'] && !isset($groupPermissions['topic.reply'])) || (!$curPerm['post_replies'] && isset($groupPermissions['topic.reply']))) ? false : true;
             $curPerm['post_topics_def'] = (($curPerm['post_topics'] && !isset($groupPermissions['topic.post'])) || (!$curPerm['post_topics'] && isset($groupPermissions['topic.post']))) ? false : true;
 

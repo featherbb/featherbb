@@ -85,9 +85,9 @@ class Post
         $isAdmmod = (User::isAdmin() || (User::isAdminMod() && array_key_exists(User::get()->username, $modsArray))) ? true : false;
 
         // Do we have permission to post?
-        if ((($args['tid'] && (($curPosting['post_replies'] == '' && !User::can('topic.reply')) || $curPosting['post_replies'] == '0')) ||
-                ($args['fid'] && (($curPosting['post_topics'] == '' && !User::can('topic.post')) || $curPosting['post_topics'] == '0')) ||
-                (isset($curPosting['closed']) && $curPosting['closed'] == '1')) &&
+        if ((($args['tid'] && (($curPosting['post_replies'] == '' && !User::can('topic.reply')) || $curPosting['post_replies'] == 0)) ||
+                ($args['fid'] && (($curPosting['post_topics'] == '' && !User::can('topic.post')) || $curPosting['post_topics'] == 0)) ||
+                (isset($curPosting['closed']) && $curPosting['closed'] == 1)) &&
                 !$isAdmmod) {
             throw new Error(__('No permission'), 403);
         }
@@ -114,7 +114,7 @@ class Post
                     $new = $this->model->reply($post, $args['tid'], $curPosting, $isSubscribed);
 
                     // Should we send out notifications?
-                    if (ForumSettings::get('o_topic_subscriptions') == '1') {
+                    if (ForumSettings::get('o_topic_subscriptions') == 1) {
                         $this->model->sendNotificationsReply($args['tid'], $curPosting, $new['pid'], $post);
                     }
                 }
@@ -124,7 +124,7 @@ class Post
                     $new = $this->model->insertTopic($post, $args['fid']);
 
                     // Should we send out notifications?
-                    if (ForumSettings::get('o_forum_subscriptions') == '1') {
+                    if (ForumSettings::get('o_forum_subscriptions') == 1) {
                         $this->model->sendNotificationsNewTopic($post, $curPosting, $new['tid']);
                     }
                 }
@@ -178,7 +178,7 @@ class Post
         $checkboxes = $this->model->getCheckboxes($args['fid'], $isAdmmod, $isSubscribed);
 
         // Check to see if the topic review is to be displayed
-        if ($args['tid'] && ForumSettings::get('o_topic_review') != '0') {
+        if ($args['tid'] && ForumSettings::get('o_topic_review') != 0) {
             $postData = $this->model->review($args['tid']);
         } else {
             $postData = '';
@@ -220,7 +220,7 @@ class Post
         // Fetch some information about the post, the topic and the forum
         $curPost = $this->model->getInfoDelete($args['id']);
 
-        if (ForumSettings::get('o_censoring') == '1') {
+        if (ForumSettings::get('o_censoring') == 1) {
             $curPost['subject'] = Utils::censor($curPost['subject']);
         }
 
@@ -234,7 +234,7 @@ class Post
         if ((!User::can('post.delete') ||
                 (!User::can('topic.delete') && $isTopicPost) ||
                 $curPost['poster_id'] != User::get()->id ||
-                $curPost['closed'] == '1') &&
+                $curPost['closed'] == 1) &&
                 !$isAdmmod) {
             throw new Error(__('No permission'), 403);
         }
@@ -271,13 +271,13 @@ class Post
 
         $canEditSubject = $args['id'] == $curPost['first_post_id'];
 
-        if (ForumSettings::get('o_censoring') == '1') {
+        if (ForumSettings::get('o_censoring') == 1) {
             $curPost['subject'] = Utils::censor($curPost['subject']);
             $curPost['message'] = Utils::censor($curPost['message']);
         }
 
         // Do we have permission to edit this post?
-        if ((!User::can('post.edit') || $curPost['poster_id'] != User::get()->id || $curPost['closed'] == '1') && !$isAdmmod) {
+        if ((!User::can('post.edit') || $curPost['poster_id'] != User::get()->id || $curPost['closed'] == 1) && !$isAdmmod) {
             throw new Error(__('No permission'), 403);
         }
 
@@ -340,7 +340,7 @@ class Post
         // Fetch some info about the post, the topic and the forum
         $curPost = $this->model->getInfoReport($args['id']);
 
-        if (ForumSettings::get('o_censoring') == '1') {
+        if (ForumSettings::get('o_censoring') == 1) {
             $curPost['subject'] = Utils::censor($curPost['subject']);
         }
 

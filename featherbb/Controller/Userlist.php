@@ -37,7 +37,7 @@ class Userlist
         }
 
         // Determine if we are allowed to view post counts
-        $showPostCount = (ForumSettings::get('o_show_post_count') == '1' || User::isAdminMod()) ? true : false;
+        $showPostCount = (ForumSettings::get('o_show_post_count') == 1 || User::isAdminMod()) ? true : false;
 
         $username = Input::query('username') && User::can('search.users') ? Utils::trim(Input::query('username')) : '';
         $showGroup = Input::query('show_group') ? intval(Input::query('show_group')) : -1;

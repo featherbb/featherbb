@@ -35,7 +35,7 @@ class Post extends Api
             return $curPost;
         }
 
-        if (ForumSettings::get('o_censoring') == '1') {
+        if (ForumSettings::get('o_censoring') == 1) {
             $curPost['subject'] = Utils::censor($curPost['subject']);
         }
 
@@ -60,7 +60,7 @@ class Post extends Api
 
         $canEditSubject = $args['id'] == $curPost['first_post_id'];
 
-        if (ForumSettings::get('o_censoring') == '1') {
+        if (ForumSettings::get('o_censoring') == 1) {
             $curPost['subject'] = Utils::censor($curPost['subject']);
             $curPost['message'] = Utils::censor($curPost['message']);
         }

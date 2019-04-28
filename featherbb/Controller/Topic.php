@@ -81,7 +81,7 @@ class Topic
         // Generate paging links
         $pagingLinks = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate($numPages, $p, 'topic/'.$args['id'].'/'.$urlTopic.'/#');
 
-        if (ForumSettings::get('o_censoring') == '1') {
+        if (ForumSettings::get('o_censoring') == 1) {
             $curTopic['subject'] = Utils::censor($curTopic['subject']);
         }
 
@@ -257,7 +257,7 @@ class Topic
                     User::getPref('disp.posts') = $curTopic['num_replies'] + 1;
             }*/
 
-            if (ForumSettings::get('o_censoring') == '1') {
+            if (ForumSettings::get('o_censoring') == 1) {
                 $curTopic['subject'] = Utils::censor($curTopic['subject']);
             }
 

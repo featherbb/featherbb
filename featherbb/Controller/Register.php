@@ -45,7 +45,7 @@ class Register
 
         // Display an error message if new registrations are disabled
         // If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
-        if (ForumSettings::get('o_regs_allow') == '0' || Input::post('username') || Input::post('password')) {
+        if (ForumSettings::get('o_regs_allow') == 0 || Input::post('username') || Input::post('password')) {
             throw new Error(__('No new regs'), 403);
         }
 
@@ -90,11 +90,11 @@ class Register
         }
 
         // Display an error message if new registrations are disabled
-        if (ForumSettings::get('o_regs_allow') == '0') {
+        if (ForumSettings::get('o_regs_allow') == 0) {
             throw new Error(__('No new regs'), 403);
         }
 
-        if (ForumSettings::get('o_rules') != '1') {
+        if (ForumSettings::get('o_rules') != 1) {
             return Router::redirect(Router::pathFor('register'));
         }
 

@@ -125,12 +125,12 @@ class Parser
      */
     public function parseMessage($text, $hideSmilies)
     {
-        if (ForumSettings::get('o_censoring') == '1') {
+        if (ForumSettings::get('o_censoring') == 1) {
             $text = Utils::censor($text);
         }
 
-        if (ForumSettings::get('p_message_bbcode') == '1') {
-            if (ForumSettings::get('p_message_img_tag') !== '1' || User::getPref('show.img') !== '1') {
+        if (ForumSettings::get('p_message_bbcode') == 1) {
+            if (ForumSettings::get('p_message_img_tag') !== 1 || User::getPref('show.img') !== 1) {
                 $this->parser->disablePlugin('Autoimage');// enable after parsing?
                 $this->parser->disablePlugin('Autovideo');
             }
@@ -142,7 +142,7 @@ class Parser
             $html = Utils::escape($text);
         }
 
-        if (User::getPref('show.smilies') == '1' && ForumSettings::get('o_smilies') == '1' && $hideSmilies == 0) {
+        if (User::getPref('show.smilies') == 1 && ForumSettings::get('o_smilies') == 1 && $hideSmilies == 0) {
             $html = $this->doSmilies($html);
         }
 
@@ -157,12 +157,12 @@ class Parser
      */
     public function parseSignature($text)
     {
-        if (ForumSettings::get('o_censoring') == '1') {
+        if (ForumSettings::get('o_censoring') == 1) {
             $text = Utils::censor($text);
         }
 
-        if (ForumSettings::get('p_sig_bbcode') == '1') {
-            if (ForumSettings::get('p_sig_img_tag') !== '1' || User::getPref('show.img.sig') !== '1') {
+        if (ForumSettings::get('p_sig_bbcode') == 1) {
+            if (ForumSettings::get('p_sig_img_tag') !== 1 || User::getPref('show.img.sig') !== 1) {
                 $this->parser->disablePlugin('Autoimage');// enable after parsing?
                 $this->parser->disablePlugin('Autovideo');
             }
@@ -174,7 +174,7 @@ class Parser
             $html = Utils::escape($text);
         }
 
-        if (User::getPref('show.smilies') == '1' && ForumSettings::get('o_smilies') == '1') {
+        if (User::getPref('show.smilies') == 1 && ForumSettings::get('o_smilies') == 1) {
             $html = $this->doSmilies($html);
         }
 

@@ -22,7 +22,7 @@ class Cache extends SlimSugar
      *
      * @param string $key
      * @param boolean [optional] $timestamp
-     * @return string
+     * @return mixed
      */
     public static function retrieve($key)
     {

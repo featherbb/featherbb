@@ -149,7 +149,7 @@ class Install
                 ])->addTemplate('@forum/install')->display(false);
             } else {
                 $data['style'] = $this->defaultStyle;
-                $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), ['on', 'true', '1']) ? 1 : 0;
+                $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), ['on', 'true', 1]) ? 1 : 0;
                 return $this->createConfig($data);
             }
         } else {

@@ -135,40 +135,40 @@ class Groups
         $userTitle = ($userTitle != '') ? $userTitle : 'NULL';
         $userTitle = Hooks::fire('model.admin.groups.add_edit_group.set_user_title', $userTitle);
 
-        $promoteMinPosts = Input::post('promote_min_posts') ? intval(Input::post('promote_min_posts')) : '0';
+        $promoteMinPosts = Input::post('promote_min_posts') ? intval(Input::post('promote_min_posts')) : 0;
         if (Input::post('promote_next_group') &&
                 isset($groups[Input::post('promote_next_group')]) &&
                 !in_array(Input::post('promote_next_group'), [ForumEnv::get('FEATHER_ADMIN'), ForumEnv::get('FEATHER_GUEST')]) &&
                 (Input::post('group_id') || Input::post('promote_next_group') != Input::post('group_id'))) {
             $promoteNextGroup = Input::post('promote_next_group');
         } else {
-            $promoteNextGroup = '0';
+            $promoteNextGroup = 0;
         }
 
         // Permissions
-        $moderator = Input::post('moderator') && Input::post('moderator') == '1' ? '1' : '0';
-        $modEditUsers = $moderator == '1' && Input::post('mod_edit_users') == '1' ? '1' : '0';
-        $modRenameUsers = $moderator == '1' && Input::post('mod_rename_users') == '1' ? '1' : '0';
-        $modChangePasswords = $moderator == '1' && Input::post('mod_change_passwords') == '1' ? '1' : '0';
-        $modBanUsers = $moderator == '1' && Input::post('mod_ban_users') == '1' ? '1' : '0';
-        $modPromoteUsers = $moderator == '1' && Input::post('mod_promote_users') == '1' ? '1' : '0';
-        $readBoard = Input::post('read_board') ? intval(Input::post('read_board')) : '1';
-        $viewUsers = (Input::post('view_users') && Input::post('view_users') == '1') || $isAdminGroup ? '1' : '0';
-        $postReplies = Input::post('post_replies') ? intval(Input::post('post_replies')) : '1';
-        $postTopics = Input::post('post_topics') ? intval(Input::post('post_topics')) : '1';
-        $editPosts = Input::post('edit_posts') ? intval(Input::post('edit_posts')) : ($isAdminGroup) ? '1' : '0';
-        $deletePosts = Input::post('delete_posts') ? intval(Input::post('delete_posts')) : ($isAdminGroup) ? '1' : '0';
-        $deleteTopics = Input::post('delete_topics') ? intval(Input::post('delete_topics')) : ($isAdminGroup) ? '1' : '0';
-        $postLinks = Input::post('post_links') ? intval(Input::post('post_links')) : '1';
-        $setTitle = Input::post('set_title') ? intval(Input::post('set_title')) : ($isAdminGroup) ? '1' : '0';
-        $search = Input::post('search') ? intval(Input::post('search')) : '1';
-        $searchUsers = Input::post('search_users') ? intval(Input::post('search_users')) : '1';
-        $sendEmail = (Input::post('send_email') && Input::post('send_email') == '1') || $isAdminGroup ? '1' : '0';
+        $moderator = Input::post('moderator') && Input::post('moderator') == 1 ? 1 : 0;
+        $modEditUsers = $moderator == 1 && Input::post('mod_edit_users') == 1 ? 1 : 0;
+        $modRenameUsers = $moderator == 1 && Input::post('mod_rename_users') == 1 ? 1 : 0;
+        $modChangePasswords = $moderator == 1 && Input::post('mod_change_passwords') == 1 ? 1 : 0;
+        $modBanUsers = $moderator == 1 && Input::post('mod_ban_users') == 1 ? 1 : 0;
+        $modPromoteUsers = $moderator == 1 && Input::post('mod_promote_users') == 1 ? 1 : 0;
+        $readBoard = Input::post('read_board') ? intval(Input::post('read_board')) : 1;
+        $viewUsers = (Input::post('view_users') && Input::post('view_users') == 1) || $isAdminGroup ? 1 : 0;
+        $postReplies = Input::post('post_replies') ? intval(Input::post('post_replies')) : 1;
+        $postTopics = Input::post('post_topics') ? intval(Input::post('post_topics')) : 1;
+        $editPosts = Input::post('edit_posts') ? intval(Input::post('edit_posts')) : ($isAdminGroup) ? 1 : 0;
+        $deletePosts = Input::post('delete_posts') ? intval(Input::post('delete_posts')) : ($isAdminGroup) ? 1 : 0;
+        $deleteTopics = Input::post('delete_topics') ? intval(Input::post('delete_topics')) : ($isAdminGroup) ? 1 : 0;
+        $postLinks = Input::post('post_links') ? intval(Input::post('post_links')) : 1;
+        $setTitle = Input::post('set_title') ? intval(Input::post('set_title')) : ($isAdminGroup) ? 1 : 0;
+        $search = Input::post('search') ? intval(Input::post('search')) : 1;
+        $searchUsers = Input::post('search_users') ? intval(Input::post('search_users')) : 1;
+        $sendEmail = (Input::post('send_email') && Input::post('send_email') == 1) || $isAdminGroup ? 1 : 0;
         // Preferences
-        $postFlood = (Input::post('post_flood') && Input::post('post_flood') >= 0) ? Input::post('post_flood') : '0';
-        $searchFlood = (Input::post('search_flood') && Input::post('search_flood') >= 0) ? Input::post('search_flood') : '0';
-        $emailFlood = (Input::post('email_flood') && Input::post('email_flood') >= 0) ? Input::post('email_flood') : '0';
-        $reportFlood = (Input::post('report_flood') && Input::post('report_flood') >= 0) ? Input::post('report_flood') : '0';
+        $postFlood = (Input::post('post_flood') && Input::post('post_flood') >= 0) ? Input::post('post_flood') : 0;
+        $searchFlood = (Input::post('search_flood') && Input::post('search_flood') >= 0) ? Input::post('search_flood') : 0;
+        $emailFlood = (Input::post('email_flood') && Input::post('email_flood') >= 0) ? Input::post('email_flood') : 0;
+        $reportFlood = (Input::post('report_flood') && Input::post('report_flood') >= 0) ? Input::post('report_flood') : 0;
 
         $insertUpdateGroup = [
             'g_title'               =>  $title,

@@ -231,7 +231,7 @@ class Maintenance
         $query = DB::table('topics')->whereLt('last_post', $prune['date'])
                         ->whereNull('moved_to');
 
-        if ($pruneSticky == '0') {
+        if ($pruneSticky == 0) {
             $query = $query->where('sticky', 0);
         }
 

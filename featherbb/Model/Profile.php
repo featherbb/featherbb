@@ -130,7 +130,7 @@ class Profile
 
             // Check if it's a banned email address
             if (Email::isBannedEmail($newEmail)) {
-                if (ForumSettings::get('p_allow_banned_email') == '0') {
+                if (ForumSettings::get('p_allow_banned_email') == 0) {
                     throw new Error(__('Banned email'), 403);
                 } elseif (ForumSettings::get('o_mailing_list') != '') {
                     // Load the "banned email change" template
@@ -163,7 +163,7 @@ class Profile
             $result = $result->findMany();
 
             if ($result) {
-                if (ForumSettings::get('p_allow_dupe_email') == '0') {
+                if (ForumSettings::get('p_allow_dupe_email') == 0) {
                     throw new Error(__('Dupe email'), 400);
                 } elseif (ForumSettings::get('o_mailing_list') != '') {
                     foreach ($result as $curDupe) {
@@ -630,7 +630,7 @@ class Profile
             } else {
                 // Set all his/her posts to guest
                 $updateGuest = DB::table('posts')
-                    ->whereIn('poster_id', '1');
+                    ->whereIn('poster_id', 1);
                 $updateGuest = Hooks::fireDB('model.profile.delete_user_posts_guest_query', $updateGuest);
                 $updateGuest = $updateGuest->updateMany('poster_id', $id);
             }
@@ -693,7 +693,7 @@ class Profile
             {
                 $prefs = [
                     'timezone'        => floatval(Input::post('form_timezone')),
-                    'dst'            => Input::post('form_dst') ? '1' : '0',
+                    'dst'            => Input::post('form_dst') ? 1 : 0,
                     'time_format'    => Input::post('form_time_format'),
                     'date_format'    => Input::post('form_date_format'),
                 ];
@@ -731,7 +731,7 @@ class Profile
                     }
                 }
 
-                if (ForumSettings::get('o_regs_verify') == '0' || User::isAdminMod()) {
+                if (ForumSettings::get('o_regs_verify') == 0 || User::isAdminMod()) {
                     // Validate the email address
                     $form['email'] = strtolower(Utils::trim(Input::post('req_email')));
                     if (!Email::isValidEmail($form['email'])) {
@@ -793,7 +793,7 @@ class Profile
                 $form = [];
 
                 // Clean up signature from POST
-                if (ForumSettings::get('o_signatures') == '1') {
+                if (ForumSettings::get('o_signatures') == 1) {
                     $form['signature'] = Utils::linebreaks(Utils::trim(Input::post('signature')));
 
                     // Validate signature
@@ -801,12 +801,12 @@ class Profile
                         throw new Error(sprintf(__('Sig too long'), ForumSettings::get('p_sig_length'), Utils::strlen($form['signature']) - ForumSettings::get('p_sig_length')));
                     } elseif (substr_count($form['signature'], "\n") > (ForumSettings::get('p_sig_lines')-1)) {
                         throw new Error(sprintf(__('Sig too many lines'), ForumSettings::get('p_sig_lines')));
-                    } elseif ($form['signature'] && ForumSettings::get('p_sig_all_caps') == '0' && Utils::isAllUppercase($form['signature']) && !User::isAdminMod()) {
+                    } elseif ($form['signature'] && ForumSettings::get('p_sig_all_caps') == 0 && Utils::isAllUppercase($form['signature']) && !User::isAdminMod()) {
                         $form['signature'] = \utf8\ucwords(\utf8\to_lower($form['signature']));
                     }
 
                     // Validate BBCode syntax
-                    if (ForumSettings::get('p_sig_bbcode') == '1') {
+                    if (ForumSettings::get('p_sig_bbcode') == 1) {
                         $errors = [];
 
                         $form['signature'] = Parser::preparseBbcode($form['signature'], $errors, true);
@@ -825,11 +825,11 @@ class Profile
                 $prefs = [
                     'disp.topics'         => Input::post('form_disp_topics'),
                     'disp.posts'          => Input::post('form_disp_posts'),
-                    'show.smilies'        => Input::post('form_show_smilies') ? '1' : '0',
-                    'show.img'            => Input::post('form_show_img') ? '1' : '0',
-                    'show.img.sig'        => Input::post('form_show_img_sig') ? '1' : '0',
-                    'show.avatars'        => Input::post('form_show_avatars') ? '1' : '0',
-                    'show.sig'            => Input::post('form_show_sig') ? '1' : '0',
+                    'show.smilies'        => Input::post('form_show_smilies') ? 1 : 0,
+                    'show.img'            => Input::post('form_show_img') ? 1 : 0,
+                    'show.img.sig'        => Input::post('form_show_img_sig') ? 1 : 0,
+                    'show.avatars'        => Input::post('form_show_avatars') ? 1 : 0,
+                    'show.sig'            => Input::post('form_show_sig') ? 1 : 0,
                 ];
 
                 if ($prefs['disp.topics'] != '') {
@@ -870,8 +870,8 @@ class Profile
             {
                 $prefs = [
                     'email.setting'            => intval(Input::post('form_email_setting')),
-                    'notify_with_post'        => Input::post('form_notify_with_post') ? '1' : '0',
-                    'auto_notify'            => Input::post('form_auto_notify') ? '1' : '0',
+                    'notify_with_post'        => Input::post('form_notify_with_post') ? 1 : 0,
+                    'auto_notify'            => Input::post('form_auto_notify') ? 1 : 0,
                 ];
 
                 if ($prefs['email.setting'] < 0 || $prefs['email.setting'] > 2) {
@@ -1026,27 +1026,27 @@ class Profile
 
         $userTitleField = Utils::getTitle($user);
         $userInfo['personal'][] = '<dt>'.__('Title').'</dt>';
-        $userInfo['personal'][] = '<dd>'.((ForumSettings::get('o_censoring') == '1') ? Utils::censor($userTitleField) : $userTitleField).'</dd>';
+        $userInfo['personal'][] = '<dd>'.((ForumSettings::get('o_censoring') == 1) ? Utils::censor($userTitleField) : $userTitleField).'</dd>';
 
         if ($user['realname'] != '') {
             $userInfo['personal'][] = '<dt>'.__('Realname').'</dt>';
-            $userInfo['personal'][] = '<dd>'.Utils::escape((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user['realname']) : $user['realname']).'</dd>';
+            $userInfo['personal'][] = '<dd>'.Utils::escape((ForumSettings::get('o_censoring') == 1) ? Utils::censor($user['realname']) : $user['realname']).'</dd>';
         }
 
         if ($user['location'] != '') {
             $userInfo['personal'][] = '<dt>'.__('Location').'</dt>';
-            $userInfo['personal'][] = '<dd>'.Utils::escape((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user['location']) : $user['location']).'</dd>';
+            $userInfo['personal'][] = '<dd>'.Utils::escape((ForumSettings::get('o_censoring') == 1) ? Utils::censor($user['location']) : $user['location']).'</dd>';
         }
 
         if ($user['url'] != '') {
-            $user['url'] = Utils::escape((ForumSettings::get('o_censoring') == '1') ? Utils::censor($user['url']) : $user['url']);
+            $user['url'] = Utils::escape((ForumSettings::get('o_censoring') == 1) ? Utils::censor($user['url']) : $user['url']);
             $userInfo['personal'][] = '<dt>'.__('Website').'</dt>';
             $userInfo['personal'][] = '<dd><span class="website"><a href="'.$user['url'].'" rel="nofollow">'.$user['url'].'</a></span></dd>';
         }
 
-        if ($user['prefs']['email.setting'] == '0' && !User::get()->is_guest && User::can('email.send')) {
+        if ($user['prefs']['email.setting'] == 0 && !User::get()->is_guest && User::can('email.send')) {
             $user['email_field'] = '<a href="mailto:'.Utils::escape($user['email']).'">'.Utils::escape($user['email']).'</a>';
-        } elseif ($user['prefs']['email.setting'] == '1' && !User::get()->is_guest && User::can('email.send')) {
+        } elseif ($user['prefs']['email.setting'] == 1 && !User::get()->is_guest && User::can('email.send')) {
             $user['email_field'] = '<a href="'.Router::pathFor('email', ['id' => $user['id']]).'">'.__('Send email').'</a>';
         } else {
             $user['email_field'] = '';
@@ -1056,7 +1056,7 @@ class Profile
             $userInfo['personal'][] = '<dd><span class="email">'.$user['email_field'].'</span></dd>';
         }
 
-        if (ForumSettings::get('o_avatars') == '1') {
+        if (ForumSettings::get('o_avatars') == 1) {
             $avatarField = Utils::generateAvatarMarkup($user['id']);
             if ($avatarField != '') {
                 $userInfo['personality'][] = '<dt>'.__('Avatar').'</dt>';
@@ -1064,7 +1064,7 @@ class Profile
             }
         }
 
-        if (ForumSettings::get('o_signatures') == '1') {
+        if (ForumSettings::get('o_signatures') == 1) {
             if (isset($parsedSignature)) {
                 $userInfo['personality'][] = '<dt>'.__('Signature').'</dt>';
                 $userInfo['personality'][] = '<dd><div class="postsignature postmsg">'.$parsedSignature.'</div></dd>';
@@ -1072,7 +1072,7 @@ class Profile
         }
 
         $postsField = '';
-        if (ForumSettings::get('o_show_post_count') == '1' || User::isAdminMod()) {
+        if (ForumSettings::get('o_show_post_count') == 1 || User::isAdminMod()) {
             $postsField = Utils::forumNumberFormat($user['num_posts']);
         }
         if (User::can('search.topics')) {
@@ -1081,7 +1081,7 @@ class Profile
                 $quickSearches[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$user['id'].'">'.__('Show topics').'</a>';
                 $quickSearches[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Show posts').'</a>';
             }
-            if (User::isAdminMod() && ForumSettings::get('o_topic_subscriptions') == '1') {
+            if (User::isAdminMod() && ForumSettings::get('o_topic_subscriptions') == 1) {
                 $quickSearches[] = '<a href="'.Router::pathFor('search').'?action=show_subscriptions&amp;user_id='.$user['id'].'">'.__('Show subscriptions').'</a>';
             }
 
@@ -1124,7 +1124,7 @@ class Profile
         } else {
             $userDisp['username_field'] = '<p>'.__('Username').': '.Utils::escape($user['username']).'</p>'."\n";
 
-            if (ForumSettings::get('o_regs_verify') == '1') {
+            if (ForumSettings::get('o_regs_verify') == 1) {
                 $userDisp['email_field'] = '<p>'.sprintf(__('Email info'), Utils::escape($user['email']).' - <a href="'.Router::pathFor('profileAction', ['id' => $id, 'action' => 'change_email']).'">'.__('Change email').'</a>').'</p>'."\n";
             } else {
                 $userDisp['email_field'] = '<label class="required"><strong>'.__('Email').' <span>'.__('Required').'</span></strong><br /><input type="text" name="req_email" value="'.$user['email'].'" size="40" maxlength="80" required /><br /></label>'."\n";
@@ -1136,7 +1136,7 @@ class Profile
 
         if (User::isAdmin()) {
             $userDisp['posts_field'] .= '<label>'.__('Posts').'<br /><input type="text" name="num_posts" value="'.$user['num_posts'].'" size="8" maxlength="8" /><br /></label>';
-        } elseif (ForumSettings::get('o_show_post_count') == '1' || User::isAdminMod()) {
+        } elseif (ForumSettings::get('o_show_post_count') == 1 || User::isAdminMod()) {
             $postsActions[] = sprintf(__('Posts info'), Utils::forumNumberFormat($user['num_posts']));
         }
 
@@ -1144,7 +1144,7 @@ class Profile
             $postsActions[] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$id.'">'.__('Show topics').'</a>';
             $postsActions[] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$id.'">'.__('Show posts').'</a>';
 
-            if (ForumSettings::get('o_topic_subscriptions') == '1') {
+            if (ForumSettings::get('o_topic_subscriptions') == 1) {
                 $postsActions[] = '<a href="'.Router::pathFor('search').'?action=show_subscriptions&amp;user_id='.$id.'">'.__('Show subscriptions').'</a>';
             }
         }
@@ -1263,7 +1263,7 @@ class Profile
         }
 
         // Check username for any censored words
-        if (ForumSettings::get('o_censoring') == '1' && Utils::censor($username) != $username) {
+        if (ForumSettings::get('o_censoring') == 1 && Utils::censor($username) != $username) {
             $errors[] = __('Username censor');
         }
 

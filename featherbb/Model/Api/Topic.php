@@ -53,7 +53,7 @@ class Topic extends Api
 
         $curPosting['where'] = [
             ['fp.read_forum' => 'IS NULL'],
-            ['fp.read_forum' => '1']
+            ['fp.read_forum' => 1]
         ];
 
         if ($tid) {
@@ -99,9 +99,9 @@ class Topic extends Api
         $isAdmmod = (User::isAdmin($this->user) || (User::isAdminMod($this->user) && array_key_exists($this->user->username, $modsArray))) ? true : false;
 
         // Do we have permission to post?
-        if ((($tid && (($curPosting['post_replies'] == '' && !User::can('topic.reply', $this->user)) || $curPosting['post_replies'] == '0')) ||
-                ($fid && (($curPosting['post_topics'] == '' && !User::can('topic.post', $this->user)) || $curPosting['post_topics'] == '0')) ||
-                (isset($curPosting['closed']) && $curPosting['closed'] == '1')) &&
+        if ((($tid && (($curPosting['post_replies'] == '' && !User::can('topic.reply', $this->user)) || $curPosting['post_replies'] == 0)) ||
+                ($fid && (($curPosting['post_topics'] == '' && !User::can('topic.post', $this->user)) || $curPosting['post_topics'] == 0)) ||
+                (isset($curPosting['closed']) && $curPosting['closed'] == 1)) &&
             !$isAdmmod) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
@@ -120,25 +120,25 @@ class Topic extends Api
         if ($fid) {
             $subject = Utils::trim(Input::post('req_subject'));
 
-            if (ForumSettings::get('o_censoring') == '1') {
+            if (ForumSettings::get('o_censoring') == 1) {
                 $censoredSubject = Utils::trim(Utils::censor($subject));
             }
 
             if ($subject == '') {
                 $errors[] = __('No subject');
-            } elseif (ForumSettings::get('o_censoring') == '1' && $censoredSubject == '') {
+            } elseif (ForumSettings::get('o_censoring') == 1 && $censoredSubject == '') {
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::isAllUppercase($subject) && !User::isAdminMod($this->user)) {
+            } elseif (ForumSettings::get('p_subject_all_caps') == 0 && Utils::isAllUppercase($subject) && !User::isAdminMod($this->user)) {
                 $errors[] = __('All caps subject');
             }
         }
 
         if ($this->user->is_guest) {
-            $email = strtolower(Utils::trim((ForumSettings::get('p_force_guest_email') == '1') ? Input::post('req_email') : Input::post('email')));
+            $email = strtolower(Utils::trim((ForumSettings::get('p_force_guest_email') == 1) ? Input::post('req_email') : Input::post('email')));
 
-            if (ForumSettings::get('p_force_guest_email') == '1' || $email != '') {
+            if (ForumSettings::get('p_force_guest_email') == 1 || $email != '') {
                 if (!Email::isValidEmail($email)) {
                     $errors[] = __('Invalid email');
                 }
@@ -146,7 +146,7 @@ class Topic extends Api
                 // Check if it's a banned email address
                 // we should only check guests because members' addresses are already verified
                 if ($this->user->is_guest && Email::isBannedEmail($email)) {
-                    if (ForumSettings::get('p_allow_banned_email') == '0') {
+                    if (ForumSettings::get('p_allow_banned_email') == 0) {
                         $errors[] = __('Banned email');
                     }
 
@@ -161,19 +161,19 @@ class Topic extends Api
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > ForumEnv::get('FEATHER_MAX_POSTSIZE')) {
             $errors[] = sprintf(__('Too long message'), Utils::forumNumberFormat(ForumEnv::get('FEATHER_MAX_POSTSIZE')));
-        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::isAllUppercase($message) && !User::isAdminMod($this->user)) {
+        } elseif (ForumSettings::get('p_message_all_caps') == 0 && Utils::isAllUppercase($message) && !User::isAdminMod($this->user)) {
             $errors[] = __('All caps message');
         }
 
         // Validate BBCode syntax
-        if (ForumSettings::get('p_message_bbcode') == '1') {
+        if (ForumSettings::get('p_message_bbcode') == 1) {
             $message = Parser::preparseBbcode($message, $errors);
         }
 
         if (empty($errors)) {
             if ($message == '') {
                 $errors[] = __('No message');
-            } elseif (ForumSettings::get('o_censoring') == '1') {
+            } elseif (ForumSettings::get('o_censoring') == 1) {
                 // Censor message to see if that causes problems
                 $censoredMessage = Utils::trim(Utils::censor($message));
 
@@ -198,21 +198,21 @@ class Topic extends Api
         // Otherwise it should be in $feather ($_pOST)
         else {
             $post['username'] = Utils::trim(Input::post('req_username'));
-            $post['email'] = strtolower(Utils::trim((ForumSettings::get('p_force_guest_email') == '1') ? Input::post('req_email') : Input::post('email')));
+            $post['email'] = strtolower(Utils::trim((ForumSettings::get('p_force_guest_email') == 1) ? Input::post('req_email') : Input::post('email')));
         }
 
         if (Input::post('req_subject')) {
             $post['subject'] = Utils::trim(Input::post('req_subject'));
         }
 
-        $post['hide_smilies'] = Input::post('hide_smilies') ? '1' : '0';
-        $post['subscribe'] = Input::post('subscribe') ? '1' : '0';
-        $post['stick_topic'] = Input::post('stick_topic') && $isAdmmod ? '1' : '0';
+        $post['hide_smilies'] = Input::post('hide_smilies') ? 1 : 0;
+        $post['subscribe'] = Input::post('subscribe') ? 1 : 0;
+        $post['stick_topic'] = Input::post('stick_topic') && $isAdmmod ? 1 : 0;
 
         $post['message']  = Utils::linebreaks(Utils::trim(Input::post('req_message')));
 
         // Validate BBCode syntax
-        if (ForumSettings::get('p_message_bbcode') == '1') {
+        if (ForumSettings::get('p_message_bbcode') == 1) {
             $post['message']  = Parser::preparseBbcode($post['message'], $errors);
         }
 
@@ -249,7 +249,7 @@ class Topic extends Api
 
         if (!$this->user->is_guest) {
             // To subscribe or not to subscribe, that ...
-            if (ForumSettings::get('o_topic_subscriptions') == '1' && $post['subscribe']) {
+            if (ForumSettings::get('o_topic_subscriptions') == 1 && $post['subscribe']) {
                 $subscription['insert'] = [
                     'user_id'   =>  $this->user->id,
                     'topic_id'  =>  $new['tid']
@@ -288,7 +288,7 @@ class Topic extends Api
                 'topic_id'  => $new['tid'],
             ];
 
-            if (ForumSettings::get('p_force_guest_email') == '1' || $post['email'] != '') {
+            if (ForumSettings::get('p_force_guest_email') == 1 || $post['email'] != '') {
                 $query['poster_email'] = $post['email'];
             }
 
@@ -327,7 +327,7 @@ class Topic extends Api
         // Get any subscribed users that should be notified (banned users are excluded)
         $result['where'] = [
             ['fp.read_forum' => 'IS NULL'],
-            ['fp.read_forum' => '1']
+            ['fp.read_forum' => 1]
         ];
         $result['select'] = ['u.id', 'u.email', 'u.notify_with_post', 'u.language'];
 
@@ -349,13 +349,13 @@ class Topic extends Api
             $censoredMessage = Utils::trim(Utils::censor($post['message']));
             $censoredSubject = Utils::trim(Utils::censor($post['subject']));
 
-            if (ForumSettings::get('o_censoring') == '1') {
+            if (ForumSettings::get('o_censoring') == 1) {
                 $cleanedMessage = Email::bbcode2email($censoredMessage, -1);
             } else {
                 $cleanedMessage = Email::bbcode2email($post['message'], -1);
             }
 
-            $cleanedSubject = ForumSettings::get('o_censoring') == '1' ? $censoredSubject : $post['subject'];
+            $cleanedSubject = ForumSettings::get('o_censoring') == 1 ? $censoredSubject : $post['subject'];
 
             // Loop through subscribed users and send emails
             foreach ($result as $curSubscriber) {
@@ -403,7 +403,7 @@ class Topic extends Api
 
                 // We have to double check here because the templates could be missing
                 if (isset($notificationEmails[$curSubscriber['language']])) {
-                    if ($curSubscriber['notify_with_post'] == '0') {
+                    if ($curSubscriber['notify_with_post'] == 0) {
                         Email::send($curSubscriber['email'], $notificationEmails[$curSubscriber['language']][0], $notificationEmails[$curSubscriber['language']][1]);
                     } else {
                         Email::send($curSubscriber['email'], $notificationEmails[$curSubscriber['language']][2], $notificationEmails[$curSubscriber['language']][3]);
@@ -480,7 +480,7 @@ class Topic extends Api
             $new['pid'] = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'posts');
 
             // To subscribe or not to subscribe, that ...
-            if (ForumSettings::get('o_topic_subscriptions') == '1') {
+            if (ForumSettings::get('o_topic_subscriptions') == 1) {
                 // ... is the question
                 // Let's do it
                 if (isset($post['subscribe']) && $post['subscribe'] && !$isSubscribed) {
@@ -496,7 +496,7 @@ class Topic extends Api
                     $subscription = $subscription->save();
 
                     // We reply and we don't want to be subscribed anymore
-                } elseif ($post['subscribe'] == '0' && $isSubscribed) {
+                } elseif ($post['subscribe'] == 0 && $isSubscribed) {
                     $unsubscription = DB::table('topic_subscriptions')
                         ->where('user_id', $this->user->id)
                         ->where('topic_id', $tid);
@@ -515,7 +515,7 @@ class Topic extends Api
                 'topic_id'  => $tid,
             ];
 
-            if (ForumSettings::get('p_force_guest_email') == '1' || $post['email'] != '') {
+            if (ForumSettings::get('p_force_guest_email') == 1 || $post['email'] != '') {
                 $query['insert']['poster_email'] = $post['email'];
             }
 

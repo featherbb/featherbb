@@ -84,20 +84,20 @@ class Forums
                 foreach ($permissions as $permGroup) {
                     $permissionsData = ['group_id' => $permGroup['g_id'],
                                                 'forum_id' => $args['id']];
-                    if ($permGroup['board.read'] == '1' && isset(Input::post('read_forum_new')[$permGroup['g_id']]) && Input::post('read_forum_new')[$permGroup['g_id']] == '1') {
-                        $permissionsData['read_forum'] = '1';
+                    if ($permGroup['board.read'] == 1 && isset(Input::post('read_forum_new')[$permGroup['g_id']]) && Input::post('read_forum_new')[$permGroup['g_id']] == 1) {
+                        $permissionsData['read_forum'] = 1;
                     } else {
-                        $permissionsData['read_forum'] = '0';
+                        $permissionsData['read_forum'] = 0;
                     }
 
-                    $permissionsData['post_replies'] = (isset(Input::post('post_replies_new')[$permGroup['g_id']])) ? '1' : '0';
-                    $permissionsData['post_topics'] = (isset(Input::post('post_topics_new')[$permGroup['g_id']])) ? '1' : '0';
+                    $permissionsData['post_replies'] = (isset(Input::post('post_replies_new')[$permGroup['g_id']])) ? 1 : 0;
+                    $permissionsData['post_topics'] = (isset(Input::post('post_topics_new')[$permGroup['g_id']])) ? 1 : 0;
                     // Check if the new settings differ from the old
                     if ($permissionsData['read_forum'] != Input::post('read_forum_old')[$permGroup['g_id']] ||
                         $permissionsData['post_replies'] != Input::post('post_replies_old')[$permGroup['g_id']] ||
                         $permissionsData['post_topics'] != Input::post('post_topics_old')[$permGroup['g_id']]) {
                         // If there is no group permissions override for this forum
-                            if ($permissionsData['read_forum'] == '1' && $permissionsData['post_replies'] == $permGroup['topic.reply'] && $permissionsData['post_topics'] == $permGroup['topic.post']) {
+                            if ($permissionsData['read_forum'] == 1 && $permissionsData['post_replies'] == $permGroup['topic.reply'] && $permissionsData['post_topics'] == $permGroup['topic.post']) {
                                 $this->model->deletePermissions($args['id'], $permGroup['g_id']);
                             } else {
                                 // Run an UPDATE and see if it affected a row, if not, INSERT

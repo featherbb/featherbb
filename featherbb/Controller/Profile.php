@@ -150,7 +150,7 @@ class Profile
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('@forum/profile/section_personal')->display();
             } elseif ($args['section'] == 'personality') {
-                if (ForumSettings::get('o_avatars') == '0' && ForumSettings::get('o_signatures') == '0') {
+                if (ForumSettings::get('o_avatars') == 0 && ForumSettings::get('o_signatures') == 0) {
                     throw new Error(__('Bad request'), 404);
                 }
 
@@ -293,7 +293,7 @@ class Profile
                 ]
             )->addTemplate('@forum/profile/change_mail')->display();
         } elseif ($args['action'] == 'upload_avatar' || $args['action'] == 'upload_avatar2') {
-            if (ForumSettings::get('o_avatars') == '0') {
+            if (ForumSettings::get('o_avatars') == 0) {
                 throw new Error(__('Avatars disabled'), 400);
             }
 

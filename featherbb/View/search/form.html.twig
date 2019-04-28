@@ -36,7 +36,7 @@
                         </select>
                         <br /></label>
                         <p class="clearl">{{ trans('Search in info') }}</p>
-                        {{ settings('o_search_all_forums') == '1' or isAdminMod() ? trans('Search multiple forums info')|raw : '' }}
+                        {{ settings('o_search_all_forums') == 1 or isAdminMod() ? trans('Search multiple forums info')|raw : '' }}
                     </div>
                 </fieldset>
             </div>

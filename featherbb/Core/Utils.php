@@ -372,7 +372,7 @@ class Utils
 
     /**
      * Fetch admin IDs
-     * @return string
+     * @return array
      */
     public static function getAdminIds()
     {
@@ -408,7 +408,7 @@ class Utils
 
     /**
      * Get IP Address
-     * @return mixed\
+     * @return mixed
      */
     public static function getIp()
     {

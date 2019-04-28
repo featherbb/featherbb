@@ -48,7 +48,7 @@ class Forum
         $sortBy = $this->model->sortForumBy($curForum['sort_by']);
 
         // Can we or can we not post new topics?
-        if (($curForum['post_topics'] == '' && User::can('topic.post')) || $curForum['post_topics'] == '1' || $isAdmmod) {
+        if (($curForum['post_topics'] == '' && User::can('topic.post')) || $curForum['post_topics'] == 1 || $isAdmmod) {
             $postLink = "\t\t\t".'<p class="postlink conr"><a href="'.Router::pathFor('newTopic', ['fid' => $args['id']]).'">'.__('Post topic').'</a></p>'."\n";
         } else {
             $postLink = '';

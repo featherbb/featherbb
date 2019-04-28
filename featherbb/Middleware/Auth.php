@@ -101,7 +101,7 @@ class Auth
                     User::get()->last_visit = User::get()->logged;
                 }
 
-                $idle_sql = (User::get()->idle == '1') ? ', idle=0' : '';
+                $idle_sql = (User::get()->idle == 1) ? ', idle=0' : '';
 
                 DB::table('online')->rawExecute('UPDATE '.ForumSettings::get('db_prefix').'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', [':user_id' => User::get()->id]);
 
@@ -130,7 +130,7 @@ class Auth
 
         foreach ($result as $cur_user) {
             // If the entry is a guest, delete it
-            if ($cur_user['user_id'] == '1') {
+            if ($cur_user['user_id'] == 1) {
                 DB::table('online')->where('ident', $cur_user['ident'])
                     ->deleteMany();
             } else {
@@ -142,7 +142,7 @@ class Auth
                         ->save();
                     DB::table('online')->where('user_id', $cur_user['user_id'])
                         ->deleteMany();
-                } elseif ($cur_user['idle'] == '0') {
+                } elseif ($cur_user['idle'] == 0) {
                     DB::table('online')->where('user_id', $cur_user['user_id'])
                         ->updateMany('idle', 1);
                 }

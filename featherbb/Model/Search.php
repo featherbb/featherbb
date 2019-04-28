@@ -79,7 +79,7 @@ class Search
 
             $showAs = (Input::query('show_as') && Input::query('show_as') == 'topics') ? 'topics' : 'posts';
             $sortBy = (Input::query('sort_by')) ? intval(Input::query('sort_by')) : 0;
-            $searchIn = (!Input::query('search_in') || Input::query('search_in') == '0') ? 0 : ((Input::query('search_in') == '1') ? 1 : -1);
+            $searchIn = (!Input::query('search_in') || Input::query('search_in') == 0) ? 0 : ((Input::query('search_in') == 1) ? 1 : -1);
         }
         // If it's a user search (by ID)
         elseif ($action == 'show_user_posts' || $action == 'show_user_topics' || $action == 'show_subscriptions') {
@@ -132,7 +132,7 @@ class Search
             $keywordResults = $authorResults = [];
 
             // Search a specific forum?
-            $forumSql = (!empty($forums) || (empty($forums) && ForumSettings::get('o_search_all_forums') == '0' && !User::isAdminMod())) ? ' AND t.forum_id IN ('.implode(',', $forums).')' : '';
+            $forumSql = (!empty($forums) || (empty($forums) && ForumSettings::get('o_search_all_forums') == 0 && !User::isAdminMod())) ? ' AND t.forum_id IN ('.implode(',', $forums).')' : '';
 
             if (!empty($author) || !empty($keywords)) {
                 // Flood protection
@@ -334,7 +334,7 @@ class Search
 
                 $result['where'] = [
                     ['fp.read_forum' => 'IS NULL'],
-                    ['fp.read_forum' => '1']
+                    ['fp.read_forum' => 1]
                 ];
 
                 // If it's a search for new posts since last visit
@@ -707,7 +707,7 @@ class Search
             $forum = '<a href="'.Router::pathFor('Forum', ['id' => $curSearch['forum_id'], 'name' => $forumName]).'">'.Utils::escape($curSearch['forum_name']).'</a>';
             $urlTopic = Url::slug($curSearch['subject']);
 
-            if (ForumSettings::get('o_censoring') == '1') {
+            if (ForumSettings::get('o_censoring') == 1) {
                 $curSearch['subject'] = Utils::censor($curSearch['subject']);
             }
 
@@ -724,7 +724,7 @@ class Search
                     $curSearch['icon_text'] = '<!-- -->';
                 }
 
-                if (ForumSettings::get('o_censoring') == '1') {
+                if (ForumSettings::get('o_censoring') == 1) {
                     $curSearch['message'] = Utils::censor($curSearch['message']);
                 }
 
@@ -745,16 +745,16 @@ class Search
                 $subject = '<a href="'.Router::pathFor('Topic', ['id' => $curSearch['tid'], 'name' => $urlTopic]).'">'.Utils::escape($curSearch['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($curSearch['poster']).'</span>';
 
                 // Include separate icon, label and background for sticky and closed topics
-                if ($curSearch['sticky'] == '1') {
+                if ($curSearch['sticky'] == 1) {
                     $curSearch['item_status'] .= ' isticky';
-                    if ($curSearch['closed'] == '1') {
+                    if ($curSearch['closed'] == 1) {
                         $curSearch['icon_type'] = 'icon icon-closed';
                         $statusText[] = '<span class="stickytext">'.__('Sticky and closed').'</span>';
                     } else {
                         $curSearch['icon_type'] = 'icon icon-sticky';
                         $statusText[] = '<span class="stickytext">'.__('Sticky').'</span>';
                     }
-                } elseif ($curSearch['closed'] == '1') {
+                } elseif ($curSearch['closed'] == 1) {
                     $statusText[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $curSearch['item_status'] .= ' iclosed';
                     $curSearch['icon_type'] = 'icon icon-closed';
@@ -814,7 +814,7 @@ class Search
         $result['select'] = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.redirect_url'];
         $result['where'] = [
             ['fp.read_forum' => 'IS NULL'],
-            ['fp.read_forum' => '1']
+            ['fp.read_forum' => 1]
         ];
         $result['order_by'] = ['c.disp_position', 'c.id', 'f.disp_position'];
 
@@ -830,7 +830,7 @@ class Search
         $result = $result->findMany();
 
         // We either show a list of forums of which multiple can be selected
-        if (ForumSettings::get('o_search_all_forums') == '1' || User::isAdminMod()) {
+        if (ForumSettings::get('o_search_all_forums') == 1 || User::isAdminMod()) {
             $output .= "\t\t\t\t\t\t".'<div class="conl multiselect">'.__('Forum search')."\n";
             $output .= "\t\t\t\t\t\t".'<br />'."\n";
             $output .= "\t\t\t\t\t\t".'<div class="checklist">'."\n";

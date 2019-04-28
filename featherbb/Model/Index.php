@@ -45,7 +45,7 @@ class Index
         $query['select'] = ['f.id', 'f.last_post'];
         $query['where'] = [
             ['fp.read_forum' => 'IS NULL'],
-            ['fp.read_forum' => '1']
+            ['fp.read_forum' => 1]
         ];
 
         $query = DB::table('forums')
@@ -110,7 +110,7 @@ class Index
         $query['select'] = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.forum_desc', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.num_posts', 'f.last_post', 'f.last_post_id', 'last_post_tid' => 't.id', 'last_post_subject' => 't.subject', 'f.last_poster'];
         $query['where'] = [
             ['fp.read_forum' => 'IS NULL'],
-            ['fp.read_forum' => '1']
+            ['fp.read_forum' => 1]
         ];
         $query['order_by'] = ['c.disp_position', 'c.id', 'f.disp_position'];
 
@@ -257,7 +257,7 @@ class Index
         $online['num_guests'] = 0;
 
         $query['select'] = ['user_id', 'ident'];
-        $query['where'] = ['idle' => '0'];
+        $query['where'] = ['idle' => 0];
         $query['order_by'] = ['ident'];
 
         $query = DB::table('online')

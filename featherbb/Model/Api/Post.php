@@ -46,7 +46,7 @@ class Post extends Api
         if ((!User::can('post.delete', $this->user) ||
                 (!User::can('post.delete', $this->user) && $isTopicPost) ||
                 $curPost['poster_id'] != $this->user->id ||
-                $curPost['closed'] == '1') &&
+                $curPost['closed'] == 1) &&
             !$isAdmmod) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
@@ -65,7 +65,7 @@ class Post extends Api
         $isAdmmod = (User::isAdmin($this->user) || (User::isAdminMod($this->user) && array_key_exists($this->user->username, $modsArray))) ? true : false;
 
         // Do we have permission to edit this post?
-        if ((!User::can('post.edit', $this->user) || $curPost['poster_id'] != $this->user->id || $curPost['closed'] == '1') && !$isAdmmod) {
+        if ((!User::can('post.edit', $this->user) || $curPost['poster_id'] != $this->user->id || $curPost['closed'] == 1) && !$isAdmmod) {
             return json_encode($this->errorMessage, JSON_PRETTY_PRINT);
         }
 
@@ -81,7 +81,7 @@ class Post extends Api
         $curPost['select'] = ['fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies'];
         $curPost['where'] = [
             ['fp.read_forum' => 'IS NULL'],
-            ['fp.read_forum' => '1']
+            ['fp.read_forum' => 1]
         ];
 
         $curPost = DB::table('posts')
@@ -109,7 +109,7 @@ class Post extends Api
         $query['select'] = ['fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies'];
         $query['where'] = [
             ['fp.read_forum' => 'IS NULL'],
-            ['fp.read_forum' => '1']
+            ['fp.read_forum' => 1]
         ];
 
         $query = DB::table('posts')

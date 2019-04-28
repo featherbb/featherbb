@@ -76,10 +76,10 @@
                             <textarea name="req_message" id="req_message" rows="20" tabindex="{{ cur_index }}">{{ inputPost('req_message') ? post.message : cur_post.message }}</textarea><br /></label>
                             {% set cur_index = cur_index + 1 %}
                             <ul class="bblinks list-inline">
-                                <li><span><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}</a> {{ settings('p_message_bbcode') == '1' ? trans('on') : trans('off') }}</span></li>
-                                <li><span><a href="{{ pathFor('help') }}#url" onclick="window.open(this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_message_bbcode') == '1' and can('post.links') ? trans('on') : trans('off') }}</span></li>
-                                <li><span><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ settings('p_message_bbcode') == '1' and settings('p_message_img_tag') == '1' ? trans('on') : trans('off') }}</span></li>
-                                <li><span><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies') == '1' ? trans('on') : trans('off') }}</span></li>
+                                <li><span><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}</a> {{ settings('p_message_bbcode') == 1 ? trans('on') : trans('off') }}</span></li>
+                                <li><span><a href="{{ pathFor('help') }}#url" onclick="window.open(this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_message_bbcode') == 1 and can('post.links') ? trans('on') : trans('off') }}</span></li>
+                                <li><span><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ settings('p_message_bbcode') == 1 and settings('p_message_img_tag') == 1 ? trans('on') : trans('off') }}</span></li>
+                                <li><span><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies') == 1 ? trans('on') : trans('off') }}</span></li>
                             </ul>
                         </div>
                     </fieldset>
