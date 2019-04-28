@@ -56,7 +56,7 @@
                                             {% if plugin.errors is empty %}
                                                 {% set valid_plugin_updates =+ 1 %}
                                                 <a href="https://github.com/featherbb/{{ plugin.name }}/releases/tag/{{ plugin.last_version }}" target="_blank">{{ plugin.last_version }}</a>
-                                                <a href="http://marketplace.featherbb.org/plugins/view/{{ plugin.name }}/changelog" target="_blank">{{ trans('View changelog') }}</a>
+                                                <a href="https://marketplace.featherbb.org/plugins/view/{{ plugin.name }}/changelog" target="_blank">{{ trans('View changelog') }}</a>
                                             {% else %}
                                                 {{ plugin.errors }}
                                             {% endif %}
@@ -99,7 +99,7 @@
                                         </td>
                                         <td>
                                             <a href="https://github.com/featherbb/{{ theme.name }}/releases/tag/{{ theme.last_version }}" target="_blank">{{ theme.last_version }}</a>
-                                            <a href="http://marketplace.featherbb.org/themes/view/{{ theme.name }}/changelog" target="_blank">{{ trans('View changelog') }}</a>
+                                            <a href="https://marketplace.featherbb.org/themes/view/{{ theme.name }}/changelog" target="_blank">{{ trans('View changelog') }}</a>
                                         </td>
                                     </tr>
                                     {% endfor %}

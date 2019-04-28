@@ -43,7 +43,7 @@ class Lister
         $plugins = [];
 
         // Get the official list from the website
-        $content = json_decode(AdminUtils::getContent('http://featherbb.org/plugins.json'));
+        $content = json_decode(AdminUtils::getContent('https://featherbb.org/plugins.json'));
 
         // If internet is available
         if (!is_null($content)) {
