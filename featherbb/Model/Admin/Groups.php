@@ -146,29 +146,30 @@ class Groups
         }
 
         // Permissions
-        $moderator = Input::post('moderator') && Input::post('moderator') == 1 ? 1 : 0;
+        $moderator = Input::post('moderator') != null && Input::post('moderator') == 1 ? 1 : 0;
         $modEditUsers = $moderator == 1 && Input::post('mod_edit_users') == 1 ? 1 : 0;
         $modRenameUsers = $moderator == 1 && Input::post('mod_rename_users') == 1 ? 1 : 0;
         $modChangePasswords = $moderator == 1 && Input::post('mod_change_passwords') == 1 ? 1 : 0;
         $modBanUsers = $moderator == 1 && Input::post('mod_ban_users') == 1 ? 1 : 0;
         $modPromoteUsers = $moderator == 1 && Input::post('mod_promote_users') == 1 ? 1 : 0;
-        $readBoard = Input::post('read_board') ? intval(Input::post('read_board')) : 1;
-        $viewUsers = (Input::post('view_users') && Input::post('view_users') == 1) || $isAdminGroup ? 1 : 0;
-        $postReplies = Input::post('post_replies') ? intval(Input::post('post_replies')) : 1;
-        $postTopics = Input::post('post_topics') ? intval(Input::post('post_topics')) : 1;
-        $editPosts = Input::post('edit_posts') ? intval(Input::post('edit_posts')) : ($isAdminGroup) ? 1 : 0;
-        $deletePosts = Input::post('delete_posts') ? intval(Input::post('delete_posts')) : ($isAdminGroup) ? 1 : 0;
-        $deleteTopics = Input::post('delete_topics') ? intval(Input::post('delete_topics')) : ($isAdminGroup) ? 1 : 0;
-        $postLinks = Input::post('post_links') ? intval(Input::post('post_links')) : 1;
-        $setTitle = Input::post('set_title') ? intval(Input::post('set_title')) : ($isAdminGroup) ? 1 : 0;
-        $search = Input::post('search') ? intval(Input::post('search')) : 1;
-        $searchUsers = Input::post('search_users') ? intval(Input::post('search_users')) : 1;
-        $sendEmail = (Input::post('send_email') && Input::post('send_email') == 1) || $isAdminGroup ? 1 : 0;
+        $readBoard = Input::post('read_board') != null ? intval(Input::post('read_board')) : 1;
+        $viewUsers = (Input::post('view_users') != null && Input::post('view_users') == 1) || $isAdminGroup ? 1 : 0;
+        $postReplies = Input::post('post_replies') != null ? intval(Input::post('post_replies')) : 1;
+        $postTopics = Input::post('post_topics') != null ? intval(Input::post('post_topics')) : 1;
+        $editPosts = Input::post('edit_posts') != null ? intval(Input::post('edit_posts')) : ($isAdminGroup) ? 1 : 0;
+        $deletePosts = Input::post('delete_posts') != null ? intval(Input::post('delete_posts')) : ($isAdminGroup) ? 1 : 0;
+        $deleteTopics = Input::post('delete_topics') != null ? intval(Input::post('delete_topics')) : ($isAdminGroup) ? 1 : 0;
+        $postLinks = Input::post('post_links') != null ? intval(Input::post('post_links')) : 1;
+        $setTitle = Input::post('set_title') != null ? intval(Input::post('set_title')) : ($isAdminGroup) ? 1 : 0;
+        $search = Input::post('search') != null ? intval(Input::post('search')) : 1;
+        $searchUsers = Input::post('search_users') != null ? intval(Input::post('search_users')) : 1;
+        $sendEmail = (Input::post('send_email') != null && Input::post('send_email') == 1) || $isAdminGroup ? 1 : 0;
+
         // Preferences
-        $postFlood = (Input::post('post_flood') && Input::post('post_flood') >= 0) ? Input::post('post_flood') : 0;
-        $searchFlood = (Input::post('search_flood') && Input::post('search_flood') >= 0) ? Input::post('search_flood') : 0;
-        $emailFlood = (Input::post('email_flood') && Input::post('email_flood') >= 0) ? Input::post('email_flood') : 0;
-        $reportFlood = (Input::post('report_flood') && Input::post('report_flood') >= 0) ? Input::post('report_flood') : 0;
+        $postFlood = (Input::post('post_flood') != null && Input::post('post_flood') >= 0) ? Input::post('post_flood') : 0;
+        $searchFlood = (Input::post('search_flood') != null && Input::post('search_flood') >= 0) ? Input::post('search_flood') : 0;
+        $emailFlood = (Input::post('email_flood') != null && Input::post('email_flood') >= 0) ? Input::post('email_flood') : 0;
+        $reportFlood = (Input::post('report_flood') != null && Input::post('report_flood') >= 0) ? Input::post('report_flood') : 0;
 
         $insertUpdateGroup = [
             'g_title'               =>  $title,
@@ -281,9 +282,9 @@ class Groups
         CacheInterface::store('quickjump', Cache::quickjump());
 
         if (Input::post('mode') == 'edit') {
-            return Router::redirect(Router::pathFor('adminGroups'), __('Group edited redirect'));
+            return Router::redirect(Router::pathFor('editGroup', ['id' => $groupId]), __('Group edited redirect'));
         } else {
-            return Router::redirect(Router::pathFor('adminGroups'), __('Group added redirect'));
+            return Router::redirect(Router::pathFor('editGroup', ['id' => $groupId]), __('Group added redirect'));
         }
     }
 
@@ -355,7 +356,10 @@ class Groups
             ->deleteMany();
 
         // Don't let users be promoted to this group
-        DB::table('preferences')->where('promote.next_group', $groupId)->deleteMany();
+        DB::table('preferences')
+            ->where('preference_name', 'promote.next_group')
+            ->where('preference_value', $groupId)
+            ->deleteMany();
 
         return Router::redirect(Router::pathFor('adminGroups'), __('Group removed redirect'));
     }

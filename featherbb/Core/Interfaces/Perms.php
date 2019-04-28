@@ -9,7 +9,7 @@ class Perms extends SlimSugar
         return static::$slim->getContainer()['perms']->allowGroup($gid, $permission);
     }
 
-    public function denyGroup($gid = null, $permission = null)
+    public static function denyGroup($gid = null, $permission = null)
     {
         return static::$slim->getContainer()['perms']->denyGroup($gid, $permission);
     }
