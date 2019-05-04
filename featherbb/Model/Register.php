@@ -49,7 +49,7 @@ class Register
         $user['username'] = Utils::trim(Input::post('req_user'));
         $user['email1'] = strtolower(Utils::trim(Input::post('req_email1')));
 
-        if (ForumSettings::get('o_regs_verify') == 1) {
+        if (ForumSettings::get('o_regs_verify') == '1') {
             $email2 = strtolower(Utils::trim(Input::post('req_email2')));
 
             $user['password1'] = Random::pass(12);
@@ -85,13 +85,13 @@ class Register
         // Validate email
         if (!Email::isValidEmail($user['email1'])) {
             $user['errors'][] = __('Invalid email');
-        } elseif (ForumSettings::get('o_regs_verify') == 1 && $user['email1'] != $email2) {
+        } elseif (ForumSettings::get('o_regs_verify') == '1' && $user['email1'] != $email2) {
             $user['errors'][] = __('Email not match');
         }
 
         // Check if it's a banned email address
         if (Email::isBannedEmail($user['email1'])) {
-            if (ForumSettings::get('p_allow_banned_email') == 0) {
+            if (ForumSettings::get('p_allow_banned_email') == '0') {
                 $user['errors'][] = __('Banned email');
             }
             $user['banned_email'] = 1; // Used later when we send an alert email
@@ -107,7 +107,7 @@ class Register
         $dupeMail = $dupeMail->findMany();
 
         if ($dupeMail) {
-            if (ForumSettings::get('p_allow_dupe_email') == 0) {
+            if (ForumSettings::get('p_allow_dupe_email') == '0') {
                 $user['errors'][] = __('Dupe email');
             }
 
@@ -138,7 +138,7 @@ class Register
         // Insert the new user into the database. We do this now to get the last inserted ID for later use
         $now = time();
 
-        $intialGroupId = (ForumSettings::get('o_regs_verify') == 0) ? ForumSettings::get('o_default_user_group') : ForumEnv::get('FEATHER_UNVERIFIED');
+        $intialGroupId = (ForumSettings::get('o_regs_verify') == '0') ? ForumSettings::get('o_default_user_group') : ForumEnv::get('FEATHER_UNVERIFIED');
         $passwordHash = Utils::passwordHash($user['password1']);
 
         // Add the user
@@ -160,7 +160,7 @@ class Register
 
         $newUid = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'users');
 
-        if (ForumSettings::get('o_regs_verify') == 1) {
+        if (ForumSettings::get('o_regs_verify') == '1') {
             Prefs::setUser($newUid, ['language' => $user['language']], ForumEnv::get('FEATHER_UNVERIFIED'));
         } else {
             Prefs::setUser($newUid, ['language' => $user['language']]);
@@ -211,7 +211,7 @@ class Register
             }
 
             // Should we alert people on the admin mailing list that a new user has registered?
-            if (ForumSettings::get('o_regs_report') == 1) {
+            if (ForumSettings::get('o_regs_report') == '1') {
                 // Load the "new user" template
                 $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.ForumSettings::get('language').'/mail_templates/new_user.tpl'));
                 $mailTpl = Hooks::fire('model.register.insert_user_new_mail_tpl', $mailTpl);
@@ -234,7 +234,7 @@ class Register
         }
 
         // Must the user verify the registration or do we log him/her in right now?
-        if (ForumSettings::get('o_regs_verify') == 1) {
+        if (ForumSettings::get('o_regs_verify') == '1') {
             // Load the "welcome" template
             $mailTpl = trim(file_get_contents(ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.$user['language'].'/mail_templates/welcome.tpl'));
             $mailTpl = Hooks::fire('model.register.insert_user_welcome_mail_tpl', $mailTpl);

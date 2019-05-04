@@ -126,17 +126,17 @@
                             <input type="hidden" name="form_sent" value="1" />
                             <input type="hidden" name="pid" value="{{ pid }}" />
                             <input type="hidden" name="page" value="{{ page_number }}" />
-        {% if settings('o_topic_subscriptions') == 1 and (userGet('auto_notify') == 1 or cur_topic.is_subscribed) %}
+        {% if settings('o_topic_subscriptions') == '1' and (userGet('auto_notify') == '1' or cur_topic.is_subscribed) %}
                     <input type="hidden" name="subscribe" value="1" />
         {% endif %}
 
         {% if userGet('is_guest') %}
                     <label class="conl required"><strong>{{ trans('Guest name') }} <span>{{ trans('Required') }}</span></strong><br />
                         <input type="text" name="req_username" size="25" maxlength="25" tabindex="1" /><br /></label>
-                    <label class="conl{{ settings('p_force_guest_email') == 1 ? ' required' : '' }}">
-                        {{ settings('p_force_guest_email') == 1 ? "<strong>#{ trans('Email') } <span>#{ trans('Required') }</span></strong>" : trans('Email') }}
+                    <label class="conl{{ settings('p_force_guest_email') == '1' ? ' required' : '' }}">
+                        {{ settings('p_force_guest_email') == '1' ? "<strong>#{ trans('Email') } <span>#{ trans('Required') }</span></strong>" : trans('Email') }}
                         <br />
-                        <input type="text" name="{{ settings('p_force_guest_email') == 1 ? 'req_email' : 'email' }}" size="50" maxlength="80" tabindex="2" />
+                        <input type="text" name="{{ settings('p_force_guest_email') == '1' ? 'req_email' : 'email' }}" size="50" maxlength="80" tabindex="2" />
                         <br />
                     </label>
                     <div class="clearer"></div>
@@ -150,10 +150,10 @@
         <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="1"></textarea>
         </div>
                             <ul class="bblinks list-inline">
-                                <li><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}</a> {{ settings('p_message_bbcode') == 1 ? trans('on') : trans('off') }}</li>
-                                <li><a href="{{ pathFor('help') }}#url" onclick="window.open(this.href); return false;">{{ trans('url tag') }}</a> {{ (settings('p_message_bbcode') == 1 and can('post.links')) ? trans('on') : trans('off') }}</li>
-                                <li><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ (settings('p_message_bbcode') == 1 and settings('p_message_img_tag') == 1) ? trans('on') : trans('off') }}</li>
-                                <li><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies') == 1 ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}</a> {{ settings('p_message_bbcode') == '1' ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#url" onclick="window.open(this.href); return false;">{{ trans('url tag') }}</a> {{ (settings('p_message_bbcode') == '1' and can('post.links')) ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ (settings('p_message_bbcode') == '1' and settings('p_message_img_tag') == '1') ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies') == '1' ? trans('on') : trans('off') }}</li>
                             </ul>
                         </div>
                     </fieldset>

@@ -121,12 +121,12 @@
 
 
             {% if isAdminMod() %}
-                {% if settings('o_report_method')  == 0 or settings('o_report_method') == '2' %}
+                {% if settings('o_report_method')  == '0' or settings('o_report_method') == '2' %}
                     {% if has_reports %}
                         <li class="reportlink"><span><strong><a href="{{ pathFor('adminReports') }}">{{ trans('New reports') }}</a></strong></span></li>
                     {% endif %}
                 {% endif %}
-                {% if settings('o_maintenance') == 1 %}
+                {% if settings('o_maintenance') == '1' %}
                     <li class="maintenancelink"><span><strong><a href="{{ pathFor('adminMaintenance') }}">{{ trans('Maintenance mode enabled') }}</a></strong></span></li>
                 {% endif %}
             {% endif %}
@@ -157,7 +157,7 @@
                 <div class="clear"></div>
             </div>
 
-{% if can('board.read') and settings('o_announcement') == 1 %}
+{% if can('board.read') and settings('o_announcement') == '1' %}
             <div id="announce" class="block">
                 <div class="hd"><h2><span>{{ trans('Announcement') }}</span></h2></div>
                 <div class="box">
@@ -226,13 +226,13 @@
                         <dd><span><a href="{{ pathFor('moderateTopic', {'id': tid, 'fid': fid, 'name': slug(cur_topic.subject), 'page': page_number}) }}">{{ trans('Moderate topic') }}</a></span></dd>
                         <dd><span><a href="{{ pathFor('moveTopic', {'id': tid, 'fid': fid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Move topic') }}</a></span></dd>
 
-                        {% if cur_topic.closed == 1 %}
+                        {% if cur_topic.closed == '1' %}
                             <dd><span><a href="{{ pathFor('openTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Open topic') }}</a></span></dd>
                         {% else %}
                             <dd><span><a href="{{ pathFor('closeTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Close topic') }}</a></span></dd>
                         {% endif %}
 
-                        {% if cur_topic.sticky == 1 %}
+                        {% if cur_topic.sticky == '1' %}
                             <dd><span><a href="{{ pathFor('unstickTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Unstick topic') }}</a></span></dd>
                         {% else %}
                             <dd><span><a href="{{ pathFor('stickTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Stick topic') }}</a></span></dd>
@@ -248,7 +248,7 @@
         <div id="brdfooternav" class="inbox">
 
             {# Display the "Jump to" drop list #}
-            {% if settings('o_quickjump') == 1 and quickjump is not empty %}
+            {% if settings('o_quickjump') == '1' and quickjump is not empty %}
                 <div class="conl">
                     <form id="qjump" method="get" action="">
                             <div>
@@ -274,7 +274,7 @@
                     {{ trans(
                     ['Powered by',
                     '<a href="http://featherbb.org">FeatherBB</a>'
-                    ~"#{ settings('o_show_version') == 1 ? settings('o_cur_version') : '' }"
+                    ~"#{ settings('o_show_version') == '1' ? settings('o_cur_version') : '' }"
                     ]) }}
                 </p>
             </div>

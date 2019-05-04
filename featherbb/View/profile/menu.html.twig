@@ -12,7 +12,7 @@
                     <li{{ page == 'personal' ? ' class="isactive"' : '' }}>
                         <a href="{{ pathFor('profileSection', {'id': "#{ id }", 'section': 'personal'}) }}">{{ trans('Section personal') }}</a>
                     </li>
-        {% if settings('o_avatars') == 1 or settings('o_signatures') == 1 %}
+        {% if settings('o_avatars') == '1' or settings('o_signatures') == '1' %}
                     <li{{ page == 'personality' ? ' class="isactive"' : '' }}>
                         <a href="{{ pathFor('profileSection', {'id': "#{ id }", 'section': 'personality'}) }}">{{ trans('Section personality') }}</a>
                     </li>

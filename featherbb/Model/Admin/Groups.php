@@ -135,14 +135,14 @@ class Groups
         $userTitle = ($userTitle != '') ? $userTitle : 'NULL';
         $userTitle = Hooks::fire('model.admin.groups.add_edit_group.set_user_title', $userTitle);
 
-        $promoteMinPosts = Input::post('promote_min_posts') ? intval(Input::post('promote_min_posts')) : 0;
+        $promoteMinPosts = Input::post('promote_min_posts') ? intval(Input::post('promote_min_posts')) : '0';
         if (Input::post('promote_next_group') &&
                 isset($groups[Input::post('promote_next_group')]) &&
                 !in_array(Input::post('promote_next_group'), [ForumEnv::get('FEATHER_ADMIN'), ForumEnv::get('FEATHER_GUEST')]) &&
                 (Input::post('group_id') || Input::post('promote_next_group') != Input::post('group_id'))) {
             $promoteNextGroup = Input::post('promote_next_group');
         } else {
-            $promoteNextGroup = 0;
+            $promoteNextGroup = '0';
         }
 
         // Permissions
@@ -282,9 +282,9 @@ class Groups
         CacheInterface::store('quickjump', Cache::quickjump());
 
         if (Input::post('mode') == 'edit') {
-            return Router::redirect(Router::pathFor('editGroup', ['id' => $groupId]), __('Group edited redirect'));
+            return Router::redirect(Router::pathFor('adminGroups'), __('Group edited redirect'));
         } else {
-            return Router::redirect(Router::pathFor('editGroup', ['id' => $groupId]), __('Group added redirect'));
+            return Router::redirect(Router::pathFor('adminGroups'), __('Group added redirect'));
         }
     }
 
@@ -356,10 +356,7 @@ class Groups
             ->deleteMany();
 
         // Don't let users be promoted to this group
-        DB::table('preferences')
-            ->where('preference_name', 'promote.next_group')
-            ->where('preference_value', $groupId)
-            ->deleteMany();
+        DB::table('preferences')->where('promote.next_group', $groupId)->deleteMany();
 
         return Router::redirect(Router::pathFor('adminGroups'), __('Group removed redirect'));
     }

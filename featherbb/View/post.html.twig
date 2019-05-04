@@ -76,15 +76,15 @@
                             <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
 
     {% if userGet('is_guest') %}
-        {% set email_form_name = settings('p_force_guest_email') == 1 ? 'req_email' : 'email' %}
+        {% set email_form_name = settings('p_force_guest_email') == '1' ? 'req_email' : 'email' %}
 
                             <label class="conl required">
                                 <strong>{{ trans('Guest name') }} <span>{{ trans('Required') }}</span></strong><br />
                                 <input type="text" name="req_username" value="{{ inputPost('req_username') ? post.username : '' }}" size="25" maxlength="25" tabindex="{{ cur_index }}" /><br />
                                 {% set cur_index = cur_index + 1 %}
                             </label>
-                            <label class="conl{{ settings('p_force_guest_email') == 1 ? ' required' : '' }}">
-                                {{ settings('p_force_guest_email') == 1 ? "<strong>#{ trans('Email') } <span>#{ trans('Required') }</span></strong>" : trans('Email') }}
+                            <label class="conl{{ settings('p_force_guest_email') == '1' ? ' required' : '' }}">
+                                {{ settings('p_force_guest_email') == '1' ? "<strong>#{ trans('Email') } <span>#{ trans('Required') }</span></strong>" : trans('Email') }}
                                 <br />
                                 <input type="text" name="{{ email_form_name }}" value="{{ inputPost( email_form_name ) ? post.email : '' }}" size="50" maxlength="80" tabindex="{{ cur_index }}" /><br />
                                 {% set cur_index = cur_index + 1 %}
@@ -105,10 +105,10 @@
                                 {% set cur_index = cur_index + 1 %}
                             </label>
                             <ul class="bblinks list-inline">
-                                <li><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}ok</a> {{ settings('p_message_bbcode') == 1 ? trans('on') : trans('off') }}</li>
-                                <li><a href="{{ pathFor('help') }}#url" onclick="window.open (this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_message_bbcode') == 1 and can('post.links') ? trans('on') : trans('off') }}</li>
-                                <li><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ settings('p_message_bbcode') == 1 and settings('p_message_img_tag') == 1 ? trans('on') : trans('off') }}</li>
-                                <li><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies') == 1 ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}ok</a> {{ settings('p_message_bbcode') == '1' ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#url" onclick="window.open (this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_message_bbcode') == '1' and can('post.links') ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ settings('p_message_bbcode') == '1' and settings('p_message_img_tag') == '1' ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies') == '1' ? trans('on') : trans('off') }}</li>
                             </ul>
                         </div>
                     </fieldset>
@@ -161,7 +161,7 @@
 
 
 
-    {% if tid and settings('o_topic_review') != 0 %}
+    {% if tid and settings('o_topic_review') != '0' %}
 
     <div id="postreview">
         <h2><span>{{ trans('Topic review') }}</span></h2>

@@ -48,7 +48,7 @@
                         </div>
                     </fieldset>
                 </div>
-            {% if settings('o_regs_verify') == 0 %}
+            {% if settings('o_regs_verify') == '0' %}
 
                 <div class="inform">
                     <fieldset>
@@ -67,14 +67,14 @@
 
                 <div class="inform">
                     <fieldset>
-                        <legend>{{ settings('o_regs_verify') == 1 ? trans('Email legend 2') : trans('Email legend') }}</legend>
+                        <legend>{{ settings('o_regs_verify') == '1' ? trans('Email legend 2') : trans('Email legend') }}</legend>
                         <div class="infldset">
-            {% if settings('o_regs_verify') == 1 %}
+            {% if settings('o_regs_verify') == '1' %}
                             <p>{{ trans('Email info') }}</p>
             {% endif %}
                             <label class="required"><strong>{{ trans('Email') }} <span>{{ trans('Required') }}</span></strong><br />
                             <input type="text" name="req_email1" value="{{ inputPost('req_email1') ? inputPost('req_email1') : '' }}" size="50" maxlength="80" /><br /></label>
-            {% if settings('o_regs_verify') == 1 %}
+            {% if settings('o_regs_verify') == '1' %}
                             <label class="required"><strong>{{ trans('Confirm email') }} <span>{{ trans('Required') }}</span></strong><br />
                             <input type="text" name="req_email2" value="{{ inputPost('req_email2') ? inputPost('req_email2') : '' }}" size="50" maxlength="80" /><br /></label>
             {% endif %}

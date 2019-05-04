@@ -18,7 +18,7 @@
                     </li>
             {% endif %}
 
-            {% if isAdmin() or settings('o_report_method') == 0 or settings('o_report_method') == '2' %}
+            {% if isAdmin() or settings('o_report_method') == '0' or settings('o_report_method') == '2' %}
                     <li{{ page == 'reports' ? ' class="isactive"' : '' }}>
                         <a href="{{ pathFor('adminReports') }}">{{ trans('Reports') }}</a>
                     </li>

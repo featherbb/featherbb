@@ -345,7 +345,7 @@ class Email
             $smtpPort = 25;
         }
 
-        if (ForumSettings::get('o_smtp_ssl') == 1) {
+        if (ForumSettings::get('o_smtp_ssl') == '1') {
             $smtpHost = 'ssl://' . $smtpHost;
         }
 

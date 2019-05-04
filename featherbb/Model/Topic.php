@@ -136,7 +136,7 @@ class Topic
     {
         $curTopic['where'] = [
             ['fp.read_forum' => 'IS NULL'],
-            ['fp.read_forum' => 1]
+            ['fp.read_forum' => '1']
         ];
 
         if (!User::get()->is_guest) {
@@ -182,8 +182,8 @@ class Topic
     {
         $closed = Hooks::fire('model.topic.get_post_link_start', $closed, $topicId, $postReplies, $isAdmmod);
 
-        if ($closed == 0) {
-            if (($postReplies == '' && User::can('topic.reply')) || $postReplies == 1 || $isAdmmod) {
+        if ($closed == '0') {
+            if (($postReplies == '' && User::can('topic.reply')) || $postReplies == '1' || $isAdmmod) {
                 $postLink = "\t\t\t".'<p class="postlink conr"><a href="'.Router::pathFor('newReply', ['tid' => $topicId]).'">'.__('Post reply').'</a></p>'."\n";
             } else {
                 $postLink = '';
@@ -207,7 +207,7 @@ class Topic
     public function isQuickpost($postReplies, $closed, $isAdmmod)
     {
         $quickpost = false;
-        if (ForumSettings::get('o_quickpost') == 1 && ($postReplies == 1 || ($postReplies == '' && User::can('topic.reply'))) && ($closed == 0 || $isAdmmod)) {
+        if (ForumSettings::get('o_quickpost') == '1' && ($postReplies == '1' || ($postReplies == '' && User::can('topic.reply'))) && ($closed == '0' || $isAdmmod)) {
             $quickpost = true;
         }
 
@@ -220,14 +220,14 @@ class Topic
     {
         $topicId = Hooks::fire('model.topic.subscribe_topic_start', $topicId);
 
-        if (ForumSettings::get('o_topic_subscriptions') != 1) {
+        if (ForumSettings::get('o_topic_subscriptions') != '1') {
             throw new Error(__('No permission'), 403);
         }
 
         // Make sure the user can view the topic
         $authorized['where'] = [
             ['fp.read_forum' => 'IS NULL'],
-            ['fp.read_forum' => 1]
+            ['fp.read_forum' => '1']
         ];
 
         $authorized = DB::table('topics')
@@ -272,7 +272,7 @@ class Topic
     {
         $topicId = Hooks::fire('model.topic.unsubscribe_topic_start', $topicId);
 
-        if (ForumSettings::get('o_topic_subscriptions') != 1) {
+        if (ForumSettings::get('o_topic_subscriptions') != '1') {
             throw new Error(__('No permission'), 403);
         }
 
@@ -299,7 +299,7 @@ class Topic
     // Subscraction link
     public function getSubscraction($isSubscribed, $topicId, $topicSubject)
     {
-        if (!User::get()->is_guest && ForumSettings::get('o_topic_subscriptions') == 1) {
+        if (!User::get()->is_guest && ForumSettings::get('o_topic_subscriptions') == '1') {
             if ($isSubscribed) {
                 // I apologize for the variable naming here. It's a mix of subscription and action I guess :-)
                 $subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.__('Is subscribed').' - </span><a href="'.Router::pathFor('unsubscribeTopic', ['id' => $topicId, 'name' => $topicSubject]).'">'.__('Unsubscribe').'</a></p>'."\n";
@@ -344,7 +344,7 @@ class Topic
         $result['select'] = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name'];
         $result['where'] = [
             ['fp.post_topics' => 'IS NULL'],
-            ['fp.post_topics' => 1]
+            ['fp.post_topics' => '1']
         ];
         $result['order_by'] = ['c.disp_position', 'c.id', 'f.disp_position'];
 
@@ -372,7 +372,7 @@ class Topic
         $selectGetForumListMove = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name'];
         $whereGetForumListMove = [
             ['fp.post_topics' => 'IS NULL'],
-            ['fp.post_topics' => 1]
+            ['fp.post_topics' => '1']
         ];
         $orderByGetForumListMove = ['c.disp_position', 'c.id', 'f.disp_position'];
 
@@ -418,7 +418,7 @@ class Topic
         $result['select'] = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name'];
         $result['where'] = [
             ['fp.post_topics' => 'IS NULL'],
-            ['fp.post_topics' => 1]
+            ['fp.post_topics' => '1']
         ];
         $orderByGetForumListSplit = ['c.disp_position', 'c.id', 'f.disp_position'];
 
@@ -481,7 +481,7 @@ class Topic
         // Verify that the move to forum ID is valid
         $authorized['where'] = [
             ['fp.post_topics' => 'IS NULL'],
-            ['fp.post_topics' => 1]
+            ['fp.post_topics' => '1']
         ];
 
         $authorized = DB::table('forums')
@@ -626,7 +626,7 @@ class Topic
         $curTopic['select'] = ['forum_id' => 'f.id', 'f.forum_name', 't.subject', 't.num_replies', 't.first_post_id'];
         $curTopic['where'] = [
             ['fp.read_forum' => 'IS NULL'],
-            ['fp.read_forum' => 1]
+            ['fp.read_forum' => '1']
         ];
 
         $curTopic = DB::table('topics')
@@ -687,7 +687,7 @@ class Topic
             // Verify that the move to forum ID is valid
             $result['where'] = [
                 ['fp.post_topics' => 'IS NULL'],
-                ['fp.post_topics' => 1]
+                ['fp.post_topics' => '1']
             ];
 
             $result = DB::table('forums')
@@ -870,14 +870,14 @@ class Topic
 
                 $curPost['user_title_formatted'] = Utils::getTitle($curPost);
 
-                if (ForumSettings::get('o_censoring') == 1) {
+                if (ForumSettings::get('o_censoring') == '1') {
                     $curPost['user_title_formatted'] = Utils::censor($curPost['user_title_formatted']);
                 }
 
                 // Format the online indicator
                 $curPost['is_online_formatted'] = ($curPost['is_online'] == $curPost['poster_id']) ? '<strong>'.__('Online').'</strong>' : '<span>'.__('Offline').'</span>';
 
-                if (ForumSettings::get('o_avatars') == 1 && User::getPref('show.avatars') != 0) {
+                if (ForumSettings::get('o_avatars') == '1' && User::getPref('show.avatars') != '0') {
                     if (isset($avatarCache[$curPost['poster_id']])) {
                         $curPost['user_avatar'] = $avatarCache[$curPost['poster_id']];
                     } else {
@@ -886,9 +886,9 @@ class Topic
                 }
 
                 // We only show location, register date, post count and the contact links if "Show user info" is enabled
-                if (ForumSettings::get('o_show_user_info') == 1) {
+                if (ForumSettings::get('o_show_user_info') == '1') {
                     if ($curPost['location'] != '') {
-                        if (ForumSettings::get('o_censoring') == 1) {
+                        if (ForumSettings::get('o_censoring') == '1') {
                             $curPost['location'] = Utils::censor($curPost['location']);
                         }
 
@@ -897,7 +897,7 @@ class Topic
 
                     $curPost['user_info'][] = '<dd><span>'.__('Registered topic').' '.Utils::formatTime($curPost['registered'], true).'</span></dd>';
 
-                    if (ForumSettings::get('o_show_post_count') == 1 || User::isAdminMod()) {
+                    if (ForumSettings::get('o_show_post_count') == '1' || User::isAdminMod()) {
                         $curPost['user_info'][] = '<dd><span>'.__('Posts topic').' '.Utils::forumNumberFormat($curPost['num_posts']).'</span></dd>';
                     }
 
@@ -905,14 +905,14 @@ class Topic
                     if (!isset($curPost['email_setting']) || is_null($curPost['email_setting'])) {
                         $curPost['email_setting'] = ForumSettings::get('email.setting');
                     }
-                    if ((($curPost['email_setting'] == 0 && !User::get()->is_guest) || User::isAdminMod()) && User::can('email.send')) {
+                    if ((($curPost['email_setting'] == '0' && !User::get()->is_guest) || User::isAdminMod()) && User::can('email.send')) {
                         $curPost['user_contacts'][] = '<span class="email"><a href="mailto:'.Utils::escape($curPost['email']).'">'.__('Email').'</a></span>';
-                    } elseif ($curPost['email_setting'] == 1 && !User::get()->is_guest && User::can('email.send')) {
+                    } elseif ($curPost['email_setting'] == '1' && !User::get()->is_guest && User::can('email.send')) {
                         $curPost['user_contacts'][] = '<span class="email"><a href="'.Router::pathFor('email', ['id' => $curPost['poster_id']]).'">'.__('Email').'</a></span>';
                     }
 
                     if ($curPost['url'] != '') {
-                        if (ForumSettings::get('o_censoring') == 1) {
+                        if (ForumSettings::get('o_censoring') == '1') {
                             $curPost['url'] = Utils::censor($curPost['url']);
                         }
 
@@ -943,7 +943,7 @@ class Topic
                     $curPost['user_info'][] = '<dd><span><a href="'.Router::pathFor('getPostHost', ['pid' => $curPost['id']]).'" title="'.Utils::escape($curPost['poster_ip']).'">'.__('IP address logged').'</a></span></dd>';
                 }
 
-                if (ForumSettings::get('o_show_user_info') == 1 && $curPost['poster_email'] != '' && !User::get()->is_guest && User::can('email.send')) {
+                if (ForumSettings::get('o_show_user_info') == '1' && $curPost['poster_email'] != '' && !User::get()->is_guest && User::can('email.send')) {
                     $curPost['user_contacts'][] = '<span class="email"><a href="mailto:'.Utils::escape($curPost['poster_email']).'">'.__('Email').'</a></span>';
                 }
             }
@@ -954,7 +954,7 @@ class Topic
                     $curPost['post_actions'][] = '<li class="postreport"><span><a href="'.Router::pathFor('report', ['id' => $curPost['id']]).'">'.__('Report').'</a></span></li>';
                 }
 
-                if ($curTopic['closed'] == 0) {
+                if ($curTopic['closed'] == '0') {
                     if ($curPost['poster_id'] == User::get()->id) {
                         if ((($startFrom + $postCount) == 1 && User::can('topic.delete')) || (($startFrom + $postCount) > 1 && User::can('post.delete'))) {
                             $curPost['post_actions'][] = '<li class="postdelete"><span><a href="'.Router::pathFor('deletePost', ['id' => $curPost['id']]).'">'.__('Delete').'</a></span></li>';
@@ -964,7 +964,7 @@ class Topic
                         }
                     }
 
-                    if (($curTopic['post_replies'] == '' && User::can('topic.reply')) || $curTopic['post_replies'] == 1) {
+                    if (($curTopic['post_replies'] == '' && User::can('topic.reply')) || $curTopic['post_replies'] == '1') {
                         $curPost['post_actions'][] = '<li class="postquote"><span><a href="'.Router::pathFor('newQuoteReply', ['tid' => $topicId, 'qid' => $curPost['id']]).'">'.__('Quote').'</a></span></li>';
                     }
                 }
@@ -981,7 +981,7 @@ class Topic
             $curPost['message'] = Parser::parseMessage($curPost['message'], $curPost['hide_smilies']);
 
             // Do signature parsing/caching
-            if (ForumSettings::get('o_signatures') == 1 && $curPost['signature'] != '' && User::getPref('show.sig') != 0) {
+            if (ForumSettings::get('o_signatures') == '1' && $curPost['signature'] != '' && User::getPref('show.sig') != '0') {
                 // if (isset($avatarCache[$curPost['poster_id']])) {
                 //     $curPost['signature_formatted'] = $avatarCache[$curPost['poster_id']];
                 // } else {
@@ -1047,7 +1047,7 @@ class Topic
                 $curPost->username = $curPost->poster;
                 $curPost->userTitle = Utils::getTitle($curPost);
 
-                if (ForumSettings::get('o_censoring') == 1) {
+                if (ForumSettings::get('o_censoring') == '1') {
                     $curPost->userTitle = Utils::censor($curPost->userTitle);
                 }
             }
@@ -1070,7 +1070,7 @@ class Topic
 
     public function incrementViews($id)
     {
-        if (ForumSettings::get('o_topic_views') == 1) {
+        if (ForumSettings::get('o_topic_views') == '1') {
             $query = DB::table('topics')
                         ->where('id', $id)
                         ->findOne()

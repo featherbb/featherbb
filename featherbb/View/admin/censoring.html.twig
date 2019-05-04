@@ -17,7 +17,7 @@
                         <legend>{{ trans('Add word subhead') }}</legend>
                         <div class="infldset">
                             <p>
-                                {{ trans(['Add word info', settings('o_censoring') == 1
+                                {{ trans(['Add word info', settings('o_censoring') == '1'
                                 ? trans(['Censoring enabled', '<a href="' ~pathFor('adminOptions') ~'#censoring">' ~trans('Options') ~'</a>'])
                                 : trans(['Censoring disabled', '<a href="' ~pathFor('adminOptions') ~'#censoring">' ~trans('Options') ~'</a>'])
                                 ]) }}

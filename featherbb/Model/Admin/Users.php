@@ -376,7 +376,7 @@ class Users
                 // Set all their posts to guest
                 DB::table('posts')
                         ->whereIn('poster_id', $userIds)
-                        ->updateMany('poster_id', 1);
+                        ->updateMany('poster_id', '1');
             }
 
             // Delete the users

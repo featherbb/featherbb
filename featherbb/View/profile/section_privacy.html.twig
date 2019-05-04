@@ -19,9 +19,9 @@
                         <input type="hidden" name="form_sent" value="1" />
                         <p>{{ trans('Email setting info') }}</p>
                         <div class="rbox">
-                            <label><input type="radio" name="form_email_setting" value="0"{{ pref('email.setting', user) == 0 ? ' checked="checked"' : '' }}/>
+                            <label><input type="radio" name="form_email_setting" value="0"{{ pref('email.setting', user) == '0' ? ' checked="checked"' : '' }}/>
                                 {{ trans('Email setting 1') }}<br /></label>
-                            <label><input type="radio" name="form_email_setting" value="1"{{ pref('email.setting', user) == 1 ? ' checked="checked"' : '' }}/>
+                            <label><input type="radio" name="form_email_setting" value="1"{{ pref('email.setting', user) == '1' ? ' checked="checked"' : '' }}/>
                                 {{ trans('Email setting 2') }}<br /></label>
                             <label><input type="radio" name="form_email_setting" value="2"
                                 {{ pref('email.setting', user) == '2' ? ' checked="checked"' : '' }}/>
@@ -30,16 +30,16 @@
                     </div>
                 </fieldset>
             </div>
-    {% if settings('o_forum_subscriptions') == 1 or settings('o_topic_subscriptions') == 1 %}
+    {% if settings('o_forum_subscriptions') == '1' or settings('o_topic_subscriptions') == '1' %}
             <div class="inform">
                 <fieldset>
                     <legend>{{ trans('Subscription legend') }}</legend>
                     <div class="infldset">
                         <div class="rbox">
-                            <label><input type="checkbox" name="form_notify_with_post" value="1"{{ pref('notify_with_post', user) == 1 ? ' checked="checked"' : '' }}/>
+                            <label><input type="checkbox" name="form_notify_with_post" value="1"{{ pref('notify_with_post', user) == '1' ? ' checked="checked"' : '' }}/>
                                 {{ trans('Notify full') }}<br /></label>
-                {% if settings('o_topic_subscriptions') == 1 %}
-                            <label><input type="checkbox" name="form_auto_notify" value="1"{{ pref('auto_notify', user) == 1 ? ' checked="checked"' : '' }}/>{{ trans('Auto notify full') }}<br /></label>
+                {% if settings('o_topic_subscriptions') == '1' %}
+                            <label><input type="checkbox" name="form_auto_notify" value="1"{{ pref('auto_notify', user) == '1' ? ' checked="checked"' : '' }}/>{{ trans('Auto notify full') }}<br /></label>
                 {% endif %}
                         </div>
                     </div>

@@ -46,34 +46,34 @@
                             <p>{{ trans('Post display info') }}</p>
                             <div class="rbox">
 
-                                {% if settings('o_smilies') == 1 or settings('o_smilies_sig') == 1 %}
+                                {% if settings('o_smilies') == '1' or settings('o_smilies_sig') == '1' %}
                                     <label><input type="checkbox" name="form_show_smilies"
-                                                  value="1"{{ pref('show.smilies', user) == 1 ? ' checked="checked"' : '' }}/>{{ trans('Show smilies') }}
+                                                  value="1"{{ pref('show.smilies', user) == '1' ? ' checked="checked"' : '' }}/>{{ trans('Show smilies') }}
                                         <br/></label>
                                 {% endif %}
 
-                                {% if settings('o_signatures') == 1 %}
+                                {% if settings('o_signatures') == '1' %}
                                     <label><input type="checkbox" name="form_show_sig"
-                                                  value="1"{{ pref('show.sig', user) == 1 ? ' checked="checked"' : '' }}/>{{ trans('Show sigs') }}
+                                                  value="1"{{ pref('show.sig', user) == '1' ? ' checked="checked"' : '' }}/>{{ trans('Show sigs') }}
                                         <br/></label>
                                 {% endif %}
 
 
-                                {% if settings('o_avatars') == 1 %}
+                                {% if settings('o_avatars') == '1' %}
                                     <label><input type="checkbox" name="form_show_avatars"
-                                                  value="1"{{ pref('show.avatars', user) == 1 ? ' checked="checked"' : '' }}/>{{ trans('Show avatars') }}
+                                                  value="1"{{ pref('show.avatars', user) == '1' ? ' checked="checked"' : '' }}/>{{ trans('Show avatars') }}
                                         <br/></label>
                                 {% endif %}
 
-                                {% if settings('p_message_bbcode') == 1 and settings('p_message_img_tag') == 1 %}
+                                {% if settings('p_message_bbcode') == '1' and settings('p_message_img_tag') == '1' %}
                                     <label><input type="checkbox" name="form_show_img"
-                                                  value="1"{{ pref('show.img', user) == 1 ? ' checked="checked"' : '' }}/>{{ trans('Show images') }}
+                                                  value="1"{{ pref('show.img', user) == '1' ? ' checked="checked"' : '' }}/>{{ trans('Show images') }}
                                         <br/></label>
                                 {% endif %}
 
-                                {% if settings('o_signatures') == 1 and settings('p_sig_bbcode') == 1 and settings('p_sig_img_tag') == 1 %}
+                                {% if settings('o_signatures') == '1' and settings('p_sig_bbcode') == '1' and settings('p_sig_img_tag') == '1' %}
                                     <label><input type="checkbox" name="form_show_img_sig"
-                                                  value="1"{{ pref('show.img.sig', user) == 1 ? ' checked="checked"' : '' }}/>{{ trans('Show images sigs') }}
+                                                  value="1"{{ pref('show.img.sig', user) == '1' ? ' checked="checked"' : '' }}/>{{ trans('Show images sigs') }}
                                         <br/></label>
                                 {% endif %}
                             </div>

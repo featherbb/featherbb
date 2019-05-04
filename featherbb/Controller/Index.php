@@ -48,7 +48,7 @@ class Index
     {
         Hooks::fire('controller.index.rules');
 
-        if (ForumSettings::get('o_rules') == 0 || (User::get()->is_guest && !User::can('board.read') && ForumSettings::get('o_regs_allow') == 0)) {
+        if (ForumSettings::get('o_rules') == '0' || (User::get()->is_guest && !User::can('board.read') && ForumSettings::get('o_regs_allow') == '0')) {
             throw new Error(__('Bad request'), 404);
         }
 

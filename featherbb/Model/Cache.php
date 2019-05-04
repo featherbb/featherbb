@@ -96,7 +96,7 @@ class Cache
             $selectQuickjump = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.redirect_url'];
             $whereQuickjump = [
                 ['fp.read_forum' => 'IS NULL'],
-                ['fp.read_forum' => 1]
+                ['fp.read_forum' => '1']
             ];
             $orderByQuickjump = ['c.disp_position', 'c.id', 'f.disp_position'];
 

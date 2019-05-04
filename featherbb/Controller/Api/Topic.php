@@ -57,7 +57,7 @@ class Topic extends Api
             $new = $this->model->insertTopic($post, $args['id']);
 
             // Should we send out notifications?
-            if (ForumSettings::get('o_forum_subscriptions') == 1) {
+            if (ForumSettings::get('o_forum_subscriptions') == '1') {
                 $this->model->sendNotificationsNewTopic($post, $curPosting, $new['tid']);
             }
 
@@ -113,7 +113,7 @@ class Topic extends Api
             $new = $this->model->insertReply($post, $args['id'], $curPosting, $isSubscribed);
 
             // Should we send out notifications?
-            if (ForumSettings::get('o_topic_subscriptions') == 1) {
+            if (ForumSettings::get('o_topic_subscriptions') == '1') {
                 \FeatherBB\Model\Post::sendNotificationsReply($args['id'], $curPosting, $new['pid'], $post);
             }
 
