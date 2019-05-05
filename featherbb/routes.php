@@ -217,7 +217,7 @@ Container::set('errorHandler', function ($c) {
 
         // Hide internal mechanism
         if (!ForumEnv::get('FEATHER_DEBUG')) {
-            $error['message'] = __('Error');
+            $error['message'] = function_exists('__') ? __('Error') : 'Error';
             $error['hide'] = true;
         }
 

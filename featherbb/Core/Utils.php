@@ -91,12 +91,14 @@ class Utils
 
         if (is_null($dateFormat)) {
             $availableDateFormats = Container::get('forum_date_formats');
-            $dateFormat = $availableDateFormats[User::getPref('date_format')];
+            $userFormat = User::getPref('date_format');
+            $dateFormat = isset($availableDateFormats[$userFormat]) ? $availableDateFormats[$userFormat] : $userFormat;
         }
 
         if (is_null($timeFormat)) {
             $availableTimeFormats = Container::get('forum_time_formats');
-            $timeFormat = $availableTimeFormats[User::getPref('time_format')];
+            $userFormat = User::getPref('time_format');
+            $timeFormat = isset($availableTimeFormats[$userFormat]) ? $availableTimeFormats[$userFormat] : $userFormat;
         }
 
         $date = gmdate($dateFormat, $timestamp);
