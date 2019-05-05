@@ -65,7 +65,7 @@ class Post
         $langAntispamQuestions = require ForumEnv::get('FEATHER_ROOT').'featherbb/lang/'.User::getPref('language').'/antispam.php';
         $indexQuestions = rand(0, count($langAntispamQuestions)-1);
 
-        // If $_pOST['username'] is filled, we are facing a bot
+        // If $_POST['username'] is filled, we are facing a bot
         if (Input::post('username')) {
             throw new Error(__('Bad request'), 400);
         }
