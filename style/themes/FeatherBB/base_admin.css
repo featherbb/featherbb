@@ -189,3 +189,4 @@ input[type=radio]:focus {
 }
 #adminconsole img.pluginIcons {
 }
+#adminconsole td.nodefault {background-color: #d59b9b}
