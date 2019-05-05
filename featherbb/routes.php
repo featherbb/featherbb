@@ -222,7 +222,8 @@ Container::set('errorHandler', function ($c) {
         }
 
         // Display a simple error page that does not require heavy user-specific methods like permissions
-        if (method_exists($e, 'isSimpleError') && $e->isSimpleError()) {
+        if (method_exists($e, 'isSimpleError') && $e->isSimpleError()
+            || !function_exists('__')) {
             if (ob_get_contents()) {
                 ob_end_clean();
             }
@@ -244,7 +245,6 @@ Container::set('errorHandler', function ($c) {
         if (method_exists($e, 'displayHtml')) {
             $error['html'] = $e->displayHtml();
         }
-
 
         return View::setPageInfo([
             'title' => [\FeatherBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')],
