@@ -50,7 +50,11 @@
                                 <tr>
                                     <th scope="row">{{ trans('Redirect label') }}</th>
                                     <td>
-    {{ cur_forum.num_topics is not empty ? trans('Redirect help') : ('<input type="text" name="redirect_url" size="45" maxlength="100" value="' ~cur_forum.redirect_url ~'" tabindex="{{ getIndex() }}" />') }}
+                                    {% if cur_forum.num_topics == 0 %}
+                                        <input type="text" name="redirect_url" size="45" maxlength="100" value="{{ cur_forum.redirect_url }}" tabindex="{{ getIndex() }}" />
+                                    {% else %}
+                                        {{ trans('Redirect help') }}
+                                    {% endif %}
                                     </td>
                                 </tr>
                             </table>
