@@ -8,7 +8,7 @@ Options -Indexes
 # Disable access to config.php file
 # (it should not return any content, but just in case.)
 
-<Files "config.php">
+<Files ".env">
 Order Allow,Deny
 Deny from all
 </Files>
