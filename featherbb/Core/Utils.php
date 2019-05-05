@@ -90,11 +90,13 @@ class Utils
         $now = time();
 
         if (is_null($dateFormat)) {
-            $dateFormat = User::getPref('date_format');
+            $availableDateFormats = Container::get('forum_date_formats');
+            $dateFormat = $availableDateFormats[User::getPref('date_format')];
         }
 
         if (is_null($timeFormat)) {
-            $timeFormat = User::getPref('time_format');
+            $availableTimeFormats = Container::get('forum_time_formats');
+            $timeFormat = $availableTimeFormats[User::getPref('time_format')];
         }
 
         $date = gmdate($dateFormat, $timestamp);

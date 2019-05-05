@@ -44,46 +44,46 @@
                                     <th scope="row">{{ trans('Timezone label') }}</th>
                                     <td>
                                         <select name="form_default_timezone">
-                                            <option value="-12"{{ settings('o_default_timezone') == -12 ? ' selected="selected"' : '' }}>{{ trans('UTC-12:00') }}</option>
-                                            <option value="-11"{{ settings('o_default_timezone') == -11 ? ' selected="selected"' : '' }}>{{ trans('UTC-11:00') }}</option>
-                                            <option value="-10"{{ settings('o_default_timezone') == -10 ? ' selected="selected"' : '' }}>{{ trans('UTC-10:00') }}</option>
-                                            <option value="-9.5"{{ settings('o_default_timezone') == -9.5 ? ' selected="selected"' : '' }}>{{ trans('UTC-09:30') }}</option>
-                                            <option value="-9"{{ settings('o_default_timezone') == -9 ? ' selected="selected"' : '' }}>{{ trans('UTC-09:00') }}</option>
-                                            <option value="-8.5"{{ settings('o_default_timezone') == -8.5 ? ' selected="selected"' : '' }}>{{ trans('UTC-08:30') }}</option>
-                                            <option value="-8"{{ settings('o_default_timezone') == -8 ? ' selected="selected"' : '' }}>{{ trans('UTC-08:00') }}</option>
-                                            <option value="-7"{{ settings('o_default_timezone') == -7 ? ' selected="selected"' : '' }}>{{ trans('UTC-07:00') }}</option>
-                                            <option value="-6"{{ settings('o_default_timezone') == -6 ? ' selected="selected"' : '' }}>{{ trans('UTC-06:00') }}</option>
-                                            <option value="-5"{{ settings('o_default_timezone') == -5 ? ' selected="selected"' : '' }}>{{ trans('UTC-05:00') }}</option>
-                                            <option value="-4"{{ settings('o_default_timezone') == -4 ? ' selected="selected"' : '' }}>{{ trans('UTC-04:00') }}</option>
-                                            <option value="-3.5"{{ settings('o_default_timezone') == -3.5 ? ' selected="selected"' : '' }}>{{ trans('UTC-03:30') }}</option>
-                                            <option value="-3"{{ settings('o_default_timezone') == -3 ? ' selected="selected"' : '' }}>{{ trans('UTC-03:00') }}</option>
-                                            <option value="-2"{{ settings('o_default_timezone') == -2 ? ' selected="selected"' : '' }}>{{ trans('UTC-02:00') }}</option>
-                                            <option value="-1"{{ settings('o_default_timezone') == -1 ? ' selected="selected"' : '' }}>{{ trans('UTC-01:00') }}</option>
-                                            <option value="0"{{ settings('o_default_timezone') == 0 ? ' selected="selected"' : '' }}>{{ trans('UTC') }}</option>
-                                            <option value="1"{{ settings('o_default_timezone') == 1 ? ' selected="selected"' : '' }}>{{ trans('UTC+01:00') }}</option>
-                                            <option value="2"{{ settings('o_default_timezone') == 2 ? ' selected="selected"' : '' }}>{{ trans('UTC+02:00') }}</option>
-                                            <option value="3"{{ settings('o_default_timezone') == 3 ? ' selected="selected"' : '' }}>{{ trans('UTC+03:00') }}</option>
-                                            <option value="3.5"{{ settings('o_default_timezone') == 3.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+03:30') }}</option>
-                                            <option value="4"{{ settings('o_default_timezone') == 4 ? ' selected="selected"' : '' }}>{{ trans('UTC+04:00') }}</option>
-                                            <option value="4.5"{{ settings('o_default_timezone') == 4.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+04:30') }}</option>
-                                            <option value="5"{{ settings('o_default_timezone') == 5 ? ' selected="selected"' : '' }}>{{ trans('UTC+05:00') }}</option>
-                                            <option value="5.5"{{ settings('o_default_timezone') == 5.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+05:30') }}</option>
-                                            <option value="5.75"{{ settings('o_default_timezone') == 5.75 ? ' selected="selected"' : '' }}>{{ trans('UTC+05:45') }}</option>
-                                            <option value="6"{{ settings('o_default_timezone') == 6 ? ' selected="selected"' : '' }}>{{ trans('UTC+06:00') }}</option>
-                                            <option value="6.5"{{ settings('o_default_timezone') == 6.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+06:30') }}</option>
-                                            <option value="7"{{ settings('o_default_timezone') == 7 ? ' selected="selected"' : '' }}>{{ trans('UTC+07:00') }}</option>
-                                            <option value="8"{{ settings('o_default_timezone') == 8 ? ' selected="selected"' : '' }}>{{ trans('UTC+08:00') }}</option>
-                                            <option value="8.75"{{ settings('o_default_timezone') == 8.75 ? ' selected="selected"' : '' }}>{{ trans('UTC+08:45') }}</option>
-                                            <option value="9"{{ settings('o_default_timezone') == 9 ? ' selected="selected"' : '' }}>{{ trans('UTC+09:00') }}</option>
-                                            <option value="9.5"{{ settings('o_default_timezone') == 9.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+09:30') }}</option>
-                                            <option value="10"{{ settings('o_default_timezone') == 10 ? ' selected="selected"' : '' }}>{{ trans('UTC+10:00') }}</option>
-                                            <option value="10.5"{{ settings('o_default_timezone') == 10.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+10:30') }}</option>
-                                            <option value="11"{{ settings('o_default_timezone') == 11 ? ' selected="selected"' : '' }}>{{ trans('UTC+11:00') }}</option>
-                                            <option value="11.5"{{ settings('o_default_timezone') == 11.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+11:30') }}</option>
-                                            <option value="12"{{ settings('o_default_timezone') == 12 ? ' selected="selected"' : '' }}>{{ trans('UTC+12:00') }}</option>
-                                            <option value="12.75"{{ settings('o_default_timezone') == 12.75 ? ' selected="selected"' : '' }}>{{ trans('UTC+12:45') }}</option>
-                                            <option value="13"{{ settings('o_default_timezone') == 13 ? ' selected="selected"' : '' }}>{{ trans('UTC+13:00') }}</option>
-                                            <option value="14"{{ settings('o_default_timezone') == 14 ? ' selected="selected"' : '' }}>{{ trans('UTC+14:00') }}</option>
+                                            <option value="-12"{{ settings('timezone') == -12 ? ' selected="selected"' : '' }}>{{ trans('UTC-12:00') }}</option>
+                                            <option value="-11"{{ settings('timezone') == -11 ? ' selected="selected"' : '' }}>{{ trans('UTC-11:00') }}</option>
+                                            <option value="-10"{{ settings('timezone') == -10 ? ' selected="selected"' : '' }}>{{ trans('UTC-10:00') }}</option>
+                                            <option value="-9.5"{{ settings('timezone') == -9.5 ? ' selected="selected"' : '' }}>{{ trans('UTC-09:30') }}</option>
+                                            <option value="-9"{{ settings('timezone') == -9 ? ' selected="selected"' : '' }}>{{ trans('UTC-09:00') }}</option>
+                                            <option value="-8.5"{{ settings('timezone') == -8.5 ? ' selected="selected"' : '' }}>{{ trans('UTC-08:30') }}</option>
+                                            <option value="-8"{{ settings('timezone') == -8 ? ' selected="selected"' : '' }}>{{ trans('UTC-08:00') }}</option>
+                                            <option value="-7"{{ settings('timezone') == -7 ? ' selected="selected"' : '' }}>{{ trans('UTC-07:00') }}</option>
+                                            <option value="-6"{{ settings('timezone') == -6 ? ' selected="selected"' : '' }}>{{ trans('UTC-06:00') }}</option>
+                                            <option value="-5"{{ settings('timezone') == -5 ? ' selected="selected"' : '' }}>{{ trans('UTC-05:00') }}</option>
+                                            <option value="-4"{{ settings('timezone') == -4 ? ' selected="selected"' : '' }}>{{ trans('UTC-04:00') }}</option>
+                                            <option value="-3.5"{{ settings('timezone') == -3.5 ? ' selected="selected"' : '' }}>{{ trans('UTC-03:30') }}</option>
+                                            <option value="-3"{{ settings('timezone') == -3 ? ' selected="selected"' : '' }}>{{ trans('UTC-03:00') }}</option>
+                                            <option value="-2"{{ settings('timezone') == -2 ? ' selected="selected"' : '' }}>{{ trans('UTC-02:00') }}</option>
+                                            <option value="-1"{{ settings('timezone') == -1 ? ' selected="selected"' : '' }}>{{ trans('UTC-01:00') }}</option>
+                                            <option value="0"{{ settings('timezone') == 0 ? ' selected="selected"' : '' }}>{{ trans('UTC') }}</option>
+                                            <option value="1"{{ settings('timezone') == 1 ? ' selected="selected"' : '' }}>{{ trans('UTC+01:00') }}</option>
+                                            <option value="2"{{ settings('timezone') == 2 ? ' selected="selected"' : '' }}>{{ trans('UTC+02:00') }}</option>
+                                            <option value="3"{{ settings('timezone') == 3 ? ' selected="selected"' : '' }}>{{ trans('UTC+03:00') }}</option>
+                                            <option value="3.5"{{ settings('timezone') == 3.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+03:30') }}</option>
+                                            <option value="4"{{ settings('timezone') == 4 ? ' selected="selected"' : '' }}>{{ trans('UTC+04:00') }}</option>
+                                            <option value="4.5"{{ settings('timezone') == 4.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+04:30') }}</option>
+                                            <option value="5"{{ settings('timezone') == 5 ? ' selected="selected"' : '' }}>{{ trans('UTC+05:00') }}</option>
+                                            <option value="5.5"{{ settings('timezone') == 5.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+05:30') }}</option>
+                                            <option value="5.75"{{ settings('timezone') == 5.75 ? ' selected="selected"' : '' }}>{{ trans('UTC+05:45') }}</option>
+                                            <option value="6"{{ settings('timezone') == 6 ? ' selected="selected"' : '' }}>{{ trans('UTC+06:00') }}</option>
+                                            <option value="6.5"{{ settings('timezone') == 6.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+06:30') }}</option>
+                                            <option value="7"{{ settings('timezone') == 7 ? ' selected="selected"' : '' }}>{{ trans('UTC+07:00') }}</option>
+                                            <option value="8"{{ settings('timezone') == 8 ? ' selected="selected"' : '' }}>{{ trans('UTC+08:00') }}</option>
+                                            <option value="8.75"{{ settings('timezone') == 8.75 ? ' selected="selected"' : '' }}>{{ trans('UTC+08:45') }}</option>
+                                            <option value="9"{{ settings('timezone') == 9 ? ' selected="selected"' : '' }}>{{ trans('UTC+09:00') }}</option>
+                                            <option value="9.5"{{ settings('timezone') == 9.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+09:30') }}</option>
+                                            <option value="10"{{ settings('timezone') == 10 ? ' selected="selected"' : '' }}>{{ trans('UTC+10:00') }}</option>
+                                            <option value="10.5"{{ settings('timezone') == 10.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+10:30') }}</option>
+                                            <option value="11"{{ settings('timezone') == 11 ? ' selected="selected"' : '' }}>{{ trans('UTC+11:00') }}</option>
+                                            <option value="11.5"{{ settings('timezone') == 11.5 ? ' selected="selected"' : '' }}>{{ trans('UTC+11:30') }}</option>
+                                            <option value="12"{{ settings('timezone') == 12 ? ' selected="selected"' : '' }}>{{ trans('UTC+12:00') }}</option>
+                                            <option value="12.75"{{ settings('timezone') == 12.75 ? ' selected="selected"' : '' }}>{{ trans('UTC+12:45') }}</option>
+                                            <option value="13"{{ settings('timezone') == 13 ? ' selected="selected"' : '' }}>{{ trans('UTC+13:00') }}</option>
+                                            <option value="14"{{ settings('timezone') == 14 ? ' selected="selected"' : '' }}>{{ trans('UTC+14:00') }}</option>
                                         </select>
                                         <span>{{ trans('Timezone help') }}</span>
                                     </td>
@@ -91,9 +91,9 @@
                                 <tr>
                                     <th scope="row">{{ trans('DST label') }}</th>
                                     <td>
-                                        <label class="conl"><input type="radio" name="form_default_dst" value="1"{{ settings('o_default_dst') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="form_default_dst" value="1"{{ settings('dst') == '1' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('Yes') }}</strong></label>
                                         <label class="conl"><input type="radio" name="form_default_dst" value="0"
-                                            {{ settings('o_default_dst') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
+                                            {{ settings('dst') == '0' ? ' checked="checked"' : '' }} />&#160;<strong>{{ trans('No') }}</strong></label>
                                         <span class="clearb">{{ trans('DST help') }}</span>
                                     </td>
                                 </tr>
@@ -119,12 +119,6 @@
                         </div>
                     </fieldset>
                 </div>
-
-
-    $diff = (User::get()->timezone + User::get()->dst) * 3600;
-    $timestamp = time() + $diff;
-
-
                 <div class="inform">
                     <fieldset>
                         <legend>{{ trans('Timeouts subhead') }}</legend>
@@ -133,20 +127,20 @@
                                 <tr>
                                     <th scope="row">{{ trans('Time format label') }}</th>
                                     <td>
-                                        <input type="text" name="form_time_format" size="25" maxlength="25" value="{{ settings('o_time_format') }}" />
+                                        <input type="text" name="form_time_format" size="25" maxlength="25" value="{{ settings('time_format') }}" />
                                         <span>
-                                        {{ trans(['Time format help', timestamp|date(settings('o_time_format')),
-                                        '<a href="http://www.php.net/manual/en/function.date.php">' ~trans('PHP manual') ~'</a>']) }}
+                                        {{ trans(['Time format help', timestamp|date(settings('time_format')),
+                                        '<a href="https://www.php.net/manual/en/function.date.php">' ~trans('PHP manual') ~'</a>']) }}
                                         </span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('Date format label') }}</th>
                                     <td>
-                                        <input type="text" name="form_date_format" size="25" maxlength="25" value="{{ settings('o_date_format') }}" />
+                                        <input type="text" name="form_date_format" size="25" maxlength="25" value="{{ settings('date_format') }}" />
                                         <span>
-                                        {{ trans(['Date format help', timestamp|date(settings('o_date_format')),
-                                        '<a href="http://www.php.net/manual/en/function.date.php">' ~trans('PHP manual') ~'</a>']) }}
+                                        {{ trans(['Date format help', timestamp|date(settings('date_format')),
+                                        '<a href="https://www.php.net/manual/en/function.date.php">' ~trans('PHP manual') ~'</a>']) }}
                                         </span>
                                     </td>
                                 </tr>
@@ -162,13 +156,6 @@
                                     <td>
                                         <input type="text" name="form_timeout_online" size="5" maxlength="5" value="{{ settings('o_timeout_online') }}" />
                                         <span>{{ trans('Online timeout help') }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">{{ trans('Redirect time label') }}</th>
-                                    <td>
-                                        <input type="text" name="form_redirect_delay" size="3" maxlength="3" value="{{ settings('o_redirect_delay') }}" />
-                                        <span>{{ trans('Redirect time help') }}</span>
                                     </td>
                                 </tr>
                             </table>
@@ -238,14 +225,14 @@
                                 <tr>
                                     <th scope="row">{{ trans('Topics per page label') }}</th>
                                     <td>
-                                        <input type="text" name="form_disp_topics_default" size="3" maxlength="2" value="{{ settings('o_disp_topics_default') }}" />
+                                        <input type="text" name="form_disp_topics_default" size="3" maxlength="2" value="{{ settings('disp.topics') }}" />
                                         <span>{{ trans('Topics per page help') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">{{ trans('Posts per page label') }}</th>
                                     <td>
-                                        <input type="text" name="form_disp_posts_default" size="3" maxlength="2" value="{{ settings('o_disp_posts_default') }}" />
+                                        <input type="text" name="form_disp_posts_default" size="3" maxlength="2" value="{{ settings('disp.posts') }}" />
                                         <span>{{ trans('Posts per page help') }}</span>
                                     </td>
                                 </tr>
@@ -510,8 +497,8 @@
                                     <th scope="row">{{ trans('SMTP password label') }}</th>
                                     <td>
                                         <label><input type="checkbox" name="form_smtp_change_pass" value="1" />&#160;{{ trans('SMTP change password help') }}</label>
-                                        <input type="password" name="form_smtp_pass1" size="25" maxlength="50" value="{{ smtp_pass }}" />
-                                        <input type="password" name="form_smtp_pass2" size="25" maxlength="50" value="{{ smtp_pass }}" />
+                                        <input type="password" name="form_smtp_pass1" size="25" value="{{ settings('o_smtp_pass') }}" />
+                                        <input type="password" name="form_smtp_pass2" size="25" value="{{ settings('o_smtp_pass') }}" />
                                         <span>{{ trans('SMTP password help') }}</span>
                                     </td>
                                 </tr>

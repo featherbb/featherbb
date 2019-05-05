@@ -40,6 +40,9 @@ class Options
 
         AdminUtils::generateAdminMenu('admin options');
 
+        $diff = (User::getPref('timezone') + User::getPref('dst')) * 3600;
+        $timestamp = time() + $diff;
+
         View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Admin options')],
                 'active_page' => 'admin',
@@ -47,6 +50,7 @@ class Options
                 'languages' => $this->model->languages(),
                 'styles' => $this->model->styles(),
                 'times' => $this->model->times(),
+                'timestamp' => $timestamp
             ]
         )->addTemplate('@forum/admin/options')->display();
     }
