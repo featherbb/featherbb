@@ -1,0 +1,574 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "Bad HTTP Referer message"
+msgstr "Mauvais HTTP_REFERER. Si vous avez déplacé ces forums d'un endroit à un autre ou si vous avez changé de domaine, vous devez mettre à jour l'URL de base manuellement dans la base de données (recherchez o_base_url dans la table config) et nettoyer le cache en supprimant tous les fichiers *.php dans le répertoire /cache."
+
+msgid "Must enter title message"
+msgstr "Vous devez spécifier un nom pour le forum."
+
+msgid "Invalid e-mail message"
+msgstr "L'adresse électronique d'administrateur que vous avez indiquée est invalide."
+
+msgid "Invalid webmaster e-mail message"
+msgstr "L'adresse électronique de Webmestre que vous avez indiquée est invalide."
+
+msgid "SMTP passwords did not match"
+msgstr "Vous devez indiquer le mot de passe SMTP deux fois exactement de la même manière pour le modifier."
+
+msgid "Enter announcement here"
+msgstr "Veuillez saisir votre annonce ici."
+
+msgid "Enter rules here"
+msgstr "Veuillez saisir vos règles ici."
+
+msgid "Default maintenance message"
+msgstr "Les forums sont temporairement fermés pour maintenance. Veuillez essayer à nouveau dans quelques minutes."
+
+msgid "Timeout error message"
+msgstr "La valeur pour «&#160;Délai avant déconnexion&#160;» doit être inférieure à celle du champ «&#160;Délai de fin de visite&#160;»."
+
+msgid "Options updated redirect"
+msgstr "Options mises à jour. Redirection&#160;…"
+
+msgid "Options head"
+msgstr "Options"
+
+msgid "Essentials subhead"
+msgstr "Principal"
+
+msgid "Board title label"
+msgstr "Titre du forum"
+
+msgid "Board title help"
+msgstr "Le titre de ce forum (affiché en haut de chaque page). Ce champ <strong>ne</strong> doit <strong>pas</strong> contenir de code HTML."
+
+msgid "Board desc label"
+msgstr "Description du forum"
+
+msgid "Board desc help"
+msgstr "Une courte description de ce forum (affichée en haut de chaque page). Ce champ peut contenir du code HTML."
+
+msgid "Base URL label"
+msgstr "URL de base"
+
+msgid "Base URL help"
+msgstr "L'URL complète du forum sans barre oblique finale (ex. : http://www.mondomaine.com/forums). Ceci <strong>doit</strong> être correct pour que les fonctionnalités dédiées aux administrateurs et aux modérateurs puissent être conservées. Si vous obtenez des erreurs «&#160;Bad referer&#160;», elle est sûrement incorrecte."
+
+msgid "Base URL problem"
+msgstr "Votre installation ne supporte pas la conversion automatique des noms de domaine localisés. Comme votre URL de base contient des caractères spéciaux, vous <strong>devez</strong> utiliser un convertisseur en ligne, afin d'éviter les erreur \"Bad referer\""
+
+msgid "Timezone label"
+msgstr "Fuseau horaire par défaut"
+
+msgid "Timezone help"
+msgstr "Le fuseau horaire par défaut pour les invités et les utilisateurs qui s'inscrivent sur le forum."
+
+msgid "DST label"
+msgstr "Ajustement pour l'heure d'été"
+
+msgid "DST help"
+msgstr "Pour activer l'heure d'été (avance d'une heure)."
+
+msgid "Language label"
+msgstr "Langue par défaut"
+
+msgid "Language help"
+msgstr "Ceci est la langue par défaut utilisée si le visiteur est un invité ou si un utilisateur n'a pas modifié ce paramètre dans son pofil. Si vous supprimez un paquetage de langue, ceci devra être mis à jour."
+
+msgid "Default style label"
+msgstr "Style par défaut"
+
+msgid "Default style help"
+msgstr "Ceci est le style par défaut utilisé si le visiteur est un invité ou si un utilisateur n'a pas modifié ce paramètre dans son profil."
+
+msgid "UTC-12:00"
+msgstr "(UTC-12:00) Ligne de changement de date OUEST"
+
+msgid "UTC-11:00"
+msgstr "(UTC-11:00) Niue, Samoa"
+
+msgid "UTC-10:00"
+msgstr "(UTC-10:00) Hawaii et des îles Aléoutiennes, Îles Cook"
+
+msgid "UTC-09:30"
+msgstr "(UTC-09:30) Îles Marquises"
+
+msgid "UTC-09:00"
+msgstr "(UTC-09:00) Alaska, Îles Gambier"
+
+msgid "UTC-08:30"
+msgstr "(UTC-08:30) Îles Pitcairn"
+
+msgid "UTC-08:00"
+msgstr "(UTC-08:00) Pacifique"
+
+msgid "UTC-07:00"
+msgstr "(UTC-07:00) Montagnes, les Rocheuses"
+
+msgid "UTC-06:00"
+msgstr "(UTC-06:00) Centre"
+
+msgid "UTC-05:00"
+msgstr "(UTC-05:00) Est"
+
+msgid "UTC-04:00"
+msgstr "(UTC-04:00) Atlantique"
+
+msgid "UTC-03:30"
+msgstr "(UTC-03:30) Terre-Neuve"
+
+msgid "UTC-03:00"
+msgstr "(UTC-03:00) Amazone, Centre du Groenland"
+
+msgid "UTC-02:00"
+msgstr "(UTC-02:00) Milieu de l'Atlantique"
+
+msgid "UTC-01:00"
+msgstr "(UTC-01:00) Açores, Cap Vert, Groenland de l'Est"
+
+msgid "UTC"
+msgstr "(UTC) Europe Occidentale, Greenwich"
+
+msgid "UTC+01:00"
+msgstr "(UTC+01:00) Europe Centrale, Afrique Occidentale"
+
+msgid "UTC+02:00"
+msgstr "(UTC+02:00) Europe de l'Est, Afrique Centrale"
+
+msgid "UTC+03:00"
+msgstr "(UTC+03:00) Moscou, Afrique Orientale"
+
+msgid "UTC+03:30"
+msgstr "(UTC+03:30) Iran"
+
+msgid "UTC+04:00"
+msgstr "(UTC+04:00) Golf, Samara"
+
+msgid "UTC+04:30"
+msgstr "(UTC+04:30) Afghanistan"
+
+msgid "UTC+05:00"
+msgstr "(UTC+05:00) Pakistan, Iekaterinbourg"
+
+msgid "UTC+05:30"
+msgstr "(UTC+05:30) Inde, Sri Lanka"
+
+msgid "UTC+05:45"
+msgstr "(UTC+05:45) Népal"
+
+msgid "UTC+06:00"
+msgstr "(UTC+06:00) Bangladesh, Bhutan, Novosibirsk"
+
+msgid "UTC+06:30"
+msgstr "(UTC+06:30) Îles Cocos, Myanmar"
+
+msgid "UTC+07:00"
+msgstr "(UTC+07:00) Indochine, Krasnoyarsk"
+
+msgid "UTC+08:00"
+msgstr "(UTC+08:00) Grande Chin, Australie occidentale, Irkutsk"
+
+msgid "UTC+08:45"
+msgstr "(UTC+08:45) Australie occidentale"
+
+msgid "UTC+09:00"
+msgstr "(UTC+09:00) Japon, Corée, Chine"
+
+msgid "UTC+09:30"
+msgstr "(UTC+09:30) Australie Méridionale"
+
+msgid "UTC+10:00"
+msgstr "(UTC+10:00) Australie Orientale, Vladivostok"
+
+msgid "UTC+10:30"
+msgstr "(UTC+10:30) Île Lord Howe"
+
+msgid "UTC+11:00"
+msgstr "(UTC+11:00) Île Salomon, Magadan"
+
+msgid "UTC+11:30"
+msgstr "(UTC+11:30) Île Norfolk"
+
+msgid "UTC+12:00"
+msgstr "(UTC+12:00) Nouvelle Zélande, Fiji, Kamchatka"
+
+msgid "UTC+12:45"
+msgstr "(UTC+12:45) Îles Chatham"
+
+msgid "UTC+13:00"
+msgstr "(UTC+13:00) Tonga, Îles Phoenix"
+
+msgid "UTC+14:00"
+msgstr "(UTC+14:00) Îles de la Ligne"
+
+msgid "Timeouts subhead"
+msgstr "Horaire et délais avant interruption"
+
+msgid "Time format label"
+msgstr "Format de l'horaire"
+
+msgid "PHP manual"
+msgstr "manuel PHP"
+
+msgid "Time format help"
+msgstr "[Format actuel&#160;: %s]. Rendez-vous au %s pour des options de formatage."
+
+msgid "Date format label"
+msgstr "Format de la date"
+
+msgid "Date format help"
+msgstr "[Format actuel&#160;: %s]. Rendez-vous au %s pour des options de formatage."
+
+msgid "Visit timeout label"
+msgstr "Délai d'interruption de visite"
+
+msgid "Visit timeout help"
+msgstr "Délai en secondes d'inactivité d'un utilisateur avant de mettre à jour ses données de dernière visite (touche principalement les indicateurs de nouveau message)."
+
+msgid "Online timeout label"
+msgstr "Délai de déconnexion"
+
+msgid "Online timeout help"
+msgstr "Délai en secondes d'inactivité d'un utilisateur avant d'être retiré de la liste des utilisateurs en ligne."
+
+msgid "Display subhead"
+msgstr "Affichage"
+
+msgid "Version number label"
+msgstr "Numéro de version"
+
+msgid "Version number help"
+msgstr "Afficher la version de FluxBB dans le pied de page."
+
+msgid "Info in posts label"
+msgstr "Infos sur l'utilisateur dans les messages"
+
+msgid "Info in posts help"
+msgstr "Afficher les informations à propos de l'utilisateur ayant créé le  message sous son nom d'utilisateur dans la discussion. Les informations données sont&#160;: le lieu, la date d'inscription, le nombre de messages publiés et les liens de contact (e-mail et URL)."
+
+msgid "Post count label"
+msgstr "Nombre de messages"
+
+msgid "Post count help"
+msgstr "Affiche le nombre de messages publiés par un utilisateur (indiqué dans les discussions, le profil et la liste d'utilisateurs)."
+
+msgid "Smilies label"
+msgstr "Émoticônes dans les messages"
+
+msgid "Smilies help"
+msgstr "Convertit les émoticônes en petites icônes graphiques."
+
+msgid "Smilies sigs label"
+msgstr "Émoticônes dans les signatures"
+
+msgid "Smilies sigs help"
+msgstr "Convertit les émoticônes en petites icônes graphiques dans les signatures d'utilisateurs."
+
+msgid "Clickable links label"
+msgstr "Rendre les liens cliquables"
+
+msgid "Clickable links help"
+msgstr "Si activée, FluxBB détectera automatiquement les URL dans les messages et les convertira en hyperliens cliquables."
+
+msgid "Topic review label"
+msgstr "Résumé de discussion"
+
+msgid "Topic review help"
+msgstr "Nombre maximal de sujets à afficher lors de la composition de message (le plus récent en premier). 0 pour désactiver."
+
+msgid "Topics per page label"
+msgstr "Discussions par page"
+
+msgid "Topics per page help"
+msgstr "Le nombre de discussions à afficher par défaut par page dans un forum. Les utilisateurs peuvent personnaliser ce paramètre."
+
+msgid "Posts per page label"
+msgstr "Messages par page"
+
+msgid "Posts per page help"
+msgstr "Le nombre de messages à afficher par défaut par page dans une discussion. Les utilisateurs peuvent personnaliser ce paramètre."
+
+msgid "Indent label"
+msgstr "Tabulation"
+
+msgid "Indent help"
+msgstr "Si définie à 8, une indentation normale sera utilisée lors de l'affichage du texte contenu dans une balise [code][/code]. Sinon, le nombre d'espaces indiqué sera utilisé pour l'indentation du texte."
+
+msgid "Quote depth label"
+msgstr "Niveau maximum de citations imbriquées"
+
+msgid "Quote depth help"
+msgstr "Le nombre de fois qu'une balise [quote] peut apparaîre à l'intérieure d'une autre balise [quote], toute balise de niveau supérieur sera ignorée."
+
+msgid "Features subhead"
+msgstr "Fonctionnalités"
+
+msgid "Quick post label"
+msgstr "Réponse rapide"
+
+msgid "Quick post help"
+msgstr "Si activée, FluxBB ajoutera un formulaire de réponse rapide au bas des sujets. Ainsi, les utilisateurs pourront répondre directement à partir du sujet."
+
+msgid "Users online label"
+msgstr "Utilisateurs en ligne"
+
+msgid "Users online help"
+msgstr "Affiche des informations sur la page d'accueil indiquant le nombre d'invités et d'inscrits visitant actuellement les forums."
+
+msgid "Censor words label"
+msgstr "Mots censurés"
+
+msgid "Censor words help"
+msgstr "Activez ceci pour censurer des mots spécifiques dans le forum. Rendez-vous à la rubrique %s pour davantage d'informations."
+
+msgid "Signatures label"
+msgstr "Signatures"
+
+msgid "Signatures help"
+msgstr "Autoriser les utilisateurs à ajouter une signature en bas de message."
+
+msgid "User has posted label"
+msgstr "Indication de message antérieur"
+
+msgid "User has posted help"
+msgstr "Cette fonctionnalité affiche un point devant les sujets dans viewforum.php si l'utilisateur actuellement connecté a déjà écrit un message dans le sujet. Désactivez cette fonction si vous constatez des problèmes de surcharge du serveur."
+
+msgid "Topic views label"
+msgstr "Affichages de sujet"
+
+msgid "Topic views help"
+msgstr "Conserver le nombre de fois qu'un sujet a été visionné. Désactivez cette option si vous constatez une surcharge du serveur dans un forum très fréquenté."
+
+msgid "Quick jump label"
+msgstr "Basculement rapide"
+
+msgid "Quick jump help"
+msgstr "Activer la liste déroulante de basculement rapide (basculer vers un forum)."
+
+msgid "GZip label"
+msgstr "Compression GZip"
+
+msgid "GZip help"
+msgstr "Si activée, FluxBB compressera au format gzip ce qui sera envoyé au navigateur. Cela réduira l'utilisation de la bande passante mais utilisera davantage les ressources du processeur. Cette fonctionnalité demande une configuration de PHP avec zlib (--with-zlib). Remarque : si vous avez d'ores et déjà configuré un des modules Apache mod_gzip ou mod_deflate pour compresser les scripts PHP, vous devriez désactiver cette fonctionnalité."
+
+msgid "Search all label"
+msgstr "Rechercher dans tous les forums"
+
+msgid "Search all help"
+msgstr "Si désactivée, les recherches ne pourront être effectuées que dans un forum à la fois. Désactivez ceci si la charge du serveur est trop élevée à cause d'un nombre de recherches trop important."
+
+msgid "Menu items label"
+msgstr "Éléments de menu supplémentaires"
+
+msgid "Menu items help"
+msgstr "En ajoutant des hyperliens HTML dans cette boîte, un nombre illimité d'éléments peuvent être ajoutés au menu de navigation situé en haut de chaque page. Le format pour ajouter de nouveaux liens est le suivant&#160;: X = &lt;a href=\"URL\"&gt;INTITULE DU LIEN&lt;/a&gt; où X est la position à laquelle le lien devra être inséré (ex. : 0 pour insérer au début et 2 pour insérer après l'élément «&#160;Liste d'utilisateurs&#160;»). Chaque élément devra se trouver dans une nouvelle ligne."
+
+msgid "None"
+msgstr "Aucun"
+
+msgid "No cache"
+msgstr "Ne pas placer dans le cache"
+
+msgid "Minutes"
+msgstr "%d minutes"
+
+msgid "Reports subhead"
+msgstr "Signalements"
+
+msgid "Reporting method label"
+msgstr "Méthode de signalement"
+
+msgid "Internal"
+msgstr "Interne"
+
+msgid "By e-mail"
+msgstr "E-mail"
+
+msgid "Both"
+msgstr "Les deux"
+
+msgid "Reporting method help"
+msgstr "Choisissez la méthode pour traiter les signalements de discussion/message. Vous pouvez opter pour le système de signalement interne, l'envoi d'un e-mail à la liste de diffusion (voir ci-dessous) ou effectuer les deux opérations."
+
+msgid "Mailing list label"
+msgstr "Liste de diffusion"
+
+msgid "Mailing list help"
+msgstr "Une liste d'abonnés séparés par une virgule. Les personnes dans cette liste sont les destinataires des signalements."
+
+msgid "Avatars subhead"
+msgstr "Avatars"
+
+msgid "Use avatars label"
+msgstr "Utiliser des avatars"
+
+msgid "Use avatars help"
+msgstr "Si activée, les utilisateurs pourront envoyer vers le serveur un avatar qui sera affiché sous leur titre/rang."
+
+msgid "Upload directory label"
+msgstr "Répertoire d'envoi"
+
+msgid "Upload directory help"
+msgstr "Le répertoire vers lequel les avatars seront envoyés (relatif au répertoire racine de FluxBB). PHP doit avoir les permissions d'écriture dans ce répertoire."
+
+msgid "Max width label"
+msgstr "Largeur max"
+
+msgid "Max width help"
+msgstr "La largeur maximale autorisée pour les avatars en pixels (60 recommandés)."
+
+msgid "Max height label"
+msgstr "Hauteur max"
+
+msgid "Max height help"
+msgstr "La hauteur maximale autorisée pour les avatars en pixels (60 recommandés)."
+
+msgid "Max size label"
+msgstr "Taille max"
+
+msgid "Max size help"
+msgstr "La taille maximale autorisée pour les avatars en octets (10240 recommandés)."
+
+msgid "E-mail subhead"
+msgstr "E-mail"
+
+msgid "Admin e-mail label"
+msgstr "E-mail de l'administrateur"
+
+msgid "Admin e-mail help"
+msgstr "L'adresse électronique de l'administrateur du forum."
+
+msgid "Webmaster e-mail label"
+msgstr "E-mail du webmaster"
+
+msgid "Webmaster e-mail help"
+msgstr "Ceci est l'adresse indiquée comme adresse de provenance dans les e-mails envoyés par le forum."
+
+msgid "Forum subscriptions label"
+msgstr "Suivi de forum"
+
+msgid "Forum subscriptions help"
+msgstr "Autorise les utilisateurs à suivre des forums (reçoivent un e-mail lorsque quelqu'un créé une nouvelle discussion)."
+
+msgid "Topic subscriptions label"
+msgstr "Suivi de discussion"
+
+msgid "Topic subscriptions help"
+msgstr "Autorise les utilisateurs à suivre des discussions (reçoivent un e-mail lorsque quelqu'un répond)."
+
+msgid "SMTP address label"
+msgstr "Adresse du serveur SMTP"
+
+msgid "SMTP address help"
+msgstr "L'adresse d'un serveur SMTP externe à utiliser pour envoyer les e-mails. Vous pouvez spécifier un numéro de port personnalisé si le serveur SMTP n'utilise pas le port par défaut 25 (exemple : mail.monhôte.com:3580). Laisser vide pour utiliser le programme d'envoi d'e-mail local."
+
+msgid "SMTP username label"
+msgstr "Nom d'utilisateur SMTP"
+
+msgid "SMTP username help"
+msgstr "Nom d'utilisateur pour serveur SMTP. Indiquez un nom d'utilisateur uniquement si cela est demandé par le serveur SMTP (la plupart des serveurs <strong>ne</strong> nécessitent <strong>pas</strong> d'authentification)."
+
+msgid "SMTP password label"
+msgstr "Mot de passe SMTP"
+
+msgid "SMTP change password help"
+msgstr "Cocher ceci si vous souhaitez modifier ou supprimer le mot de passe stocké actuellement."
+
+msgid "SMTP password help"
+msgstr "Mot de passe pour serveur SMTP. Indiquez un mot de passe uniquement si cela est demandé par le serveur SMTP (la plupart des serveurs <strong>ne</strong> nécessitent <strong>pas</strong> d'authentification). Veuillez indiquer deux fois votre mot de passe pour confirmation."
+
+msgid "SMTP SSL label"
+msgstr "Chiffrage du SMTP par SSL"
+
+msgid "SMTP SSL help"
+msgstr "Chiffre la connexion vers le serveur SMTP en utilisant SSL. Ne devrait être utilisé que si votre serveur SMTP le demande et que votre version de PHP prend en charge SSL."
+
+msgid "Registration subhead"
+msgstr "Inscription"
+
+msgid "Allow new label"
+msgstr "Autoriser de nouvelles inscriptions"
+
+msgid "Allow new help"
+msgstr "Indique si ce forum accepte de nouvelles inscriptions. Ne désactiver que sous certaines conditions."
+
+msgid "Verify label"
+msgstr "Vérifier les inscriptions"
+
+msgid "Verify help"
+msgstr "Si activée, les utilisateurs obtiendront par e-mail un mot de passe aléatoire lors de leur inscription. Ils pourront alors se connecter et modifier leur mot de passe dans leur profil s'ils le souhaitent. Cette fonctionnalité demande également une vérification de leur adresse électronique s'ils choisissent d'en changer. Ceci est un moyen efficace d'éviter l'inscription abusive et de vérifier que les utilisateurs ont une adresse électronique correcte associée à leur profil."
+
+msgid "Report new label"
+msgstr "Signaler les nouvelles inscriptions"
+
+msgid "Report new help"
+msgstr "Si activée, FluxBB notifiera les utilisateurs dans la liste de diffusion (voir ci-dessus) lorsqu'un nouvel utilisateur s'inscrit sur les forums."
+
+msgid "Use rules label"
+msgstr "Règles du forum pour les utilisateurs"
+
+msgid "Use rules help"
+msgstr "Si activée, les utilisateurs devront accepter les règles lorsqu'ils s'inscriront (indiquez le texte ci-dessous). Ces règles seront toujours disponibles sous forme de lien dans le menu de navigation en haut de chaque page."
+
+msgid "Rules label"
+msgstr "Indiquez vos règles d'utilisation ici"
+
+msgid "Rules help"
+msgstr "Ici vous pouvez indiquer toute règle ou autre information que l'utilisateur doit considérer et accepter avant de s'inscrire. Si vous avez activé les règles ci-dessus vous devez saisir quelque chose ici, sinon, elles seront désactivées. Ce texte ne sera pas traité comme les messages ordinaires et peut contenir du code HTML."
+
+msgid "E-mail default label"
+msgstr "Paramètre e-mail par défaut"
+
+msgid "E-mail default help"
+msgstr "Choisissez le paramètre de vie privée pour les nouvelles inscriptions d'utilisateurs."
+
+msgid "Display e-mail label"
+msgstr "Divulguer l'adresse électronique aux autres utilisateurs."
+
+msgid "Hide allow form label"
+msgstr "Masquer l'adresse électronique mais autoriser l'utilisation du formulaire d'envoi d'e-mail."
+
+msgid "Hide both label"
+msgstr "Masquer l'adresse électronique et ne pas autoriser l'utilisation du formulaire d'envoi d'e-mail."
+
+msgid "Announcement subhead"
+msgstr "Annonces"
+
+msgid "Display announcement label"
+msgstr "Afficher l'annonce"
+
+msgid "Display announcement help"
+msgstr "Activez ceci pour afficher le message ci-dessous sur chaque page des forums."
+
+msgid "Announcement message label"
+msgstr "Message d'annonce"
+
+msgid "Announcement message help"
+msgstr "Ce texte ne sera pas traité comme les messages ordinaires et peut contenir du code HTML."
+
+msgid "Maintenance subhead"
+msgstr "Maintenance"
+
+msgid "Maintenance mode label"
+msgstr "Mode maintenance"
+
+msgid "Maintenance mode help"
+msgstr "Si activé, le forum ne sera disponible qu'aux administrateurs. Ceci devra être utilisé si le forum doit être indisponible temporairement pour maintenance. ATTENTION&#160;! Ne vous déconnectez pas lorsque le forum est en mode maintenance. Vous ne seriez plus en mesure de vous connecter."
+
+msgid "Maintenance message label"
+msgstr "Message de maintenance"
+
+msgid "Maintenance message help"
+msgstr "Le message qui s'affichera pour les utilisateurs lorsque le forum sera en mode maintenance. Si laissé vide, un message par défaut sera utilisé. Ce texte ne sera pas traité comme les messages ordinaires et peut contenir du code HTML."

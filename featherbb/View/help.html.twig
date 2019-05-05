@@ -1,0 +1,119 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.help.start') }}
+
+<h2><span>{{ trans('BBCode') }}</span></h2>
+<div class="box">
+    <div class="inbox">
+        <p><a name="bbcode"></a>{{ trans('BBCode info 1') }}</p>
+        <p>{{ trans('BBCode info 2') }}</p>
+    </div>
+</div>
+<h2><span>{{ trans('Text style') }}</span></h2>
+<div class="box">
+    <div class="inbox">
+        <p>{{ trans('Text style info') }}</p>
+        <p><code>[b]{{ trans('Bold text') }}[/b]</code> {{ trans('produces') }} <samp><strong>{{ trans('Bold text') }}</strong></samp></p>
+        <p><code>[u]{{ trans('Underlined text') }}[/u]</code> {{ trans('produces') }} <samp><span class="bbu">{{ trans('Underlined text') }}</span></samp></p>
+        <p><code>[i]{{ trans('Italic text') }}[/i]</code> {{ trans('produces') }} <samp><em>{{ trans('Italic text') }}</em></samp></p>
+        <p><code>[s]{{ trans('Strike-through text') }}[/s]</code> {{ trans('produces') }} <samp><span class="bbs">{{ trans('Strike-through text') }}</span></samp></p>
+        <p><code>[del]{{ trans('Deleted text') }}[/del]</code> {{ trans('produces') }} <samp><del>{{ trans('Deleted text') }}</del></samp></p>
+        <p><code>[ins]{{ trans('Inserted text') }}[/ins]</code> {{ trans('produces') }} <samp><ins>{{ trans('Inserted text') }}</ins></samp></p>
+        <p><code>[em]{{ trans('Emphasised text') }}[/em]</code> {{ trans('produces') }} <samp><em>{{ trans('Emphasised text') }}</em></samp></p>
+        <p><code>[color=#FF0000]{{ trans('Red text') }}[/color]</code> {{ trans('produces') }} <samp><span style="color: #ff0000">{{ trans('Red text') }}</span></samp></p>
+        <p><code>[color=blue]{{ trans('Blue text') }}[/color]</code> {{ trans('produces') }} <samp><span style="color: blue">{{ trans('Blue text') }}</span></samp></p>
+        <p><code>[h]{{ trans('Heading text') }}[/h]</code> {{ trans('produces') }}</p> <div class="postmsg"><h5>{{ trans('Heading text') }}</h5></div>
+    </div>
+</div>
+<h2><span>{{ trans('Links and images') }}</span></h2>
+<div class="box">
+    <div class="inbox">
+        <p><{{ trans('Links info') }}</p>
+        <p><a name="url"></a><code>[url={{ urlBase(true) ~'/' }}]{{ settings('o_board_title') }}[/url]</code> {{ trans('produces') }} <samp><a href="{{ urlBase(true) ~'/' }}">{{ settings('o_board_title') }}</a></samp></p>
+        <p><code>[url]{{ urlBase(true) ~'/' }}[/url]</code> {{ trans('produces') }} <samp><a href="{{ urlBase(true) ~'/' }}">{{ urlBase(true) ~'/' }}</a></samp></p>
+        <p><code>[url=/help/]{{ trans('This help page') }}[/url]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('help') }}">{{ trans('This help page') }}</a></samp></p>
+        <p><code>[email]myname@example.com[/email]</code> {{ trans('produces') }} <samp><a href="mailto:myname@example.com">myname@example.com</a></samp></p>
+        <p><code>[email=myname@example.com]{{ trans('My email address') }}[/email]</code> {{ trans('produces') }} <samp><a href="mailto:myname@example.com">{{ trans('My email address') }}</a></samp></p>
+        <p><code>[topic=1]{{ trans('Test topic') }}[/topic]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}">{{ trans('Test topic') }}</a></samp></p>
+        <p><code>[topic]1[/topic]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}">{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}</a></samp></p>
+        <p><code>[post=1]{{ trans('Test post') }}[/post]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('viewPost', {'name': 'test', 'id': 1, 'pid': '1'}) }}#1">{{ trans('Test post') }}</a></samp></p>
+        <p><code>[post]1[/post]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('viewPost', {'name': 'test', 'id': 1, 'pid': '1'}) }}#1">{{ pathFor('viewPost', {'name': 'test', 'id': 1, 'pid': '1'}) }}#1</a></samp></p>
+        <p><code>[forum=1]{{ trans('Test forum') }}[]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}">{{ trans('Test forum') }}</a></samp></p>
+        <p><code>[forum]1[]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Forum', {'id': '1', 'name': 'test-name'}) }}">{{ pathFor('Forum', {'id': '1', 'name': 'test-name'}) }}</a></samp></p>
+        <p><code>[user=2]{{ trans('Test user') }}[/user]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('userProfile', {'id': '2'}) }}">{{ trans('Test user') }}</a></samp></p>
+        <p><code>[user]2[/user]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('userProfile', {'id': '2'}) }}">{{ pathFor('userProfile', {'id': '2'}) }}</a></samp></p>
+    </div>
+    <div class="inbox">
+        <p><a name="img"></a>{{ trans('Images info') }}</p>
+        <p><code>[img={{ trans('FeatherBB bbcode test') }}]{{ urlBase(true) }}/style/img/logo.png[/img]</code> {{ trans('produces') }} <samp><img style="height: 21px" src="{{ urlBase(true) }}/style/img/logo.png" alt="{{ trans('FeatherBB bbcode test') }}" /></samp></p>
+    </div>
+</div>
+<h2><span>{{ trans('Quotes') }}</span></h2>
+<div class="box">
+    <div class="inbox">
+        <p>{{ trans('Quotes info') }}</p>
+        <p><code>[quote=James]{{ trans('Quote text') }}[/quote]</code></p>
+        <p>{{ trans('produces quote box') }}</p>
+        <div class="postmsg">
+            <div class="quotebox"><cite>James {{ trans('wrote') }}</cite><blockquote><div><p>{{ trans('Quote text') }}</p></div></blockquote></div>
+        </div>
+        <p>{{ trans('Quotes info 2') }}</p>
+        <p><code>[quote]{{ trans('Quote text') }}[/quote]</code></p>
+        <p>{{ trans('produces quote box') }}</p>
+        <div class="postmsg">
+            <div class="quotebox"><blockquote><div><p>{{ trans('Quote text') }}</p></div></blockquote></div>
+        </div>
+        <p>{{ trans('quote note') }}</p>
+    </div>
+</div>
+<h2><span>{{ trans('Code') }}</span></h2>
+<div class="box">
+    <div class="inbox">
+        <p>{{ trans('Code info') }}</p>
+        <p><code>[code]{{ trans('Code text') }}[/code]</code></p>
+        <p>{{ trans('produces code box') }}</p>
+        <div class="postmsg">
+            <div class="codebox"><pre><code class="hljs">{{ trans('Code text') }}</code></pre></div>
+        </div>
+    </div>
+</div>
+<h2><span>{{ trans('Lists') }}</span></h2>
+<div class="box">
+    <div class="inbox">
+        <p><a name="lists"></a>{{ trans('List info') }}</p>
+        <p><code>[list][*]{{ trans('List text 1') }}[/*][*]{{ trans('List text 2') }}[/*][*]{{ trans('List text 3') }}[/*][/list]</code>
+        <br /><span>{{ trans('produces list') }}</span></p>
+        <div class="postmsg">
+            <ul><li><p>{{ trans('List text 1') }}</p></li><li><p>{{ trans('List text 2') }}</p></li><li><p>{{ trans('List text 3') }}</p></li></ul>
+        </div>
+        <p><code>[list=1][*]{{ trans('List text 1') }}[/*][*]{{ trans('List text 2') }}[/*][*]{{ trans('List text 3') }}[/*][/list]</code>
+        <br /><span>{{ trans('produces decimal list') }}</span></p>
+        <div class="postmsg">
+            <ol class="decimal"><li><p>{{ trans('List text 1') }}</p></li><li><p>{{ trans('List text 2') }}</p></li><li><p>{{ trans('List text 3') }}</p></li></ol>
+        </div>
+        <p><code>[list=a][*]{{ trans('List text 1') }}[/*][*]{{ trans('List text 2') }}[/*][*]{{ trans('List text 3') }}[/*][/list]</code>
+        <br /><span>{{ trans('produces alpha list') }}</span></p>
+        <div class="postmsg">
+            <ol class="alpha"><li><p>{{ trans('List text 1') }}</p></li><li><p>{{ trans('List text 2') }}</p></li><li><p>{{ trans('List text 3') }}</p></li></ol>
+        </div>
+    </div>
+</div>
+<h2><span>{{ trans('Nested tags') }}</span></h2>
+<div class="box">
+    <div class="inbox">
+        <p>{{ trans('Nested tags info') }}</p>
+        <p><code>[b][u]{{ trans('Bold, underlined text') }}[/u][/b]</code> {{ trans('produces') }} <samp><strong><span class="bbu">{{ trans('Bold, underlined text') }}</span></strong></samp></p>
+    </div>
+</div>
+<h2><span>{{ trans('Smilies') }}</span></h2>
+<div class="box">
+    <div class="inbox">
+        <p><a name="smilies"></a>{{ trans('Smilies info') }}</p>
+
+    </div>
+</div>
+
+    {{ fireHook('view.header.end') }}
+{% endblock content %}

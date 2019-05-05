@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015-2016 FeatherBB
+ * Copyright (C) 2015-2019 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -10,37 +10,43 @@
 namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Email;
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Url;
+use FeatherBB\Core\Interfaces\Cache as CacheInterface;
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Prefs;
+use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Utils;
 use FeatherBB\Model\Cache;
 
 class Options
 {
-    public function update_options()
+    public function update()
     {
-        $form = array(
+        $form = [
             'board_title'            => Utils::trim(Input::post('form_board_title')),
             'board_desc'            => Utils::trim(Input::post('form_board_desc')),
             'base_url'                => Utils::trim(Input::post('form_base_url')),
-            'default_timezone'        => floatval(Input::post('form_default_timezone')),
-            'default_dst'            => Input::post('form_default_dst') != '1' ? '0' : '1',
-            'default_lang'            => Utils::trim(Input::post('form_default_lang')),
-            'default_style'            => Utils::trim(Input::post('form_default_style')),
-            'time_format'            => Utils::trim(Input::post('form_time_format')),
-            'date_format'            => Utils::trim(Input::post('form_date_format')),
+            // 'default_timezone'        => floatval(Input::post('form_default_timezone')),
+            // 'default_dst'            => Input::post('form_default_dst') != '1' ? '0' : '1',
+            // 'default_lang'            => Utils::trim(Input::post('form_default_lang')),
+            // 'default_style'            => Utils::trim(Input::post('form_default_style')),
+            // 'time_format'            => Utils::trim(Input::post('form_time_format')),
+            // 'date_format'            => Utils::trim(Input::post('form_date_format')),
             'timeout_visit'            => (intval(Input::post('form_timeout_visit')) > 0) ? intval(Input::post('form_timeout_visit')) : 1,
             'timeout_online'        => (intval(Input::post('form_timeout_online')) > 0) ? intval(Input::post('form_timeout_online')) : 1,
-            'redirect_delay'        => (intval(Input::post('form_redirect_delay')) >= 0) ? intval(Input::post('form_redirect_delay')) : 0,
             'show_version'            => Input::post('form_show_version') != '1' ? '0' : '1',
             'show_user_info'        => Input::post('form_show_user_info') != '1' ? '0' : '1',
             'show_post_count'        => Input::post('form_show_post_count') != '1' ? '0' : '1',
-            'smilies'                => Input::post('form_smilies') != '1' ? '0' : '1',
-            'smilies_sig'            => Input::post('form_smilies_sig') != '1' ? '0' : '1',
+            // 'smilies'                => Input::post('form_smilies') != '1' ? '0' : '1',
+            // 'smilies_sig'            => Input::post('form_smilies_sig') != '1' ? '0' : '1',
             'make_links'            => Input::post('form_make_links') != '1' ? '0' : '1',
             'topic_review'            => (intval(Input::post('form_topic_review')) >= 0) ? intval(Input::post('form_topic_review')) : 0,
-            'disp_topics_default'    => intval(Input::post('form_disp_topics_default')),
-            'disp_posts_default'    => intval(Input::post('form_disp_posts_default')),
+            // 'disp_topics_default'    => intval(Input::post('form_disp_topics_default')),
+            // 'disp_posts_default'    => intval(Input::post('form_disp_posts_default')),
             'indent_num_spaces'        => (intval(Input::post('form_indent_num_spaces')) >= 0) ? intval(Input::post('form_indent_num_spaces')) : 0,
             'quote_depth'            => (intval(Input::post('form_quote_depth')) > 0) ? intval(Input::post('form_quote_depth')) : 1,
             'quickpost'                => Input::post('form_quickpost') != '1' ? '0' : '1',
@@ -53,8 +59,6 @@ class Options
             'gzip'                    => Input::post('form_gzip') != '1' ? '0' : '1',
             'search_all_forums'        => Input::post('form_search_all_forums') != '1' ? '0' : '1',
             'additional_navlinks'    => Utils::trim(Input::post('form_additional_navlinks')),
-            'feed_type'                => intval(Input::post('form_feed_type')),
-            'feed_ttl'                => intval(Input::post('form_feed_ttl')),
             'report_method'            => intval(Input::post('form_report_method')),
             'mailing_list'            => Utils::trim(Input::post('form_mailing_list')),
             'avatars'                => Input::post('form_avatars') != '1' ? '0' : '1',
@@ -74,14 +78,29 @@ class Options
             'regs_report'            => Input::post('form_regs_report') != '1' ? '0' : '1',
             'rules'                    => Input::post('form_rules') != '1' ? '0' : '1',
             'rules_message'            => Utils::trim(Input::post('form_rules_message')),
-            'default_email_setting'    => intval(Input::post('form_default_email_setting')),
+            // 'default_email_setting'    => intval(Input::post('form_default_email_setting')),
             'announcement'            => Input::post('form_announcement') != '1' ? '0' : '1',
             'announcement_message'    => Utils::trim(Input::post('form_announcement_message')),
             'maintenance'            => Input::post('form_maintenance') != '1' ? '0' : '1',
             'maintenance_message'    => Utils::trim(Input::post('form_maintenance_message')),
-        );
+        ];
 
-        $form = Container::get('hooks')->fire('model.admin.options.update_options.form', $form);
+        $prefs = [
+            'language'            => Utils::trim(Input::post('form_default_lang')),
+            'style'            => Utils::trim(Input::post('form_default_style')),
+            'dst'            => Input::post('form_default_dst') != '1' ? '0' : '1',
+            'timezone'        => floatval(Input::post('form_default_timezone')),
+            'time_format'            => Utils::trim(Input::post('form_time_format')),
+            'date_format'            => Utils::trim(Input::post('form_date_format')),
+            'show.smilies'                => Input::post('form_smilies') != '1' ? '0' : '1',
+            'show.smilies.sig'            => Input::post('form_smilies_sig') != '1' ? '0' : '1',
+            'disp.topics'    => intval(Input::post('form_disp_topics_default')),
+            'disp.posts'    => intval(Input::post('form_disp_posts_default')),
+            'email.setting'    => intval(Input::post('form_default_email_setting')),
+        ];
+
+        $form = Hooks::fire('model.admin.options.update_options.form', $form);
+        $prefs = Hooks::fire('model.admin.options.update_options.prefs', $prefs);
 
         if ($form['board_title'] == '') {
             throw new Error(__('Must enter title message'), 400);
@@ -102,28 +121,28 @@ class Options
         }
 
         $languages = \FeatherBB\Core\Lister::getLangs();
-        if (!in_array($form['default_lang'], $languages)) {
+        if (!in_array($prefs['language'], $languages)) {
             throw new Error(__('Bad request'), 404);
         }
 
         $styles = \FeatherBB\Core\Lister::getStyles();
-        if (!in_array($form['default_style'], $styles)) {
+        if (!in_array($prefs['style'], $styles)) {
             throw new Error(__('Bad request'), 404);
         }
 
-        if ($form['time_format'] == '') {
-            $form['time_format'] = 'H:i:s';
+        if ($prefs['time_format'] == '') {
+            $prefs['time_format'] = 'H:i:s';
         }
 
-        if ($form['date_format'] == '') {
-            $form['date_format'] = 'Y-m-d';
+        if ($prefs['date_format'] == '') {
+            $prefs['date_format'] = 'Y-m-d';
         }
 
-        if (!Container::get('email')->is_valid_email($form['admin_email'])) {
+        if (!Email::isValidEmail($form['admin_email'])) {
             throw new Error(__('Invalid e-mail message'), 400);
         }
 
-        if (!Container::get('email')->is_valid_email($form['webmaster_email'])) {
+        if (!Email::isValidEmail($form['webmaster_email'])) {
             throw new Error(__('Invalid webmaster e-mail message'), 400);
         }
 
@@ -142,11 +161,11 @@ class Options
 
         // Change or enter a SMTP password
         if (Input::post('form_smtp_change_pass')) {
-            $smtp_pass1 = Input::post('form_smtp_pass1') ? Utils::trim(Input::post('form_smtp_pass1')) : '';
-            $smtp_pass2 = Input::post('form_smtp_pass2') ? Utils::trim(Input::post('form_smtp_pass2')) : '';
+            $smtpPass1 = Input::post('form_smtp_pass1') ? Utils::trim(Input::post('form_smtp_pass1')) : '';
+            $smtpPass2 = Input::post('form_smtp_pass2') ? Utils::trim(Input::post('form_smtp_pass2')) : '';
 
-            if ($smtp_pass1 == $smtp_pass2) {
-                $form['smtp_pass'] = $smtp_pass1;
+            if ($smtpPass1 == $smtpPass2) {
+                $form['smtp_pass'] = $smtpPass1;
             } else {
                 throw new Error(__('SMTP passwords did not match'), 400);
             }
@@ -173,126 +192,103 @@ class Options
             $form['maintenance'] = '0';
         }
 
-        // Make sure the number of displayed topics and posts is between 3 and 75
-        if ($form['disp_topics_default'] < 3) {
-            $form['disp_topics_default'] = 3;
-        } elseif ($form['disp_topics_default'] > 75) {
-            $form['disp_topics_default'] = 75;
-        }
-
-        if ($form['disp_posts_default'] < 3) {
-            $form['disp_posts_default'] = 3;
-        } elseif ($form['disp_posts_default'] > 75) {
-            $form['disp_posts_default'] = 75;
-        }
-
-        if ($form['feed_type'] < 0 || $form['feed_type'] > 2) {
-            throw new Error(__('Bad request'), 400);
-        }
-
-        if ($form['feed_ttl'] < 0) {
-            throw new Error(__('Bad request'), 400);
+        if ($form['timeout_online'] >= $form['timeout_visit']) {
+            throw new Error(__('Timeout error message'), 400);
         }
 
         if ($form['report_method'] < 0 || $form['report_method'] > 2) {
             throw new Error(__('Bad request'), 400);
         }
 
-        if ($form['default_email_setting'] < 0 || $form['default_email_setting'] > 2) {
-            throw new Error(__('Bad request'), 400);
+        // Make sure the number of displayed topics and posts is between 3 and 75
+        if ($prefs['disp.topics'] < 3) {
+            $prefs['disp.topics'] = 3;
+        } elseif ($prefs['disp.topics'] > 75) {
+            $prefs['disp.topics'] = 75;
         }
 
-        if ($form['timeout_online'] >= $form['timeout_visit']) {
-            throw new Error(__('Timeout error message'), 400);
+        if ($prefs['disp.posts'] < 3) {
+            $prefs['disp.posts'] = 3;
+        } elseif ($prefs['disp.posts'] > 75) {
+            $prefs['disp.posts'] = 75;
+        }
+
+        if ($prefs['email.setting'] < 0 || $prefs['email.setting'] > 2) {
+            throw new Error(__('Bad request'), 400);
         }
 
         foreach ($form as $key => $input) {
             // Only update values that have changed
             if (array_key_exists('o_'.$key, Container::get('forum_settings')) && ForumSettings::get('o_'.$key) != $input) {
                 if ($input != '' || is_int($input)) {
-                    DB::for_table('config')->where('conf_name', 'o_'.$key)
-                                                               ->update_many('conf_value', $input);
+                    DB::table('config')->where('conf_name', 'o_'.$key)
+                                                               ->updateMany('conf_value', $input);
                 } else {
-                    DB::for_table('config')->where('conf_name', 'o_'.$key)
-                                                               ->update_many_expr('conf_value', 'NULL');
+                    DB::table('config')->where('conf_name', 'o_'.$key)
+                                                               ->updateManyExpr('conf_value', 'NULL');
                 }
             }
         }
 
+        Prefs::set($prefs);
+
         // Regenerate the config cache
-        Container::get('cache')->store('config', Cache::get_config());
-        $this->clear_feed_cache();
+        $config = array_merge(Cache::getConfig(), Cache::getPreferences());
+        CacheInterface::store('config', $config);
 
         return Router::redirect(Router::pathFor('adminOptions'), __('Options updated redirect'));
     }
 
-    public function clear_feed_cache()
-    {
-        $d = dir(ForumEnv::get('FORUM_CACHE_DIR'));
-        $d = Container::get('hooks')->fire('model.admin.options.clear_feed_cache.directory', $d);
-        while (($entry = $d->read()) !== false) {
-            if (substr($entry, 0, 10) == 'cache_feed' && substr($entry, -4) == '.php') {
-                @unlink(ForumEnv::get('FORUM_CACHE_DIR').$entry);
-            }
-            if (function_exists('opcache_invalidate')) {
-                opcache_invalidate(ForumEnv::get('FORUM_CACHE_DIR').$entry, true);
-            } elseif (function_exists('apc_delete_file')) {
-                @apc_delete_file(ForumEnv::get('FORUM_CACHE_DIR').$entry);
-            }
-        }
-        $d->close();
-    }
-
-    public function get_styles()
+    public function styles()
     {
         $styles = \FeatherBB\Core\Lister::getStyles();
-        $styles = Container::get('hooks')->fire('model.admin.options.get_styles.styles', $styles);
+        $styles = Hooks::fire('model.admin.options.get_styles.styles', $styles);
 
         $output = '';
 
         foreach ($styles as $temp) {
-            if (ForumSettings::get('o_default_style') == $temp) {
+            if (ForumSettings::get('style') == $temp) {
                 $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
             } else {
                 $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
             }
         }
 
-        $output = Container::get('hooks')->fire('model.admin.options.get_styles.output', $output);
+        $output = Hooks::fire('model.admin.options.get_styles.output', $output);
         return $output;
     }
 
-    public function get_langs()
+    public function languages()
     {
         $langs = \FeatherBB\Core\Lister::getLangs();
-        $langs = Container::get('hooks')->fire('model.admin.options.get_langs.langs', $langs);
+        $langs = Hooks::fire('model.admin.options.get_langs.langs', $langs);
 
         $output = '';
 
         foreach ($langs as $temp) {
-            if (ForumSettings::get('o_default_lang') == $temp) {
+            if (ForumSettings::get('language') == $temp) {
                 $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
             } else {
                 $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
             }
         }
 
-        $output = Container::get('hooks')->fire('model.admin.options.get_langs.output', $output);
+        $output = Hooks::fire('model.admin.options.get_langs.output', $output);
         return $output;
     }
 
-    public function get_times()
+    public function times()
     {
-        $times = array(5, 15, 30, 60);
-        $times = Container::get('hooks')->fire('model.admin.options.get_times.times', $times);
+        $times = [5, 15, 30, 60];
+        $times = Hooks::fire('model.admin.options.get_times.times', $times);
 
         $output = '';
 
         foreach ($times as $time) {
-            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'"'.(ForumSettings::get('o_feed_ttl') == $time ? ' selected="selected"' : '').'>'.sprintf(__('Minutes'), $time).'</option>'."\n";
+            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'>'.sprintf(__('Minutes'), $time).'</option>'."\n";
         }
 
-        $output = Container::get('hooks')->fire('model.admin.options.get_times.output', $output);
+        $output = Hooks::fire('model.admin.options.get_times.output', $output);
         return $output;
     }
 }

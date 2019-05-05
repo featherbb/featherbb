@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015-2016 FeatherBB
+ * Copyright (C) 2015-2019 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -10,283 +10,271 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\Cache;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Router;
+use FeatherBB\Core\Interfaces\User;
 use FeatherBB\Core\Track;
 use FeatherBB\Core\Url;
 use FeatherBB\Core\Utils;
 
 class Index
 {
-    // Returns page head
-    public function get_page_head()
-    {
-        Container::get('hooks')->fire('model.index.get_page_head_start');
-
-        if (ForumSettings::get('o_feed_type') == '1') {
-            $page_head = array('feed' => '<link rel="alternate" type="application/rss+xml" href="extern.php?action=feed&amp;type=rss" title="'.__('RSS active topics feed').'" />');
-        } elseif (ForumSettings::get('o_feed_type') == '2') {
-            $page_head = array('feed' => '<link rel="alternate" type="application/atom+xml" href="extern.php?action=feed&amp;type=atom" title="'.__('Atom active topics feed').'" />');
-        }
-
-        $page_head = Container::get('hooks')->fire('model.index.get_page_head', $page_head);
-
-        return $page_head;
-    }
-
     // Returns forum action
-    public function get_forum_actions()
+    public function forumActions()
     {
-        Container::get('hooks')->fire('model.index.get_forum_actions_start');
+        Hooks::fire('model.index.get_forum_actions_start');
 
-        $forum_actions = array();
+        $forumActions = [];
 
         // Display a "mark all as read" link
         if (!User::get()->is_guest) {
-            $forum_actions[] = '<a href="'.Router::pathFor('markRead').'">'.__('Mark all as read').'</a>';
+            $forumActions[] = '<a href="'.Router::pathFor('markRead').'">'.__('Mark all as read').'</a>';
         }
 
-        $forum_actions = Container::get('hooks')->fire('model.index.get_forum_actions', $forum_actions);
+        $forumActions = Hooks::fire('model.index.get_forum_actions', $forumActions);
 
-        return $forum_actions;
+        return $forumActions;
     }
 
     // Detects if a "new" icon has to be displayed
-    protected function get_new_posts()
+    protected function getNewPosts()
     {
-        Container::get('hooks')->fire('model.index.get_new_posts_start');
+        Hooks::fire('model.index.get_new_posts_start');
 
-        $query['select'] = array('f.id', 'f.last_post');
-        $query['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $query['select'] = ['f.id', 'f.last_post'];
+        $query['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
 
-        $query = DB::for_table('forums')
-            ->table_alias('f')
-            ->select_many($query['select'])
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
-            ->where_any_is($query['where'])
-            ->where_gt('f.last_post', User::get()->last_visit);
+        $query = DB::table('forums')
+            ->tableAlias('f')
+            ->selectMany($query['select'])
+            ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
+            ->whereAnyIs($query['where'])
+            ->whereGt('f.last_post', User::get()->last_visit);
 
-        $query = Container::get('hooks')->fireDB('model.index.query_get_new_posts', $query);
+        $query = Hooks::fireDB('model.index.query_get_new_posts', $query);
 
-        $query = $query->find_result_set();
+        $query = $query->findResultSet();
 
-        $forums = $new_topics = array();
-        $tracked_topics = Track::get_tracked_topics();
+        $forums = $newTopics = [];
+        $trackedTopics = Track::getTrackedTopics();
 
-        foreach ($query as $cur_forum) {
-            if (!isset($tracked_topics['forums'][$cur_forum->id]) || $tracked_topics['forums'][$cur_forum->id] < $cur_forum->last_post) {
-                $forums[$cur_forum->id] = $cur_forum->last_post;
+        foreach ($query as $curForum) {
+            if (!isset($trackedTopics['forums'][$curForum->id]) || $trackedTopics['forums'][$curForum->id] < $curForum->last_post) {
+                $forums[$curForum->id] = $curForum->last_post;
             }
         }
 
         if (!empty($forums)) {
-            if (empty($tracked_topics['topics'])) {
-                $new_topics = $forums;
+            if (empty($trackedTopics['topics'])) {
+                $newTopics = $forums;
             } else {
-                $query['select'] = array('forum_id', 'id', 'last_post');
+                $query['select'] = ['forum_id', 'id', 'last_post'];
 
-                $query = DB::for_table('topics')
-                    ->select_many($query['select'])
-                    ->where_in('forum_id', array_keys($forums))
-                    ->where_gt('last_post', User::get()->last_visit)
-                    ->where_null('moved_to');
+                $query = DB::table('topics')
+                    ->selectMany($query['select'])
+                    ->whereIn('forum_id', array_keys($forums))
+                    ->whereGt('last_post', User::get()->last_visit)
+                    ->whereNull('moved_to');
 
-                $query = Container::get('hooks')->fireDB('model.index.get_new_posts_query', $query);
+                $query = Hooks::fireDB('model.index.get_new_posts_query', $query);
 
-                $query = $query->find_result_set();
+                $query = $query->findResultSet();
 
-                foreach ($query as $cur_topic) {
-                    if (!isset($new_topics[$cur_topic->forum_id]) && (!isset($tracked_topics['forums'][$cur_topic->forum_id]) || $tracked_topics['forums'][$cur_topic->forum_id] < $forums[$cur_topic->forum_id]) && (!isset($tracked_topics['topics'][$cur_topic->id]) || $tracked_topics['topics'][$cur_topic->id] < $cur_topic->last_post)) {
-                        $new_topics[$cur_topic->forum_id] = $forums[$cur_topic->forum_id];
+                foreach ($query as $curTopic) {
+                    if (!isset($newTopics[$curTopic->forum_id]) && (!isset($trackedTopics['forums'][$curTopic->forum_id]) || $trackedTopics['forums'][$curTopic->forum_id] < $forums[$curTopic->forum_id]) && (!isset($trackedTopics['topics'][$curTopic->id]) || $trackedTopics['topics'][$curTopic->id] < $curTopic->last_post)) {
+                        $newTopics[$curTopic->forum_id] = $forums[$curTopic->forum_id];
                     }
                 }
             }
         }
 
-        $new_topics = Container::get('hooks')->fire('model.index.get_new_posts', $new_topics);
+        $newTopics = Hooks::fire('model.index.get_new_posts', $newTopics);
 
-        return $new_topics;
+        return $newTopics;
     }
 
     // Returns the elements needed to display categories and their forums
-    public function print_categories_forums()
+    public function printCategoriesForums()
     {
-        Container::get('hooks')->fire('model.index.print_categories_forums_start');
+        Hooks::fire('model.index.print_categories_forums_start');
 
         // Get list of forums and topics with new posts since last visit
         if (!User::get()->is_guest) {
-            $new_topics = $this->get_new_posts();
+            $newTopics = $this->getNewPosts();
         }
 
-        $query['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.forum_desc', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.num_posts', 'f.last_post', 'f.last_post_id', 'f.last_poster');
-        $query['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
-        $query['order_by'] = array('c.disp_position', 'c.id', 'f.disp_position');
+        $query['select'] = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.forum_desc', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.num_posts', 'f.last_post', 'f.last_post_id', 'last_post_tid' => 't.id', 'last_post_subject' => 't.subject', 'f.last_poster'];
+        $query['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
+        $query['order_by'] = ['c.disp_position', 'c.id', 'f.disp_position'];
 
-        $query = DB::for_table('categories')
-            ->table_alias('c')
-            ->select_many($query['select'])
-            ->inner_join('forums', array('c.id', '=', 'f.cat_id'), 'f')
-            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
-            ->where_any_is($query['where'])
-            ->order_by_many($query['order_by']);
+        $query = DB::table('categories')
+            ->tableAlias('c')
+            ->selectMany($query['select'])
+            ->innerJoin('forums', ['c.id', '=', 'f.cat_id'], 'f')
+            ->leftOuterJoin('topics', ['t.last_post_id', '=', 'f.last_post_id'], 't')
+            ->leftOuterJoin('forum_perms', 'fp.forum_id=f.id AND fp.group_id='.User::get()->g_id, 'fp')
+            ->whereAnyIs($query['where'])
+            ->whereNull('t.moved_to')
+            ->orderByMany($query['order_by']);
 
-        $query = Container::get('hooks')->fireDB('model.index.query_print_categories_forums', $query);
+        $query = Hooks::fireDB('model.index.query_print_categories_forums', $query);
 
-        $query = $query->find_result_set();
+        $query = $query->findResultSet();
 
-        $index_data = array();
+        $indexData = [];
         $i = 0;
-        foreach ($query as $cur_forum) {
+        foreach ($query as $curForum) {
             if ($i == 0) {
-                $cur_forum->cur_category = 0;
-                $cur_forum->forum_count_formatted = 0;
+                $curForum->cur_category = 0;
+                $curForum->forum_count_formatted = 0;
             }
 
-            if (isset($cur_forum->cur_category)) {
-                $cur_cat = $cur_forum->cur_category;
+            if (isset($curForum->cur_category)) {
+                $curCat = $curForum->cur_category;
             } else {
-                $cur_cat = 0;
+                $curCat = 0;
             }
 
-            if ($cur_forum->cid != $cur_cat) {
+            if ($curForum->cid != $curCat) {
                 // A new category since last iteration?
-                $cur_forum->forum_count_formatted = 0;
-                $cur_forum->cur_category = $cur_forum->cid;
+                $curForum->forum_count_formatted = 0;
+                $curForum->cur_category = $curForum->cid;
             }
 
-            ++$cur_forum->forum_count_formatted;
+            ++$curForum->forum_count_formatted;
 
-            $cur_forum->item_status = ($cur_forum->forum_count_formatted % 2 == 0) ? 'roweven' : 'rowodd';
-            $forum_field_new = '';
-            $cur_forum->icon_type = 'icon';
+            $curForum->item_status = ($curForum->forum_count_formatted % 2 == 0) ? 'roweven' : 'rowodd';
+            $forum_fieldNew = '';
+            $curForum->icon_type = 'icon';
 
             // Are there new posts since our last visit?
-            if (isset($new_topics[$cur_forum->fid])) {
-                $cur_forum->item_status .= ' inew';
-                $forum_field_new = '<span class="newtext">[ <a href="'.Router::pathFor('quickSearch', ['show' => 'new&amp;fid='.$cur_forum->fid]).'">'.__('New posts').'</a> ]</span>';
-                $cur_forum->icon_type = 'icon icon-new';
+            if (isset($newTopics[$curForum->fid])) {
+                $curForum->item_status .= ' inew';
+                $forum_fieldNew = '<span class="newtext">[ <a href="'.Router::pathFor('quickSearch', ['show' => 'new&amp;fid='.$curForum->fid]).'">'.__('New posts').'</a> ]</span>';
+                $curForum->icon_type = 'icon icon-new';
             }
 
             // Is this a redirect forum?
-            if ($cur_forum->redirect_url != '') {
-                $cur_forum->forum_field = '<h3><span class="redirtext">'.__('Link to').'</span> <a href="'.Utils::escape($cur_forum->redirect_url).'" title="'.__('Link to').' '.Utils::escape($cur_forum->redirect_url).'">'.Utils::escape($cur_forum->forum_name).'</a></h3>';
-                $cur_forum->num_topics_formatted = $cur_forum->num_posts_formatted = '-';
-                $cur_forum->item_status .= ' iredirect';
-                $cur_forum->icon_type = 'icon';
+            if ($curForum->redirect_url != '') {
+                $curForum->forum_field = '<h3><span class="redirtext">'.__('Link to').'</span> <a href="'.Utils::escape($curForum->redirect_url).'" title="'.__('Link to').' '.Utils::escape($curForum->redirect_url).'">'.Utils::escape($curForum->forum_name).'</a></h3>';
+                $curForum->num_topics_formatted = $curForum->num_posts_formatted = '-';
+                $curForum->item_status .= ' iredirect';
+                $curForum->icon_type = 'icon';
             } else {
-                $forum_name = Url::url_friendly($cur_forum->forum_name);
-                $cur_forum->forum_field = '<h3><a href="'.Router::pathFor('Forum', ['id' => $cur_forum->fid, 'name' => $forum_name]).'">'.Utils::escape($cur_forum->forum_name).'</a>'.(!empty($forum_field_new) ? ' '.$forum_field_new : '').'</h3>';
-                $cur_forum->num_topics_formatted = $cur_forum->num_topics;
-                $cur_forum->num_posts_formatted = $cur_forum->num_posts;
+                $forumName = Url::slug($curForum->forum_name);
+                $curForum->forum_field = '<h3><a href="'.Router::pathFor('Forum', ['id' => $curForum->fid, 'name' => $forumName]).'">'.Utils::escape($curForum->forum_name).'</a>'.(!empty($forum_fieldNew) ? ' '.$forum_fieldNew : '').'</h3>';
+                $curForum->num_topics_formatted = $curForum->num_topics;
+                $curForum->num_posts_formatted = $curForum->num_posts;
             }
 
-            if ($cur_forum->forum_desc != '') {
-                $cur_forum->forum_field .= "\n\t\t\t\t\t\t\t\t".'<div class="forumdesc">'.$cur_forum->forum_desc.'</div>';
+            if ($curForum->forum_desc != '') {
+                $curForum->forum_field .= "\n\t\t\t\t\t\t\t\t".'<div class="forumdesc">'.$curForum->forum_desc.'</div>';
             }
 
             // If there is a last_post/last_poster
-            if ($cur_forum->last_post != '') {
-                $cur_forum->last_post_formatted = '<a href="'.Router::pathFor('viewPost', ['pid' => $cur_forum->last_post_id]).'#p'.$cur_forum->last_post_id.'">'.Container::get('utils')->format_time($cur_forum->last_post).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_forum->last_poster).'</span>';
-            } elseif ($cur_forum->redirect_url != '') {
-                $cur_forum->last_post_formatted = '- - -';
+            if ($curForum->last_post != '') {
+                $curForum->last_post_formatted = '<a href="'.Router::pathFor('viewPost', ['id' => $curForum->last_post_tid, 'name' => Url::slug($curForum->last_post_subject), 'pid' => $curForum->last_post_id]).'#p'.$curForum->last_post_id.'">'.Utils::formatTime($curForum->last_post).'</a> <span class="byuser">'.__('by').' '.Utils::escape($curForum->last_poster).'</span>';
+            } elseif ($curForum->redirect_url != '') {
+                $curForum->last_post_formatted = '- - -';
             } else {
-                $cur_forum->last_post_formatted = __('Never');
+                $curForum->last_post_formatted = __('Never');
             }
 
-            if ($cur_forum->moderators != '') {
-                $mods_array = unserialize($cur_forum->moderators);
-                $moderators = array();
+            if ($curForum->moderators != '') {
+                $modsArray = unserialize($curForum->moderators);
+                $moderators = [];
 
-                foreach ($mods_array as $mod_username => $mod_id) {
-                    if (User::get()->g_view_users == '1') {
-                        $moderators[] = '<a href="'.Router::pathFor('userProfile', ['id' => $mod_id]).'">'.Utils::escape($mod_username).'</a>';
+                foreach ($modsArray as $modUsername => $modId) {
+                    if (User::can('users.view')) {
+                        $moderators[] = '<a href="'.Router::pathFor('userProfile', ['id' => $modId]).'">'.Utils::escape($modUsername).'</a>';
                     } else {
-                        $moderators[] = Utils::escape($mod_username);
+                        $moderators[] = Utils::escape($modUsername);
                     }
                 }
 
-                $cur_forum->moderators_formatted = "\t\t\t\t\t\t\t\t".'<p class="modlist">(<em>'.__('Moderated by').'</em> '.implode(', ', $moderators).')</p>'."\n";
+                $curForum->moderators_formatted = "\t\t\t\t\t\t\t\t".'<p class="modlist">(<em>'.__('Moderated by').'</em> '.implode(', ', $moderators).')</p>'."\n";
             } else {
-                $cur_forum->moderators_formatted = '';
+                $curForum->moderators_formatted = '';
             }
 
-            $index_data[] = $cur_forum;
+            $indexData[$curForum->cid][] = $curForum;
             ++$i;
         }
 
-        $index_data = Container::get('hooks')->fire('model.index.print_categories_forums', $index_data);
+        $indexData = Hooks::fire('model.index.print_categories_forums', $indexData);
 
-        return $index_data;
+        return $indexData;
     }
 
     // Returns the elements needed to display stats
-    public function collect_stats()
+    public function stats()
     {
-        Container::get('hooks')->fire('model.index.collect_stats_start');
+        Hooks::fire('model.index.collect_stats_start');
 
         // Collect some statistics from the database
-        if (!Container::get('cache')->isCached('users_info')) {
-            Container::get('cache')->store('users_info', Cache::get_users_info());
+        if (!Cache::isCached('users_info')) {
+            Cache::store('users_info', \FeatherBB\Model\Cache::getUsersInfo());
         }
 
-        $stats = Container::get('cache')->retrieve('users_info');
+        $stats = Cache::retrieve('users_info');
 
-        $query = DB::for_table('forums')
-            ->select_expr('SUM(num_topics)', 'total_topics')
-            ->select_expr('SUM(num_posts)', 'total_posts');
+        $query = DB::table('forums')
+            ->selectExpr('SUM(num_topics)', 'total_topics')
+            ->selectExpr('SUM(num_posts)', 'total_posts');
 
-        $query = Container::get('hooks')->fireDB('model.index.collect_stats_query', $query);
+        $query = Hooks::fireDB('model.index.collect_stats_query', $query);
 
-        $query = $query->find_one();
+        $query = $query->findOne();
 
         $stats['total_topics'] = intval($query['total_topics']);
         $stats['total_posts'] = intval($query['total_posts']);
 
-        if (User::get()->g_view_users == '1') {
+        if (User::can('users.view')) {
             $stats['newest_user'] = '<a href="'.Router::pathFor('userProfile', ['id' => $stats['last_user']['id']]).'">'.Utils::escape($stats['last_user']['username']).'</a>';
         } else {
             $stats['newest_user'] = Utils::escape($stats['last_user']['username']);
         }
 
-        $stats = Container::get('hooks')->fire('model.index.collect_stats', $stats);
+        $stats = Hooks::fire('model.index.collect_stats', $stats);
 
         return $stats;
     }
 
     // Returns the elements needed to display users online
-    public function fetch_users_online()
+    public function usersOnline()
     {
-        Container::get('hooks')->fire('model.index.fetch_users_online_start');
+        Hooks::fire('model.index.fetch_users_online_start');
 
         // Fetch users online info and generate strings for output
-        $online = array();
+        $online = [];
         $online['num_guests'] = 0;
 
-        $query['select'] = array('user_id', 'ident');
-        $query['where'] = array('idle' => '0');
-        $query['order_by'] = array('ident');
+        $query['select'] = ['user_id', 'ident'];
+        $query['where'] = ['idle' => '0'];
+        $query['order_by'] = ['ident'];
 
-        $query = DB::for_table('online')
-            ->select_many($query['select'])
+        $query = DB::table('online')
+            ->selectMany($query['select'])
             ->where($query['where'])
-            ->order_by_many($query['order_by']);
+            ->orderByMany($query['order_by']);
 
-        $query = Container::get('hooks')->fireDB('model.index.query_fetch_users_online', $query);
+        $query = Hooks::fireDB('model.index.query_fetch_users_online', $query);
 
-        $query = $query->find_result_set();
+        $query = $query->findResultSet();
 
-        foreach($query as $user_online) {
-            if ($user_online->user_id > 1) {
-                if (User::get()->g_view_users == '1') {
-                    $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.Router::pathFor('userProfile', ['id' => $user_online->user_id]).'">'.Utils::escape($user_online->ident).'</a>';
+        foreach ($query as $userOnline) {
+            if ($userOnline->user_id > 1) {
+                if (User::can('users.view')) {
+                    $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.Router::pathFor('userProfile', ['id' => $userOnline->user_id]).'">'.Utils::escape($userOnline->ident).'</a>';
                 } else {
-                    $online['users'][] = "\n\t\t\t\t".'<dd>'.Utils::escape($user_online->ident);
+                    $online['users'][] = "\n\t\t\t\t".'<dd>'.Utils::escape($userOnline->ident);
                 }
             } else {
                 ++$online['num_guests'];
@@ -299,7 +287,7 @@ class Index
             $online['num_users'] = 0;
         }
 
-        $online = Container::get('hooks')->fire('model.index.fetch_users_online', $online);
+        $online = Hooks::fire('model.index.fetch_users_online', $online);
 
         return $online;
     }

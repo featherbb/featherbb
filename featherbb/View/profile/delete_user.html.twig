@@ -1,0 +1,37 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.profile.delete_user.start') }}
+
+    {% include '@forum/profile/menu.html.twig' %}
+
+    <div class="blockform">
+        <h2><span>{{ trans('Confirm delete user') }}</span></h2>
+        <div class="box">
+            <form id="confirm_del_user" method="post" action="{{ pathFor('userProfile', {'id': id}) }}">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Confirm delete legend') }}</legend>
+                        <div class="infldset">
+                            <p>{{ trans('Confirmation info') }} <strong>{{ username }}</strong></p>
+                            <div class="rbox">
+                                <label><input type="checkbox" name="delete_posts" value="1" checked="checked" />
+                                    {{ trans('Delete posts') }}<br /></label>
+                            </div>
+                            <p class="warntext"><strong>{{ trans('Delete warning') }}</strong></p>
+                        </div>
+                    </fieldset>
+                </div>
+                <p class="buttons">
+                    <input type="submit" name="delete_user_comply" value="{{ trans('Delete') }}" />
+                    <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    {{ fireHook('view.profile.delete_user.end') }}
+{% endblock content %}

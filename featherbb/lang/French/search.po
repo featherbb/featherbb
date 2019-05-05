@@ -1,0 +1,175 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "User search"
+msgstr "Rechercher un utilisateur"
+
+msgid "No search permission"
+msgstr "Vous ne pouvez pas effectuer de recherche, vous n'avez pas les permissions requises"
+
+msgid "Search flood"
+msgstr "Vous devez patienter au minimum %s secondes avant d'effectuer une nouvelle recherche. Veuillez patienter un moment et essayer à nouveau."
+
+msgid "Search"
+msgstr "Recherche"
+
+msgid "Search criteria legend"
+msgstr "Choisissez vos critères de recherche"
+
+msgid "Search info"
+msgstr "Pour effectuer une recherche par mots-clés, indiquez le ou les termes à rechercher en les séparant par des espaces. Utilisez AND, OR, NOT pour affiner votre recherche. Pour rechercher par auteur, saisissez le nom d'utilisateur auquel les messages appartiennent. Utilisez le joker * pour des recherches sur des fragments de mot."
+
+msgid "Keyword search"
+msgstr "Mots-clés"
+
+msgid "Author search"
+msgstr "Rechercher un auteur"
+
+msgid "Search in legend"
+msgstr "Indiquez où la recherche doit s'effectuer"
+
+msgid "Search in info"
+msgstr "Choisissez le forum dans lequel vous souhaitez lancer votre recherche et indiquez si vous souhaitez rechercher dans les sujets des discussions uniquement ou dans les textes des messages ou bien dans les deux à la fois."
+
+msgid "Search multiple forums info"
+msgstr "Si aucun forum n'est sélectionné, la recherche s'effectuera dans tous les forums."
+
+msgid "Forum search"
+msgstr "Forum"
+
+msgid "All forums"
+msgstr "Tous les forums"
+
+msgid "Search in"
+msgstr "Rechercher dans&#160;…"
+
+msgid "Message and subject"
+msgstr "Le texte du message et du sujet"
+
+msgid "Message only"
+msgstr "Le texte du message seulement"
+
+msgid "Topic only"
+msgstr "Le texte du sujet seulement"
+
+msgid "Sort by"
+msgstr "Trier par&#160;…"
+
+msgid "Sort order"
+msgstr "Ordre&#160;…"
+
+msgid "Search results legend"
+msgstr "Sélectionnez le mode d'affichage des résultats"
+
+msgid "Search results info"
+msgstr "Vous pouvez choisir le mode de classement et d'affichage des résultats."
+
+msgid "Sort by post time"
+msgstr "Date du message"
+
+msgid "Sort by author"
+msgstr "Auteur"
+
+msgid "Sort by subject"
+msgstr "Sujet"
+
+msgid "Sort by forum"
+msgstr "Forum"
+
+msgid "Ascending"
+msgstr "Croissant"
+
+msgid "Descending"
+msgstr "Décroissant"
+
+msgid "Show as"
+msgstr "Afficher les&#160;…"
+
+msgid "Show as topics"
+msgstr "Discussions"
+
+msgid "Show as posts"
+msgstr "Messages"
+
+msgid "Search results"
+msgstr "Résultats de la recherche"
+
+msgid "Quick search show_new"
+msgstr "Nouveaux"
+
+msgid "Quick search show_recent"
+msgstr "Récentes"
+
+msgid "Quick search show_unanswered"
+msgstr "Sans réponse"
+
+msgid "Quick search show_replies"
+msgstr "Publiés"
+
+msgid "Quick search show_user_topics"
+msgstr "Discussions de %s"
+
+msgid "Quick search show_user_posts"
+msgstr "Messages de %s"
+
+msgid "Quick search show_subscriptions"
+msgstr "Suivies par %s"
+
+msgid "By keywords show as topics"
+msgstr "Discussions avec messages contenant «&#160;%s&#160;»"
+
+msgid "By keywords show as posts"
+msgstr "Messages contenant «&#160;%s&#160;»"
+
+msgid "By user show as topics"
+msgstr "Discussions contenant des messages de %s"
+
+msgid "By user show as posts"
+msgstr "Messages de %s"
+
+msgid "By both show as topics"
+msgstr "Discussions avec messages de %s contenant «&#160;%s&#160;»"
+
+msgid "By both show as posts"
+msgstr "Messages de %s contenant «&#160;%s&#160;»"
+
+msgid "No terms"
+msgstr "Vous devez saisir au moins un mot-clé et/ou un auteur à rechercher."
+
+msgid "No hits"
+msgstr "Désolé, aucun résultat n'a été trouvé pour votre recherche."
+
+msgid "No user posts"
+msgstr "Il n'y a pas de message de cet utilisateur dans ce forum."
+
+msgid "No user topics"
+msgstr "Il n'y a pas de discussion de cet utilisateur dans ce forum."
+
+msgid "No subscriptions"
+msgstr "Cet utilisateur ne suit actuellement aucune discussion."
+
+msgid "No new posts"
+msgstr "Il n'y a pas de discussion avec de nouveaux messages depuis votre dernière visite."
+
+msgid "No recent posts"
+msgstr "Il n'y a pas de discussion avec de nouveaux messages depuis les 24 dernières heures."
+
+msgid "No unanswered"
+msgstr "Il n'y a pas de message sans réponse dans ce forum."
+
+msgid "Go to post"
+msgstr "Aller au message"
+
+msgid "Go to topic"
+msgstr "Aller à la discussion"

@@ -2,10 +2,16 @@
 
 namespace FeatherBB;
 
+use FeatherBB\Core\Interfaces\Feather;
 use FeatherBB\Core\Interfaces\SlimStatic;
+use FeatherBB\Middleware\Auth;
+use FeatherBB\Middleware\Core;
+use FeatherBB\Middleware\Csrf;
+use FeatherBB\Middleware\RedirectNonTrailingSlash;
+use Slim\App;
 
 /**
- * Copyright (C) 2015-2016 FeatherBB
+ * Copyright (C) 2015-2019 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -14,37 +20,20 @@ use FeatherBB\Core\Interfaces\SlimStatic;
 // Start a session for flash messages
 session_cache_limiter(false);
 session_start();
-error_reporting(E_ALL); // Let's report everything for development
-ini_set('display_errors', 1);
 
-// Load Slim Framework
+// Load Conposer dependencies
 require 'vendor/autoload.php';
 
-// Instantiate Slim and add CSRF
-$feather = new \Slim\App();
-SlimStatic::boot($feather);
+// Instantiate Slim
+SlimStatic::boot(new App);
+
 // Allow static proxies to be called from anywhere in App
 Statical::addNamespace('*', __NAMESPACE__.'\\*');
 
-$feather_settings = array('config_file' => 'featherbb/config.php',
-    'cache_dir' => 'cache/',
-    'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
-
-Feather::add(new \FeatherBB\Middleware\Csrf);
-Feather::add(new \FeatherBB\Middleware\Auth);
-Feather::add(new \FeatherBB\Middleware\Core($feather_settings));
-// Permanently redirect paths with a trailing slash
-// to their non-trailing counterpart
-Feather::add(function ($req, $res, $next) {
-    $uri = $req->getUri();
-    $path = $uri->getPath();
-    if ($path != '/' && substr($path, -1) == '/') {
-        $uri = $uri->withPath(substr($path, 0, -1));
-        return $res->withRedirect((string)$uri, 301);
-    }
-
-    return $next($req, $res);
-});
+Feather::add(new RedirectNonTrailingSlash);
+Feather::add(new Csrf);
+Feather::add(new Auth);
+Feather::add(new Core);
 
 // Load the routes
 require 'featherbb/routes.php';

@@ -131,21 +131,6 @@ msgstr "Real name"
 msgid "Website label"
 msgstr "Website"
 
-msgid "Jabber label"
-msgstr "Jabber"
-
-msgid "ICQ label"
-msgstr "ICQ"
-
-msgid "MSN label"
-msgstr "Microsoft Account"
-
-msgid "AOL label"
-msgstr "AOL IM"
-
-msgid "Yahoo label"
-msgstr "Yahoo Messenger"
-
 msgid "Location label"
 msgstr "Location"
 

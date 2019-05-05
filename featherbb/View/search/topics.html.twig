@@ -1,0 +1,35 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {% include '@forum/search/header.html.twig' %}
+
+    {{ fireHook('view.search.topics.start') }}
+
+{% for search in display.cur_search %}
+
+    <tr class="{{ search.item_status }}">
+        <td class="tcl">
+            <div class="{{ search.icon_type }}">
+                <div class="nosize">
+                {{ formatNumber(search.topic_count + search.start_from) }}</div>
+            </div>
+            <div class="tclcon">
+                <div>
+                    {{ search.subject|raw }}
+                </div>
+            </div>
+        </td>
+        <td class="tc2">{{ search.forum|raw }}</td>
+        <td class="tc3">{{ formatNumber(search.num_replies) }}</td>
+        <td class="tcr"><a href="{{ pathFor('viewPost', {'id': search.tid, 'name': search.url_topic, 'pid': search.last_post_id}) ~'#p' ~search.last_post_id }}">{{ formatTime(search.last_post) }}</a> <span class="byuser">{{ trans('by') }} {{ search.last_poster }}</span></td>
+    </tr>
+
+
+{% endfor %}
+
+    {{ fireHook('view.search.topics.end') }}
+
+    {% include '@forum/search/footer.html.twig' %}
+
+{% endblock content %}

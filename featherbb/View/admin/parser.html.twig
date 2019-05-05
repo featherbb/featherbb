@@ -1,0 +1,93 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {% include '@forum/admin/menu.html.twig' %}
+
+    {{ fireHook('view.admin.parser.start') }}
+
+<div class="blockform">
+    <h2><span>{{ trans('Parser head') }}</span></h2>
+    <div class="box">
+        <form method="post" action="{{ pathFor('adminParser') }}" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+            <p class="submittop">
+                <input type="submit" name="save" value="{{ trans('Save changes') }}" />
+            </p>
+            <div class="inform">
+                <fieldset>
+                    <legend>{{ trans('Smilies subhead') }}</legend>
+                    <div class="infldset">
+                        <table cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th scope="col">{{ trans('smiley_text_label') }}</th>
+                                <th scope="col">{{ trans('smiley_file_label') }}</th>
+                                <th scope="col"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for key, value in smilies %}
+                            <tr>
+                                <td><input type="text" name="smiley_text[{{ loop.index }}]" value="{{ key }}" size="20" maxlength="80" /></td>
+                                <td>
+                                    <select name="smiley_file[{{ loop.index }}]">
+                                        {% for file in smiley_files %}
+                                            {% if file == value %}
+                                                <option selected="selected">{{ file }}</option>
+                                            {% else %}
+                                                <option>{{ file }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <img src="{{ urlBase~value }}">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td>
+                                    <input type="text" name="smiley_text[{{ loop.index }}]" value="" size="20" maxlength="80" /><br />
+                                    {{ trans('New smiley text') }}
+                                </td>
+                                <td>
+                                    <select name="smiley_file[{{ loop.index }}]">
+                                        <option selected="selected">{{ trans('Select new file') }}</option>
+                                        {% for file in smiley_files %}
+                                            <option>{{ file }}</option>
+                                        {% endfor %}
+                                    </select><br />{{ trans('New smiley image') }}
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">{{ trans('smiley_upload') }}</th>
+                                {% if file_uploads %}
+                                <td><input type="hidden" name="MAX_FILE_SIZE" value="{{ settings('o_avatars_size') }}" />
+                                    <input type="hidden" name="form_sent" value="1" />
+                                    <input type="file" name="new_smiley" id="upload_smiley" /></td>
+                                <td><input type="submit" name="upload" value="{{ trans('upload_button') }}" /></td>
+                                {% else %}
+                                <td colspan="2">{{ trans('upload_off') }}</td>
+                                {% endif %}
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+
+
+            <p class="submitend">
+                <input type="submit" name="save" value="{{ trans('Save changes') }}" />
+            </p>
+        </form>
+    </div>
+</div>
+<div class="clearer"></div>
+</div>
+
+    {{ fireHook('view.admin.parser.end') }}
+{% endblock content %}

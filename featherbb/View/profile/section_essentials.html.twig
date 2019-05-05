@@ -1,0 +1,159 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+{{ fireHook('view.profile.section_essentials.start') }}
+
+{% include '@forum/profile/menu.html.twig' %}
+
+<div class="blockform">
+    <h2><span>{{ user.username }} - {{ trans('Section essentials') }}</span></h2>
+    <div class="box">
+        <form id="profile1" method="post" action="{{ pathFor('profileSection', {'id': id, 'section': 'essentials'}) }}" onsubmit="return process_form(this)">
+            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+            <div class="inform">
+                <fieldset>
+                    <legend>{{ trans('Username and pass legend') }}</legend>
+                    <div class="infldset">
+                        <input type="hidden" name="form_sent" value="1" />
+                        {{ user_disp.username_field|raw }}
+        {% if userGet('id') == id or isAdmin() or (isAdminMod() and can('mod.change_passwords')) %}
+                        <p class="actions">
+                            <span>
+                                <a href="{{ pathFor('profileAction', {'id': id, 'action': 'change_pass'}) }}">{{ trans('Change pass') }}</a>
+                            </span>
+                        </p>
+        {% endif %}
+                    </div>
+                </fieldset>
+            </div>
+            <div class="inform">
+                <fieldset>
+                    <legend>{{ trans('Email legend') }}</legend>
+                    <div class="infldset">
+                        {{ user_disp.email_field|raw }}
+                    </div>
+                </fieldset>
+            </div>
+            <div class="inform">
+                <fieldset>
+                    <legend>{{ trans('Localisation legend') }}</legend>
+                    <div class="infldset">
+                        <p>{{ trans('Time zone info') }}</p>
+                        <label>{{ trans('Time zone') }}
+                        <br />
+                            <select name="form_timezone">
+                            <option value="-12"{{ pref('timezone', user) == -12 ? ' selected="selected"' : ''}}>{{ trans('UTC-12:00') }}</option>
+                            <option value="-11"{{ pref('timezone', user) == -11 ? ' selected="selected"' : ''}}>{{ trans('UTC-11:00') }}</option>
+                            <option value="-10"{{ pref('timezone', user) == -10 ? ' selected="selected"' : ''}}>{{ trans('UTC-10:00') }}</option>
+                            <option value="-9.5"{{ pref('timezone', user) == -9.5 ? ' selected="selected"' : ''}}>{{ trans('UTC-09:30') }}</option>
+                            <option value="-9"{{ pref('timezone', user) == -9 ? ' selected="selected"' : ''}}>{{ trans('UTC-09:00') }}</option>
+                            <option value="-8.5"{{ pref('timezone', user) == -8.5 ? ' selected="selected"' : ''}}>{{ trans('UTC-08:30') }}</option>
+                            <option value="-8"{{ pref('timezone', user) == -8 ? ' selected="selected"' : ''}}>{{ trans('UTC-08:00') }}</option>
+                            <option value="-7"{{ pref('timezone', user) == -7 ? ' selected="selected"' : ''}}>{{ trans('UTC-07:00') }}</option>
+                            <option value="-6"{{ pref('timezone', user) == -6 ? ' selected="selected"' : ''}}>{{ trans('UTC-06:00') }}</option>
+                            <option value="-5"{{ pref('timezone', user) == -5 ? ' selected="selected"' : ''}}>{{ trans('UTC-05:00') }}</option>
+                            <option value="-4"{{ pref('timezone', user) == -4 ? ' selected="selected"' : ''}}>{{ trans('UTC-04:00') }}</option>
+                            <option value="-3.5"{{ pref('timezone', user) == -3.5 ? ' selected="selected"' : ''}}>{{ trans('UTC-03:30') }}</option>
+                            <option value="-3"{{ pref('timezone', user) == -3 ? ' selected="selected"' : ''}}>{{ trans('UTC-03:00') }}</option>
+                            <option value="-2"{{ pref('timezone', user) == -2 ? ' selected="selected"' : ''}}>{{ trans('UTC-02:00') }}</option>
+                            <option value="-1"{{ pref('timezone', user) == -1 ? ' selected="selected"' : ''}}>{{ trans('UTC-01:00') }}</option>
+                            <option value="0"{{ pref('timezone', user) == 0 ? ' selected="selected"' : ''}}>{{ trans('UTC') }}</option>
+                            <option value="1"{{ pref('timezone', user) == 1 ? ' selected="selected"' : ''}}>{{ trans('UTC+01:00') }}</option>
+                            <option value="2"{{ pref('timezone', user) == 2 ? ' selected="selected"' : ''}}>{{ trans('UTC+02:00') }}</option>
+                            <option value="3"{{ pref('timezone', user) == 3 ? ' selected="selected"' : ''}}>{{ trans('UTC+03:00') }}</option>
+                            <option value="3.5"{{ pref('timezone', user) == 3.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+03:30') }}</option>
+                            <option value="4"{{ pref('timezone', user) == 4 ? ' selected="selected"' : ''}}>{{ trans('UTC+04:00') }}</option>
+                            <option value="4.5"{{ pref('timezone', user) == 4.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+04:30') }}</option>
+                            <option value="5"{{ pref('timezone', user) == 5 ? ' selected="selected"' : ''}}>{{ trans('UTC+05:00') }}</option>
+                            <option value="5.5"{{ pref('timezone', user) == 5.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+05:30') }}</option>
+                            <option value="5.75"{{ pref('timezone', user) == 5.75 ? ' selected="selected"' : ''}}>{{ trans('UTC+05:45') }}</option>
+                            <option value="6"{{ pref('timezone', user) == 6 ? ' selected="selected"' : ''}}>{{ trans('UTC+06:00') }}</option>
+                            <option value="6.5"{{ pref('timezone', user) == 6.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+06:30') }}</option>
+                            <option value="7"{{ pref('timezone', user) == 7 ? ' selected="selected"' : ''}}>{{ trans('UTC+07:00') }}</option>
+                            <option value="8"{{ pref('timezone', user) == 8 ? ' selected="selected"' : ''}}>{{ trans('UTC+08:00') }}</option>
+                            <option value="8.75"{{ pref('timezone', user) == 8.75 ? ' selected="selected"' : ''}}>{{ trans('UTC+08:45') }}</option>
+                            <option value="9"{{ pref('timezone', user) == 9 ? ' selected="selected"' : ''}}>{{ trans('UTC+09:00') }}</option>
+                            <option value="9.5"{{ pref('timezone', user) == 9.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+09:30') }}</option>
+                            <option value="10"{{ pref('timezone', user) == 10 ? ' selected="selected"' : ''}}>{{ trans('UTC+10:00') }}</option>
+                            <option value="10.5"{{ pref('timezone', user) == 10.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+10:30') }}</option>
+                            <option value="11"{{ pref('timezone', user) == 11 ? ' selected="selected"' : ''}}>{{ trans('UTC+11:00') }}</option>
+                            <option value="11.5"{{ pref('timezone', user) == 11.5 ? ' selected="selected"' : ''}}>{{ trans('UTC+11:30') }}</option>
+                            <option value="12"{{ pref('timezone', user) == 12 ? ' selected="selected"' : ''}}>{{ trans('UTC+12:00') }}</option>
+                            <option value="12.75"{{ pref('timezone', user) == 12.75 ? ' selected="selected"' : ''}}>{{ trans('UTC+12:45') }}</option>
+                            <option value="13"{{ pref('timezone', user) == 13 ? ' selected="selected"' : ''}}>{{ trans('UTC+13:00') }}</option>
+                            <option value="14"{{ pref('timezone', user) == 14 ? ' selected="selected"' : ''}}>{{ trans('UTC+14:00') }}</option>
+                        </select>
+                        <br />
+                        </label>
+                        <div class="rbox">
+                            <label>
+                                <input type="checkbox" name="form_dst" value="1"{{ pref('dst', user) == '1' ? ' checked="checked"' : ''}} />{{ trans('DST') }}<br />
+                            </label>
+                        </div>
+                        <label>{{ trans('Time format') }}
+                        <br />
+                            <select name="form_time_format">
+                {% for key, time_format in forum_time_formats %}
+                                <option value="{{ key }}"{{ pref('time_format', user) == key ? ' selected="selected"' : '' }}>{{ formatTime(date().timestamp, false, null, time_format, true, true) }} {{ key == 0 ? trans('Default') : '' }}</option>
+                {% endfor %}
+                        </select>
+                        <br />
+                        </label>
+                        <label>{{ trans('Date format') }}
+                            <br />
+                            <select name="form_date_format">
+                {% for key, date_format in forum_date_formats %}
+                                <option value="{{ key }}"{{ pref('date_format', user) == key ? ' selected="selected"' : '' }}>{{ formatTime(date().timestamp, true, date_format, null, false, true) }}{{ key == 0 ? ' ('~trans('Default')~')' }}</option>
+                {% endfor %}
+                            </select>
+                        <br />
+                        </label>
+
+    {#// Only display the language selection box if there's more than one language available#}
+                {% if languages|length > 1 %}
+
+                        <label>{{ trans('Language') }}
+                        <br /><select name="form_language">
+                        {% for lang in languages %}
+                            <option value="{{ lang }}"{{ pref('language', user) == lang ? ' selected="selected" ' : '' }}>{{ lang }}</option>
+                        {% endfor %}
+                        </select>
+                        <br /></label>
+
+                {% endif %}
+
+
+                    </div>
+                </fieldset>
+            </div>
+            <div class="inform">
+                <fieldset>
+                    <legend>{{ trans('User activity') }}</legend>
+                    <div class="infldset">
+                        {% set regIp = (isAdminMod() ? ' (<a href="' ~"#{ pathFor('usersIpShow', {}, {'ip': user.registration_ip}) }" ~'">' ~"#{ user.registration_ip }" ~'</a>)' : '' ) %}
+                        <p>{{ trans(['Registered info', formatTime(user.registered, true) ~ regIp ]) }}</p>
+                        <p>{{ trans(['Last post info', formatTime(user.last_post)]) }}</p>
+                        <p>{{ trans(['Last visit info', formatTime(user.last_visit)]) }}</p>
+                        {{ user_disp.posts_field|raw }}
+                    {% if isAdminMod() %}
+                        <label>{{ trans('Admin note') }}<br />
+                        <input id="admin_note" type="text" name="admin_note" value="{{ user.admin_note }}" size="30" maxlength="30" /><br />
+                        </label>
+                    {% endif %}
+                    </div>
+                </fieldset>
+            </div>
+            <p class="buttons">
+                <input type="submit" name="update" value="{{ trans('Submit') }}" />
+                {{ trans('Instructions') }}
+            </p>
+        </form>
+    </div>
+</div>
+    <div class="clearer"></div>
+</div>
+
+    {{ fireHook('view.profile.section_essentials.end') }}
+{% endblock content %}

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015-2016 FeatherBB
+ * Copyright (C) 2015-2019 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -15,14 +15,9 @@ class Hooks
     /**
      * @var array
      */
-    protected $hooks = array(
-        // 'slim.before' => array(array()),
-        // 'slim.before.router' => array(array()),
-        // 'slim.before.dispatch' => array(array()),
-        // 'slim.after.dispatch' => array(array()),
-        // 'slim.after.router' => array(array()),
-        // 'slim.after' => array(array())
-    );
+    protected $hooks = [
+    ];
+
     /**
      * Assign hook
      * @param  string   $name       The hook name
@@ -32,7 +27,7 @@ class Hooks
     public function bind($name, $callable, $priority = 10)
     {
         if (!isset($this->hooks[$name])) {
-            $this->hooks[$name] = array(array());
+            $this->hooks[$name] = [[]];
         }
         if (is_callable($callable)) {
             $this->hooks[$name][(int) $priority][] = $callable;
@@ -43,6 +38,7 @@ class Hooks
      * Invoke hook
      * @param  string $name The hook name
      * @param  mixed  ...   (Optional) Argument(s) for hooked functions, can specify multiple arguments
+     * @return mixed data
      */
     public function fire($name)
     {
@@ -53,8 +49,7 @@ class Hooks
             //$this->hooks[$name] = array(array());
             if (isset($args[0])) {
                 return $args[0];
-            }
-            else {
+            } else {
                 return;
             }
         }
@@ -64,7 +59,7 @@ class Hooks
                 ksort($this->hooks[$name]);
             }
 
-            $output = array();
+            $output = [];
             $count = 0;
 
             foreach ($this->hooks[$name] as $priority) {
@@ -80,9 +75,8 @@ class Hooks
             // let's return the first output
             if ($count == 1 || !is_array($args[0])) {
                 return $output[0];
-            }
-            else {
-                $data = array();
+            } else {
+                $data = [];
                 // Move all the keys to the same level
                 array_walk_recursive($output, function ($v, $k) use (&$data) {
                     $data[] = $v;
@@ -98,6 +92,7 @@ class Hooks
      * Invoke hook for DB
      * @param  string $name The hook name
      * @param  mixed  ...   Argument(s) for hooked functions, can specify multiple arguments
+     * @return mixed
      */
     public function fireDB($name)
     {
@@ -105,7 +100,6 @@ class Hooks
         array_shift($args);
 
         if (!isset($this->hooks[$name])) {
-            //$this->hooks[$name] = array(array());
             return $args[0];
         }
         if (!empty($this->hooks[$name])) {
@@ -114,7 +108,7 @@ class Hooks
                 ksort($this->hooks[$name]);
             }
 
-            $output = array();
+            $output = [];
 
             foreach ($this->hooks[$name] as $priority) {
                 if (!empty($priority)) {
@@ -160,10 +154,10 @@ class Hooks
     public function clearHooks($name = null)
     {
         if (!is_null($name) && isset($this->hooks[(string) $name])) {
-            $this->hooks[(string) $name] = array(array());
+            $this->hooks[(string) $name] = [[]];
         } else {
             foreach ($this->hooks as $key => $value) {
-                $this->hooks[$key] = array(array());
+                $this->hooks[$key] = [[]];
             }
         }
     }

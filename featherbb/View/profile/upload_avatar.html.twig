@@ -1,0 +1,40 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.profile.upload_avatar.start') }}
+
+    {% include '@forum/profile/menu.html.twig' %}
+
+<div class="blockform">
+    <h2><span>{{ trans('Upload avatar') }}</span></h2>
+    <div class="box">
+        <form id="upload_avatar" method="post" enctype="multipart/form-data" action="{{ pathFor('profileAction', {'id': id, 'action': 'upload_avatar2'}) }}" onsubmit="return process_form(this)">
+            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+            <div class="inform">
+                <fieldset>
+                    <legend>{{ trans('Upload avatar legend') }}</legend>
+                    <div class="infldset">
+                        <input type="hidden" name="form_sent" value="1" />
+                        <input type="hidden" name="MAX_FILE_SIZE" value="{{ settings('o_avatars_size') }}" />
+                        <label class="required"><strong>{{ trans('File') }} <span>{{ trans('Required') }}</span></strong>
+                            <br /><input name="req_file" type="file" size="40" /><br /></label>
+                        <p>{{ trans('Avatar desc') }}
+                            {{ settings('o_avatars_width') }} x {{ settings('o_avatars_height') }}
+                            {{ trans('pixels') }} {{ trans('and') }} {{ formatNumber(settings('o_avatars_size')) }}
+                            {{ trans('bytes') }} ({{ avatarFormattedSize }})
+                        </p>
+                    </div>
+                </fieldset>
+            </div>
+            <p class="buttons">
+                <input type="submit" name="upload" value="{{ trans('Upload') }}" />
+                <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+            </p>
+        </form>
+    </div>
+</div>
+
+    {{ fireHook('view.profile.upload_avatar.end') }}
+{% endblock content %}

@@ -1,0 +1,37 @@
+{{ fireHook('view.profile.menu.start') }}
+
+<div id="profile" class="block2col">
+    <div class="blockmenu">
+        <h2><span>{{ trans('Profile menu') }}</span></h2>
+        <div class="box">
+            <div class="inbox">
+                <ul>
+                    <li{{ page == 'essentials' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('profileSection', {'id': "#{ id }", 'section': 'essentials'}) }}">{{ trans('Section essentials') }}</a>
+                    </li>
+                    <li{{ page == 'personal' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('profileSection', {'id': "#{ id }", 'section': 'personal'}) }}">{{ trans('Section personal') }}</a>
+                    </li>
+        {% if settings('o_avatars') == '1' or settings('o_signatures') == '1' %}
+                    <li{{ page == 'personality' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('profileSection', {'id': "#{ id }", 'section': 'personality'}) }}">{{ trans('Section personality') }}</a>
+                    </li>
+        {% endif %}
+                    <li{{ page == 'display' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('profileSection', {'id': "#{ id }", 'section': 'display'}) }}">{{ trans('Section display') }}</a>
+                    </li>
+                    <li{{ page == 'privacy' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('profileSection', {'id': "#{ id }", 'section': 'privacy'}) }}">{{ trans('Section privacy') }}</a>
+                    </li>
+        {% if isAdmin() or (isAdminMod() and can('mod.ban_users')) %}
+                    <li{{ page == 'admin' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('profileSection', {'id': "#{ id }", 'section': 'admin'}) }}">{{ trans('Section admin') }}</a>
+                    </li>
+        {% endif %}
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {{ fireHook('view.profile.menu.end') }}

@@ -1,0 +1,62 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.profile.section_personality.start') }}
+
+    {% include '@forum/profile/menu.html.twig' %}
+
+<div class="blockform">
+    <h2><span>{{ user.username }} - {{ trans('Section personality') }}</span></h2>
+    <div class="box">
+        <form id="profile4" method="post" action="{{ pathFor('profileSection', {'id': id, 'section': 'personality'}) }}">
+            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+            <div><input type="hidden" name="form_sent" value="1" /></div>
+    {% if settings('o_avatars') == '1' %}
+            <div class="inform">
+                <fieldset id="profileavatar">
+                    <legend>{{ trans('Avatar legend') }}</legend>
+                    <div class="infldset">
+            {% if user_avatar %}
+                        <div class="useravatar">{{ user_avatar|raw }}</div>
+            {% endif %}
+                    <p>{{ trans('Avatar info') }}</p>
+                    <p class="clearb actions">{{ avatar_field|raw }}</p>
+                    </div>
+                </fieldset>
+            </div>
+    {% endif %}
+
+    {% if settings('o_signatures') == '1' %}
+
+            <div class="inform">
+                <fieldset>
+                    <legend>{{ trans('Signature legend') }}</legend>
+                    <div class="infldset">
+                        <p>{{ trans('Signature info') }}</p>
+                        <div class="txtarea">
+                            {{ trans(['Sig max size', formatNumber(settings('p_sig_length')), settings('p_sig_lines') ]) }}
+                            <br />
+                            <textarea id="req_message" name="signature" rows="10" cols="65">{{ user.signature }}</textarea><br />
+                        </div>
+                        <ul class="bblinks list-inline">
+                            <li><span><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}</a> {{ settings('p_sig_bbcode') == '1' ? trans('on') : trans('off') }}</span></li>
+                            <li><span><a href="{{ pathFor('help') }}#url" onclick="window.open(this.href); return false;">{{ trans('url tag') }}</a> {{ settings('p_sig_bbcode') == '1' and can('post.links') ? trans('on') : trans('off') }}</span></li>
+                            <li><span><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ settings('p_sig_bbcode') == '1' and settings('p_sig_img_tag') == '1' ? trans('on') : trans('off') }}</span></li>
+                            <li><span><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies_sig') == '1' ? trans('on') : trans('off') }}</span></li>
+                        </ul>
+                        {{ signature_preview|raw }}
+                    </div>
+                </fieldset>
+            </div>
+    {% endif %}
+            <p class="buttons"><input type="submit" name="update" value="{{ trans('Submit') }}" /> {{ trans('Instructions') }}</p>
+        </form>
+    </div>
+</div>
+    <div class="clearer"></div>
+</div>
+
+{{ fireHook('view.profile.section_personality.end') }}
+{% endblock content %}

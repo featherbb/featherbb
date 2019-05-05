@@ -1,0 +1,82 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.profile.section_admin.start') }}
+
+    {% include '@forum/profile/menu.html.twig' %}
+
+    <div class="blockform">
+        <h2><span>{{ user.username }} - {{ trans('Section admin') }}</span></h2>
+        <div class="box">
+            <form id="profile7" method="post" action="{{ pathFor('profileSection', {'id': id, 'section': 'admin'}) }}">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <div class="inform">
+                <input type="hidden" name="form_sent" value="1" />
+                    <fieldset>
+
+
+{% if isAdmin() == false %}
+
+                <legend>{{ trans('Delete ban legend') }}</legend>
+                <div class="infldset">
+                    <p><input type="submit" name="ban" value="{{ trans('Ban user') }}" /></p>
+                </div>
+            </fieldset>
+        </div>
+
+{% else %}
+        {% if userGet('id') != id %}
+
+                    <legend>{{ trans('Group membership legend') }}</legend>
+                    <div class="infldset">
+                        <select id="group_id" name="group_id">
+                            {{ group_list|raw }}
+                        </select>
+                        <input type="submit" name="update_group_membership" value="{{ trans('Save') }}" />
+                    </div>
+                </fieldset>
+                    </div>
+                    <div class="inform">
+                <fieldset>
+
+        {% endif %}
+
+                <legend>{{ trans('Delete ban legend') }}</legend>
+                <div class="infldset">
+                    <input type="submit" name="delete_user" value="{{ trans('Delete user') }}" />
+                    <input type="submit" name="ban" value="{{ trans('Ban user') }}" />
+                </div>
+            </fieldset>
+        </div>
+
+
+        {% if canGroup(user.g_id, 'mod.is_mod') or isAdmin() %}
+
+            <div class="inform">
+                <fieldset>
+                    <legend>{{ trans('Set mods legend') }}</legend>
+                    <div class="infldset">
+                        <p>{{ trans('Moderator in info') }}</p>
+                                {{ forum_list|raw }}
+                            </div>
+                        </div>
+                        <br class="clearb" /><input type="submit" name="update_forums" value="{{ trans('Update forums') }}" />
+                    </div>
+                </fieldset>
+            </div>
+
+        {% endif %}
+
+{% endif %}
+
+
+            </form>
+        </div>
+    </div>
+    <div class="clearer"></div>
+</div>
+
+    {{ fireHook('view.profile.section_admin.end') }}
+{% endblock content %}

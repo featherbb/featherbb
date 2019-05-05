@@ -1,0 +1,36 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.moderate.move_topics.start') }}
+
+    <div class="blockform">
+        <h2><span>{{ action == 'single' ? trans('Move topic') : trans('Move topics') }}</h2>
+        <div class="box">
+            <form method="post" action="">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <input type="hidden" name="topics" value="{{ topics }}" />
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ __('Move legend') }}</legend>
+                        <div class="infldset">
+                            <label>{{ __('Move to') }}
+                                <br />
+                                <select name="move_to_forum">
+                                    {{ list_forums|raw }}
+                                </select>
+                                <br />
+                            </label>
+                            <div class="rbox">
+                                <label><input type="checkbox" name="with_redirect" value="1"{{ action == 'single' ? ' checked="checked"' : '' }} />{{ trans('Leave redirect') }}<br /></label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <p class="buttons"><input type="submit" name="move_topics_to" value="{{ __('Move') }}" /> <a href="javascript:history.go(-1)">{{ __('Go back') }}</a></p>
+            </form>
+        </div>
+    </div>
+
+{{ fireHook('view.moderate.move_topics.end') }}
+{% endblock content %}

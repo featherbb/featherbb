@@ -1,0 +1,44 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.misc.email.report') }}
+
+
+    <div class="linkst">
+        <div class="inbox">
+            <ul class="crumbs">
+                <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
+                <li><span>»&#160;</span><a href="{{ pathFor('Forum', {'id': cur_post.fid, 'name': slug(cur_post.forum_name)}) }}">{{ cur_post.forum_name }}</a></li>
+                <li><span>»&#160;</span><a href="{{ pathFor('viewPost', {'name': slug(cur_post.forum_name), 'id': tid, 'pid': id}) }}#p{{ id }}">{{ cur_post.subject }}</a></li>
+                <li><span>»&#160;</span><strong>{{ trans('Report post') }}</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="reportform" class="blockform">
+        <h2><span>{{ trans('Report post') }}</span></h2>
+        <div class="box">
+            <form id="report" method="post" action="{{ pathFor('report', {'id': id}) }}" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Reason desc') }}</legend>
+                        <div class="infldset txtarea">
+                            <input type="hidden" name="form_sent" value="1" />
+                            <label class="required"><strong>{{ trans('Reason') }} <span>{{ trans('Required') }}</span></strong><br />
+                                <textarea name="req_reason" rows="10" cols="60"></textarea><br /></label>
+                        </div>
+                    </fieldset>
+                </div>
+                <p class="buttons">
+                    <input type="submit" name="submit" value="{{ trans('Submit') }}" accesskey="s" />
+                    <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    {{ fireHook('view.misc.report.start') }}
+{% endblock content %}

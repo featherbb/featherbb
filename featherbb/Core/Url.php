@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015-2016 FeatherBB
+ * Copyright (C) 2015-2019 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -9,9 +9,11 @@
 
 namespace FeatherBB\Core;
 
+use FeatherBB\Core\Interfaces\Request;
+
 class Url
 {
-    protected static $url_replace = array(
+    protected static $urlReplace = [
                                         'À' => 'A',
                                         'Á' => 'A',
                                         'Â' => 'A',
@@ -585,60 +587,60 @@ class Url
                                         '('    =>    '-',
                                         '"'    =>    '-',
                                         "'"    =>    '-',
-                            );
+    ];
 
     //
     // Generate a string with numbered links (for multipage scripts)
     //
-    public static function paginate($num_pages, $cur_page, $link, $args = null)
+    public static function paginate($numPages, $curPage, $link, $args = null)
     {
-        $pages = array();
-        $link_to_all = false;
+        $pages = [];
+        $linkToAll = false;
 
-        // If $cur_page == -1, we link to all pages (used in Forum.php)
-        if ($cur_page == -1) {
-            $cur_page = 1;
-            $link_to_all = true;
+        // If $curPage == -1, we link to all pages (used in Forum.php)
+        if ($curPage == -1) {
+            $curPage = 1;
+            $linkToAll = true;
         }
 
-        if ($num_pages <= 1) {
-            $pages = array('<strong class="item1">1</strong>');
+        if ($numPages <= 1) {
+            $pages = ['<strong class="item1">1</strong>'];
         } else {
             // Add a previous page link
-            if ($num_pages > 1 && $cur_page > 1) {
-                $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.self::get_sublink($link, 'page/$1', ($cur_page - 1), $args).'">'.__('Previous').'</a>';
+            if ($numPages > 1 && $curPage > 1) {
+                $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.self::getSublink($link, 'page/$1', ($curPage - 1), $args).'">'.__('Previous').'</a>';
             }
 
-            if ($cur_page > 3) {
+            if ($curPage > 3) {
                 $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'">1</a>';
 
-                if ($cur_page > 5) {
+                if ($curPage > 5) {
                     $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
                 }
             }
 
             // Don't ask me how the following works. It just does, OK? :-)
-            for ($current = ($cur_page == 5) ? $cur_page - 3 : $cur_page - 2, $stop = ($cur_page + 4 == $num_pages) ? $cur_page + 4 : $cur_page + 3; $current < $stop; ++$current) {
-                if ($current < 1 || $current > $num_pages) {
+            for ($current = ($curPage == 5) ? $curPage - 3 : $curPage - 2, $stop = ($curPage + 4 == $numPages) ? $curPage + 4 : $curPage + 3; $current < $stop; ++$current) {
+                if ($current < 1 || $current > $numPages) {
                     continue;
-                } elseif ($current != $cur_page || $link_to_all) {
-                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.str_replace('#', '', self::get_sublink($link, 'page/$1', $current, $args)).'">'.Utils::forum_number_format($current).'</a>';
+                } elseif ($current != $curPage || $linkToAll) {
+                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.str_replace('#', '', self::getSublink($link, 'page/$1', $current, $args)).'">'.Utils::forumNumberFormat($current).'</a>';
                 } else {
-                    $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.Utils::forum_number_format($current).'</strong>';
+                    $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.Utils::forumNumberFormat($current).'</strong>';
                 }
             }
 
-            if ($cur_page <= ($num_pages-3)) {
-                if ($cur_page != ($num_pages-3) && $cur_page != ($num_pages-4)) {
+            if ($curPage <= ($numPages-3)) {
+                if ($curPage != ($numPages-3) && $curPage != ($numPages-4)) {
                     $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
                 }
 
-                $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.self::get_sublink($link, 'page/$1', $num_pages, $args).'">'.Utils::forum_number_format($num_pages).'</a>';
+                $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.self::getSublink($link, 'page/$1', $numPages, $args).'">'.Utils::forumNumberFormat($numPages).'</a>';
             }
 
             // Add a next page link
-            if ($num_pages > 1 && !$link_to_all && $cur_page < $num_pages) {
-                $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.self::get_sublink($link, 'page/$1', ($cur_page + 1), $args).'">'.__('Next').'</a>';
+            if ($numPages > 1 && !$linkToAll && $curPage < $numPages) {
+                $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.self::getSublink($link, 'page/$1', ($curPage + 1), $args).'">'.__('Next').'</a>';
             }
         }
 
@@ -649,55 +651,55 @@ class Url
     // Generate a string with numbered links (for multipage scripts)
     // Old FluxBB-style function for search page
     //
-    public static function paginate_old($num_pages, $cur_page, $link)
+    public static function paginateOld($numPages, $curPage, $link)
     {
-        $pages = array();
-        $link_to_all = false;
+        $pages = [];
+        $linkToAll = false;
 
-        // If $cur_page == -1, we link to all pages (used in Forum.php)
-        if ($cur_page == -1) {
-            $cur_page = 1;
-            $link_to_all = true;
+        // If $curPage == -1, we link to all pages (used in Forum.php)
+        if ($curPage == -1) {
+            $curPage = 1;
+            $linkToAll = true;
         }
 
-        if ($num_pages <= 1) {
-            $pages = array('<strong class="item1">1</strong>');
+        if ($numPages <= 1) {
+            $pages = ['<strong class="item1">1</strong>'];
         } else {
             // Add a previous page link
-            if ($num_pages > 1 && $cur_page > 1) {
-                $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($cur_page == 2 ? '' : '&amp;p='.($cur_page - 1)).'">'.__('Previous').'</a>';
+            if ($numPages > 1 && $curPage > 1) {
+                $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($curPage == 2 ? '' : '&amp;p='.($curPage - 1)).'">'.__('Previous').'</a>';
             }
 
-            if ($cur_page > 3) {
+            if ($curPage > 3) {
                 $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'">1</a>';
 
-                if ($cur_page > 5) {
+                if ($curPage > 5) {
                     $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
                 }
             }
 
             // Don't ask me how the following works. It just does, OK? :-)
-            for ($current = ($cur_page == 5) ? $cur_page - 3 : $cur_page - 2, $stop = ($cur_page + 4 == $num_pages) ? $cur_page + 4 : $cur_page + 3; $current < $stop; ++$current) {
-                if ($current < 1 || $current > $num_pages) {
+            for ($current = ($curPage == 5) ? $curPage - 3 : $curPage - 2, $stop = ($curPage + 4 == $numPages) ? $curPage + 4 : $curPage + 3; $current < $stop; ++$current) {
+                if ($current < 1 || $current > $numPages) {
                     continue;
-                } elseif ($current != $cur_page || $link_to_all) {
-                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($current == 1 ? '' : '&amp;p='.$current).'">'.Utils::forum_number_format($current).'</a>';
+                } elseif ($current != $curPage || $linkToAll) {
+                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.($current == 1 ? '' : '&amp;p='.$current).'">'.Utils::forumNumberFormat($current).'</a>';
                 } else {
-                    $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.Utils::forum_number_format($current).'</strong>';
+                    $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.Utils::forumNumberFormat($current).'</strong>';
                 }
             }
 
-            if ($cur_page <= ($num_pages-3)) {
-                if ($cur_page != ($num_pages-3) && $cur_page != ($num_pages-4)) {
+            if ($curPage <= ($numPages-3)) {
+                if ($curPage != ($numPages-3) && $curPage != ($numPages-4)) {
                     $pages[] = '<span class="spacer">'.__('Spacer').'</span>';
                 }
 
-                $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.$num_pages.'">'.Utils::forum_number_format($num_pages).'</a>';
+                $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.$numPages.'">'.Utils::forumNumberFormat($numPages).'</a>';
             }
 
             // Add a next page link
-            if ($num_pages > 1 && !$link_to_all && $cur_page < $num_pages) {
-                $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.($cur_page +1).'">'.__('Next').'</a>';
+            if ($numPages > 1 && !$linkToAll && $curPage < $numPages) {
+                $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.($curPage +1).'">'.__('Next').'</a>';
             }
         }
 
@@ -708,11 +710,11 @@ class Url
     // Make a string safe to use in a URL
     // Inspired by (c) Panther <http://www.pantherforum.org/>
     //
-    public static function url_friendly($str)
+    public static function slug($str)
     {
-        $str = strtr($str, self::$url_replace);
+        $str = strtr($str, self::$urlReplace);
         $str = strtolower(utf8_decode($str));
-        $str = Utils::trim(preg_replace(array('/[^a-z0-9\s]/', '/[\s]+/'), array('', '-'), $str), '-');
+        $str = Utils::trim(preg_replace(['/[^a-z0-9\s]/', '/[\s]+/'], ['', '-'], $str), '-');
 
         if (empty($str)) {
             $str = 'view';
@@ -727,47 +729,47 @@ class Url
     //
     public static function get($link, $args = null)
     {
-        $base_url = self::base();
+        $baseUrl = self::base();
 
-        $gen_link = $link;
+        $genLink = $link;
         if ($args == null) {
-            $gen_link = $base_url.'/'.$link;
+            $genLink = $baseUrl.'/'.$link;
         } elseif (!is_array($args)) {
-            $gen_link = $base_url.'/'.str_replace('$1', $args, $link);
+            $genLink = $baseUrl.'/'.str_replace('$1', $args, $link);
         } else {
             for ($i = 0; isset($args[$i]); ++$i) {
-                $gen_link = str_replace('$'.($i + 1), $args[$i], $gen_link);
+                $genLink = str_replace('$'.($i + 1), $args[$i], $genLink);
             }
-            $gen_link = $base_url.'/'.$gen_link;
+            $genLink = $baseUrl.'/'.$genLink;
         }
 
-        return $gen_link;
+        return $genLink;
     }
 
     //
     // Generate a hyperlink with parameters and anchor and a subsection such as a subpage
     // Inspired by (c) Panther <http://www.pantherforum.org/>
     //
-    private static function get_sublink($link, $sublink, $subarg, $args = null)
+    private static function getSublink($link, $sublink, $subarg, $args = null)
     {
-        $base_url = self::base();
+        $baseUrl = self::base();
 
         if ($sublink == 'p$1' && $subarg == 1) {
             return self::get($link, $args);
         }
 
-        $gen_link = $link;
+        $genLink = $link;
         if (!is_array($args) && $args != null) {
-            $gen_link = str_replace('$1', $args, $link);
+            $genLink = str_replace('$1', $args, $link);
         } else {
             for ($i = 0; isset($args[$i]); ++$i) {
-                $gen_link = str_replace('$'.($i + 1), $args[$i], $gen_link);
+                $genLink = str_replace('$'.($i + 1), $args[$i], $genLink);
             }
         }
 
-        $gen_link = $base_url.'/'.str_replace('#', str_replace('$1', str_replace('$1', $subarg, $sublink), '$1/'), $gen_link);
+        $genLink = $baseUrl.'/'.str_replace('#', str_replace('$1', str_replace('$1', $subarg, $sublink), '$1/'), $genLink);
 
-        return $gen_link;
+        return $genLink;
     }
 
     //
@@ -776,21 +778,18 @@ class Url
     public static function base()
     {
         return Request::getUri()->getScheme().'://'.Request::getUri()->getHost().Request::getUri()->getBasePath();
-        // return Request::getUri()->getBasePath();
     }
 
     //
     // Fetch the base_url for static files, optionally support HTTPS and HTTP
     //
-    public static function base_static()
+    public static function baseStatic()
     {
-        $url = Request::getUri()->getBasePath();
-        $url = str_replace('/index.php', '', $url);
-        return $url;
+        return Request::getUri()->getScheme().'://'.Request::getUri()->getHost();
     }
 
     //
-    // function is_valid($url) {
+    // function isValid($url) {
     //
     // Return associative array of valid URI components, or FALSE if $url is not
     // RFC-3986 compliant. If the passed URL begins with: "www." or "ftp.", then
@@ -817,7 +816,7 @@ class Url
     //      [fragment] => fragone
     //      [url] => http://www.jmrware.com:80/articles?height=10&width=75#fragone
     // )
-    public static function is_valid($url)
+    public static function isValid($url)
     {
         if (strpos($url, 'www.') === 0) {
             $url = 'http://'. $url;
@@ -909,5 +908,4 @@ class Url
         }
         return $m; // return TRUE == array of useful named $matches plus the valid $url.
     }
-
 }

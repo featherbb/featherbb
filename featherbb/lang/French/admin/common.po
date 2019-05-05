@@ -1,0 +1,118 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "Admin menu"
+msgstr "Menu d'administration"
+
+msgid "Plugins menu"
+msgstr "Menu des plugins"
+
+msgid "Moderator menu"
+msgstr "Menu de modération"
+
+msgid "Index"
+msgstr "Accueil"
+
+msgid "Categories"
+msgstr "Catégories"
+
+msgid "Forums"
+msgstr "Forums"
+
+msgid "Users"
+msgstr "Utilisateurs"
+
+msgid "User groups"
+msgstr "Groupes d'utilisateurs"
+
+msgid "Admin options"
+msgstr "Options"
+
+msgid "Permissions"
+msgstr "Permissions"
+
+msgid "Censoring"
+msgstr "Censure"
+
+msgid "Parser"
+msgstr "Parser"
+
+msgid "Bans"
+msgstr "Bannissements"
+
+msgid "Prune"
+msgstr "Élagage"
+
+msgid "Maintenance"
+msgstr "Maintenance"
+
+msgid "Reports"
+msgstr "Signalements"
+
+msgid "Server statistics"
+msgstr "Statistiques du serveur"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "Go back"
+msgstr "Retour"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Update"
+msgstr "Mettre à jour"
+
+msgid "Updates"
+msgstr "Mises à jour"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Remove"
+msgstr "Supprimer"
+
+msgid "Yes"
+msgstr "Oui"
+
+msgid "No"
+msgstr "Non"
+
+msgid "Save changes"
+msgstr "Enregistrer les modifications"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "here"
+msgstr "ici"
+
+msgid "Action"
+msgstr "Action"
+
+msgid "None"
+msgstr "Aucune"
+
+msgid "Maintenance mode"
+msgstr "Mode maintenance"
+
+msgid "No plugin message"
+msgstr "Il n'y a aucun plugin nommé %s dans le répertoire plugin."
+
+msgid "Plugin failed message"
+msgstr "Échec du chargement du plugin <strong>%s</strong>"

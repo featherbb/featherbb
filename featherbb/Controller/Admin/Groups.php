@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015-2016 FeatherBB
+ * Copyright (C) 2015-2019 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -11,6 +11,13 @@ namespace FeatherBB\Controller\Admin;
 
 use FeatherBB\Core\AdminUtils;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Hooks;
+use FeatherBB\Core\Interfaces\Input;
+use FeatherBB\Core\Interfaces\Lang;
+use FeatherBB\Core\Interfaces\Request;
+use FeatherBB\Core\Interfaces\User;
+use FeatherBB\Core\Interfaces\View;
 use FeatherBB\Core\Utils;
 
 class Groups
@@ -18,35 +25,38 @@ class Groups
     public function __construct()
     {
         $this->model = new \FeatherBB\Model\Admin\Groups();
-        translate('admin/groups');
+        Lang::load('admin/groups');
+        if (!User::isAdmin()) {
+            throw new Error(__('No permission'), 403);
+        }
     }
 
     public function display($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.groups.display');
+        Hooks::fire('controller.admin.groups.display');
 
-        $groups = $this->model->fetch_groups();
+        $groups = $this->model->groups();
 
         // Set default group
         if (Request::isPost()) {
-            return $this->model->set_default_group($groups);
+            return $this->model->setDefaultGroup($groups);
         }
 
-        AdminUtils::generateAdminMenu('groups');
+        AdminUtils::generateAdminMenu('user groups');
 
-        View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
+        View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'groups' => $groups,
                 'cur_index' => 5,
-            )
-        )->addTemplate('admin/groups/admin_groups.php')->display();
+            ]
+        )->addTemplate('@forum/admin/groups/admin_groups')->display();
     }
 
     public function delete($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.groups.delete');
+        Hooks::fire('controller.admin.groups.delete');
 
         if ($args['id'] < 5) {
             throw new Error(__('Bad request'), 403);
@@ -58,69 +68,66 @@ class Groups
         }
 
         // Check if this group has any members
-        $is_member = $this->model->check_members($args['id']);
+        $isMember = $this->model->checkMembers($args['id']);
 
         // If the group doesn't have any members or if we've already selected a group to move the members to
-        if (!$is_member || Input::post('del_group')) {
+        if (!$isMember || Input::post('del_group')) {
             if (Input::post('del_group_comply') || Input::post('del_group')) {
-                return $this->model->delete_group($args['id']);
+                return $this->model->deleteGroup($args['id']);
             } else {
-                AdminUtils::generateAdminMenu('groups');
+                AdminUtils::generateAdminMenu('user groups');
 
-                return View::setPageInfo(array(
-                        'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
+                return View::setPageInfo([
+                        'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
                         'active_page' => 'admin',
                         'admin_console' => true,
-                        'group_title'      =>  $this->model->get_group_title($args['id']),
+                        'group_title'      =>  $this->model->groupTitle($args['id']),
                         'id'    => $args['id'],
-                    )
-                )->addTemplate('admin/groups/confirm_delete.php')->display();
+                    ]
+                )->addTemplate('@forum/admin/groups/confirm_delete')->display();
             }
         }
 
-        AdminUtils::generateAdminMenu('groups');
+        AdminUtils::generateAdminMenu('user groups');
 
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
+        return View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'id'    => $args['id'],
-                'group_info'      =>  $this->model->get_title_members($args['id']),
-                'group_list_delete'      =>  $this->model->get_group_list_delete($args['id']),
-            )
-        )->addTemplate('admin/groups/delete_group.php')->display();
+                'group_info'      =>  $this->model->titleMembers($args['id']),
+                'group_list_delete'      =>  $this->model->groupListDelete($args['id']),
+            ]
+        )->addTemplate('@forum/admin/groups/delete_group')->display();
     }
 
     public function addedit($req, $res, $args)
     {
-        Container::get('hooks')->fire('controller.admin.groups.addedit');
+        Hooks::fire('controller.admin.groups.addedit');
 
-        $groups = $this->model->fetch_groups();
+        $groups = $this->model->groups();
 
         // Add/edit a group (stage 2)
         if (Input::post('add_edit_group')) {
-            return $this->model->add_edit_group($groups);
+            return $this->model->addEdit($groups);
         }
 
         // Add/edit a group (stage 1)
         elseif (Input::post('add_group') || isset($args['id'])) {
+            AdminUtils::generateAdminMenu('user groups');
 
-            AdminUtils::generateAdminMenu('groups');
+            $id = isset($args['id']) ? intval($args['id']) : intval(Input::post('base_group'));
+            $group = $this->model->infoAdd($groups, $id);
 
-            $group = $this->model->info_add_group($groups, $args['id']);
-
-            View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')),
+            View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
                     'active_page' => 'admin',
                     'admin_console' => true,
-                    'focus_element' => array('groups2', 'req_title'),
-                    'required_fields' => array('req_title' => __('Group title label')),
                     'group'    =>    $group,
-                    'groups'    =>    $groups,
-                    'id'    => $args['id'],
-                    'group_list'    => $this->model->get_group_list($groups, $group),
-                )
-            )->addTemplate('admin/groups/add_edit_group.php')->display();
+                    'id'    => $id,
+                    'group_list'    => $this->model->getGroupList($groups, $group),
+                ]
+            )->addTemplate('@forum/admin/groups/add_edit_group')->display();
         }
     }
 }

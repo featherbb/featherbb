@@ -1,0 +1,178 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "fopen disabled message"
+msgstr "Impossible de vérifier la présence de nouvelles mises à jour puisque l'option «&#160;allow_url_fopen&#160;» est désactivée sur ce système."
+
+msgid "Upgrade check failed message"
+msgstr "La vérification de nouvelles mises à jour a échoué pour des raisons inconnues."
+
+msgid "Running latest version message"
+msgstr "Vous utilisez la version la plus récente de FeatherBB."
+
+msgid "New version available message"
+msgstr "Une nouvelle version de FeatherBB est disponible. Vous pouvez télécharger cette version ici&#160;: %s."
+
+msgid "Deleted install.php redirect"
+msgstr "Le fichier a été supprimé avec succès. Redirection …"
+
+msgid "Delete install.php failed"
+msgstr "Impossible de supprimer install.php. Veuillez le faire à la main."
+
+msgid "PHPinfo disabled message"
+msgstr "La fonction PHP phpinfo() a été désactivée sur ce serveur."
+
+msgid "Not available"
+msgstr "Non disponible"
+
+msgid "Forum admin head"
+msgstr "Administration du forum"
+
+msgid "NA"
+msgstr "N/A"
+
+msgid "Welcome to admin"
+msgstr "Bienvenue dans le panneau d'administration de FeatherBB. À partir d'ici vous pouvez gérer les aspects vitaux du forum. Selon que vous êtes administrateur ou modérateur, vous pouvez"
+
+msgid "Welcome 1"
+msgstr "Organiser les catégories et forums."
+
+msgid "Welcome 2"
+msgstr "Définir les options et préférences pour chaque forum."
+
+msgid "Welcome 3"
+msgstr "Gérer les permissions pour les utilisateurs et les invités."
+
+msgid "Welcome 4"
+msgstr "Afficher les statistiques IP des utilisateurs."
+
+msgid "Welcome 5"
+msgstr "Bannir des utilisateurs."
+
+msgid "Welcome 6"
+msgstr "Censurer des mots."
+
+msgid "Welcome 7"
+msgstr "Paramétrer les rangs d'utilisateurs."
+
+msgid "Welcome 8"
+msgstr "Supprimer d'anciens messages."
+
+msgid "Welcome 9"
+msgstr "Traiter les signalements de messages."
+
+msgid "Alerts head"
+msgstr "Attention"
+
+msgid "Install file exists"
+msgstr "Le fichier install.php existe toujours, il doit être supprimé. %s."
+
+msgid "Delete install file"
+msgstr "Le supprimer"
+
+msgid "About head"
+msgstr "Au sujet de FeatherBB"
+
+msgid "FeatherBB version label"
+msgstr "Version de FeatherBB"
+
+msgid "Forum label"
+msgstr "Forum FeatherBB.org"
+
+msgid "IRC label"
+msgstr "Canal IRC"
+
+msgid "Support label"
+msgstr "Support"
+
+msgid "View server statistics"
+msgstr "Voir les statistiques du serveur"
+
+msgid "Check for upgrade"
+msgstr "Vérification de mise à jour"
+
+msgid "FeatherBB version data"
+msgstr "v%s - %s"
+
+msgid "Server statistics head"
+msgstr "Statistiques du serveur"
+
+msgid "Server statistics label"
+msgstr "Statistiques du serveur"
+
+msgid "Server load label"
+msgstr "Charge du serveur"
+
+msgid "Server load data"
+msgstr "%s - %s utilisateur(s) en ligne"
+
+msgid "Environment label"
+msgstr "Environnement"
+
+msgid "Environment data OS"
+msgstr "Système d'exploitation&#160;: %s"
+
+msgid "Show info"
+msgstr "Afficher les infos"
+
+msgid "Environment data version"
+msgstr "PHP : %s - %s"
+
+msgid "Environment data acc"
+msgstr "Accélérateur&#160;: %s"
+
+msgid "Turck MMCache"
+msgstr "Turck MMCache"
+
+msgid "Turck MMCache link"
+msgstr "turck-mmcache.sourceforge.net/"
+
+msgid "ionCube PHP Accelerator"
+msgstr "Accélérateur PHP ionCube PHP"
+
+msgid "ionCube PHP Accelerator link"
+msgstr "www.php-accelerator.co.uk/"
+
+msgid "Alternative PHP Cache (APC)"
+msgstr "Cache alternatif PHP (APC)"
+
+msgid "Alternative PHP Cache (APC) link"
+msgstr "www.php.net/apc/"
+
+msgid "Zend Optimizer"
+msgstr "Optimiseur Zend"
+
+msgid "Zend Optimizer link"
+msgstr "www.zend.com/products/guard/zend-optimizer/"
+
+msgid "eAccelerator"
+msgstr "eAccelerator"
+
+msgid "eAccelerator link"
+msgstr "www.eaccelerator.net/"
+
+msgid "XCache"
+msgstr "XCache"
+
+msgid "XCache link"
+msgstr "xcache.lighttpd.net/"
+
+msgid "Database label"
+msgstr "Base de données"
+
+msgid "Database data rows"
+msgstr "Lignes&#160;: %s"
+
+msgid "Database data size"
+msgstr "Taille&#160;: %s"

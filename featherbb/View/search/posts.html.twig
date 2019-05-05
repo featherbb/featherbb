@@ -1,0 +1,77 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {% include '@forum/search/header.html.twig' %}
+
+    {{ fireHook('view.search.posts.start') }}
+
+    {% for search in display.cur_search %}
+
+    <div class="blockpost{{ search.post_count % 2 == 0 ? ' roweven' : ' rowodd' }}
+        {{ search.pid == search.first_post_id ? ' firstpost' :
+            (search.post_count == 1 ? ' blockpost1' :
+            search.item_status != '' ? ' ' ~ search.item_status : '') }}">
+
+        <h2>
+            <span>
+                <span class="conr"># {{ search.post_count }}</span>
+                <span>
+                    {{ search.pid != search.first_post_id ? trans('Re') ~' ' }}
+                    {{ search.forum|raw }}
+                </span>
+                <span>»&#160;<a href="{{ pathFor('Topic', {'id': search.tid, 'name': search.url_topic}) }}">{{ search.subject }}</a></span>
+                <span>»&#160;<a href="{{ pathFor('viewPost', {'id': search.tid, 'name': search.url_topic, 'pid': search.pid}) ~'#p' . search.pid }}">{{ formatTime(search.pposted) }}</a>
+                </span>
+            </span>
+        </h2>
+
+        <div class="box">
+            <div class="inbox">
+                <div class="postbody">
+                    <div class="postleft">
+                        <dl>
+                            <dt>{{ search.pposter_disp|raw }}</dt>
+                            {% if search.pid == search.first_post_id %}
+                                <dd>
+                                    <span>{{ trans('Replies') }} {{ formatNumber(search.num_replies) }}</span>
+                                </dd>
+                            {% endif %}
+                            <dd>
+                                <div class="{{ search.icon_type }}">
+                                    <div class="nosize">{{ search.icon_text|raw }}</div>
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="postright">
+                        <div class="postmsg">
+                            {{ search.message|raw }}
+                        </div>
+                    </div>
+                    <div class="clearer"></div>
+                </div>
+            </div>
+            <div class="inbox">
+                <div class="postfoot clearb">
+                    <div class="postfootright">
+                        <ul>
+                            <li><span><a href="{{ pathFor('Topic', {'id': search.tid, 'name': search.url_topic}) }}">{{ trans('Go to topic') }}</a></span>
+                            </li>
+                            <li><span><a href="{{ pathFor('viewPost', {'id': search.tid, 'name': search.url_topic, 'pid': search.pid}) ~'#p' ~ search.pid }}">{{ trans('Go to post') }}</a>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endfor %}
+
+    {{ fireHook('view.search.posts.end') }}
+
+    {% include '@forum/search/footer.html.twig' %}
+
+{% endblock content %}

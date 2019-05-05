@@ -1,0 +1,36 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {% include '@forum/admin/menu.html.twig' %}
+
+    {{ fireHook('view.admin.maintenance.prune.start') }}
+
+    <div class="blockform">
+        <h2><span>{{ trans('Prune head') }}</span></h2>
+        <div class="box">
+            <form method="post" action="{{ pathFor('adminMaintenance') }}">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <div class="inform">
+                    <input type="hidden" name="action" value="prune" />
+                    <input type="hidden" name="prune_days" value="{{ prune.days }}" />
+                    <input type="hidden" name="prune_sticky" value="{{ prune_sticky }}" />
+                    <input type="hidden" name="prune_from" value="{{ prune_from }}" />
+                    <fieldset>
+                        <legend>{{ trans('Confirm prune subhead') }}</legend>
+                        <div class="infldset">
+                            <p>{{ trans(['Confirm prune info', prune.days, prune.forum, formatNumber(prune.num_topics)]) }}</p>
+                            <p class="warntext">{{ trans('Confirm prune warn') }}</p>
+                        </div>
+                    </fieldset>
+                </div>
+                <p class="buttons"><input type="submit" name="prune_comply" value="{{ trans('Prune') }}" /><a href="javascript:history.go(-1)">{{ trans('Go back') }}</a></p>
+            </form>
+        </div>
+    </div>
+    <div class="clearer"></div>
+</div>
+
+        {{ fireHook('view.admin.maintenance.prune.end') }}
+{% endblock content %}

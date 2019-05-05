@@ -1,0 +1,30 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.moderate.delete_topics.start') }}
+
+    <div class="blockform">
+        <h2><span>{{ trans('Delete topics') }}</span></h2>
+        <div class="box">
+            <form method="post" action="">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <input type="hidden" name="topics" value="{{ topics|keys|join(',') }}" />
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Confirm delete legend') }}</legend>
+                        <div class="infldset">
+                            <p>{{ trans('Delete topics comply') }}</p>
+                        </div>
+                    </fieldset>
+                </div>
+                <p class="buttons">
+                    <input class="btn btn-primary" type="submit" name="delete_topics_comply" value="{{ trans('Delete') }}" />
+                    <a class="btn btn-primary" href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+{{ fireHook('view.moderate.delete_topics.end') }}
+{% endblock content %}

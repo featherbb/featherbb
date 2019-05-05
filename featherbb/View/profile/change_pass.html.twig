@@ -1,0 +1,43 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.profile.change_pass.start') }}
+
+    {% include '@forum/profile/menu.html.twig' %}
+
+<div class="blockform">
+    <h2><span>{{ trans('Change pass') }}</span></h2>
+    <div class="box">
+        <form id="change_pass" method="post" action="{{ pathFor('profileAction', {'id': id, 'action': 'change_pass'}) }}" onsubmit="return process_form(this)">
+            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+            <div class="inform">
+                <input type="hidden" name="form_sent" value="1" />
+                <fieldset>
+                    <legend>{{ trans('Change pass legend') }}</legend>
+                    <div class="infldset">
+        {% if isAdminMod() == false %}
+                        <label class="required"><strong>{{ trans('Old pass') }} <span>
+                                    {{ trans('Required') }}</span></strong><br />
+                        <input type="password" name="req_old_password" size="16" /></label><br />
+        {% endif %}
+                        <label class="conl required"><strong>{{ trans('New pass') }} <span>
+                                    {{ trans('Required') }}</span></strong><br />
+                        <input type="password" name="req_new_password1" size="16" /></label><br />
+                        <label class="conl required"><strong>
+                                {{ trans('Confirm new pass') }} <span>{{ trans('Required') }}</span></strong><br />
+                        <input type="password" name="req_new_password2" size="16" /></label><br />
+                        <p class="clearb">{{ trans('Pass info') }}</p>
+                    </div>
+                </fieldset>
+            </div>
+            <p class="buttons">
+                <input type="submit" name="update" value="{{ trans('Submit') }}" />
+                <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a></p>
+        </form>
+    </div>
+</div>
+
+    {{ fireHook('view.profile.change_pass.end') }}
+{% endblock content %}

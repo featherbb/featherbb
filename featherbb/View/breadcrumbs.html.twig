@@ -1,0 +1,34 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.breadcrumbs.start') }}
+
+{% if crumbs is not empty %}
+
+            <div class="linkst">
+                <div class="inbox">
+                    <ul class="crumbs">
+                        <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
+
+    {% for link, text in crumbs %}
+                        <li><span>»&#160;</span>
+                            {{ link is not integer  ? '<a href="{{ link }}">' : '<strong>' }}
+                            {{ text }}
+                            {{ link is not integer ? '</a>' : '</strong>' }}</li>
+    {% endfor %}
+
+
+    {% if rightCrumb is not empty and rightCrumb is not empty %}
+                        <li class="right"><span><a href="{{ rightCrumb.link }}">{{ rightCrumb.text }}</a></span></li>
+    {% endif %}
+                    </ul>
+                    <div class="pagepost"></div>
+                    <div class="clearer"></div>
+                </div>
+            </div>
+
+{% endif %}
+
+    {{ fireHook('view.breadcrumbs.end') }}
+{% endblock content %}

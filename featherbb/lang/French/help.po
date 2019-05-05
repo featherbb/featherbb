@@ -1,0 +1,163 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "Help"
+msgstr "Aide"
+
+msgid "produces"
+msgstr "génère"
+
+msgid "BBCode"
+msgstr "BBCode"
+
+msgid "BBCode info 1"
+msgstr "Le BBCode est une collection de balises de formatage utilisées pour modifier l'apparence du texte ou ajouter des éléments graphiques sur ces forums. BBCode est basé sur le même principe que le HTML, et y ressemble donc beaucoup. Il suffit d'encadrer les parties que l'on souhaite modifier/ajouter par des balises ([nom_de_balise]partie à modifier[/nom_de_balise]). Ci-dessous la liste de toutes les balises BBCodes disponibles et les instructions d'utilisation."
+
+msgid "BBCode info 2"
+msgstr "Les administrateurs ont la possibilité d'activer ou de désactiver le système BBCode. Vous pouvez vérifier si le BBCode est activé lors de la composition d'un message ou la modification de votre signature."
+
+msgid "Text style"
+msgstr "Style du texte"
+
+msgid "Text style info"
+msgstr "Les balises suivantes changent l'apparence du texte&#160;:"
+
+msgid "Bold text"
+msgstr "Texte en gras"
+
+msgid "Underlined text"
+msgstr "Texte souligné"
+
+msgid "Italic text"
+msgstr "Texte en italique"
+
+msgid "Strike-through text"
+msgstr "Texte barré"
+
+msgid "Red text"
+msgstr "Texte rouge"
+
+msgid "Blue text"
+msgstr "Texte bleu"
+
+msgid "Heading text"
+msgstr "Titre"
+
+msgid "Deleted text"
+msgstr "Texte supprimé"
+
+msgid "Inserted text"
+msgstr "Texte inséré"
+
+msgid "Emphasised text"
+msgstr "Texte en emphase"
+
+msgid "Links and images"
+msgstr "Liens et images"
+
+msgid "This help page"
+msgstr "Cette page d'aide"
+
+msgid "Links info"
+msgstr "Vous pouvez créer des liens vers d'autres documents ou vers des adresses électroniques en utilisant les balises suivantes&#160;:"
+
+msgid "My email address"
+msgstr "Mon adresse électronique"
+
+msgid "Images info"
+msgstr "Si vous souhaitez afficher une image, vous pouvez utiliser la balise «&#160;<strong>img</strong>&#160;». Le texte après le signe «&#160;=&#160;» dans la balise ouvrante est utilisé pour l'attribut alt (texte alternatif en cas de non affichage de l'image) et devrait être ajouté à chaque fois que cela est possible"
+
+msgid "FluxBB bbcode test"
+msgstr "Test du bbcode FluxBB"
+
+msgid "Test topic"
+msgstr "Discussion de test"
+
+msgid "Test post"
+msgstr "Message de test"
+
+msgid "Test forum"
+msgstr "Forum de test"
+
+msgid "Test user"
+msgstr "Utilisateur de test"
+
+msgid "Quotes"
+msgstr "Citations"
+
+msgid "Quotes info"
+msgstr "Si vous souhaitez inclure une citation de quelqu'un, vous devriez utiliser la balise «&#160;<strong>quote</strong>&#160;»."
+
+msgid "Quotes info 2"
+msgstr "Si vous ne souhaitez pas citer quelqu'un en particulier, vous pouvez utiliser la balise «&#160;<strong>quote</strong>&#160;» sans spécifier de nom."
+
+msgid "Quote text"
+msgstr "Voici le texte que je veux citer."
+
+msgid "produces quote box"
+msgstr "génère une boîte de citation comme ceci&#160;:"
+
+msgid "quote note"
+msgstr "Remarque&#160;: si un nom d'utilisateur contient les caractères [ ou ] vous pouvez les délimiter par des guillemets."
+
+msgid "Code"
+msgstr "Code"
+
+msgid "Code info"
+msgstr "Lorsque vous affichez du code source vous devriez vous assurer que vous utilisez la balise «&#160;<strong>code</strong>&#160;». Le texte affiché entre les balises <em>code</em> utilise une police de caractères à chasse fixe et n'est pas affecté par les autres balises."
+
+msgid "Code text"
+msgstr "Voici un peu de code."
+
+msgid "produces code box"
+msgstr "génère une boîte de code comme ceci&#160;:"
+
+msgid "Nested tags"
+msgstr "Balises imbriquées"
+
+msgid "Nested tags info"
+msgstr "Les balises BBCode peuvent s'imbriquer afin de réaliser un formatage avancé. Par exemple&#160;:"
+
+msgid "Bold, underlined text"
+msgstr "Texte gras et souligné"
+
+msgid "Lists"
+msgstr "Listes"
+
+msgid "List info"
+msgstr "Pour créer une liste vous pouvez utiliser la balise «&#160;<strong>list</strong>&#160;». Trois types de listes sont à votre disposition."
+
+msgid "List text 1"
+msgstr "Exemple de premier élément de liste."
+
+msgid "List text 2"
+msgstr "Exemple de deuxième élément de liste."
+
+msgid "List text 3"
+msgstr "Exemple de troisième élément de liste."
+
+msgid "produces list"
+msgstr "génère une liste à puces."
+
+msgid "produces decimal list"
+msgstr "génère une liste numérotée."
+
+msgid "produces alpha list"
+msgstr "génère une liste alphabétique."
+
+msgid "Smilies"
+msgstr "Émoticônes"
+
+msgid "Smilies info"
+msgstr "Si vous le souhaitez (et si cette fonctionnalité est activée), les forums peuvent convertir une série d'émoticônes en images correspondantes. Ces forums reconnaissent les émoticônes suivantes et les remplacent par des images&#160;:"

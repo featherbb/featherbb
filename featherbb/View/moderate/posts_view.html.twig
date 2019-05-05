@@ -1,0 +1,80 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.moderate.posts_view.start') }}
+
+    <div class="linkst">
+        <div class="inbox crumbsplus">
+            <ul class="crumbs">
+                <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
+                <li><span>»&#160;</span><a href="{{ pathFor('Forum', {'id': fid, 'name': url_forum}) }}">{{ cur_topic.forum_name }}</a></li>
+                <li><span>»&#160;</span><a href="{{ pathFor('Topic', {'id': id, 'name': url_topic}) }}">{{ cur_topic.subject }}</a></li>
+                <li><span>»&#160;</span><strong>{{ trans('Moderate') }}</strong></li>
+            </ul>
+            <div class="pagepost">
+                <p class="pagelink conl">{{ paging_links|raw }}</p>
+            </div>
+            <div class="clearer"></div>
+        </div>
+    </div>
+
+    <form method="post" action="">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+
+    {% for post in post_data %}
+        <div id="p{{ post.id }}" class="blockpost {{ (post.id == cur_topic.first_post_id) ? 'firstpost' : '' }} {{ (loop.index % 2 == 0) ? 'roweven' : 'rowodd' }} {{ (loop.index == 1) ? 'blockpost1' : '' }}">
+
+            <h2><span><span class="conr"># {{ start_from + loop.index }}</span> <a href="{{ pathFor('viewPost', {'pid': post.id, 'name': url_topic, 'id': id}) }}#p{{ post.id }}">{{ formatTime(post.posted) }}</a></span></h2>
+            <div class="box">
+                <div class="inbox">
+                    <div class="postbody">
+                        <div class="postleft">
+                            <dl>
+                                <dt><strong>{{ post['poster_disp'] }}</strong></dt>
+                                <dd class="usertitle"><strong>{{ post['user_title'] }}</strong></dd>
+                            </dl>
+                        </div>
+                        <div class="postright">
+                            <h3 class="nosize">{{ trans('Message') }}</h3>
+                            <div class="postmsg">
+                                {{ post.message|raw }}
+                                {% if post.edited != '' %}
+                                    <p class="postedit"><em>{{ trans('Last edit') }} {{ post.edited_by }} ({{ formatTime(post.edited) }})</em></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="inbox">
+                    <div class="postfoot clearb">
+                        <div class="postfootright">{{ post.id != cur_topic.first_post_id ?
+                            ('<p class="multidelete"><label><strong>' ~trans('Select')
+                            ~'</strong>&#160;<input type="checkbox" name="posts[' ~post.id ~']" value="1" /></label></p>')|raw
+                            : ('<p class="warntext">' ~trans('Cannot select first') ~'</p>')|raw }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+        <div class="postlinksb">
+            <div class="inbox crumbsplus">
+                <div class="pagepost">
+                    <p class="pagelink conl">{{ paging_links|raw }}</p>
+                    <p class="conr modbuttons"><input type="submit" name="split_posts" value="{{ trans('Split') }}"{{ button_status }} /> <input type="submit" name="delete_posts" value="{{ trans('Delete') }}"{{ button_status }} /></p>
+                    <div class="clearer"></div>
+                </div>
+                <ul class="crumbs">
+                    <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
+                    <li><span>»&#160;</span><a href="{{ pathFor('Forum', {'id': fid, 'name': url_forum}) }}">{{ cur_topic.forum_name }}</a></li>
+                    <li><span>»&#160;</span><a href="{{ pathFor('Topic', {'id': id, 'name': url_topic}) }}">{{ cur_topic.subject }}</a></li>
+                    <li><span>»&#160;</span><strong>{{ trans('Moderate') }}</strong></li>
+                </ul>
+                <div class="clearer"></div>
+            </div>
+        </div>
+    </form>
+
+{{ fireHook('view.moderate.posts_view.end') }}
+{% endblock content %}

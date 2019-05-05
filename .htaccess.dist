@@ -1,4 +1,14 @@
+# Remove index.php from URL
+
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.php [QSA,L]
 Options -Indexes
+
+# Disable access to config.php file
+# (it should not return any content, but just in case.)
+
+<Files ".env">
+Order Allow,Deny
+Deny from all
+</Files>

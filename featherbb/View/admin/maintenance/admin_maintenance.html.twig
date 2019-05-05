@@ -1,0 +1,107 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {% include '@forum/admin/menu.html.twig' %}
+
+    {{ fireHook('view.admin.maintenance.admin_maintenance.start') }}
+
+    <div class="blockform">
+        <h2><span>{{ trans('Maintenance head') }}</span></h2>
+        <div class="box">
+            <form method="get" action="{{ pathFor('adminMaintenance') }}">
+                <div class="inform">
+                    <input type="hidden" name="action" value="rebuild"/>
+                    <fieldset>
+                        <legend>{{ trans('Rebuild index subhead') }}</legend>
+                        <div class="infldset">
+                            <p>{{ trans(['Rebuild index info', '<a href="' ~pathFor('adminOptions') ~'#maintenance">' ~trans('Maintenance mode') ~'</a>']) }}</p>
+                            <table class="aligntop">
+                                <tr>
+                                    <th scope="row">{{ trans('Posts per cycle label') }}</th>
+                                    <td>
+                                        <input type="text" name="i_per_page" size="7" maxlength="7" value="300"
+                                               tabindex="1"/>
+                                        <span>{{ trans('Posts per cycle help') }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ trans('Starting post label') }}</th>
+                                    <td>
+                                        <input type="text" name="i_start_at" size="7" maxlength="7"
+                                               value="{{ first_id is defined ? first_id : 0 }}" tabindex="2"/>
+                                        <span>{{ trans('Starting post help') }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ trans('Empty index label') }}</th>
+                                    <td class="inputadmin">
+                                        <label><input type="checkbox" name="i_empty_index" value="1" tabindex="3"
+                                                      checked="checked"/>&#160;&#160;{{ trans('Empty index help') }}
+                                        </label>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p class="topspace">{{ trans('Rebuild completed info') }}</p>
+                            <div class="fsetsubmit"><input type="submit" name="rebuild_index"
+                                                           value="{{ trans('Rebuild index') }}" tabindex="4"/></div>
+                        </div>
+                    </fieldset>
+                </div>
+            </form>
+
+            <form method="post" action="{{ pathFor('adminMaintenance') }}" onsubmit="return process_form(this)">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <div class="inform">
+                    <input type="hidden" name="action" value="prune"/>
+                    <fieldset>
+                        <legend>{{ trans('Prune subhead') }}</legend>
+                        <div class="infldset">
+                            <table class="aligntop">
+                                <tr>
+                                    <th scope="row">{{ trans('Days old label') }}</th>
+                                    <td>
+                                        <input type="text" name="req_prune_days" size="3" maxlength="3" tabindex="5"/>
+                                        <span>{{ trans('Days old help') }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ trans('Prune sticky label') }}</th>
+                                    <td>
+                                        <label class="conl"><input type="radio" name="prune_sticky" value="1"
+                                                                   tabindex="6"
+                                                                   checked="checked"/>&#160;<strong>{{ trans('Yes') }}</strong></label>
+                                        <label class="conl"><input type="radio" name="prune_sticky"
+                                                                   value="0"/>&#160;<strong>{{ trans('No') }}</strong></label>
+                                        <span class="clearb">{{ trans('Prune sticky help') }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{ trans('Prune from label') }}</th>
+                                    <td>
+                                        <select name="prune_from" tabindex="7">
+                                            <option value="all">{{ trans('All forums') }}</option>
+                                            {{ categories }}
+                                            </optgroup>
+                                        </select>
+                                        <span>{{ trans('Prune from help') }}</span>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p class="topspace">
+                                {{ trans(['Prune info', '<a href="' ~pathFor('adminOptions') ~'#maintenance">' ~trans('Maintenance mode') ~'</a>']) }}
+                            </p>
+                            <div class="fsetsubmit"><input type="submit" name="prune" value="{{ trans('Prune') }}"
+                                                           tabindex="8"/></div>
+                        </div>
+                    </fieldset>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="clearer"></div>
+    </div>
+
+    {{ fireHook('view.admin.maintenance.admin_maintenance.end') }}
+{% endblock content %}

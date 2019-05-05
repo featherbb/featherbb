@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2015-2016 FeatherBB
+ * Copyright (C) 2015-2019 FeatherBB
  * based on code by (C) 2008-2015 FluxBB
  * and Rickard Andersson (C) 2002-2008 PunBB
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
@@ -10,12 +10,11 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
-use FeatherBB\Core\Random;
 use FeatherBB\Core\Utils;
 
 class Install
 {
-    protected $database_scheme = array(
+    protected $databaseScheme = [
         'bans' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `username` varchar(200) DEFAULT NULL,
@@ -77,30 +76,6 @@ class Install
             `g_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `g_title` varchar(50) NOT NULL DEFAULT '',
             `g_user_title` varchar(50) DEFAULT NULL,
-            `g_promote_min_posts` int(10) unsigned NOT NULL DEFAULT '0',
-            `g_promote_next_group` int(10) unsigned NOT NULL DEFAULT '0',
-            `g_moderator` tinyint(1) NOT NULL DEFAULT '0',
-            `g_mod_edit_users` tinyint(1) NOT NULL DEFAULT '0',
-            `g_mod_rename_users` tinyint(1) NOT NULL DEFAULT '0',
-            `g_mod_change_passwords` tinyint(1) NOT NULL DEFAULT '0',
-            `g_mod_ban_users` tinyint(1) NOT NULL DEFAULT '0',
-            `g_mod_promote_users` tinyint(1) NOT NULL DEFAULT '0',
-            `g_read_board` tinyint(1) NOT NULL DEFAULT '1',
-            `g_view_users` tinyint(1) NOT NULL DEFAULT '1',
-            `g_post_replies` tinyint(1) NOT NULL DEFAULT '1',
-            `g_post_topics` tinyint(1) NOT NULL DEFAULT '1',
-            `g_edit_posts` tinyint(1) NOT NULL DEFAULT '1',
-            `g_delete_posts` tinyint(1) NOT NULL DEFAULT '1',
-            `g_delete_topics` tinyint(1) NOT NULL DEFAULT '1',
-            `g_post_links` tinyint(1) NOT NULL DEFAULT '1',
-            `g_set_title` tinyint(1) NOT NULL DEFAULT '1',
-            `g_search` tinyint(1) NOT NULL DEFAULT '1',
-            `g_search_users` tinyint(1) NOT NULL DEFAULT '1',
-            `g_send_email` tinyint(1) NOT NULL DEFAULT '1',
-            `g_post_flood` smallint(6) NOT NULL DEFAULT '30',
-            `g_search_flood` smallint(6) NOT NULL DEFAULT '30',
-            `g_email_flood` smallint(6) NOT NULL DEFAULT '60',
-            `g_report_flood` smallint(6) NOT NULL DEFAULT '60',
             `inherit` text,
             PRIMARY KEY (`g_id`)
         ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;",
@@ -123,7 +98,7 @@ class Install
             `user` int(11) DEFAULT NULL,
             `group` int(11) DEFAULT NULL,
             PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;",
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
         'plugins' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `name` varchar(200) NOT NULL DEFAULT '',
@@ -149,14 +124,14 @@ class Install
             KEY `posts_multi_idx` (`poster_id`,`topic_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
         'preferences' => "CREATE TABLE IF NOT EXISTS %t% (
-            `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-            `preference_name` tinytext,
+            `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+            `preference_name` varchar(200) NOT NULL,
             `preference_value` tinytext,
-            `user` int(11) DEFAULT NULL,
-            `group` int(11) DEFAULT NULL,
+            `user` int(10) unsigned DEFAULT NULL,
+            `group` int(10) unsigned DEFAULT NULL,
             `default` tinyint(1) DEFAULT NULL,
             PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;",
+        ) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;",
         'reports' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `post_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -190,6 +165,13 @@ class Install
             PRIMARY KEY (`word`),
             KEY `search_words_id_idx` (`id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+        'smilies' => "CREATE TABLE IF NOT EXISTS %t% (
+          `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+          `image` varchar(40) NOT NULL DEFAULT '',
+          `text` varchar(20) NOT NULL DEFAULT '',
+          `disp_position` tinyint(2) UNSIGNED NOT NULL DEFAULT '0',
+          PRIMARY KEY (`id`)
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
         'topic_subscriptions' => "CREATE TABLE IF NOT EXISTS %t% (
             `user_id` int(10) unsigned NOT NULL DEFAULT '0',
             `topic_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -220,34 +202,13 @@ class Install
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `group_id` int(10) unsigned NOT NULL DEFAULT '3',
             `username` varchar(200) NOT NULL DEFAULT '',
-            `password` varchar(40) NOT NULL DEFAULT '',
+            `password` varchar(255) NOT NULL DEFAULT '',
             `email` varchar(80) NOT NULL DEFAULT '',
             `title` varchar(50) DEFAULT NULL,
             `realname` varchar(40) DEFAULT NULL,
             `url` varchar(100) DEFAULT NULL,
-            `jabber` varchar(80) DEFAULT NULL,
-            `icq` varchar(12) DEFAULT NULL,
-            `msn` varchar(80) DEFAULT NULL,
-            `aim` varchar(30) DEFAULT NULL,
-            `yahoo` varchar(30) DEFAULT NULL,
             `location` varchar(30) DEFAULT NULL,
             `signature` text,
-            `disp_topics` tinyint(3) unsigned DEFAULT NULL,
-            `disp_posts` tinyint(3) unsigned DEFAULT NULL,
-            `email_setting` tinyint(1) NOT NULL DEFAULT '1',
-            `notify_with_post` tinyint(1) NOT NULL DEFAULT '0',
-            `auto_notify` tinyint(1) NOT NULL DEFAULT '0',
-            `show_smilies` tinyint(1) NOT NULL DEFAULT '1',
-            `show_img` tinyint(1) NOT NULL DEFAULT '1',
-            `show_img_sig` tinyint(1) NOT NULL DEFAULT '1',
-            `show_avatars` tinyint(1) NOT NULL DEFAULT '1',
-            `show_sig` tinyint(1) NOT NULL DEFAULT '1',
-            `timezone` float NOT NULL DEFAULT '0',
-            `dst` tinyint(1) NOT NULL DEFAULT '0',
-            `time_format` tinyint(1) NOT NULL DEFAULT '0',
-            `date_format` tinyint(1) NOT NULL DEFAULT '0',
-            `language` varchar(25) NOT NULL DEFAULT 'English',
-            `style` varchar(25) NOT NULL DEFAULT 'FeatherBB',
             `num_posts` int(10) unsigned NOT NULL DEFAULT '0',
             `last_post` int(10) unsigned DEFAULT NULL,
             `last_search` int(10) unsigned DEFAULT NULL,
@@ -262,209 +223,249 @@ class Install
             PRIMARY KEY (`id`),
             UNIQUE KEY `users_username_idx` (`username`(25)),
             KEY `users_registered_idx` (`registered`)
-        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",);
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",];
 
-    public function create_table($table_name, $sql)
+    public function createTable($tableName, $sql)
     {
-        $db = DB::get_db();
-        $req = preg_replace('/%t%/', '`'.$table_name.'`', $sql);
+        $db = DB::getDb();
+        $req = preg_replace('/%t%/', '`'.$tableName.'`', $sql);
         return $db->exec($req);
     }
 
-    public function add_data($table_name, array $data)
+    public function addData($tableName, array $data)
     {
-        return (bool) DB::for_table($table_name)
+        return (bool) DB::table($tableName)
                         ->create()
                         ->set($data)
                         ->save();
     }
 
-    public function add_mock_forum(array $arch)
+    public function addMockForum(array $arch)
     {
-        foreach ($arch as $table_name => $data) {
-            $this->add_data($table_name, $data);
+        foreach ($arch as $tableName => $data) {
+            $this->addData($tableName, $data);
         }
     }
 
-    public function save_config(array $data)
+    public function saveConfig(array $data)
     {
         foreach ($data as $key => $value) {
-            $this->add_data('config', array('conf_name' => $key,
-                                            'conf_value' => $value));
+            $this->addData('config', ['conf_name' => $key,
+                                            'conf_value' => $value]);
         }
     }
 
-    public function get_database_scheme()
+    public function addSmilies(array $smilies)
     {
-        return $this->database_scheme;
+        foreach ($smilies as $smiley) {
+            $this->addData('smilies', $smiley);
+        }
     }
 
-    public static function load_default_groups()
+    public function getDatabaseScheme()
     {
-        $groups['Administrators'] = array(
+        return $this->databaseScheme;
+    }
+
+    public static function loadDefaultGroups()
+    {
+        $groups['Administrators'] = [
             'g_id' => 1,
             'g_title' => __('Administrators'),
             'g_user_title' => __('Administrator'),
-            'g_moderator' => 0,
-            'g_mod_edit_users' => 0,
-            'g_mod_rename_users' => 0,
-            'g_mod_change_passwords' => 0,
-            'g_mod_ban_users' => 0,
-            'g_read_board' => 1,
-            'g_view_users' => 1,
-            'g_post_replies' => 1,
-            'g_post_topics' => 1,
-            'g_edit_posts' => 1,
-            'g_delete_posts' => 1,
-            'g_delete_topics' => 1,
-            'g_set_title' => 1,
-            'g_search' => 1,
-            'g_search_users' => 1,
-            'g_send_email' => 1,
-            'g_post_flood' => 0,
-            'g_search_flood' => 0,
-            'g_email_flood' => 0,
-            'g_report_flood' => 0,
-            'inherit' => 'a:1:{i:0;i:2;}');
-        $groups['Moderators'] = array(
+        ];
+        $groups['Moderators'] = [
             'g_id' => 2,
             'g_title' => __('Moderators'),
             'g_user_title' => __('Moderator'),
-            'g_moderator' => 1,
-            'g_mod_edit_users' => 1,
-            'g_mod_rename_users' => 1,
-            'g_mod_change_passwords' => 1,
-            'g_mod_ban_users' => 1,
-            'g_read_board' => 1,
-            'g_view_users' => 1,
-            'g_post_replies' => 1,
-            'g_post_topics' => 1,
-            'g_edit_posts' => 1,
-            'g_delete_posts' => 1,
-            'g_delete_topics' => 1,
-            'g_set_title' => 1,
-            'g_search' => 1,
-            'g_search_users' => 1,
-            'g_send_email' => 1,
-            'g_post_flood' => 0,
-            'g_search_flood' => 0,
-            'g_email_flood' => 0,
-            'g_report_flood' => 0,
-            'inherit' => 'a:1:{i:0;i:4;}');
-        $groups['Guests'] = array(
+        ];
+        $groups['Guests'] = [
             'g_id' => 3,
             'g_title' => __('Guests'),
             'g_user_title' => __('Guest'),
-            'g_moderator' => 0,
-            'g_mod_edit_users' => 0,
-            'g_mod_rename_users' => 0,
-            'g_mod_change_passwords' => 0,
-            'g_mod_ban_users' => 0,
-            'g_read_board' => 1,
-            'g_view_users' => 1,
-            'g_post_replies' => 0,
-            'g_post_topics' => 0,
-            'g_edit_posts' => 0,
-            'g_delete_posts' => 0,
-            'g_delete_topics' => 0,
-            'g_set_title' => 0,
-            'g_search' => 1,
-            'g_search_users' => 1,
-            'g_send_email' => 0,
-            'g_post_flood' => 60,
-            'g_search_flood' => 30,
-            'g_email_flood' => 0,
-            'g_report_flood' => 0);
-        $groups['Members'] = array(
+        ];
+        $groups['Members'] = [
             'g_id' => 4,
             'g_title' => __('Members'),
             'g_user_title' => __('Member'),
-            'g_moderator' => 0,
-            'g_mod_edit_users' => 0,
-            'g_mod_rename_users' => 0,
-            'g_mod_change_passwords' => 0,
-            'g_mod_ban_users' => 0,
-            'g_read_board' => 1,
-            'g_view_users' => 1,
-            'g_post_replies' => 1,
-            'g_post_topics' => 1,
-            'g_edit_posts' => 1,
-            'g_delete_posts' => 1,
-            'g_delete_topics' => 1,
-            'g_set_title' => 0,
-            'g_search' => 1,
-            'g_search_users' => 1,
-            'g_send_email' => 1,
-            'g_post_flood' => 60,
-            'g_search_flood' => 30,
-            'g_email_flood' => 60,
-            'g_report_flood' => 60,
-            'inherit' => 'a:1:{i:0;i:3;}');
+        ];
 
         return $groups;
     }
 
-    public static function load_default_user()
+    public static function loadDefaultUser()
     {
-        return $user = array(
+        return $user = [
                 'group_id' => 3,
                 'username' => __('Guest'),
                 'password' => __('Guest'),
-                'email' => __('Guest'));
+                'email' => __('Guest')];
     }
 
-    public static function load_admin_user(array $data)
+    public static function loadAdminUser(array $data)
     {
         $now = time();
-        return $user = array(
+        return $user = [
             'group_id' => 1,
             'username' => $data['username'],
-            'password' => Random::hash($data['password']),
+            'password' => Utils::passwordHash($data['password']),
             'email' => $data['email'],
-            'language' => $data['default_lang'],
-            'style' => $data['default_style'],
             'num_posts' => 1,
             'last_post' => $now,
             'registered' => $now,
             'registration_ip' => Utils::getIp(),
-            'last_visit' => $now);
+            'last_visit' => $now];
     }
 
-    public static function load_mock_forum_data(array $data)
+    public static function loadMockForumData(array $data)
     {
-        $cat_name = __('Test category');
+        $catName = __('Test category');
         $subject = __('Test post');
         $message = __('Message');
-        $forum_name = __('Test forum');
-        $forum_desc = __('This is just a test forum');
+        $forumName = __('Test forum');
+        $forumDesc = __('This is just a test forum');
         $now = time();
         $ip = Utils::getIp();
 
-        return $mock_data = array(
-            'categories' => array('cat_name' => $cat_name,
-                                  'disp_position' => 1),
-                'forums' => array('forum_name' => $forum_name,
-                                  'forum_desc' => $forum_desc,
+        return $mockData = [
+            'categories' => ['cat_name' => $catName,
+                                  'disp_position' => 1],
+                'forums' => ['forum_name' => $forumName,
+                                  'forum_desc' => $forumDesc,
                                   'num_topics' => 1,
                                   'num_posts' => 1,
                                   'last_post' => $now,
                                   'last_post_id' => 1,
                                   'last_poster' => $data['username'],
                                   'disp_position' => 1,
-                                  'cat_id' =>  1),
-                'topics' => array('poster' => $data['username'],
+                                  'cat_id' =>  1],
+                'topics' => ['poster' => $data['username'],
                                   'subject' => $subject,
                                   'posted' => $now,
                                   'first_post_id' => 1,
                                   'last_post' => $now,
                                   'last_post_id' => 1,
                                   'last_poster' => $data['username'],
-                                  'forum_id' => 1),
-                'posts' => array('poster' => $data['username'],
+                                  'forum_id' => 1],
+                'posts' => ['poster' => $data['username'],
                                  'poster_id' => 2,
                                  'poster_ip' => $ip,
                                  'message' => $message,
                                  'posted' => $now,
-                                 'topic_id' => 1));
+                                 'topic_id' => 1]];
+    }
+
+    public static function loadSmilies()
+    {
+        return $smilies = [
+            [
+                'id' => 1,
+                'image' => 'smile.png',
+                'text' => ':)',
+                'disp_position' => 0
+            ],
+            [
+                'id' => 2,
+                'image' => 'smile.png',
+                'text' => '=)',
+                'disp_position' => 1
+            ],
+            [
+                'id' => 3,
+                'image' => 'neutral.png',
+                'text' => ':|',
+                'disp_position' => 2
+            ],
+            [
+                'id' => 4,
+                'image' => 'neutral.png',
+                'text' => '=|',
+                'disp_position' => 3
+            ],
+            [
+                'id' => 5,
+                'image' => 'sad.png',
+                'text' => ':(',
+                'disp_position' => 4
+            ],
+            [
+                'id' => 6,
+                'image' => 'sad.png',
+                'text' => '=(',
+                'disp_position' => 5
+            ],
+            [
+                'id' => 7,
+                'image' => 'big_smile.png',
+                'text' => '=D',
+                'disp_position' => 6
+            ],
+            [
+                'id' => 8,
+                'image' => 'big_smile.png',
+                'text' => ':D',
+                'disp_position' => 7
+            ],
+            [
+                'id' => 9,
+                'image' => 'yikes.png',
+                'text' => ':o',
+                'disp_position' => 8
+            ],
+            [
+                'id' => 10,
+                'image' => 'yikes.png',
+                'text' => ':O',
+                'disp_position' => 9
+            ],
+            [
+                'id' => 11,
+                'image' => 'wink.png',
+                'text' => ';)',
+                'disp_position' => 10
+            ],
+            [
+                'id' => 12,
+                'image' => 'hmm.png',
+                'text' => ':/',
+                'disp_position' => 11
+            ],
+            [
+                'id' => 13,
+                'image' => 'tongue.png',
+                'text' => ':P',
+                'disp_position' => 12
+            ],
+            [
+                'id' => 14,
+                'image' => 'tongue.png',
+                'text' => ':p',
+                'disp_position' => 13
+            ],
+            [
+                'id' => 15,
+                'image' => 'lol.png',
+                'text' => ':lol:',
+                'disp_position' => 14
+            ],
+            [
+                'id' => 16,
+                'image' => 'mad.png',
+                'text' => ':mad:',
+                'disp_position' => 15
+            ],
+            [
+                'id' => 17,
+                'image' => 'roll.png',
+                'text' => ':rolleyes:',
+                'disp_position' => 16
+            ],
+            [
+                'id' => 18,
+                'image' => 'cool.png',
+                'text' => ':cool:',
+                'disp_position' => 17
+            ],
+        ];
     }
 }

@@ -1,0 +1,125 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.register.form.start') }}
+
+
+{#// If there are errors, we display them#}
+    {% if errors is not empty %}
+
+    <div id="posterror" class="block">
+        <h2><span>{{ trans('Registration errors') }}</span></h2>
+        <div class="box">
+            <div class="inbox error-info">
+                <p>{{ trans('Registration errors info') }}</p>
+                <ul class="error-list">
+                    {% for cur_error in errors %}
+                    <li><strong>{{ cur_error }}</strong></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+
+    <div id="regform" class="blockform">
+        <h2><span>{{ trans('Register') }}</span></h2>
+        <div class="box">
+            <form id="register" method="post" action="" onsubmit="this.register.disabled=true;if(process_form(this)){return true;}else{this.register.disabled=false;return false;}">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <div class="inform">
+                    <div class="infoform">
+                        <h3>{{ trans('Important information') }}</h3>
+                        <p>{{ trans('Desc 1') }}</p>
+                        <p>{{ trans('Desc 2') }}</p>
+                    </div>
+                    <fieldset>
+                        <legend>{{ trans('Username legend') }}</legend>
+                        <div class="infldset">
+                            <input type="hidden" name="form_sent" value="1" />
+                            <input type="hidden" name="username" value="" />
+                            <input type="hidden" name="password" value="" />
+                            <label class="required"><strong>{{ trans('Username') }} <span>{{ trans('Required') }}</span></strong><br />
+                                <input type="text" name="req_user" value="{{ inputPost('req_user') ? inputPost('req_user') : '' }}" size="25" maxlength="25" /><br />
+                            </label>
+                        </div>
+                    </fieldset>
+                </div>
+            {% if settings('o_regs_verify') == '0' %}
+
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Pass legend') }}</legend>
+                        <div class="infldset">
+                            <label class="conl required"><strong>{{ trans('Password') }} <span>{{ trans('Required') }}</span></strong><br />
+                                <input type="password" name="req_password1" value="{{ inputPost('req_password1') ? inputPost('req_password1') : '' }}" size="16" /><br /></label>
+                            <label class="conl required"><strong>{{ trans('Confirm pass') }} <span>{{ trans('Required') }}</span></strong><br />
+                                <input type="password" name="req_password2" value="{{ inputPost('req_password2') ? inputPost('req_password2') : '' }}" size="16" /><br /></label>
+                            <p class="clearb">{{ trans('Pass info') }}</p>
+                        </div>
+                    </fieldset>
+                </div>
+
+            {% endif %}
+
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ settings('o_regs_verify') == '1' ? trans('Email legend 2') : trans('Email legend') }}</legend>
+                        <div class="infldset">
+            {% if settings('o_regs_verify') == '1' %}
+                            <p>{{ trans('Email info') }}</p>
+            {% endif %}
+                            <label class="required"><strong>{{ trans('Email') }} <span>{{ trans('Required') }}</span></strong><br />
+                            <input type="text" name="req_email1" value="{{ inputPost('req_email1') ? inputPost('req_email1') : '' }}" size="50" maxlength="80" /><br /></label>
+            {% if settings('o_regs_verify') == '1' %}
+                            <label class="required"><strong>{{ trans('Confirm email') }} <span>{{ trans('Required') }}</span></strong><br />
+                            <input type="text" name="req_email2" value="{{ inputPost('req_email2') ? inputPost('req_email2') : '' }}" size="50" maxlength="80" /><br /></label>
+            {% endif %}
+                        </div>
+                    </fieldset>
+                </div>
+
+            {#// Only display the language selection box if there's more than one language available#}
+            {% if languages|length > 1 %}
+
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Localisation legend') }}</legend>
+                        <div class="infldset">
+                            <label>{{ trans('Language') }}
+                                <br />
+                                <select name="language">
+                                    {% for lang in languages %}
+                                        <option value="{{ lang }}"{{ settings('o_default_lang') == lang ? ' selected="selected"' }}>{{ lang }}</option>
+                                    {% endfor %}
+                                </select>
+                                <br />
+                            </label>
+                        </div>
+                    </fieldset>
+                </div>
+
+            {% endif %}
+
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Robot title') }}</legend>
+                        <div class="infldset">
+                            <p>{{ trans('Robot info') }}</p>
+                            <label class="required"><strong>{{ trans(['Robot question', question[index_questions]]) }} <span>{{ trans('Required') }}</span></strong><br />
+                                <input name="captcha" id="captcha" type="text" size="10" maxlength="30" />
+                                <input name="captcha_q" value="{{ qencoded }}" type="hidden" />
+                            </label>
+                        </div>
+                    </fieldset>
+                </div>
+                <p class="buttons"><input type="submit" name="register" value="{{ trans('Register') }}" /></p>
+            </form>
+        </div>
+    </div>
+
+    {{ fireHook('view.register.form.end') }}
+{% endblock content %}

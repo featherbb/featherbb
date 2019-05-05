@@ -1,0 +1,29 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {% include '@forum/admin/menu.html.twig' %}
+
+    {{ fireHook('view.admin.maintenance.rebuild.start') }}
+
+    <div class="blockform">
+        <h2><span>{{ trans('Rebuilding search index') }}</span></h2>
+        <div class="box">
+            <div class="inform">
+                <fieldset>
+                    <legend>{{ trans('Rebuilding index info') }}</legend>
+                    <div class="infldset">
+                        <p>{{ trans(['Processing post', id]) }}</p>
+                        <p>{{ trans(['Javascript redirect failed', link]) }}</p>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+    <div class="clearer"></div>
+    </div>
+
+    <script type="text/javascript">window.location="{{ pathFor('adminMaintenance')~query_str|raw }}"</script>
+
+    {{ fireHook('view.admin.maintenance.rebuild.end') }}
+{% endblock content %}

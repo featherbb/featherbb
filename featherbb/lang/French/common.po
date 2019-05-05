@@ -1,0 +1,448 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "lang_direction"
+msgstr "ltr"
+
+msgid "lang_identifier"
+msgstr "fr"
+
+msgid "lang_decimal_point"
+msgstr ","
+
+msgid "lang_thousands_sep"
+msgstr " "
+
+msgid "Bad request"
+msgstr "Erreur. Le lien que vous avez suivi est incorrect ou périmé."
+
+msgid "No view"
+msgstr "Vous n'êtes pas autorisé(e) à visiter ces forums."
+
+msgid "No permission"
+msgstr "Vous n'êtes pas autorisé(e) à afficher cette page."
+
+msgid "Failed CSRF check"
+msgstr "Echec de la vérification CSRF. Vous avez été renvoyé(e) vers cette page par une source inconnue ou interdite."
+
+msgid "CSRF strength fail"
+msgstr "Echec du module CSRF. 16 caractères au minimum."
+
+msgid "CSRF session fail"
+msgstr "Echec du module CSRF. Session introuvable."
+
+msgid "No cookie"
+msgstr "Vous semblez avoir été identifié(e), cependant aucun cookie n'a été envoyé. Veuillez vérifier vos paramètres et, si possible, activer les cookies pour ce site."
+
+msgid "Pun include extension"
+msgstr "Impossible de procéder à l'inclusion utilisateur %s depuis le gabarit %s. Fichiers \"%s\" non autorisés"
+
+msgid "Pun include directory"
+msgstr "Impossible de procéder à l'inclusion utilisateur %s depuis le gabarit %s. Ouverture de dossier non autorisé"
+
+msgid "Pun include error"
+msgstr "Impossible de procéder à l'inclusion utilisateur %s à partir du gabarit %s. Ce fichier ne se trouve ni dans le dossier des gabarits, ni dans le dossier d'inclusion d'utilisateur."
+
+msgid "Announcement"
+msgstr "Annonce"
+
+msgid "Options"
+msgstr "Options"
+
+msgid "Submit"
+msgstr "Valider"
+
+msgid "Ban message"
+msgstr "Vous êtes banni(e) de ce forum."
+
+msgid "Ban message 2"
+msgstr "Votre bannissement expire le"
+
+msgid "Ban message 3"
+msgstr "L'administrateur ou le modérateur qui vous a banni envoie le message suivant :"
+
+msgid "Ban message 4"
+msgstr "Pour toute question, contactez l'administrateur"
+
+msgid "Never"
+msgstr "Jamais"
+
+msgid "Today"
+msgstr "Aujourd'hui"
+
+msgid "Yesterday"
+msgstr "Hier"
+
+msgid "Info"
+msgstr "Info"
+
+msgid "Go back"
+msgstr "Retour"
+
+msgid "Maintenance"
+msgstr "Maintenance"
+
+msgid "Redirecting"
+msgstr "Redirection"
+
+msgid "Click redirect"
+msgstr "Cliquez ici si vous ne voulez pas attendre (ou si votre navigateur ne vous redirige pas automatiquement)."
+
+msgid "on"
+msgstr "activé"
+
+msgid "off"
+msgstr "désactivé"
+
+msgid "Invalid email"
+msgstr "L'adresse électronique que vous avez saisie est invalide."
+
+msgid "Required"
+msgstr "(obligatoire)"
+
+msgid "required field"
+msgstr "est un champ obligatoire pour ce formulaire."
+
+msgid "Last post"
+msgstr "Dernier message"
+
+msgid "by"
+msgstr "par"
+
+msgid "New posts"
+msgstr "Nouveaux messages"
+
+msgid "New posts info"
+msgstr "Atteindre le premier nouveau message de cette discussion."
+
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Send email"
+msgstr "Envoyer un e-mail"
+
+msgid "Moderated by"
+msgstr "Modéré par"
+
+msgid "Registered"
+msgstr "Date d'inscription"
+
+msgid "Subject"
+msgstr "Sujet"
+
+msgid "Message"
+msgstr "Message"
+
+msgid "Topic"
+msgstr "Discussion"
+
+msgid "Forum"
+msgstr "Forum"
+
+msgid "Posts"
+msgstr "Messages"
+
+msgid "Replies"
+msgstr "Réponses"
+
+msgid "Pages"
+msgstr "Pages&#160;:"
+
+msgid "Page"
+msgstr "Page %s"
+
+msgid "BBCode"
+msgstr "BBCode&#160;:"
+
+msgid "url tag"
+msgstr "Balise [url]&#160;:"
+
+msgid "img tag"
+msgstr "Balise [img]&#160;:"
+
+msgid "Smilies"
+msgstr "Émoticônes&#160;:"
+
+msgid "and"
+msgstr "et"
+
+msgid "Image link"
+msgstr "image"
+
+msgid "wrote"
+msgstr "a écrit&#160;:"
+
+msgid "Mailer"
+msgstr "%s E-mail automatique"
+
+msgid "Important information"
+msgstr "Information importante"
+
+msgid "Write message legend"
+msgstr "Veuillez composer votre message et l'envoyer"
+
+msgid "Previous"
+msgstr "Précédent"
+
+msgid "Next"
+msgstr "Suivant"
+
+msgid "Spacer"
+msgstr "…"
+
+msgid "Title"
+msgstr "Titre de l'utilisateur"
+
+msgid "Member"
+msgstr "Membre"
+
+msgid "Moderator"
+msgstr "Modérateur"
+
+msgid "Administrator"
+msgstr "Administrateur"
+
+msgid "Banned"
+msgstr "Banni(e)"
+
+msgid "Guest"
+msgstr "Invité"
+
+msgid "BBerr pcre"
+msgstr "(%s) Le message est trop long ou complexe. Merci de le réduire."
+
+msgid "BBerr unexpected attribute"
+msgstr "Attribut inattendu: \"%1$s\". (Pas d'attribut autorisé pour (%2$s)."
+
+msgid "BBerr unrecognized attribute"
+msgstr "Attribut non reconnu: \"%1$s\", n'est pas valide pour for (%2$s)."
+
+msgid "BBerr bbcode attribute"
+msgstr "Les attributs ne peuvent PAS contenir de BBCode"
+
+msgid "BBerr missing attribute"
+msgstr "(%1$s) n'a pas tous les arguments requis."
+
+msgid "BBerr nesting overflow"
+msgstr "(%1$s) : Profondeur d'imbrication de : %2$d excède la limite autorisée: %3$d."
+
+msgid "BBerr self-nesting"
+msgstr "(%s) a été ouvert dans lui-même, ceci n'est pas autorisé."
+
+msgid "BBerr invalid nesting"
+msgstr "(%1$s) a été ouvert dans (%2$s), ceci n'est pas autorisé."
+
+msgid "BBerr invalid parent"
+msgstr "(%1$s) ne peut pas être dans: (%2$s). Tags parents possibles: %3$s."
+
+msgid "BBerr Invalid URL name"
+msgstr "URL invalide: %s"
+
+msgid "BBerr Invalid email address"
+msgstr "Adresse email invalide: %s"
+
+msgid "BBerr Invalid color"
+msgstr "Couleur invalide: %s"
+
+msgid "BBerr invalid content"
+msgstr "Contenu invalide, (%s) requiert du contenu spécifique."
+
+msgid "BBerr bad meta data"
+msgstr "Impossible de charger l'image à partir de cette URL: %s"
+
+msgid "BBerr no file size"
+msgstr "Impossible de déterminer la taille du fichier distant."
+
+msgid "BBerr non image"
+msgstr "L' URL distante n'a pas de Content-Type: \"image\"."
+
+msgid "BBerr bad http response"
+msgstr "Mauvaise réponse du header HTTP: \"%s\""
+
+msgid "BBerr bad headers"
+msgstr "Impossible de lire les headers HTTP de l'image."
+
+msgid "BBerr orphan close"
+msgstr "Tag de fermeture orphelin: (/%s) n'a pas d'ouverture"
+
+msgid "BBerr orphan open"
+msgstr "Tag d'ouverture orphelin: (%s) n'a pas de fermeture."
+
+msgid "BBmsg big image"
+msgstr "Image trop grande"
+
+msgid "BBmsg images disabled"
+msgstr "Les images sont désactivées"
+
+msgid "Index"
+msgstr "Accueil"
+
+msgid "User list"
+msgstr "Liste des membres"
+
+msgid "Rules"
+msgstr "Règles"
+
+msgid "Search"
+msgstr "Recherche"
+
+msgid "Register"
+msgstr "Inscription"
+
+msgid "Login"
+msgstr "Identification"
+
+msgid "Not logged in"
+msgstr "Vous n'êtes pas identifié(e)."
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Logout"
+msgstr "Déconnexion"
+
+msgid "Logged in as"
+msgstr "Connecté(e) sous l'identité&#160;"
+
+msgid "Admin"
+msgstr "Administration"
+
+msgid "Last visit"
+msgstr "Dernière visite&#160;: %s"
+
+msgid "Topic searches"
+msgstr "Contributions&#160;:"
+
+msgid "New posts header"
+msgstr "Nouvelles"
+
+msgid "Active topics"
+msgstr "Récentes"
+
+msgid "Unanswered topics"
+msgstr "Sans réponse"
+
+msgid "Posted topics"
+msgstr "Personnelles"
+
+msgid "Show new posts"
+msgstr "Trouver les discussions avec de nouveaux messages depuis votre dernière visite."
+
+msgid "Show active topics"
+msgstr "Trouver les discussions comportant des messages récents."
+
+msgid "Show unanswered topics"
+msgstr "Trouver les discussions sans réponse."
+
+msgid "Show posted topics"
+msgstr "Trouver les discussions auxquelles vous avez participé."
+
+msgid "Mark all as read"
+msgstr "Marquer toutes les discussions comme lues"
+
+msgid "Mark forum read"
+msgstr "Marquer ce forum comme lu"
+
+msgid "Title separator"
+msgstr " / "
+
+msgid "Board footer"
+msgstr "Pied de page des forums"
+
+msgid "Jump to"
+msgstr "Atteindre"
+
+msgid "Go"
+msgstr "Aller"
+
+msgid "Moderate topic"
+msgstr "Modérer la discussion"
+
+msgid "Move topic"
+msgstr "Déplacer la discussion"
+
+msgid "All"
+msgstr "Tous"
+
+msgid "Open topic"
+msgstr "Ouvrir la discussion"
+
+msgid "Close topic"
+msgstr "Fermer la discussion"
+
+msgid "Unstick topic"
+msgstr "Détacher la discussion"
+
+msgid "Stick topic"
+msgstr "Épingler la discussion"
+
+msgid "Moderate forum"
+msgstr "Modérer le forum"
+
+msgid "Powered by"
+msgstr "Propulsé par %s"
+
+msgid "Debug table"
+msgstr "Informations de débogage"
+
+msgid "Querytime"
+msgstr "Générées en %1$s secondes, %2$s requêtes exécutées"
+
+msgid "Memory usage"
+msgstr "Utilisation de la mémoire : %1$s"
+
+msgid "Peak usage"
+msgstr "(pic d'utilisation : %1$s)"
+
+msgid "Query times"
+msgstr "Temps (s)"
+
+msgid "Query"
+msgstr "Requête"
+
+msgid "Total query time"
+msgstr "Temps total d'exécution de la requête&#160;: %s"
+
+msgid "New reports"
+msgstr "De nouveaux signalements ont été envoyés&#160;!"
+
+msgid "Maintenance mode enabled"
+msgstr "Le mode maintenance est activé&#160;!"
+
+msgid "Size unit B"
+msgstr "%s O"
+
+msgid "Size unit KiB"
+msgstr "%s Kio"
+
+msgid "Size unit MiB"
+msgstr "%s Mio"
+
+msgid "Size unit GiB"
+msgstr "%s Gio"
+
+msgid "Size unit TiB"
+msgstr "%s Tio"
+
+msgid "Size unit PiB"
+msgstr "%s Pio"
+
+msgid "Size unit EiB"
+msgstr "%s Eio"

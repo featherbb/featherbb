@@ -1,0 +1,35 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.moderate.split_posts.start') }}
+
+    <div class="blockform">
+        <h2><span>{{ trans('Split posts') }}</span></h2>
+        <div class="box">
+            <form id="subject" method="post" action="">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Confirm split legend') }}</legend>
+                        <div class="infldset">
+                            <input type="hidden" name="posts" value="{{ posts|keys|join(',') }}" />
+                            <label class="required"><strong>{{ trans('New subject') }} <span>{{ trans('Required') }}</span></strong><br /><input type="text" name="new_subject" size="80" maxlength="70" autofocus /><br /></label>
+                            <label>{{ trans('Move to') }}
+                                <br />
+                                <select name="move_to_forum">
+                                    {{ list_forums|raw }}
+                                </select>
+                                <br />
+                            </label>
+                            <p>{{ trans('Split posts comply') }}</p>
+                        </div>
+                    </fieldset>
+                </div>
+                <p class="buttons"><input type="submit" name="split_posts_comply" value="{{ trans('Split') }}" /> <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a></p>
+            </form>
+        </div>
+    </div>
+
+    {{ fireHook('view.moderate.split_posts.end') }}
+{% endblock content %}

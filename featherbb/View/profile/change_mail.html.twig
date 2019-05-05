@@ -1,0 +1,38 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.profile.change_mail.start') }}
+
+    {% include '@forum/profile/menu.html.twig' %}
+
+<div class="blockform">
+    <h2><span>{{ trans('Change email') }}</span></h2>
+    <div class="box">
+        <form id="change_email" method="post" action="{{ pathFor('profileAction', {'id': id, 'action': 'change_email'}) }}" onsubmit="return process_form(this)">
+            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+            <div class="inform">
+                <fieldset>
+                    <legend>{{ trans('Email legend') }}</legend>
+                    <div class="infldset">
+                        <input type="hidden" name="form_sent" value="1" />
+                        <label class="required"><strong>{{ trans('New email') }} <span>
+                                    {{ trans('Required') }}</span></strong><br />
+                            <input type="text" name="req_new_email" size="50" maxlength="80" /><br /></label>
+                        <label class="required"><strong>{{ trans('Password') }} <span>
+                                    {{ trnas('Required') }}</span></strong><br /
+                            ><input type="password" name="req_password" size="16" /><br /></label>
+                        <p>{{ trans('Email instructions') }}</p>
+                    </div>
+                </fieldset>
+            </div>
+            <p class="buttons">
+                <input type="submit" name="new_email" value="{{ trans('Submit') }}" />
+                <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a></p>
+        </form>
+    </div>
+</div>
+
+    {{ fireHook('view.profile.change_mail.end') }}
+{% endblock content %}

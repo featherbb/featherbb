@@ -1,0 +1,193 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.topic.start') }}
+    <div class="linkst">
+        <div class="inbox crumbsplus">
+            <ul class="crumbs">
+                <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
+                <li> <span>»&#160;</span>
+                    <a href="{{ pathFor('Forum', {'id': "#{ cur_topic.forum_id }", 'name': "#{ url_forum }"}) }}">{{ cur_topic.forum_name }}</a>
+                </li>
+                <li> <span>»&#160;</span>
+                    <strong><a href="{{ pathFor('Topic', {'id': "#{ id }", 'name': "#{ url_topic }"}) }}">{{ cur_topic.subject }}</a></strong>
+                </li>
+            </ul>
+            <div class="pagepost">
+                <p class="pagelink conl">{{ paging_links|raw }}</p>
+                {{ post_link|raw }}
+            </div>
+            <div class="clearer"></div>
+        </div>
+    </div>
+
+    {% for post in post_data %}
+
+    <div id="p{{ post.id }}" class="blockpost{{ loop.index0 % 2 == 0 ? ' roweven' : ' rowodd' }}{{ post.id  == cur_topic.first_post_id ? ' firstpost' : '' }}{{ loop.first ? ' blockpost1' : '' }}">
+
+        <h2>
+            <span>
+                <span class="conr"><a href="
+                {{ pathFor('viewPost', {'name':"#{ cur_topic.subject }", 'id': "#{ id }", 'pid': "#{ post.id }"}) }}#p{{ post.id }}"> #
+                        {{ start_from + loop.index }}</a> {{ formatTime(post.posted) }}
+                </span>
+            </span>
+        </h2>
+        <div class="box">
+            <div class="inbox">
+                <div class="postbody">
+                    <div class="postleft">
+                        <dl>
+                            <dt><strong>{{ post.username_formatted|raw }}</strong></dt>
+                            <dd class="usertitle"><strong>{{ post.user_title_formatted|raw }}</strong></dd>
+        {% if post.user_avatar != '' %}
+                            <dd class="postavatar">{{ post.user_avatar|raw }}</dd>
+        {% endif %}
+
+        {% if post.user_info|length %}
+                            {{ post.user_info|join("\n\t\t\t\t\t")|raw }}
+        {% endif %}
+
+        {% if post.user_contacts|length %}
+                            <dd class="usercontacts">{{ post.user_contacts|join(' | ')|raw }}</dd>
+        {% endif %}
+
+                        </dl>
+                    </div>
+                    <div class="postright">
+                        <h3>{{ post.id != cur_topic.first_post_id ? trans('Re')  : '' }} {{ cur_topic.subject }}</h3>
+                        <div class="postmsg">
+                            {{ post.message|raw }}
+        {% if post.edited != '' %}
+        <p class="postedit"><em>{{ trans('Last edit') }} {{ post.edited_by }} ({{ formatTime(post.edited) }})</em></p>
+        {% endif %}
+
+                        </div>
+        {% if post.signature_formatted != '' %}
+        <div class="postsignature postmsg"><hr />{{ post.signature_formatted|raw }}</div>
+        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+            <div class="inbox">
+                <div class="postfoot clearb">
+                    <div class="postfootleft">
+                        {% if post.poster_id > 1 %}
+                        <p>{{ post.is_online_formatted|raw }}</p>
+                        {% endif %}
+                    </div>
+        {% if post.post_actions|length %}
+                    <div class="postfootright">
+                        <ul>
+                            {{ post.post_actions|join("\n\t\t\t\t\t\t")|raw }}
+                        </ul>
+                    </div>
+        {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="postlinksb">
+        <div class="inbox crumbsplus">
+            <div class="pagepost">
+                <p class="pagelink conl">{{ paging_links|raw }}</p>
+                {{ post_link|raw }}
+            </div>
+            <ul class="crumbs">
+                <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
+                <li> <span> &#160;</span>
+                    <a href="{{ pathFor('Forum', {'id': "#{ cur_topic.forum_id }", 'name': "#{ url_forum }"}) }}">{{ cur_topic.forum_name }}</a>
+                </li>
+                <li> <span> &#160;</span>
+                    <strong><a href="{{ pathFor('Topic', {'id': "#{ id }", 'name': "#{ url_topic }"}) }}">{{ cur_topic.subject }}</a></strong>
+                </li>
+            </ul>
+            {{ subscraction|raw }}
+            <div class="clearer"></div>
+        </div>
+    </div>
+
+    {#Display quick post if enabled#}
+    {% if quickpost %}
+    <div id="quickpost" class="blockform">
+        <h2><span>{{ trans('Quick post') }}</span></h2>
+        <div class="box">
+            <form id="quickpostform" method="post" action="{{ pathFor('newReply', {'tid': "#{ id }"}) }}" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Write message legend') }}</legend>
+                        <div class="infldset txtarea">
+                            <input type="hidden" name="form_sent" value="1" />
+                            <input type="hidden" name="pid" value="{{ pid }}" />
+                            <input type="hidden" name="page" value="{{ page_number }}" />
+        {% if settings('o_topic_subscriptions') == '1' and (userGet('auto_notify') == '1' or cur_topic.is_subscribed) %}
+                    <input type="hidden" name="subscribe" value="1" />
+        {% endif %}
+
+        {% if userGet('is_guest') %}
+                    <label class="conl required"><strong>{{ trans('Guest name') }} <span>{{ trans('Required') }}</span></strong><br />
+                        <input type="text" name="req_username" size="25" maxlength="25" tabindex="1" /><br /></label>
+                    <label class="conl{{ settings('p_force_guest_email') == '1' ? ' required' : '' }}">
+                        {{ settings('p_force_guest_email') == '1' ? "<strong>#{ trans('Email') } <span>#{ trans('Required') }</span></strong>" : trans('Email') }}
+                        <br />
+                        <input type="text" name="{{ settings('p_force_guest_email') == '1' ? 'req_email' : 'email' }}" size="50" maxlength="80" tabindex="2" />
+                        <br />
+                    </label>
+                    <div class="clearer"></div>
+                    <div class="required"><strong>{{ trans('Message') }} <span>{{ trans('Required') }}</span></strong>
+                    <br />
+        {% else %}
+        <div>
+        {% endif %}
+
+
+        <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="1"></textarea>
+        </div>
+                            <ul class="bblinks list-inline">
+                                <li><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}</a> {{ settings('p_message_bbcode') == '1' ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#url" onclick="window.open(this.href); return false;">{{ trans('url tag') }}</a> {{ (settings('p_message_bbcode') == '1' and can('post.links')) ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#img" onclick="window.open(this.href); return false;">{{ trans('img tag') }}</a> {{ (settings('p_message_bbcode') == '1' and settings('p_message_img_tag') == '1') ? trans('on') : trans('off') }}</li>
+                                <li><a href="{{ pathFor('help') }}#smilies" onclick="window.open(this.href); return false;">{{ trans('Smilies') }}</a> {{ settings('o_smilies') == '1' ? trans('on') : trans('off') }}</li>
+                            </ul>
+                        </div>
+                    </fieldset>
+                </div>
+                {% if userGet('is_guest') %}
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Robot title') }}</legend>
+                        <div class="infldset">
+                            <p>{{ trans('Robot info') }}</p>
+                            <label class="required"><strong>
+                                {% set question = lang_antispam_questions|keys %}
+                                {% set qencoded = getHash('md5', question[index_questions]) %}
+                                {{ trans(['Robot question', question[index_questions]]) }}
+
+                                 <span>{{ trans('Required') }}</span></strong>
+                                 <br />
+                                 <input name="captcha" id="captcha" type="text" size="10" maxlength="30" />
+                                <input name="captcha_q" value="{{ qencoded }}" type="hidden" /><br />
+                            </label>
+                        </div>
+                    </fieldset>
+                </div>
+                {% endif %}
+
+                <p class="buttons">
+                    <input type="submit" name="submit" tabindex="2" value="{{ trans('Submit') }}" accesskey="s" />
+                    <input type="submit" name="preview" value="{{ trans('Preview') }}" tabindex="3" accesskey="p" />
+                </p>
+            </form>
+        </div>
+    </div>
+
+    {% endif %}
+
+    {{ fireHook('view.topic.end') }}
+{% endblock content %}

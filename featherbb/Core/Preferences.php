@@ -1,89 +1,106 @@
 <?php
 
 /**
-* Copyright (C) 2015-2016 FeatherBB
+* Copyright (C) 2015-2019 FeatherBB
 * based on code by (C) 2008-2015 FluxBB
 * and Rickard Andersson (C) 2002-2008 PunBB
 * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
 */
 
 namespace FeatherBB\Core;
+
 use FeatherBB\Core\Database as DB;
+use FeatherBB\Core\Interfaces\Cache;
+use FeatherBB\Core\Interfaces\Container;
+use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\User;
 
 class Preferences
 {
-    protected $preferences = array();
-
-    public function __construct()
-    {
-
-    }
+    protected $preferences = [];
 
     // Add / Update
 
-    public function setUser($user = null, array $prefs)
+    public function setUser($user = null, $prefs, $gid = null)
     {
-        list($uid, $gid) = $this->getInfosFromUser($user);
+        if ($gid === null) {
+            list($uid, $gid) = $this->getInfosFromUser($user);
+        } else {
+            $uid = (int) $user;
+        }
 
-        foreach ($prefs as $pref_name => $pref_value) {
-            $pref_name = (string) $pref_name;
-            $pref_value = (string) $pref_value;
+        foreach ($prefs as $prefName => $prefValue) {
+            $prefName = (string) $prefName;
+            $prefValue = (string) $prefValue;
 
-            if ((int) $pref_name > 0) {
+            if ((int) $prefName > 0) {
                 throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = DB::for_table('preferences')
-                        ->where('preference_name', $pref_name)
+            $result = DB::table('preferences')
+                        ->where('preference_name', $prefName)
                         ->where('user', $uid)
-                        ->find_one();
-            if ($result) {
-                DB::for_table('preferences')
-                    ->find_one($result->id())
-                    ->set(['preference_value' => $pref_value])
-                    ->save();
+                        ->findOne();
+
+            if (Container::get('forum_settings') && ForumSettings::get($prefName) == $prefValue) {
+                if ($result) {
+                    $result->delete();
+                }
             } else {
-                DB::for_table('preferences')
-                    ->create()
-                    ->set(array(
-                        'preference_name' => $pref_name,
-                        'preference_value' => $pref_value,
-                        'user' => $uid
-                    ))
-                    ->save();
+                if ($result) {
+                    DB::table('preferences')
+                        ->findOne($result->id())
+                        ->set(['preference_value' => $prefValue])
+                        ->save();
+                } else {
+                    DB::table('preferences')
+                        ->create()
+                        ->set([
+                            'preference_name' => $prefName,
+                            'preference_value' => $prefValue,
+                            'user' => $uid
+                        ])
+                        ->save();
+                }
             }
-            $this->preferences[$gid][$uid][$pref_name] = $pref_value;
+            $this->preferences[$gid][$uid][$prefName] = $prefValue;
         }
         return $this;
     }
 
-    public function setGroup($gid = null, array $prefs)
+    public function setGroup($gid = null, $prefs)
     {
         $gid = (int) $gid;
         if ($gid < 1) {
             throw new \ErrorException('Internal error : Unknown gid', 500);
         }
-        foreach ($prefs as $pref_name => $pref_value) {
-            if ((int) $pref_name > 0) {
+        foreach ($prefs as $prefName => $prefValue) {
+            if ((int) $prefName > 0) {
                 throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = DB::for_table('preferences')
-                        ->where('preference_name', (string) $pref_name)
+            $result = DB::table('preferences')
+                        ->where('preference_name', (string) $prefName)
                         ->where('group', $gid)
-                        ->find_one();
-            if ($result) {
-                DB::for_table('preferences')
-                    ->find_one($result->id())
-                    ->set(['preference_value' => (string) $pref_value])
-                    ->save();
+                        ->findOne();
+            if (Container::get('forum_settings') && ForumSettings::get($prefName) == $prefValue) {
+                if ($result) {
+                    $result->delete();
+                }
             } else {
-                DB::for_table('preferences')
-                    ->create()
-                    ->set(array(
-                        'preference_name' => (string) $pref_name,
-                        'preference_value' => (string) $pref_value,
-                        'group' => $gid
-                    ))
-                    ->save();
+                if ($result) {
+                    DB::table('preferences')
+                        ->findOne($result->id())
+                        ->set(['preference_value' => (string) $prefValue])
+                        ->save();
+                } else {
+                    DB::table('preferences')
+                        ->create()
+                        ->set([
+                            'preference_name' => (string) $prefName,
+                            'preference_value' => (string) $prefValue,
+                            'group' => $gid
+                        ])
+                        ->save();
+                }
             }
             unset($this->preferences[$gid]);
         }
@@ -92,27 +109,27 @@ class Preferences
 
     public function set(array $prefs) // Default
     {
-        foreach ($prefs as $pref_name => $pref_value) {
-            if ((int) $pref_name > 0) {
+        foreach ($prefs as $prefName => $prefValue) {
+            if ((int) $prefName > 0) {
                 throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = DB::for_table('preferences')
-                        ->where('preference_name', (string) $pref_name)
+            $result = DB::table('preferences')
+                        ->where('preference_name', (string) $prefName)
                         ->where('default', 1)
-                        ->find_one();
+                        ->findOne();
             if ($result) {
-                DB::for_table('preferences')
-                    ->find_one($result->id())
-                    ->set(['preference_value' => (string) $pref_value])
+                DB::table('preferences')
+                    ->findOne($result->id())
+                    ->set(['preference_value' => (string) $prefValue])
                     ->save();
             } else {
-                DB::for_table('preferences')
+                DB::table('preferences')
                     ->create()
-                    ->set(array(
-                        'preference_name' => (string) $pref_name,
-                        'preference_value' => (string) $pref_value,
+                    ->set([
+                        'preference_name' => (string) $prefName,
+                        'preference_value' => (string) $prefValue,
                         'default' => 1
-                    ))
+                    ])
                     ->save();
             }
             unset($this->preferences);
@@ -126,19 +143,19 @@ class Preferences
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
         $prefs = (array) $prefs;
-        foreach ($prefs as $pref_id => $pref_name) {
-            $pref_name = (string) $pref_name;
+        foreach ($prefs as $prefId => $prefName) {
+            $prefName = (string) $prefName;
 
-            if ((int) $pref_name > 0) {
+            if ((int) $prefName > 0) {
                 throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = DB::for_table('preferences')
-                        ->where('preference_name', $pref_name)
+            $result = DB::table('preferences')
+                        ->where('preference_name', $prefName)
                         ->where('user', $uid)
-                        ->find_one();
+                        ->findOne();
             if ($result) {
                 $result->delete();
-                unset($this->preferences[$gid][$uid][$pref_name]);
+                unset($this->preferences[$gid][$uid][$prefName]);
             } else {
                 throw new \ErrorException('Internal error : Unknown preference name', 500);
             }
@@ -154,16 +171,16 @@ class Preferences
         }
         $prefs = (array) $prefs;
 
-        foreach ($prefs as $pref_id => $pref_name) {
-            $pref_name = (string) $pref_name;
+        foreach ($prefs as $prefId => $prefName) {
+            $prefName = (string) $prefName;
 
-            if ((int) $pref_name > 0) {
+            if ((int) $prefName > 0) {
                 throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = DB::for_table('preferences')
-                        ->where('preference_name', $pref_name)
+            $result = DB::table('preferences')
+                        ->where('preference_name', $prefName)
                         ->where('group', $gid)
-                        ->find_one();
+                        ->findOne();
             if ($result) {
                 $result->delete();
             } else {
@@ -177,14 +194,14 @@ class Preferences
     public function del($prefs = null) // Default
     {
         $prefs = (array) $prefs;
-        foreach ($prefs as $pref_id => $pref_name) {
-            if ((int) $pref_name > 0) {
+        foreach ($prefs as $prefId => $prefName) {
+            if ((int) $prefName > 0) {
                 throw new \ErrorException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = DB::for_table('preferences')
-                        ->where('preference_name', (string) $pref_name)
+            $result = DB::table('preferences')
+                        ->where('preference_name', (string) $prefName)
                         ->where('default', 1)
-                        ->find_one();
+                        ->findOne();
             if ($result) {
                 $result->delete();
             } else {
@@ -212,22 +229,22 @@ class Preferences
 
     // Utils
 
-    protected function loadPrefs($user = null)
+    public function loadPrefs($user = null)
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
 
-        $result = DB::for_table('preferences')
-                    ->table_alias('p')
-                    ->where_any_is(array(
-                        array('p.user' => $uid),
-                        array('p.group' => $gid),
-                        array('p.default' => 1),
-                    ))
-                    ->order_by_desc('p.default')
-                    ->order_by_asc('p.user')
-                    ->find_array();
+        $result = DB::table('preferences')
+                    ->tableAlias('p')
+                    ->whereAnyIs([
+                        ['p.user' => $uid],
+                        ['p.group' => $gid],
+                        ['p.default' => 1],
+                    ])
+                    ->orderByDesc('p.default')
+                    ->orderByAsc('p.user')
+                    ->findArray();
 
-        $this->preferences[$gid][$uid] = array();
+        $this->preferences[$gid][$uid] = [];
         foreach ($result as $pref) {
             $this->preferences[$gid][$uid][(string) $pref['preference_name']] = $pref['preference_value'];
         }
@@ -240,7 +257,7 @@ class Preferences
             $uid = $user->id;
             $gid = $user->group_id;
         } elseif ((int) $user > 0) {
-            $data = DB::for_table('users')->find_one($user);
+            $data = User::get($user);
             if (!$data) {
                 throw new \ErrorException('Internal error : Unknown user ID', 500);
             }
@@ -249,6 +266,16 @@ class Preferences
         } else {
             throw new \ErrorException('Internal error : wrong user object type', 500);
         }
-        return array((int) $uid, (int) $gid);
+        return [(int) $uid, (int) $gid];
+    }
+
+    public function getGroupPreferences($groupId = null, $preference = null)
+    {
+        $preferences = Cache::retrieve('group_preferences');
+        if (empty($preference)) {
+            return (array) $preferences[$groupId];
+        }
+
+        return isset($preferences[$groupId][$preference]) ? $preferences[$groupId][$preference] : null;
     }
 }

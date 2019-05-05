@@ -1,0 +1,65 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.profile.view_profile.start') }}
+
+    <div id="viewprofile" class="blockform">
+        <h2><span>{{ trans('Profile') }}</span></h2>
+        <div class="box">
+            <div class="inform">
+                <fieldset>
+                <legend>{{ trans('Section personal') }}</legend>
+                    <div class="infldset">
+                        <dl>
+                            {{ user_info.personal|join("\n\t\t\t\t\t\t\t")|raw }}
+                        </dl>
+                        <div class="clearer"></div>
+                    </div>
+                </fieldset>
+            </div>
+{% if user_info.messaging is not empty %}
+
+            <div class="inform">
+                <fieldset>
+                <legend>{{ trans('Section messaging') }}</legend>
+                    <div class="infldset">
+                        <dl>
+                            {{ user_info.messaging|join("\n\t\t\t\t\t\t\t")|raw }}
+                        </dl>
+                        <div class="clearer"></div>
+                    </div>
+                </fieldset>
+            </div>
+{% endif %}
+
+{% if user_info.personality is not empty %}
+
+            <div class="inform">
+                <fieldset>
+                <legend>{{ trans('Section personality') }}</legend>
+                    <div class="infldset">
+                        <dl>
+                            {{ user_info.personality|join("\n\t\t\t\t\t\t\t")|raw }}
+                        </dl>
+                        <div class="clearer"></div>
+                    </div>
+                </fieldset>
+            </div>
+{% endif %}
+            <div class="inform">
+                <fieldset>
+                <legend>{{ trans('User activity') }}</legend>
+                    <div class="infldset">
+                        <dl>
+                            {{ user_info.activity|join("\n\t\t\t\t\t\t\t")|raw }}
+                        </dl>
+                        <div class="clearer"></div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+    {{ fireHook('view.profile.view_profile.end') }}
+{% endblock content %}

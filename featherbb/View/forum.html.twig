@@ -1,0 +1,110 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.forum.start') }}
+    <div class="linkst">
+        <div class="inbox crumbsplus">
+            <ul class="crumbs">
+                <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
+                <li>
+                    <span>»&#160;</span>
+                    <strong><a href="{{ pathFor('Forum', {'id': id, 'name': url_forum}) }}">{{ cur_forum.forum_name }}</a></strong>
+                </li>
+            </ul>
+            <div class="pagepost">
+                <p class="pagelink conl">{{ paging_links|raw }}</p>
+                {{ post_link|raw }}
+            </div>
+            <div class="clearer"></div>
+        </div>
+    </div>
+
+    <div id="vf" class="blocktable">
+        <h2><span>{{ cur_forum.forum_name }}</span></h2>
+        <div class="box">
+            <div class="inbox">
+                <table>
+                <thead>
+                    <tr>
+                        <th class="tcl" scope="col">{{ trans('Topic') }}</th>
+                        <th class="tc2" scope="col">{{ trans('Replies') }}</th>
+    {% if settings('o_topic_views') == '1' %}
+                        <th class="tc3" scope="col">{{ trans('Views') }}</th>
+    {% endif %}
+                        <th class="tcr" scope="col">{{ trans('Last post') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                {% for topic in forum_data %}
+                        <tr class="{{ topic.item_status }}">
+                            <td class="tcl">
+                                <div class="{{ topic.icon_type }}">
+                                    <div class="nosize">
+                                        {{ formatNumber( loop.length + start_from ) }}
+                                    </div>
+                                </div>
+                                <div class="tclcon">
+                                    <div>
+                                        {{ topic.subject_formatted|raw }}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="tc2">
+                                {{ topic.moved_to is null ? formatNumber(topic.num_replies) : '-' }}
+                            </td>
+        {% if settings('o_topic_views') == '1' %}
+                            <td class="tc3">
+                                {{ topic.moved_to is null ? formatNumber(topic.num_views) : '-' }}
+                            </td>
+        {% endif %}
+                            <td class="tcr">{{ topic.last_post_formatted|raw }}</td>
+                        </tr>
+
+                {% endfor %}
+
+                {% if forum_data is empty %}
+
+                        <tr class="rowodd inone">
+                            <td class="tcl" colspan="{{ settings('o_topic_views') == 1 ? 4 : 3 }}">
+                                <div class="icon inone">
+                                    <div class="nosize"><!-- --></div>
+                                </div>
+                                <div class="tclcon">
+                                    <div>
+                                        <strong>{{ trans('Empty forum') }}</strong>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                {% endif %}
+
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="linksb">
+        <div class="inbox crumbsplus">
+            <div class="pagepost">
+                <p class="pagelink conl">{{ paging_links|raw }}</p>
+                {{ post_link|raw }}
+            </div>
+            <ul class="crumbs">
+                <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
+                <li>
+                    <span>»&#160;</span>
+                    <strong><a href="{{ pathFor('Forum', {'id': "#{ id }", 'name': "#{ url_forum }"}) }}">{{ cur_forum.forum_name }}</a></strong>
+                </li>
+            </ul>
+            {% if forum_actions is not empty %}
+                <p class="subscribelink clearb">{{ forum_actions|join(' - ')|raw }}
+            {% endif %}
+            <div class="clearer"></div>
+        </div>
+    </div>
+
+    {{ fireHook('view.forum.end') }}
+{% endblock content %}

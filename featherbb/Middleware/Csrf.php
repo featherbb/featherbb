@@ -3,12 +3,13 @@ namespace FeatherBB\Middleware;
 
 use ArrayAccess;
 use Countable;
-use Traversable;
-use IteratorAggregate;
-use RuntimeException;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use FeatherBB\Core\Error;
+use FeatherBB\Core\Interfaces\View;
+use FeatherBB\Core\Random;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
+use Traversable;
 
 /**
  * CSRF protection middleware.
@@ -86,7 +87,7 @@ class Csrf
     ) {
         $this->prefix = rtrim($prefix, '_');
         if ($strength < 16) {
-            throw new RuntimeException('CSRF middleware failed. Minimum strength is 16.');
+            throw new RuntimeException(__('CSRF strength fail'));
         }
         $this->strength = $strength;
         if (is_array($storage)) {
@@ -95,7 +96,7 @@ class Csrf
             $this->storage = $storage;
         } else {
             if (!isset($_SESSION)) {
-                throw new RuntimeException('CSRF middleware failed. Session not found.');
+                throw new RuntimeException(__('CSRF session fail'));
             }
             if (!array_key_exists($prefix, $_SESSION)) {
                 $_SESSION[$prefix] = [];
@@ -141,7 +142,8 @@ class Csrf
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
         // Validate POST, PUT, DELETE, PATCH requests
-        if (in_array($request->getMethod(), ['POST', 'PUT', 'DELETE', 'PATCH'])) {
+        if (in_array($request->getMethod(), ['POST', 'PUT', 'DELETE', 'PATCH'])
+            && substr($request->getUri()->getPath(), 0, 3) !== 'api') {
             $body = $request->getParsedBody();
             $body = $body ? (array)$body : [];
             $name = isset($body[$this->prefix . '_name']) ? $body[$this->prefix . '_name'] : false;
@@ -190,8 +192,8 @@ class Csrf
      *
      * @return RequestInterface PSR7 response object.
      */
-    public function generateNewToken(ServerRequestInterface $request) {
-
+    public function generateNewToken(ServerRequestInterface $request)
+    {
         $pair = $this->generateToken();
 
         $request = $request->withAttribute($this->prefix . '_name', $pair[$this->prefix . '_name'])
@@ -234,7 +236,7 @@ class Csrf
      */
     protected function createToken()
     {
-        return sha1(serialize($_SERVER) . rand(0, 0xffffffff));
+        return bin2hex(Random::key($this->strength));
     }
 
     /**
@@ -318,7 +320,7 @@ class Csrf
     {
         if (is_null($this->failureCallable)) {
             $this->failureCallable = function (ServerRequestInterface $request, ResponseInterface $response, $next) {
-                throw new Error('Failed CSRF check!', 500);
+                throw new Error(__('Failed CSRF check'), 500);
             };
         }
         return $this->failureCallable;

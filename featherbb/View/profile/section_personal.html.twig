@@ -1,0 +1,43 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+{{ fireHook('view.profile.section_personal.start') }}
+
+{% include '@forum/profile/menu.html.twig' %}
+
+
+<div class="blockform">
+    <h2><span>{{ user.username }} - {{ trans('Section personal') }}</span></h2>
+    <div class="box">
+        <form id="profile2" method="post" action="{{ pathFor('profileSection', {'id': id, 'section': 'personal'}) }}">
+            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+            <div class="inform">
+                <fieldset>
+                    <legend>{{ trans('Personal details legend') }}</legend>
+                    <div class="infldset">
+                        <input type="hidden" name="form_sent" value="1" />
+                        <label>{{ trans('Realname') }}<br />
+                            <input type="text" name="form_realname" value="{{ user.realname }}" size="40" maxlength="40" /><br />
+                        </label>
+                        {{ title_field is defined ? title_field|raw : '' }}
+                        <label>{{ trans('Location') }}<br /><input type="text" name="form_location" value="{{ user.location }}" size="30" maxlength="30" /><br /></label>
+                {% if can('post.links') or isAdmin() %}
+                        <label>{{ trans('Website') }}<br />
+                        <input type="text" name="form_url" value="{{ user.url }}" size="50" maxlength="80" /><br /></label>
+                {% endif %}
+                        <label>{{ trans('API token') }}<br />
+                            <input type="text" name="api" readonly="readonly" value="{{ getToken(id) }}" size="60" maxlength="60" /><br /></label>
+                    </div>
+                </fieldset>
+            </div>
+            <p class="buttons"><input type="submit" name="update" value="{{ trans('Submit') }}" />{{ trans('Instructions') }}</p>
+        </form>
+    </div>
+</div>
+    <div class="clearer"></div>
+</div>
+
+    {{ fireHook('view.profile.section_personal.end') }}
+{% endblock content %}

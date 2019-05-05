@@ -1,0 +1,106 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+{{ fireHook('view.index.start') }}
+
+{% if index_data is empty %}
+    <div id="idx0" class="block">
+        <div class="box">
+            <div class="inbox"><p>{{ trans('Empty board') }}</p></div>
+        </div>
+    </div>
+{% endif %}
+
+{% for cat in index_data %}
+
+    <div id="idx{{ cat.0.cid }}" class="blocktable">
+        <h2><span>{{ cat.0.cat_name }}</span></h2>
+        <div class="box">
+            <div class="inbox">
+                <table>
+                    <thead>
+                    <tr>
+                        <th class="tcl" scope="col">{{ trans('Forum') }}</th>
+                        <th class="tc2" scope="col">{{ trans('Topics') }}</th>
+                        <th class="tc3" scope="col">{{ trans('Posts') }}</th>
+                        <th class="tcr" scope="col">{{ trans('Last post') }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for forum in cat %}
+                    <tr class="{{ forum.item_status }}">
+                        <td class="tcl">
+                            <div class="{{ forum.icon_type }}">
+                                <div class="nosize">{{ formatNumber(forum.forum_count_formatted) }}</div>
+                            </div>
+                            <div class="tclcon">
+                                <div>
+                                    {{ forum.forum_field|raw }} {{ forum.moderators_formatted|raw }}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="tc2">{{ formatNumber(forum.num_topics_formatted) }}</td>
+                        <td class="tc3">{{ formatNumber(forum.num_posts_formatted) }}</td>
+                        <td class="tcr">{{ forum.last_post_formatted|raw }}</td>
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endfor %}
+
+    {% if forum_actions is not empty %}
+    <div class="linksb">
+        <div class="inbox crumbsplus">
+            <p class="subscribelink clearb">{{ forum_actions|join(' - ')|raw }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+
+
+    <div id="brdstats" class="block">
+        <h2><span>{{ trans('Board info') }}</span></h2>
+        <div class="box">
+            <div class="inbox">
+                <dl class="conr">
+                    <dt><strong>{{ trans('Board stats') }}</strong></dt>
+                    <dd><span>{{ trans(['No of users', "<strong>#{ stats.total_users }</strong>"]) }}</span></dd>
+                    <dd><span>{{ trans(['No of topics', "<strong>#{ stats.total_topics }</strong>"]) }}</span></dd>
+                    <dd><span>{{ trans(['No of posts', "<strong>#{ stats.total_posts }</strong>"]) }}</span></dd>
+                </dl>
+                <dl class="conl">
+                    <dt><strong>{{ trans('User info') }}</strong></dt>
+                    <dd><span>{{ trans(['Newest user', "#{ stats.newest_user }"]) }}</span></dd>
+                    {% if settings('o_users_online') == 1 %}
+                    <dd><span>{{ trans(['Users online', "<strong>#{ online.num_users }</strong>"]) }}</span></dd>
+                    <dd><span>{{ trans(['Guests online', "<strong>#{ online.num_guests }</strong>"]) }}</span></dd>
+                    {% endif %}
+                </dl>
+
+                {% if settings('o_users_online') == 1 %}
+                    {% if online.num_users > 0 %}
+                        <dl id="onlinelist" class="clearb">
+                            <dt><strong>{{ trans('Online') }} </strong></dt>
+                            {{ online.users|join(',</dd> ')|raw }}</dd>
+                        </dl>
+                    {% else %}
+                        <div class="clearer"></div>
+                    {% endif %}
+                {% endif %}
+
+                {{ fireHook('view.index.brdstats') }}
+
+            </div>
+        </div>
+    </div>
+
+
+    {{ fireHook('view.index.end') }}
+{% endblock content %}

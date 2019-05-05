@@ -1,0 +1,32 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+{{ fireHook('view.moderate.merge_topics.start') }}
+
+    <div class="blockform">
+        <h2><span>{{ trans('Merge topics') }}</span></h2>
+        <div class="box">
+            <form method="post" action="">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <input type="hidden" name="topics" value="{{ topics|keys|join(',') }}" />
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Confirm merge legend') }}</legend>
+                        <div class="infldset">
+                            <div class="rbox">
+                                <label><input type="checkbox" name="with_redirect" value="1" />{{ trans('Leave redirect') }}<br /></label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <p class="buttons">
+                    <input class="btn btn-primary" type="submit" name="merge_topics_comply" value="{{ trans('Merge') }}" />
+                    <a class="btn btn-primary" href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+{{ fireHook('view.moderate.merge_topics.end') }}
+{% endblock content %}

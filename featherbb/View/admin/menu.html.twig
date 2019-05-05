@@ -1,0 +1,74 @@
+{{ fireHook('view.admin.menu.start') }}
+
+<div id="adminconsole" class="block2col">
+    <div id="adminmenu" class="blockmenu">
+        <h2><span>{{ trans('Moderator menu') }}</span></h2>
+        <div class="box">
+            <div class="inbox">
+                <ul>
+                    <li{{ page == 'index' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminIndex') }}">{{ trans('Index') }}</a>
+                    </li>
+                    <li{{ page == 'users' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminUsers') }}">{{ trans('Users') }}</a>
+                    </li>
+            {% if isAdmin() or can('mod.ban_users') %}
+                    <li{{ page == 'bans' ? ' class="isactive"': '' }}>
+                        <a href="{{ pathFor('adminBans') }}">{{ trans('Bans') }}</a>
+                    </li>
+            {% endif %}
+
+            {% if isAdmin() or settings('o_report_method') == '0' or settings('o_report_method') == '2' %}
+                    <li{{ page == 'reports' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminReports') }}">{{ trans('Reports') }}</a>
+                    </li>
+            {% endif %}
+
+                </ul>
+            </div>
+        </div>
+
+    {% if isAdmin() %}
+
+        <h2 class="block2"><span>{{ trans('Admin menu') }}</span></h2>
+        <div class="box">
+            <div class="inbox">
+                <ul>
+                    {% for perm, data in menu_items %}
+                        {% if preg_match('/^board\..*$/', perm) %}
+                            <li{{ page == data.title|lower ? ' class="isactive"' : '' }}>
+                                <a href="{{ pathFor(data.url) }}">{{ trans(data.title) }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+    {% endif %}
+
+    {#// Did we find any plugins?#}
+    {% if plugins is not empty %}
+
+        <h2 class="block2"><span>{{ trans('Plugins menu') }}</span></h2>
+        <div class="box">
+            <div class="inbox">
+                <ul>
+
+                {% for plugin in plugins %}
+                {% set plugin_url = slug(plugin) %}
+                    <li{{ page == plugin_url ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('infoPlugin', {'name': plugin_url}) }}">{{ plugin }}</a>
+                    </li>
+                {% endfor %}
+
+
+                </ul>
+            </div>
+        </div>
+
+    {% endif %}
+
+    </div>
+
+{{ fireHook('view.admin.menu.end') }}

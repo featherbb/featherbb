@@ -1,0 +1,295 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "Non numeric message"
+msgstr "Vous avez indiqué une valeur non numérique dans une colonne n'acceptant que des valeurs numériques."
+
+msgid "Invalid date time message"
+msgstr "Vous avez indiqué une date, un horaire invalide."
+
+msgid "Not verified"
+msgstr "Non vérifié"
+
+msgid "No users selected"
+msgstr "Aucun utilisateur sélectionné."
+
+msgid "No move admins message"
+msgstr "Pour des raisons de sécurité, vous n'êtes pas autorisé(e) à déplacer plusieurs administrateurs vers un autre groupe. Si vous souhaitez déplacer ces administrateurs, vous pouvez le faire dans leurs profils respectifs."
+
+msgid "No delete admins message"
+msgstr "Les administrateurs ne peuvent être supprimés. Pour supprimer des administrateurs, vous devez d'abord les déplacer vers un autre groupe d'utilisateurs."
+
+msgid "No ban admins message"
+msgstr "Les administrateurs ne peuvent être bannis. Pour bannir des administrateurs, vous devez d'abord les déplacer vers un autre groupe d'utilisateurs."
+
+msgid "No ban mods message"
+msgstr "Les modérateurs ne peuvent être bannis. Pour bannir des modérateurs, vous devez d'abord les déplacer vers un autre groupe d'utilisateurs."
+
+msgid "Move users"
+msgstr "Changer le groupe d'utilisateurs"
+
+msgid "Move users subhead"
+msgstr "Choisir un nouveau groupe d'utilisateurs"
+
+msgid "New group label"
+msgstr "Nouveau groupe"
+
+msgid "New group help"
+msgstr "Choisissez le groupe vers lequel l'(les) utilisateur(s) sélectionné(s) sera(seront) déplacé(s). Pour des raisons de sécurité, il n'est pas possible de déplacer plusieurs utilisateurs vers le groupe des administrateurs."
+
+msgid "Invalid group message"
+msgstr "ID de groupe invalide."
+
+msgid "Users move redirect"
+msgstr "Groupe d'utilisateur modifié. Redirection&#160;…"
+
+msgid "Delete users"
+msgstr "Supprimer des utilisateurs"
+
+msgid "Confirm delete legend"
+msgstr "Important : lisez avant de supprimer des utilisateurs"
+
+msgid "Confirm delete info"
+msgstr "Veuillez confirmer que vous souhaitez supprimer ces utilisateurs."
+
+msgid "Delete posts"
+msgstr "Supprimer tous les messages et discussions que ces utilisateurs ont publiés."
+
+msgid "Delete warning"
+msgstr "Avertissement ! Des utilisateurs et/ou messages supprimés ne peuvent être récupérés. Si vous choisissez de ne pas supprimer les messages créés par ces utilisateurs, ils ne pourront être supprimés plus tard que manuellement."
+
+msgid "Users delete redirect"
+msgstr "Utilisateurs supprimés. Redirection&#160;…"
+
+msgid "Ban users"
+msgstr "Bannir des utilisateurs"
+
+msgid "Message expiry subhead"
+msgstr "Message de bannissement et expiration"
+
+msgid "Ban message label"
+msgstr "Message de bannissement"
+
+msgid "Ban message help"
+msgstr "Un message qui s'affichera pour les utilisateurs bannis lorsqu'ils consulteront les forums."
+
+msgid "Expire date label"
+msgstr "Date d'expiration"
+
+msgid "Expire date help"
+msgstr "La date à laquelle ces bannissements devront être automatiquement supprimés (format : yyyy-mm-dd). Laisser vide pour une suppression manuelle."
+
+msgid "Ban IP label"
+msgstr "Bannissement d'adresse IP"
+
+msgid "Ban IP help"
+msgstr "Bannir également les adresses IP des utilisateurs bannis pour leur rendre une nouvelle création de compte plus difficile."
+
+msgid "Invalid date message"
+msgstr "Vous avez indiqué une date d'expiration invalide."
+
+msgid "Invalid date reasons"
+msgstr "Le format devrait correspondre à YYYY-MM-DD et la date doit être définie à au moins un jour plus tard."
+
+msgid "Users banned redirect"
+msgstr "Utilisateurs bannis. Redirection&#160;…"
+
+msgid "User search head"
+msgstr "Recherche d'utilisateur"
+
+msgid "User search subhead"
+msgstr "Indiquer les critères de recherche"
+
+msgid "User search info"
+msgstr "Rechercher des utilisateurs dans la base de données. Vous pouvez indiquer un ou plusieurs termes à rechercher. Les jokers sous forme d'astérisques (*) sont acceptés."
+
+msgid "Username label"
+msgstr "Nom d'utilisateur"
+
+msgid "E-mail address label"
+msgstr "Adresse électronique"
+
+msgid "Title label"
+msgstr "Titre"
+
+msgid "Real name label"
+msgstr "Nom réel"
+
+msgid "Website label"
+msgstr "Site Web"
+
+msgid "Location label"
+msgstr "Lieu"
+
+msgid "Signature label"
+msgstr "Signature"
+
+msgid "Admin note label"
+msgstr "Note d'administrateur"
+
+msgid "Posts more than label"
+msgstr "Nombre de messages supérieur à"
+
+msgid "Posts less than label"
+msgstr "Nombre de messages inférieur à"
+
+msgid "Last post after label"
+msgstr "Dernier message publié après"
+
+msgid "Date help"
+msgstr "(dd-mm-yyyy hh:mm:ss)"
+
+msgid "Last post before label"
+msgstr "Dernier message publié avant"
+
+msgid "Last visit after label"
+msgstr "Dernière visite après"
+
+msgid "Last visit before label"
+msgstr "Dernière visite avant"
+
+msgid "Registered after label"
+msgstr "Inscrit après"
+
+msgid "Registered before label"
+msgstr "Inscrit avant"
+
+msgid "Order by label"
+msgstr "Critère de tri&#160;:"
+
+msgid "Order by username"
+msgstr "nom d'utilisateur"
+
+msgid "Order by e-mail"
+msgstr "e-mail"
+
+msgid "Order by posts"
+msgstr "nombre de messages"
+
+msgid "Order by last post"
+msgstr "dernier message"
+
+msgid "Order by last visit"
+msgstr "dernière visite"
+
+msgid "Order by registered"
+msgstr "inscrit"
+
+msgid "Ascending"
+msgstr "ascendant"
+
+msgid "Descending"
+msgstr "descendant"
+
+msgid "User group label"
+msgstr "Groupe d'utilisateurs"
+
+msgid "All groups"
+msgstr "Tous les groupes"
+
+msgid "Unverified users"
+msgstr "Utilisateurs non vérifiés"
+
+msgid "Submit search"
+msgstr "Lancer la recherche"
+
+msgid "IP search head"
+msgstr "Recherche d'IP"
+
+msgid "IP search subhead"
+msgstr "Indiquer l'IP à rechercher"
+
+msgid "IP address label"
+msgstr "Adresse IP"
+
+msgid "IP address help"
+msgstr "L'adresse IP à rechercher dans la base de données des messages."
+
+msgid "Find IP address"
+msgstr "Rechercher l'adresse IP"
+
+msgid "Results head"
+msgstr "Utilisateurs"
+
+msgid "Results username head"
+msgstr "Nom d'utilisateur"
+
+msgid "Results e-mail head"
+msgstr "E-mail"
+
+msgid "Results title head"
+msgstr "Identité/état"
+
+msgid "Results posts head"
+msgstr "Messages"
+
+msgid "Results admin note head"
+msgstr "Note d'administrateur"
+
+msgid "Results actions head"
+msgstr "Actions"
+
+msgid "Results IP address head"
+msgstr "Adresse IP"
+
+msgid "Results last used head"
+msgstr "Récemment utilisée"
+
+msgid "Results times found head"
+msgstr "Nombre de fois trouvé"
+
+msgid "Results action head"
+msgstr "Action"
+
+msgid "Results find more link"
+msgstr "Trouver davantage d'utilisateurs pour cette IP"
+
+msgid "Results no posts found"
+msgstr "Aucun message n'a été publié par cet utilisateur dans ce forum pour le moment."
+
+msgid "Select"
+msgstr "Sélectionner"
+
+msgid "Select all"
+msgstr "Tout sélectionner"
+
+msgid "Unselect all"
+msgstr "Tout désélectionner"
+
+msgid "Ban"
+msgstr "Bannir"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Change group"
+msgstr "Changer de groupe"
+
+msgid "Bad IP message"
+msgstr "L'adresse IP indiquée n'est pas correctement formatée."
+
+msgid "Results view IP link"
+msgstr "Afficher les stats IP"
+
+msgid "Results show posts link"
+msgstr "Afficher les messages"
+
+msgid "Results guest"
+msgstr "Invité"
+
+msgid "Results no IP found"
+msgstr "L'adresse IP indiquée est introuvable dans la base de données."
+
+msgid "No match"
+msgstr "Aucune correspondance"

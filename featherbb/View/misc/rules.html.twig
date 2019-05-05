@@ -1,0 +1,17 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.misc.rules.start') }}
+
+    <div id="rules" class="block">
+        <div class="hd"><h2><span>{{ trans('Forum rules') }}</span></h2></div>
+        <div class="box">
+            <div id="rules-block" class="inbox">
+                <div class="usercontent">{{ settings('o_rules_message') }}</div>
+            </div>
+        </div>
+    </div>
+
+    {{ fireHook('view.misc.rules.end') }}
+{% endblock content %}

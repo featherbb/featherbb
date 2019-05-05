@@ -1,0 +1,55 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "Must enter word message"
+msgstr "Vous devez indiquer un mot à censurer."
+
+msgid "Word updated redirect"
+msgstr "Mot censuré mis à jour. Redirection&#160;…"
+
+msgid "Word added redirect"
+msgstr "Mot censuré ajouté. Redirection&#160;…"
+
+msgid "Word removed redirect"
+msgstr "Mot censuré supprimé. Redirection&#160;…"
+
+msgid "Censoring head"
+msgstr "Censure"
+
+msgid "Add word subhead"
+msgstr "Ajouter le mot"
+
+msgid "Add word info"
+msgstr "Indiquer un mot que vous souhaitez censurer et le texte de remplacement pour ce mot. Les jokers sont acceptés (ex. : *certain* correspond à «&#160;incertain&#160;» et à «&#160;certainement&#160;»). Les noms d'utilisateurs sont également concernés par la censure. Les nouveaux utilisateurs ne pourront pas s'inscrire en utilisant des noms d'utilisateurs contenant un mot censuré. La recherche est insensible à la casse."
+
+msgid "Censoring enabled"
+msgstr "<strong>La censure est activée dans %s.</strong>"
+
+msgid "Censoring disabled"
+msgstr "<strong>La censure est désactivée dans %s.</strong>"
+
+msgid "Censored word label"
+msgstr "Mot censuré"
+
+msgid "Replacement label"
+msgstr "Mot(s) de remplacement"
+
+msgid "Action label"
+msgstr "Action"
+
+msgid "Edit remove subhead"
+msgstr "Modifier ou supprimer des mots"
+
+msgid "No words in list"
+msgstr "Aucun mot censuré pour le moment."

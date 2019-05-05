@@ -1,0 +1,78 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: FeatherBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: FeatherBB <admin@featherbb.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "Extension"
+msgstr "Extension"
+
+msgid "Version"
+msgstr "Version"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Action"
+msgstr "Action"
+
+msgid "Activate"
+msgstr "Activer"
+
+msgid "Deactivate"
+msgstr "Désactiver"
+
+msgid "Install"
+msgstr "Installer"
+
+msgid "Uninstall"
+msgstr "Désinstaller"
+
+msgid "Uninstall warning"
+msgstr "Êtes-vous sûr de vouloir supprimer cette extension ? Tout le contenu associé dans la base de données sera également supprimé !"
+
+msgid "Installed plugins"
+msgstr "Extensions installées"
+
+msgid "Author"
+msgstr "Auteur:"
+
+msgid "Toggle active state"
+msgstr "Cliquez sur les symboles pour activer ou désactiver une extension."
+
+msgid "Upload plugin"
+msgstr "Télécharger une extension"
+
+msgid "Upload"
+msgstr "Télécharger"
+
+msgid "Official plugins"
+msgstr "Extensions officielles"
+
+msgid "Official plugins description"
+msgstr "Les extensions suivantes sont disponibles sur le Marketplace FeatherBB."
+
+msgid "Download"
+msgstr "Télécharger"
+
+msgid "Plugin deactivated"
+msgstr "Plugin \"%s\" désactivé!"
+
+msgid "Plugin activated"
+msgstr "Plugin \"%s\" activé!"
+
+msgid "Plugin downloaded"
+msgstr "Plugin téléchargé!"

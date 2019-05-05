@@ -1,0 +1,289 @@
+#
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.8.4\n"
+
+msgid "Choose install language"
+msgstr "Choisir la langue du script d'installation"
+
+msgid "Choose install language info"
+msgstr "La langue utilisée pour ce script d'installation. La langue par défaut utilisée pour les forums peut être définie ci-dessous."
+
+msgid "Install language"
+msgstr "Installer la langue"
+
+msgid "Change language"
+msgstr "Changer de langue"
+
+msgid "Already installed"
+msgstr "Il semble que FluxBB soit déjà installé. Veuillez vous rendre <a href=\"index.php\">ici</a> plutôt."
+
+msgid "You are running error"
+msgstr "Vous utilisez la version %2$s de %1$s. FluxBB %3$s nécessite au moins %1$s %4$s pour fonctionner correctement. Vous devez mettre à niveau votre installation %1$s avant de poursuivre."
+
+msgid "My FluxBB Forum"
+msgstr "Mon Forum FluxBB"
+
+msgid "Description"
+msgstr "Malheureusement, on ne peut pas vous expliquer ce qu'est FluxBB - vous devrez vous en rendre compte par vous-même."
+
+msgid "Username 1"
+msgstr "Les noms d'utilisateurs doivent comporter au moins 2 caractères."
+
+msgid "Username 2"
+msgstr "Les noms d'utilisateurs ne doivent pas comporter plus de 25 caractères."
+
+msgid "Username 3"
+msgstr "Le nom d'utilisateur « guest » est réservé."
+
+msgid "Username 4"
+msgstr "Les noms d'utilisateurs ne doivent pas ressembler à une adresse IP."
+
+msgid "Username 5"
+msgstr "Les noms d'utilisateurs ne doivent pas comporter tous les caractères ', \" et [ ou ] en même temps."
+
+msgid "Username 6"
+msgstr "Les noms d'utilisateurs ne doivent pas comporter de balises de formatage de texte (BBCode) utilisés par les forums."
+
+msgid "Short password"
+msgstr "Les mots de passe doivent comporter au moins 6 caractères."
+
+msgid "Passwords not match"
+msgstr "Les mots de passe ne coïncident pas."
+
+msgid "Wrong email"
+msgstr "L'e-mail d'administrateur que vous avez indiqué est invalide."
+
+msgid "No board title"
+msgstr "Vous devez indiquer un titre pour les forums."
+
+msgid "Error default language"
+msgstr "La langue par défaut choisie semble ne pas exister."
+
+msgid "Error default style"
+msgstr "Le style par défaut choisi semble ne pas exister."
+
+msgid "No DB extensions"
+msgstr "Cet environnement PHP n'est compatible avec aucune des bases de données prises en charge par FluxBB. PHP doit prendre en charge MySQL, PostgreSQL ou SQLite pour pouvoir installer FluxBB."
+
+msgid "Administrator username"
+msgstr "Nom d'utilisateur de l'administrateur"
+
+msgid "Administrator email"
+msgstr "E-mail de l'administrateur"
+
+msgid "Board title"
+msgstr "Titre des forums"
+
+msgid "Base URL"
+msgstr "L'URL (sans slash final) de votre forum FluxBB. Elle doit être valide."
+
+msgid "Required field"
+msgstr "est un champ obligatoire dans ce formulaire."
+
+msgid "FluxBB Installation"
+msgstr "Installation de FluxBB"
+
+msgid "Welcome"
+msgstr "Vous allez installer FluxBB. Pour ce faire, vous devez remplir le formulaire ci-dessous. Si vous rencontrez des difficultés concernant cette installation, veuillez vous référer à la documentation."
+
+msgid "Install"
+msgstr "Installer FluxBB %s"
+
+msgid "Errors"
+msgstr "Les erreurs suivantes doivent être corrigées :"
+
+msgid "Database setup"
+msgstr "Paramétrage de la base de données"
+
+msgid "Info 1"
+msgstr "Toutes les informations dont nous avons besoin pour créer une connexion avec votre base de données."
+
+msgid "Select database"
+msgstr "Choisir votre type de base de données"
+
+msgid "Info 2"
+msgstr "Sélectionnez une base de données. Nous supportons SQLite, MySQL et PostgreSQL"
+
+msgid "Database type"
+msgstr "Type de base de données"
+
+msgid "Required"
+msgstr "(Obligatoire)"
+
+msgid "Database hostname"
+msgstr "Indiquer le nom d'hôte de votre serveur de base de données"
+
+msgid "Info 3"
+msgstr "Vous devriez trouver cette information auprès de votre hébergeur, si 'localhost' ne fonctionne pas."
+
+msgid "Database server hostname"
+msgstr "Nom d'hôte du serveur de base de données"
+
+msgid "Database enter name"
+msgstr "Indiquer le nom de votre base de données"
+
+msgid "Info 4"
+msgstr "Le nom de la base de données dans laquelle FluxBB sera installé. La base de données doit exister."
+
+msgid "Database name"
+msgstr "Nom de la base de données"
+
+msgid "Database enter informations"
+msgstr "Indiquer le nom d'utilisateur et le mot de passe de votre base de données"
+
+msgid "Database username"
+msgstr "Nom d'utilisateur de base de données"
+
+msgid "Info 5"
+msgstr "Indiquer le nom d'utilisateur et le mot de passe avec lesquels vous vous connectez à la base de données. À ignorer pour SQLite."
+
+msgid "Database password"
+msgstr "Mot de passe de base de données"
+
+msgid "Database enter prefix"
+msgstr "Indiquer le préfixe de table de la base de données"
+
+msgid "Info 6"
+msgstr "Si vous le souhaitez, vous pouvez spécifier un préfixe de table. Ainsi vous pourrez faire fonctionner plusieurs copies de FluxBB dans la même base de données (exemple : foo_)."
+
+msgid "Table prefix"
+msgstr "Préfixe de table"
+
+msgid "Administration setup"
+msgstr "Paramétrage de l'administration"
+
+msgid "Info 7"
+msgstr "Veuillez renseigner les informations demandées afin de paramétrer un administrateur pour votre installation FluxBB."
+
+msgid "Info 8"
+msgstr "Le nom d'utilisateur de l'administrateur des forums. Vous pourrez créer davantage d'administrateurs et de modérateurs plus tard. Les noms d'utilisateur peuvent comporter de 2 à 25 caractères. Le mot de passe doit comporter au moins 6 caractères et est sensible à la casse."
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Confirm password"
+msgstr "Confirmation du mot de passe"
+
+msgid "Board setup"
+msgstr "Paramétrage des forums"
+
+msgid "Info 11"
+msgstr "Paramètres de votre forum. Ils pourront être changés plus tard."
+
+msgid "General information"
+msgstr "Indiquer Titre du forum et description."
+
+msgid "Board description"
+msgstr "Description des forums"
+
+msgid "Appearance"
+msgstr "Aspect"
+
+msgid "Info 15"
+msgstr "La langue par défaut utilisée pour les invités et les utilisateurs qui n'ont pas opté pour une autre langue dans leur profil."
+
+msgid "Default language"
+msgstr "Langue par défaut"
+
+msgid "Default style"
+msgstr "Style par défaut"
+
+msgid "Start install"
+msgstr "Démarrage de l'installation"
+
+msgid "DB type not valid"
+msgstr "«&#160;%s&#160;» n'est pas un type de base de données valide"
+
+msgid "Table prefix error"
+msgstr "Le préfixe de table «&#160;%s&#160;» comporte des cacactères interdits ou est trop long. Le préfixe peut contenir les lettres de a à z, tout nombre et le caractère de soulignement (underscore). Mais il ne doit pas commencer par un nombre. La taille maximale est de 40 caractères. Veuillez choisir un autre préfixe."
+
+msgid "Prefix reserved"
+msgstr "Le préfixe de table «&#160;sqlite_&#160;» est réservé pour être utilisé par le moteur SQLite. Veuillez choisir un autre préfixe."
+
+msgid "Existing table error"
+msgstr "Une table nommée «&#160;%susers&#160;» est déjà présente dans la base de données «&#160;%s&#160;». Cela pourrait signifier que FluxBB est déjà installé ou qu'une autre application utilise le nom d'une ou plusieures tables nécessaires à FluxBB. Si vous souhaitez installer plusieurs copies de FluxBB dans la même base de données, vous devez choisir un préfixe de table différent."
+
+msgid "InnoDB off"
+msgstr "InnoDB semble ne pas être activé. Veuillez choisir une base de données qui ne prend pas en charge InnoDB ou activez InnoDB sur votre serveur MySQL."
+
+msgid "Administrators"
+msgstr "Administrateurs"
+
+msgid "Administrator"
+msgstr "Administrateur"
+
+msgid "Moderators"
+msgstr "Modérateurs"
+
+msgid "Moderator"
+msgstr "Modérateur"
+
+msgid "Guests"
+msgstr "Invités"
+
+msgid "Guest"
+msgstr "Invité"
+
+msgid "Members"
+msgstr "Membres"
+
+msgid "Announcement"
+msgstr "Indiquer votre annonce ici."
+
+msgid "Rules"
+msgstr "Indiquer vos règles ici"
+
+msgid "Maintenance message"
+msgstr "Les forums sont temporairement inaccessibles pour maintenance. Veuillez essayer à nouveau dans quelques minutes."
+
+msgid "Test post"
+msgstr "Message de test"
+
+msgid "Message"
+msgstr "Si vous lisez ceci (ce que vous faites probablement), l'installation de FluxBB semble avoir fonctionné ! A présent, identifiez-vous et rendez-vous au panneau d'administration pour paramétrer vos forums."
+
+msgid "Test category"
+msgstr "Catégorie de test"
+
+msgid "Test forum"
+msgstr "Forum de test"
+
+msgid "This is just a test forum"
+msgstr "Ceci n'est qu'un forum de test."
+
+msgid "Alert cache"
+msgstr "<strong>Le répertoire cache n'est pas modifiable actuellement !</strong> Pour que FluxBB fonctionne correctement, le répertoire nommé <em>%s</em> doit être modifiable par PHP. Utilisez chmod pour spécifier les permissions appropriées au répertoire. Si vous avez un doute, passez le chmod à 0777."
+
+msgid "Alert avatar"
+msgstr "<strong>Le répertoire avatar n'est pas modifiable actuellement !</strong> Si vous souhaitez que les utilisateurs puissent envoyer vers le serveur leur propre image avatar, vous devez vérifier que le répertoire nommé <em>%s</em> soit modifiable par PHP. Vous pourrez plus tard choisir d'enregistrer les images avatar dans un autre répertoire (rendez-vous à Admin/Options). Utilisez chmod pour spécifier les permissions appropriées au répertoire. Si vous avez un doute, passez le chmod à 0777."
+
+msgid "Alert upload"
+msgstr "<strong>L'envoi de fichier semble être interdit sur ce serveur !</strong> Si vous souhaitez que les utilisateurs puissent envoyer leur propre image avatar vous devez activer le paramètre de configuration file_uploads dans PHP. Une fois que l'envoi (upload) de fichiers a été activé, l'envoi d'avatars peut être activé dans Administration/Options/Fonctionnalités."
+
+msgid "FluxBB has been installed"
+msgstr "FluxBB a été installé. Pour finaliser l'installation veuillez suivre les instructions ci-dessous."
+
+msgid "Final instructions"
+msgstr "Instructions finales"
+
+msgid "Info 17"
+msgstr "Pour finaliser l'installation, vous devez cliquer sur le bouton ci-dessous afin de télécharger un fichier nommé config.php. Vous devrez ensuite envoyer ce fichier vers le répertoire racine de votre installation FluxBB."
+
+msgid "Info 18"
+msgstr "Une fois que vous aurez envoyé config.php vers le serveur, FluxBB sera complètement installé ! A ce moment-là vous pourrez <a href=\"index.php\">vous rendre à la page d'accueil des forums</a>."
+
+msgid "Download config.php file"
+msgstr "Télécharger le fichier config.php"
+
+msgid "FluxBB fully installed"
+msgstr "FluxBB a été complètement installé ! Vous pouvez à présent <a href=\"index.php\">vous rendre à la page d'accueil des forums</a>."

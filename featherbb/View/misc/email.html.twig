@@ -1,0 +1,35 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.misc.email.start') }}
+
+    <div id="emailform" class="blockform">
+        <h2><span>{{ trans('Send email to') }} {{ mail.recipient }}</span></h2>
+        <div class="box">
+            <form id="email" method="post" action="{{ pathFor('email', {'id': id}) }}" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <div class="inform">
+                    <fieldset>
+                        <legend>{{ trans('Write email') }}</legend>
+                        <div class="infldset txtarea">
+                            <input type="hidden" name="form_sent" value="1" />
+                            <label class="required"><strong>{{ trans('Email subject') }} <span>{{ trans('Required') }}</span></strong><br />
+                            <input class="longinput" type="text" name="req_subject" size="75" maxlength="70" tabindex="1" /><br /></label>
+                            <label class="required"><strong>{{ trans('Email message') }} <span>{{ trans('Required') }}</span></strong><br />
+                            <textarea name="req_message" rows="10" cols="75" tabindex="2"></textarea><br /></label>
+                            <p>{{ trans('Email disclosure note') }}</p>
+                        </div>
+                    </fieldset>
+                </div>
+                <p class="buttons">
+                    <input type="submit" name="submit" value="{{ trans('Submit') }}" tabindex="3" accesskey="s" />
+                    <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    {{ fireHook('view.misc.email.end') }}
+{% endblock content %}

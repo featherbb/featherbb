@@ -1,0 +1,338 @@
+{% if nested %} {{ fireHook('view.header.start') }}
+<!DOCTYPE html>
+<html lang="{{ trans('lang_identifier') }}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
+    {% if is_indexed %}
+    <meta name="robots" content="noindex, follow">
+    {% endif %}
+
+    <title>{{ pageTitle }}</title>
+    <link rel="shortcut icon" href="{{ urlBase() }}/style/img/favicon.ico" />
+    <!-- Theme -->
+    <link rel="stylesheet" type="text/css" href="{{ urlBase() }}/style/themes/{{ style }}/style.css">
+
+{% for type, items in assets if type != 'js' %}
+
+    <!-- {{ type|capitalize }} -->
+    {% for item in items %}
+        {% if item.params.type == 'text/javascript' %}
+<script {% for key, value in item.params %}{{ key }}={{ value }} {% endfor %}src="{{ urlBase() }}/{{ item.file }}" /></script>
+        {% else %}
+<link {% for key, value in item.params %}{{ key }}={{ value }} {% endfor %} href="{{ urlBase() }}/{{ item.file }}">
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+
+{% if admin_console %}
+{{ admStyle|raw }}
+{% endif %}
+
+{% if required_fields is not empty %}
+    <!-- Output JavaScript to validate form (make sure required fields are filled out) -->
+    <script type="text/javascript">
+        /* <![CDATA[ */
+    function process_form(the_form)
+    {
+        var required_fields = {
+            {{ required_fields|join(', ') }}
+        };
+
+        if (document.all || document.getElementById)
+        {
+            for (var i = 0; i < the_form.length; ++i)
+            {
+                var elem = the_form.elements[i];
+                if (elem.name && required_fields[elem.name] && !elem.value && elem.type && (/^(?:text(?:area)?|password|file)$/i.test(elem.type)))
+                {
+                    alert('"' + required_fields[elem.name] + '" {{ trans('required field') }}');
+                    elem.focus();
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+/* ]]> */
+</script>
+
+{% endif %}
+
+{% if page_head is not empty %}
+{{ page_head|join("\n") }}
+{% endif %}
+
+{{ fireHook('view.header.before.head.tag') }}
+</head>
+
+<body id="feather{{ active_page }}">
+
+<header>
+        <nav>
+            <div class="container">
+                <div class="phone-menu" id="phone-button">
+                    <a class="button-phone"></a>
+                </div>
+                <div id="phone">
+                    <div id="brdmenu" class="inbox">
+                        <ul>
+                            <!-- navlinks -->
+                            {% for row in navlinks %}
+                                {% if row is iterable %}
+                                    <li id="{{ row.id }}"{{ row.active|raw }}><a href="{{ row.href }}">{{ row.text }}</a></li>
+                                {% else %}
+                                    {{ row|raw }}
+                                {% endif %}
+                            {% endfor %}
+                            <!-- /navlinks -->
+                        </ul>
+                    </div>
+                    <div class="navbar-right">
+                        <form method="get" action="{{ pathFor('search') }}" class="nav-search">
+                            <input type="hidden" name="action" value="search">
+                            <input type="text" name="keywords" size="20" maxlength="100" placeholder="{{ trans('Search') }}">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="container-title-status">
+                <h1 class="title-site">
+                    <a href="{{ urlBase() }}" title="" class="site-name">
+                        <p>{{ settings('o_board_title') }}</p>
+                    </a>
+                    <div id="brddesc">{{ settings('o_board_desc') }}</div>
+                </h1>
+                <div class="status-avatar">
+                    <div id="brdwelcome" class="inbox">
+
+
+        {% if userGet('is_guest') %}
+                        <p class="conl">{{ trans('Not logged in') }}</p>
+        {% else %}
+            <ul class="conl">
+                <li><span>{{ trans('Logged in as') }} <strong>{{ userGet('username') }}</strong></span></li>
+                <li><span>{{ trans(['Last visit', formatTime(userGet('last_visit'))]) }}</span></li>
+
+
+            {% if isAdminMod() %}
+                {% if settings('o_report_method')  == '0' or settings('o_report_method') == '2' %}
+                    {% if has_reports %}
+                        <li class="reportlink"><span><strong><a href="{{ pathFor('adminReports') }}">{{ trans('New reports') }}</a></strong></span></li>
+                    {% endif %}
+                {% endif %}
+                {% if settings('o_maintenance') == '1' %}
+                    <li class="maintenancelink"><span><strong><a href="{{ pathFor('adminMaintenance') }}">{{ trans('Maintenance mode enabled') }}</a></strong></span></li>
+                {% endif %}
+            {% endif %}
+
+            {% set headerToplist = fireHook(['header.toplist', []]) %}
+            {{ headerToplist|join("\n") }}
+
+            </ul>
+        {% endif %}
+
+{% if can('board.read') and can('search.topics') %}
+            <ul class="conr">
+                <li>{{ trans('Topic searches') }}
+            {% if userGet('is_guest') %}
+                <a href="{{ pathFor('quickSearch', {'show': 'replies'}) }}" title="{{ trans('Show posted topics') }}">{{ trans('Posted topics') }}</a> |
+                <a href="{{ pathFor('quickSearch', {'show': 'new'}) }}" title="{{ trans('Show new posts') }}">{{ trans('New posts header') }}</a> |
+            {% endif %}
+                <a href="{{ pathFor('quickSearch', {'show': 'recent'}) }}" title="{{ trans('Show active topics') }}">{{ trans('Active topics') }}</a> |
+                <a href="{{ pathFor('quickSearch', {'show': 'unanswered'}) }}" title="{{ trans('Show unanswered topics') }}">{{ trans('Unanswered topics') }}</a>
+                </li>
+            </ul>
+{% endif %}
+
+{{ fireHook('view.header.brdwelcome') }}
+                    <div class="clearer"></div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+
+{% if can('board.read') and settings('o_announcement') == '1' %}
+            <div id="announce" class="block">
+                <div class="hd"><h2><span>{{ trans('Announcement') }}</span></h2></div>
+                <div class="box">
+                    <div id="announce-block" class="inbox">
+                        <div class="usercontent">{{ settings('o_announcement_message') }}</div>
+                    </div>
+                </div>
+            </div>
+{% endif %}
+
+
+{% if flashMessages is not empty %}
+            <script type="text/javascript">
+                window.onload = function() {
+                    var flashMessage = document.getElementById('flashmsg');
+                    flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type')+' show';
+                    setTimeout(function () {
+                        flashMessage.className = 'flashmsg '+flashMessage.getAttribute('data-type');
+                    }, 10000);
+                    return false;
+                }
+            </script>
+    {% for type, message in flashMessages %}
+            <div class="flashmsg info" data-type="{{ type }}" id="flashmsg">
+                <h2>{{ trans('Info') }}
+                    <span style="float:right;cursor:pointer"
+                            onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;
+                            </span>
+                </h2>
+                <p>{{ message.0 }}</p>
+            </div>
+    {% endfor %}
+{% endif %}
+
+        </div>
+    </header>
+
+    <section class="container">
+        <div id="brdmain">
+
+            {{ fireHook('view.header.end') }}
+
+            {% endif %}
+
+            {% block content %}{% endblock content %}
+        </div>
+
+
+{% if nested %}
+{{ fireHook('view.footer.start') }}
+
+<div id="brdfooter" class="block">
+    <h2><span>{{ trans('Board footer') }}</span></h2>
+    <div class="box">
+
+        {% if (active_page == 'Forum' or active_page == 'Topic') and isAdminMod() %}
+            <div id="modcontrols" class="inbox">
+                {% if active_page == 'Forum' %}
+                    <dl>
+                        <dt><strong>{{ trans('Mod controls') }}</strong></dt>
+                        <dd><span><a href="{{ pathFor('moderateForum', {'id': fid, 'name': slug(cur_forum.forum_name), 'page': page_number}) }}">{{ trans('Moderate forum') }}</a></span></dd>
+                    </dl>
+                {% elseif active_page == 'Topic' %}
+                    <dl>
+                        <dt><strong>{{ trans('Mod controls') }}</strong></dt>
+                        <dd><span><a href="{{ pathFor('moderateTopic', {'id': tid, 'fid': fid, 'name': slug(cur_topic.subject), 'page': page_number}) }}">{{ trans('Moderate topic') }}</a></span></dd>
+                        <dd><span><a href="{{ pathFor('moveTopic', {'id': tid, 'fid': fid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Move topic') }}</a></span></dd>
+
+                        {% if cur_topic.closed == '1' %}
+                            <dd><span><a href="{{ pathFor('openTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Open topic') }}</a></span></dd>
+                        {% else %}
+                            <dd><span><a href="{{ pathFor('closeTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Close topic') }}</a></span></dd>
+                        {% endif %}
+
+                        {% if cur_topic.sticky == '1' %}
+                            <dd><span><a href="{{ pathFor('unstickTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Unstick topic') }}</a></span></dd>
+                        {% else %}
+                            <dd><span><a href="{{ pathFor('stickTopic', {'id': tid, 'name': slug(cur_topic.subject) }) }}">{{ trans('Stick topic') }}</a></span></dd>
+                        {% endif %}
+                    </dl>
+                {% endif %}
+
+                {{ fireHook('view.footer.mod.actions') }}
+            </div>
+        {% endif %}
+
+
+        <div id="brdfooternav" class="inbox">
+
+            {# Display the "Jump to" drop list #}
+            {% if settings('o_quickjump') == '1' and quickjump is not empty %}
+                <div class="conl">
+                    <form id="qjump" method="get" action="">
+                            <div>
+                                <label><span>Jump to<br /></span></label>
+                                    <select name="id" onchange="window.location=(this.options[this.selectedIndex].value)">
+                                        {% for cat_id, cat_data in quickjump["#{ userGet('g_id') }"] %}
+                                            <optgroup label="{{ cat_data.cat_name }}">
+                                                {% for forum in cat_data.cat_forums %}
+                                                    <option value="{{ pathFor('Forum', {'id': "#{ forum.forum_id }", 'name': "#{ slug(forum.forum_name) }"}) }}"{{ fid == 2 ? ' selected="selected"' : '' }}>{{ forum.forum_name }}</option>
+                                                {% endfor %}
+
+                                            </optgroup>
+                                        {% endfor %}
+                                    </select>
+                            </div>
+                    </form>
+                </div>
+            {% endif %}
+            <div class="conr">
+                {{ fireHook('view.footer.feed.links') }}
+
+                <p id="poweredby">
+                    {{ trans(
+                    ['Powered by',
+                    '<a href="https://featherbb.org">FeatherBB</a>'
+                    ~"#{ settings('o_show_version') == '1' ? settings('o_cur_version') : '' }"
+                    ]) }}
+                </p>
+            </div>
+            <div class="clearer"></div>
+        </div>
+    </div>
+</div>
+
+{# Display debug info (if enabled/defined) #}
+{% if exec_info is not empty %}
+<p id="debugtime">[
+    {{ trans(['Querytime', exec_info.exec_time|round(6), exec_info.nb_queries]) }} -
+    {{ trans(['Memory usage', exec_info.mem_usage]) }}
+    {{ trans(['Peak usage', exec_info.mem_peak_usage]) }}
+    ]</p>
+{% endif %}
+{% if queries_info is not empty %}
+<div id="debug" class="blocktable">
+    <h2><span>{{ trans('Debug table') }}</span></h2>
+    <div class="box">
+        <div class="inbox">
+            <table>
+                <thead>
+                <tr>
+                    <th class="tcl" scope="col">{{ trans('Query times') }}</th>
+                    <th class="tcr" scope="col">{{ trans('Query') }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for time, sql in queries_info.raw %}
+                    <tr>
+                        <td class="tcl">{{ time|round(8) }}</td>
+                        <td class="tcr">{{ sql }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td class="tcl" colspan="2">{{ trans(['Total query time', queries_info.total_time|round(7)]) }} s</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+</section>
+
+<!-- JSRAW -->
+<script>
+    var baseUrl = '{{ urlBase() }}',
+        phpVars = {{ jsVars|json_encode()|raw }};
+    {{ jsraw|raw }}
+</script>
+<!-- JS -->
+{% for script in assets.js %}
+<script {% for key, value in script.params %}{{ key }}="{{ value }}"{% endfor %} src="{{ urlBase() }}/{{ script.file }}" /></script>
+{% endfor %}
+{{ fireHook('view.footer.before.html.tag') }}
+</body>
+</html>
+{{ fireHook('view.footer.end') }}
+{% endif %}

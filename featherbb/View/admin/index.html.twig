@@ -1,0 +1,56 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {% include '@forum/admin/menu.html.twig' %}
+
+    {{ fireHook('view.admin.index.start') }}
+
+    <div class="block">
+        <h2><span>{{ trans('Forum admin head') }}</span></h2>
+        <div id="adintro" class="box">
+            <div class="inbox">
+                <p>{{ trans('Welcome to admin') }}</p>
+                <ul>
+                    <li><span>{{ trans('Welcome 1') }}</span></li>
+                    <li><span>{{ trans('Welcome 2') }}</span></li>
+                    <li><span>{{ trans('Welcome 3') }}</span></li>
+                    <li><span>{{ trans('Welcome 4') }}</span></li>
+                    <li><span>{{ trans('Welcome 5') }}</span></li>
+                    <li><span>{{ trans('Welcome 6') }}</span></li>
+                    <li><span>{{ trans('Welcome 7') }}</span></li>
+                    <li><span>{{ trans('Welcome 8') }}</span></li>
+                    <li><span>{{ trans('Welcome 9') }}</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <h2 class="block2"><span>{{ trans('About head') }}</span></h2>
+        <div id="adstats" class="box">
+            <div class="inbox">
+                <dl>
+                    <dt>{{ trans('FeatherBB version label') }}</dt>
+                    <dd>
+                        {{ trans(['FeatherBB version data',
+                        settings('o_cur_version'),
+                        '<a href="' ~pathFor('adminAction', {'action': 'check_upgrade'}) ~'">' ~trans('Check for upgrade') ~'</a>'
+                        ]) }}
+                    </dd>
+                    <dt>{{ trans('Server statistics label') }}</dt>
+                    <dd>
+                        <a href="{{ pathFor('statistics') }}">{{ trans('View server statistics') }}</a>
+                    </dd>
+                    <dt>{{ trans('Support label') }}</dt>
+                    <dd>
+                        <a href="https://forums.featherbb.org">{{ trans('Forum label') }}</a> -
+                        <a href="https://gitter.im/featherbb/featherbb">{{ trans('IRC label') }}</a>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="clearer"></div>
+    </div>
+
+    {{ fireHook('view.admin.index.end') }}
+{% endblock content %}

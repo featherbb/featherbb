@@ -1,0 +1,71 @@
+{% extends '@forum/layout.html.twig' %}
+
+{% block content %}
+
+    {{ fireHook('view.delete.start') }}
+
+    <div class="linkst">
+        <div class="inbox">
+            <ul class="crumbs">
+                <li><a href="{{ urlBase() }}">{{ trans('Index') }}</a></li>
+                <li><span>»&#160;</span><a href="{{ pathFor('Forum', {'id': cur_post.fid, 'name': slug(cur_post.forum_name)}) }}">{{ cur_post.forum_name }}</a></li>
+                <li><span>»&#160;</span><a href="{{ pathFor('viewPost', {'name': slug(cur_post.subject), 'id': "#{ id }", 'pid': "#{ id }"}) }}#p{{ id }}">{{ cur_post.subject }}</a></li>
+                <li><span>»&#160;</span><strong>{{ trans('Delete post') }}</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="blockform">
+        <h2><span>{{ trans('Delete post') }}</span></h2>
+        <div class="box">
+            <form method="post" action="{{ pathFor('deletePost', {'id': id}) }}">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <div class="inform">
+                    <div class="forminfo">
+                        <h3><span>
+                        {% if is_topic_post %}
+                            {{ trans(['Topic by', '<strong>' ~ cur_post.poster ~'</strong>', formatTime(cur_post.posted) ]) }}
+                        {% else %}
+                            {{ trans(['Reply by', '<strong>' ~cur_post.poster ~'</strong>', formatTime(cur_post.posted) ]) }}
+                        {% endif %}
+                            </span>
+                        </h3>
+                        <p>
+                            {{ is_topic_post ? "<strong>#{ trans('Topic warning') }</strong>"|raw : "<strong>#{ trans('Warning') }</strong>"|raw }}
+                            <br />{{ trans('Delete info') }}
+                        </p>
+                    </div>
+                </div>
+                <p class="buttons"><input type="submit" name="delete" value="{{ trans('Delete') }}" />
+                    <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <div id="postreview">
+        <div class="blockpost">
+            <div class="box">
+                <div class="inbox">
+                    <div class="postbody">
+                        <div class="postleft">
+                            <dl>
+                                <dt><strong>{{ cur_post.poster }}</strong></dt>
+                                <dd><span>{{ formatTime(cur_post.posted) }}</span></dd>
+                            </dl>
+                        </div>
+                        <div class="postright">
+                            <div class="postmsg">
+                                {{ cur_post.message|raw }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ fireHook('view.delete.end') }}
+{% endblock content %}

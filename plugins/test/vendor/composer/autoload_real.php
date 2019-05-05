@@ -19,9 +19,9 @@ class ComposerAutoloaderInitc204b6b3f64b0fff63ff500918413ad3
             return self::$loader;
         }
 
-        spl_autoload_register(array('ComposerAutoloaderInitc204b6b3f64b0fff63ff500918413ad3', 'loadClassLoader'), true, true);
+        spl_autoload_register(['ComposerAutoloaderInitc204b6b3f64b0fff63ff500918413ad3', 'loadClassLoader'], true, true);
         self::$loader = $loader = new \Composer\Autoload\ClassLoader();
-        spl_autoload_unregister(array('ComposerAutoloaderInitc204b6b3f64b0fff63ff500918413ad3', 'loadClassLoader'));
+        spl_autoload_unregister(['ComposerAutoloaderInitc204b6b3f64b0fff63ff500918413ad3', 'loadClassLoader']);
 
         $map = require __DIR__ . '/autoload_namespaces.php';
         foreach ($map as $namespace => $path) {
