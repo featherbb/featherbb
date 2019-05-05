@@ -13,7 +13,6 @@ use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Email;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Cache as CacheInterface;
-use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
@@ -158,7 +157,7 @@ class Register
         $insertUser = Hooks::fireDB('model.register.insert_user_query', $insertUser);
         $insertUser = $insertUser->save();
 
-        $newUid = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'users');
+        $newUid = DB::getDb()->lastInsertId(ForumEnv::get('DB_PREFIX').'users');
 
         if (ForumSettings::get('o_regs_verify') == '1') {
             Prefs::setUser($newUid, ['language' => $user['language']], ForumEnv::get('FEATHER_UNVERIFIED'));

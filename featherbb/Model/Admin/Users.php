@@ -12,9 +12,7 @@ namespace FeatherBB\Model\Admin;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Interfaces\Cache as CacheInterface;
-use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
-use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Perms;
@@ -481,7 +479,7 @@ class Users
 
             // Overwrite the registration IP with one from the last post (if it exists)
             if ($banTheIp != 0) {
-                $result = DB::table('posts')->rawQuery('SELECT p.poster_id, p.poster_ip FROM ' . ForumSettings::get('db_prefix') . 'posts AS p INNER JOIN (SELECT MAX(id) AS id FROM ' . ForumSettings::get('db_prefix') . 'posts WHERE poster_id IN (' . implode(',', $userIds) . ') GROUP BY poster_id) AS i ON p.id=i.id')->findMany();
+                $result = DB::table('posts')->rawQuery('SELECT p.poster_id, p.poster_ip FROM ' . ForumEnv::get('DB_PREFIX') . 'posts AS p INNER JOIN (SELECT MAX(id) AS id FROM ' . ForumEnv::get('DB_PREFIX') . 'posts WHERE poster_id IN (' . implode(',', $userIds) . ') GROUP BY poster_id) AS i ON p.id=i.id')->findMany();
                 foreach ($result as $curAddress) {
                     $userInfo[$curAddress['poster_id']]['ip'] = $curAddress['poster_ip'];
                 }
@@ -618,7 +616,7 @@ class Users
             $search['conditions'][] = 'u.registered<'.$registeredBefore;
         }
 
-        $likeCommand = (ForumSettings::get('db_type') == 'pgsql') ? 'ILIKE' : 'LIKE';
+        $likeCommand = (ForumEnv::get('DB_TYPE') == 'pgsql') ? 'ILIKE' : 'LIKE';
         foreach ($form as $key => $input) {
             if ($input != '' && in_array($key, ['username', 'email', 'title', 'realname', 'url', 'location', 'signature', 'admin_note'])) {
                 $search['conditions'][] = 'u.'.str_replace("'", "''", $key).' '.$likeCommand.' \''.str_replace("'", "''", str_replace('*', '%', $input)).'\'';

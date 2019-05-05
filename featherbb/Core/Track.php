@@ -27,7 +27,7 @@ class Track
             $trackedTopics = ['topics' => [], 'forums' => []];
         }
 
-        return setcookie(ForumSettings::get('cookie_name') . '_track', json_encode($trackedTopics), time() + ForumSettings::get('o_timeout_visit'), '/', '', false, true);
+        return setcookie(ForumEnv::get('COOKIE_NAME') . '_track', json_encode($trackedTopics), time() + ForumSettings::get('o_timeout_visit'), '/', '', false, true);
     }
 
 
@@ -36,7 +36,7 @@ class Track
     //
     public static function getTrackedTopics()
     {
-        $cookieRaw = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
+        $cookieRaw = Container::get('cookie')->get(ForumEnv::get('COOKIE_NAME').'_track');
 
         if (isset($cookieRaw)) {
             $cookieData = json_decode($cookieRaw, true);

@@ -74,7 +74,7 @@ class User extends \Statical\BaseProxy
     }
 
     /**
-     * Check if user is admin or modo
+     * Check if user is admin or mod
      * @param  int     $id Optional user id
      * @return boolean     Is user in admin/mod group ?
      */

@@ -10,7 +10,6 @@
 namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Database as DB;
-use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Utils;
 
@@ -58,9 +57,9 @@ class Statistics
     {
         $total = [];
 
-        if (ForumSettings::get('db_type') == 'mysql' || ForumSettings::get('db_type') == 'mysqli' || ForumSettings::get('db_type') == 'mysql_innodb' || ForumSettings::get('db_type') == 'mysqli_innodb') {
+        if (ForumEnv::get('DB_TYPE') == 'mysql' || ForumEnv::get('DB_TYPE') == 'mysqli' || ForumEnv::get('DB_TYPE') == 'mysql_innodb' || ForumEnv::get('DB_TYPE') == 'mysqli_innodb') {
             // Calculate total db size/row count
-            $result = DB::table('users')->rawQuery('SHOW TABLE STATUS LIKE \''.ForumSettings::get('db_prefix').'%\'')->findMany();
+            $result = DB::table('users')->rawQuery('SHOW TABLE STATUS LIKE \''.ForumEnv::get('DB_PREFIX').'%\'')->findMany();
             $result = Hooks::fire('model.admin.model.statistics.get_total_size.raw_data', $result);
 
             $total['size'] = $total['records'] = 0;

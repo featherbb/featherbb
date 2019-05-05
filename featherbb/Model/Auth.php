@@ -10,7 +10,6 @@
 namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
-use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Random;
 use FeatherBB\Core\Url;
@@ -139,12 +138,12 @@ class Auth
         *
         * Generated with base64_encode(openssl_random_pseudo_bytes(64));
         */
-        $secretKey = base64_decode(ForumSettings::get('jwt_token'));
+        $secretKey = base64_decode(ForumEnv::get('JWT_TOKEN'));
 
         /*
         * Extract the algorithm from the config file too
         */
-        $algorithm = ForumSettings::get('jwt_algorithm');
+        $algorithm = ForumEnv::get('JWT_ALGORITHM');
 
         /*
         * Encode the array to a JWT string.
@@ -164,6 +163,6 @@ class Auth
     public static function setCookie($jwt, $expire)
     {
         // Store cookie to client storage
-        setcookie(ForumSettings::get('cookie_name'), $jwt, $expire, '/', '', false, true);
+        setcookie(ForumEnv::get('COOKIE_NAME'), $jwt, $expire, '/', '', false, true);
     }
 }

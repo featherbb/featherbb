@@ -9,6 +9,7 @@
 
 namespace FeatherBB\Controller;
 
+use Dotenv\Dotenv;
 use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
@@ -34,10 +35,10 @@ class Install
         'sqlite3' => 'SQLite3',
     ];
     protected $availableLangs;
-    protected $optionalFields = ['db_user', 'db_pass', 'db_prefix'];
+    protected $optionalFields = ['DB_PASS', 'DB_PREFIX'];
     protected $installLang = 'English';
     protected $defaultStyle = 'FeatherBB';
-    protected $configKeys = ['db_type', 'db_host', 'db_name', 'db_user', 'db_pass', 'db_prefix'];
+    protected $configKeys = ['DB_TYPE', 'DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS', 'DB_PREFIX'];
     protected $errors = [];
 
     public function __construct()
@@ -68,75 +69,60 @@ class Install
 
         // Second form has been submitted to start install
         if (Request::isPost() && !Input::post('choose_lang')) {
-            $missingFields = [];
             $data = array_map(function ($item) {
                 return Utils::escape(Utils::trim($item));
             }, Input::post('install'));
 
-            foreach ($data as $field => $value) {
-                // Handle empty fields
-                if (empty($value)) {
-                    // If the field is required, or if user and pass are missing even though mysql or pgsql are selected as DB
-                    if (!in_array($field, $this->optionalFields) || (in_array($field, ['db_user']) && in_array($data['db_type'], ['mysql', 'pgsql']))) {
-                        $missingFields[] = $field;
-                    }
-                }
+            // VALIDATION
+            // Make sure base_url doesn't end with a slash
+            if (substr($data['base_url'], -1) == '/') {
+                $data['base_url'] = substr($data['base_url'], 0, -1);
             }
 
-            if (!empty($missingFields)) {
-                $this->errors = 'The following fields are required but are missing : '.implode(', ', $missingFields);
-            } else { // Missing fields, so we don't need to validate the others
-                // VALIDATION
-                // Make sure base_url doesn't end with a slash
-                if (substr($data['base_url'], -1) == '/') {
-                    $data['base_url'] = substr($data['base_url'], 0, -1);
-                }
+            // Validate username and passwords
+            if (Utils::strlen($data['username']) < 2) {
+                $this->errors[] = __('Username 1');
+            } elseif (Utils::strlen($data['username']) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
+                $this->errors[] = __('Username 2');
+            } elseif (!strcasecmp($data['username'], 'Guest')) {
+                $this->errors[] = __('Username 3');
+            } elseif (preg_match('%[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}%', $data['username']) || preg_match('%((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))%', $data['username'])) {
+                $this->errors[] = __('Username 4');
+            } elseif ((strpos($data['username'], '[') !== false || strpos($data['username'], ']') !== false) && strpos($data['username'], '\'') !== false && strpos($data['username'], '"') !== false) {
+                $this->errors[] = __('Username 5');
+            } elseif (preg_match('%(?:\[/?(?:b|u|i|h|colou?r|quote|code|img|url|email|list)\]|\[(?:code|quote|list)=)%i', $data['username'])) {
+                $this->errors[] = __('Username 6');
+            }
 
-                // Validate username and passwords
-                if (Utils::strlen($data['username']) < 2) {
-                    $this->errors[] = __('Username 1');
-                } elseif (Utils::strlen($data['username']) > 25) { // This usually doesn't happen since the form element only accepts 25 characters
-                    $this->errors[] = __('Username 2');
-                } elseif (!strcasecmp($data['username'], 'Guest')) {
-                    $this->errors[] = __('Username 3');
-                } elseif (preg_match('%[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}%', $data['username']) || preg_match('%((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))%', $data['username'])) {
-                    $this->errors[] = __('Username 4');
-                } elseif ((strpos($data['username'], '[') !== false || strpos($data['username'], ']') !== false) && strpos($data['username'], '\'') !== false && strpos($data['username'], '"') !== false) {
-                    $this->errors[] = __('Username 5');
-                } elseif (preg_match('%(?:\[/?(?:b|u|i|h|colou?r|quote|code|img|url|email|list)\]|\[(?:code|quote|list)=)%i', $data['username'])) {
-                    $this->errors[] = __('Username 6');
-                }
+            if (Utils::strlen($data['password']) < 6) {
+                $this->errors[] = __('Short password');
+            } elseif ($data['password'] != $data['password_conf']) {
+                $this->errors[] = __('Passwords not match');
+            }
 
-                if (Utils::strlen($data['password']) < 6) {
-                    $this->errors[] = __('Short password');
-                } elseif ($data['password'] != $data['password_conf']) {
-                    $this->errors[] = __('Passwords not match');
-                }
+            // Validate email
+            if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+                $this->errors[] = __('Wrong email');
+            }
 
-                // Validate email
-                if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-                    $this->errors[] = __('Wrong email');
-                }
+            // Validate language
+            if (!in_array($data['language'], Lister::getLangs())) {
+                $this->errors[] = __('Error default language');
+            }
 
-                // Validate language
-                if (!in_array($data['language'], Lister::getLangs())) {
-                    $this->errors[] = __('Error default language');
-                }
+            // Check if the cache directory is writable
+            if (!is_writable(ForumEnv::get('FORUM_CACHE_DIR'))) {
+                $this->errors[] = sprintf(__('Alert cache'), ForumEnv::get('FORUM_CACHE_DIR'));
+            }
 
-                // Check if the cache directory is writable
-                if (!is_writable(ForumEnv::get('FORUM_CACHE_DIR'))) {
-                    $this->errors[] = sprintf(__('Alert cache'), ForumEnv::get('FORUM_CACHE_DIR'));
-                }
+            // Check if default avatar directory is writable
+            if (!is_writable(ForumEnv::get('FEATHER_ROOT').'style/img/avatars/')) {
+                $this->errors[] = sprintf(__('Alert avatar'), ForumEnv::get('FEATHER_ROOT').'style/img/avatars/');
+            }
 
-                // Check if default avatar directory is writable
-                if (!is_writable(ForumEnv::get('FEATHER_ROOT').'style/img/avatars/')) {
-                    $this->errors[] = sprintf(__('Alert avatar'), ForumEnv::get('FEATHER_ROOT').'style/img/avatars/');
-                }
-
-                // Validate db_prefix if existing
-                if (!empty($data['db_prefix']) && ((strlen($data['db_prefix']) > 0 && (!preg_match('%^[a-zA-Z_][a-zA-Z0-9_]*$%', $data['db_prefix']) || strlen($data['db_prefix']) > 40)))) {
-                    $this->errors[] = sprintf(__('Table prefix error'), $data['db_prefix']);
-                }
+            // Validate DB_PREFIX if existing
+            if (!empty($data['DB_PREFIX']) && ((strlen($data['DB_PREFIX']) > 0 && (!preg_match('%^[a-zA-Z_][a-zA-Z0-9_]*$%', $data['DB_PREFIX']) || strlen($data['DB_PREFIX']) > 40)))) {
+                $this->errors[] = sprintf(__('Table prefix error'), $data['DB_PREFIX']);
             }
 
             // End validation and check errors
@@ -174,15 +160,16 @@ class Install
         // Generate config ...
         $config = [];
         foreach ($data as $key => $value) {
+            $key = strtoupper($key);
             if (in_array($key, $this->configKeys)) {
                 $config[$key] = $value;
             }
         }
 
         $config = array_merge($config, [
-            'cookie_name' => mb_strtolower(ForumEnv::get('FORUM_NAME')).'_cookie_'.Random::key(7, false, true),
-            'jwt_token' => base64_encode(Random::secureRandomBytes(64)),
-            'jwt_algorithm' => 'HS512'
+            'COOKIE_NAME' => mb_strtolower(ForumEnv::get('FORUM_NAME')).'_cookie_'.Random::key(7, false, true),
+            'JWT_TOKEN' => base64_encode(Random::secureRandomBytes(64)),
+            'JWT_ALGORITHM' => 'HS512'
         ]);
 
         // ... And write it on disk
@@ -197,17 +184,24 @@ class Install
     public function createDb(array $data)
     {
         Hooks::fire('controller.install.create_db');
+        $root = realpath(dirname(__FILE__).'/../../').'/';
+        try {
+            $dotenv = Dotenv::create($root);
+            $dotenv->load();
+        } catch (\Dotenv\Exception\InvalidPathException $e) {}
 
-        // Handle db prefix
-        $data['db_prefix'] = (!empty($data['db_prefix'])) ? $data['db_prefix'] : '';
+        $forumEnv = Core::loadDefaultForumEnv();
+
+        Container::set('forum_env', $forumEnv);
+
         // Init DB
-        Core::initDb($data);
+        Core::initDb();
         // Load appropriate language
         Lang::load('install', 'featherbb', false, $data['language']);
 
         // Create tables
         foreach ($this->model->getDatabaseScheme() as $table => $sql) {
-            if (!$this->model->createTable($data['db_prefix'].$table, $sql)) {
+            if (!$this->model->createTable(ForumEnv::get('DB_PREFIX').$table, $sql)) {
                 // Error handling
                 $this->errors[] = 'A problem was encountered while creating table '.$table;
             }
@@ -228,8 +222,11 @@ class Install
         // Perms::allowGroup(2, array('mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users', 'user.set_title'));
 
         Perms::allowGroup(3, ['board.read', 'users.view', 'search.topics', 'search.users']);
-        Perms::allowGroup(4, ['board.read', 'users.view', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send']);
-        Perms::allowGroup(2, ['board.read', 'users.view', 'user.set_title', 'search.topics', 'search.users', 'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send', 'mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users']);
+        Perms::allowGroup(4, ['board.read', 'users.view', 'search.topics', 'search.users',
+            'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send']);
+        Perms::allowGroup(2, ['board.read', 'users.view', 'user.set_title', 'search.topics', 'search.users',
+            'topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'post.links', 'email.send',
+            'mod.is_mod', 'mod.edit_users', 'mod.rename_users', 'mod.change_passwords', 'mod.promote_users', 'mod.ban_users']);
         Perms::allowGroup(1, ['*']);
         Cache::store('permissions', \FeatherBB\Model\Cache::getPermissions());
         // Init preferences
@@ -295,7 +292,13 @@ class Install
     {
         Hooks::fire('controller.install.write_config');
 
-        return file_put_contents(ForumEnv::get('FORUM_CONFIG_FILE'), '<?php'."\n".'$featherbbConfig = '.var_export($array, true).';');
+        $text = '';
+
+        foreach ($array as $key => $value) {
+            $text .= $key.'='.$value."\n";
+        }
+
+        return file_put_contents(ForumEnv::get('FORUM_CONFIG_FILE'), $text);
     }
 
     public function writeHtaccess()

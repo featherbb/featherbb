@@ -44,8 +44,8 @@ class Auth
                     /*
                     * decode the jwt using the key from config
                     */
-                    $secretKey = base64_decode(ForumSettings::get('jwt_token'));
-                    $token = JWT::decode($jwt, $secretKey, [ForumSettings::get('jwt_algorithm')]);
+                    $secretKey = base64_decode(ForumEnv::get('JWT_TOKEN'));
+                    $token = JWT::decode($jwt, $secretKey, [ForumEnv::get('JWT_ALGORITHM')]);
 
                     return $token;
                 } catch (\Firebase\JWT\ExpiredException $e) {
@@ -74,18 +74,18 @@ class Auth
                 User::get()->logged = Container::get('now');
 
                 // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
-                switch (ForumSettings::get('db_type')) {
+                switch (ForumEnv::get('DB_TYPE')) {
                     case 'mysql':
                     case 'mysqli':
                     case 'mysql_innodb':
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                        DB::table('online')->rawExecute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', [':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged]);
+                        DB::table('online')->rawExecute('REPLACE INTO '.ForumEnv::get('DB_PREFIX').'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', [':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged]);
                         break;
 
                     default:
-                        DB::table('online')->rawExecute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE user_id=:user_id)', [':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged]);
+                        DB::table('online')->rawExecute('INSERT INTO '.ForumEnv::get('DB_PREFIX').'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumEnv::get('DB_PREFIX').'online WHERE user_id=:user_id)', [':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged]);
                         break;
                 }
 
@@ -103,10 +103,10 @@ class Auth
 
                 $idle_sql = (User::get()->idle == '1') ? ', idle=0' : '';
 
-                DB::table('online')->rawExecute('UPDATE '.ForumSettings::get('db_prefix').'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', [':user_id' => User::get()->id]);
+                DB::table('online')->rawExecute('UPDATE '.ForumEnv::get('DB_PREFIX').'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', [':user_id' => User::get()->id]);
 
                 // Update tracked topics with the current expire time
-                $cookie_tracked_topics = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
+                $cookie_tracked_topics = Container::get('cookie')->get(ForumEnv::get('COOKIE_NAME').'_track');
                 if (isset($cookie_tracked_topics)) {
                     Track::setTrackedTopics(json_decode($cookie_tracked_topics, true));
                 }
@@ -246,7 +246,7 @@ class Auth
      */
     public function __invoke($req, $res, $next)
     {
-        $authCookie = Container::get('cookie')->get(ForumSettings::get('cookie_name'));
+        $authCookie = Container::get('cookie')->get(ForumEnv::get('COOKIE_NAME'));
 
         $jwt = false;
 
@@ -292,18 +292,18 @@ class Auth
                 $user->logged = time();
 
                 // With MySQL/MySQLi/SQLite, REPLACE INTO avoids a user having two rows in the online table
-                switch (ForumSettings::get('db_type')) {
+                switch (ForumEnv::get('DB_TYPE')) {
                     case 'mysql':
                     case 'mysqli':
                     case 'mysql_innodb':
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                    DB::table('online')->rawExecute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', [':ident' => Utils::getIp(), ':logged' => $user->logged]);
+                    DB::table('online')->rawExecute('REPLACE INTO '.ForumEnv::get('DB_PREFIX').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', [':ident' => Utils::getIp(), ':logged' => $user->logged]);
                         break;
 
                     default:
-                        DB::table('online')->rawExecute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE ident=:ident)', [':ident' => Utils::getIp(), ':logged' => $user->logged]);
+                        DB::table('online')->rawExecute('INSERT INTO '.ForumEnv::get('DB_PREFIX').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumEnv::get('DB_PREFIX').'online WHERE ident=:ident)', [':ident' => Utils::getIp(), ':logged' => $user->logged]);
                         break;
                 }
             } else {

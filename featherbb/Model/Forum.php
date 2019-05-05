@@ -651,7 +651,7 @@ class Forum
         $mergeToTid = Hooks::fire('model.forum.merge_topics_tid', $mergeToTid);
 
         // Make any redirect topics point to our new, merged topic
-        $query = 'UPDATE '.ForumSettings::get('db_prefix').'topics SET moved_to='.$mergeToTid.' WHERE moved_to IN('.implode(',', $topics).')';
+        $query = 'UPDATE '.ForumEnv::get('DB_PREFIX').'topics SET moved_to='.$mergeToTid.' WHERE moved_to IN('.implode(',', $topics).')';
 
         // Should we create redirect topics?
         if (Input::post('with_redirect')) {

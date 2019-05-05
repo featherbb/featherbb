@@ -1270,7 +1270,7 @@ class Profile
         // Check that the username (or a too similar username) is not already registered
         $query = (!is_null($excludeId)) ? ' AND id!='.$excludeId : '';
 
-        $result = DB::table('online')->rawQuery('SELECT username FROM '.ForumSettings::get('db_prefix').'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, [':username1' => $username, ':username2' => Utils::ucpPregReplace('%[^\p{L}\p{N}]%u', '', $username)])->findOne();
+        $result = DB::table('online')->rawQuery('SELECT username FROM '.ForumEnv::get('DB_PREFIX').'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, [':username1' => $username, ':username2' => Utils::ucpPregReplace('%[^\p{L}\p{N}]%u', '', $username)])->findOne();
 
         if ($result) {
             $busy = $result['username'];

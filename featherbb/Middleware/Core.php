@@ -13,8 +13,8 @@
 
 namespace FeatherBB\Middleware;
 
+use Dotenv\Dotenv;
 use FeatherBB\Core\Database as DB;
-use FeatherBB\Core\Email;
 use FeatherBB\Core\Error;
 use FeatherBB\Core\Hooks;
 use FeatherBB\Core\Interfaces\Cache;
@@ -39,18 +39,23 @@ class Core
         'Content-type' => 'text/html',
         'X-Frame-Options' => 'deny'];
 
-    public function __construct($data)
+    public function __construct()
     {
-        // Handle empty values in data
-        $data = array_merge(['config_file' => 'featherbb/config.php',
-                                  'cache_dir' => 'cache/',
-                                  'debug'   => false], $data);
         // Define some core variables
         $this->forumEnv['FEATHER_ROOT'] = realpath(dirname(__FILE__).'/../../').'/';
-        $this->forumEnv['FORUM_CACHE_DIR'] = is_writable($this->forumEnv['FEATHER_ROOT'].$data['cache_dir']) ? realpath($this->forumEnv['FEATHER_ROOT'].$data['cache_dir']).'/' : null;
-        $this->forumEnv['FORUM_CONFIG_FILE'] = $this->forumEnv['FEATHER_ROOT'].$data['config_file'];
-        $this->forumEnv['FEATHER_DEBUG'] = $this->forumEnv['FEATHER_SHOW_QUERIES'] = ($data['debug'] == 'all' || filter_var($data['debug'], FILTER_VALIDATE_BOOLEAN) == true);
-        $this->forumEnv['FEATHER_SHOW_INFO'] = ($data['debug'] == 'info' || $data['debug'] == 'all');
+        try {
+            $dotenv = Dotenv::create($this->forumEnv['FEATHER_ROOT']);
+            $dotenv->load();
+        } catch (\Dotenv\Exception\InvalidPathException $e) {}
+        $this->forumEnv['FORUM_CACHE_DIR'] = is_writable($this->forumEnv['FEATHER_ROOT'].'cache') ? realpath($this->forumEnv['FEATHER_ROOT'].'cache').'/' : null;
+        $this->forumEnv['FORUM_CONFIG_FILE'] = $this->forumEnv['FEATHER_ROOT'].'.env';
+        $this->forumEnv['FEATHER_DEBUG'] = $this->forumEnv['FEATHER_SHOW_QUERIES'] = (getenv('DEBUG') == 'all' || filter_var(getenv('DEBUG'), FILTER_VALIDATE_BOOLEAN) == true);
+        $this->forumEnv['FEATHER_SHOW_INFO'] = (getenv('DEBUG') == 'info' || getenv('DEBUG') == 'all');
+
+        if ($this->forumEnv['FEATHER_DEBUG']) {
+            error_reporting(E_ALL); // Let's report everything for development
+            ini_set('display_errors', 1);
+        }
 
         // Populate forum_env
         $this->forumEnv = array_merge(self::loadDefaultForumEnv(), $this->forumEnv);
@@ -63,9 +68,9 @@ class Core
     {
         return [
                 'FEATHER_ROOT' => '',
-                'FORUM_CONFIG_FILE' => 'featherbb/config.php',
+                'FORUM_CONFIG_FILE' => '.env',
                 'FORUM_CACHE_DIR' => 'cache/',
-                'FORUM_VERSION' => '1.0.0-beta.4',
+                'FORUM_VERSION' => '1.0.0-beta.5',
                 'FORUM_NAME' => 'FeatherBB',
                 'FORUM_DB_REVISION' => 21,
                 'FORUM_SI_REVISION' => 2,
@@ -78,39 +83,29 @@ class Core
                 'FEATHER_MAX_POSTSIZE' => 32768,
                 'FEATHER_SEARCH_MIN_WORD' => 3,
                 'FEATHER_SEARCH_MAX_WORD' => 20,
-                // 'FORUM_MAX_COOKIE_SIZE' => 4048,
                 'FEATHER_DEBUG' => false,
                 'FEATHER_SHOW_QUERIES' => false,
-                'FEATHER_SHOW_INFO' => false
+                'FEATHER_SHOW_INFO' => false,
+                'DB_TYPE' => getenv('DB_TYPE'),
+                'DB_HOST' => getenv('DB_HOST'),
+                'DB_NAME' => getenv('DB_NAME'),
+                'DB_PREFIX' => getenv('DB_PREFIX'),
+                'DB_USER' => getenv('DB_USER'),
+                'DB_PASS' => getenv('DB_PASS'),
+                'COOKIE_NAME' => getenv('COOKIE_NAME'),
+                'JWT_TOKEN' => getenv('JWT_TOKEN'),
+                'JWT_ALGORITHM' => getenv('JWT_ALGORITHM')
         ];
     }
 
-    public static function loadDefaultForumSettings()
+    public static function initDb($log_queries = false)
     {
-        return [
-                // Database
-                'db_type' => 'mysqli',
-                'db_host' => '',
-                'db_name' => '',
-                'db_user' => '',
-                'db_pass' => '',
-                'db_prefix' => '',
-                // Cookies
-                'cookie_name' => 'feather_cookie',
-                'jwt_token' => 'changeme', // MUST BE CHANGED !!!
-                'jwt_algorithm' => 'HS512'
-        ];
-    }
-
-    public static function initDb(array $config, $log_queries = false)
-    {
-        $config['db_prefix'] = (!empty($config['db_prefix'])) ? $config['db_prefix'] : '';
-        switch ($config['db_type']) {
+        switch (ForumEnv::get('DB_TYPE')) {
             case 'mysql':
                 if (!extension_loaded('pdo_mysql')) {
                     throw new Error('Driver pdo_mysql not installed.', 500, false, false, true);
                 }
-                DB::configure('mysql:host='.$config['db_host'].';dbname='.$config['db_name']);
+                DB::configure('mysql:host='.ForumEnv::get('DB_HOST').';dbname='.ForumEnv::get('DB_NAME'));
                 DB::configure('driver_options', [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
                 break;
             case 'sqlite':
@@ -118,23 +113,23 @@ class Core
                 if (!extension_loaded('pdo_sqlite')) {
                     throw new Error('Driver pdo_mysql not installed.', 500, false, false, true);
                 }
-                DB::configure('sqlite:./'.$config['db_name']);
+                DB::configure('sqlite:./'.ForumEnv::get('DB_NAME'));
                 break;
             case 'pgsql':
                 if (!extension_loaded('pdo_pgsql')) {
                     throw new Error('Driver pdo_mysql not installed.', 500, false, false, true);
                 }
-                DB::configure('pgsql:host='.$config['db_host'].'dbname='.$config['db_name']);
+                DB::configure('pgsql:host='.ForumEnv::get('DB_HOST').'dbname='.ForumEnv::get('DB_NAME'));
                 break;
         }
-        DB::configure('username', $config['db_user']);
-        DB::configure('password', $config['db_pass']);
-        DB::configure('prefix', $config['db_prefix']);
+        DB::configure('username', ForumEnv::get('DB_USER'));
+        DB::configure('password', ForumEnv::get('DB_PASS'));
+        DB::configure('prefix', ForumEnv::get('DB_PREFIX'));
         if ($log_queries) {
             DB::configure('logging', true);
         }
         DB::configure('id_column_overrides', [
-            $config['db_prefix'].'groups' => 'g_id',
+            ForumEnv::get('DB_PREFIX').'groups' => 'g_id',
         ]);
     }
 
@@ -227,19 +222,8 @@ class Core
             return $installer->run();
         }
 
-        // Load config from disk
-        include ForumEnv::get('FORUM_CONFIG_FILE');
-        if (isset($featherbbConfig) && is_array($featherbbConfig)) {
-            $this->forumSettings = array_merge(self::loadDefaultForumSettings(), $featherbbConfig);
-        } else {
-            $res = $res->withStatus(500); // Send forbidden header
-            $body = $res->getBody();
-            $body->write('Wrong config file format');
-            return $next($req, $res);
-        }
-
         // Init DB and configure Slim
-        self::initDb($this->forumSettings, ForumEnv::get('FEATHER_SHOW_INFO'));
+        self::initDb(ForumEnv::get('FEATHER_SHOW_INFO'));
         Config::set('displayErrorDetails', ForumEnv::get('FEATHER_DEBUG'));
 
         // Ensure cached forum data exist
@@ -255,7 +239,7 @@ class Core
         }
 
         // Finalize forum_settings array
-        $this->forumSettings = array_merge(Cache::retrieve('config'), $this->forumSettings);
+        $this->forumSettings = Cache::retrieve('config');
         Container::set('forum_settings', $this->forumSettings);
 
         Lang::construct();

@@ -11,7 +11,6 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
@@ -735,7 +734,7 @@ class Topic
             $topic = Hooks::fireDB('model.topic.split_posts_topic_query', $topic);
             $topic->save();
 
-            $newTid = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'topics');
+            $newTid = DB::getDb()->lastInsertId(ForumEnv::get('DB_PREFIX').'topics');
 
             // Move the posts to the new topic
             $movePosts = DB::table('posts')->whereIn('id', $postsArray)
@@ -745,7 +744,7 @@ class Topic
             $movePosts->save();
 
             // Apply every subscription to both topics
-            DB::table('topic_subscriptions')->rawQuery('INSERT INTO '.ForumSettings::get('db_prefix').'topic_subscriptions (user_id, topic_id) SELECT user_id, '.$newTid.' FROM '.ForumSettings::get('db_prefix').'topic_subscriptions WHERE topic_id=:tid', ['tid' => $tid]);
+            DB::table('topic_subscriptions')->rawQuery('INSERT INTO '.ForumEnv::get('DB_PREFIX').'topic_subscriptions (user_id, topic_id) SELECT user_id, '.$newTid.' FROM '.ForumEnv::get('DB_PREFIX').'topic_subscriptions WHERE topic_id=:tid', ['tid' => $tid]);
 
             // Get last_post, last_post_id, and last_poster from the topic and update it
             $lastOldPostData['select'] = ['id', 'poster', 'posted'];

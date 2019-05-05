@@ -11,7 +11,6 @@ namespace FeatherBB\Model;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
@@ -211,9 +210,9 @@ class Search
                                     $whereCond = str_replace('*', '%', $curWord);
                                     $whereCondCjk = ($searchIn ? (($searchIn > 0) ? 'p.message LIKE %:where_cond%' : 't.subject LIKE %:where_cond%') : 'p.message LIKE %:where_cond% OR t.subject LIKE %:where_cond%');
 
-                                    $result = DB::table('posts')->rawQuery('SELECT p.id AS post_id, p.topic_id, '.$sortBySql.' AS sort_by FROM '.ForumSettings::get('db_prefix').'posts AS p INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE ('.$whereCondCjk.') AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forumSql, [':where_cond' => $whereCond]);
+                                    $result = DB::table('posts')->rawQuery('SELECT p.id AS post_id, p.topic_id, '.$sortBySql.' AS sort_by FROM '.ForumEnv::get('DB_PREFIX').'posts AS p INNER JOIN '.ForumEnv::get('DB_PREFIX').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumEnv::get('DB_PREFIX').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE ('.$whereCondCjk.') AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forumSql, [':where_cond' => $whereCond]);
                                 } else {
-                                    $result = DB::table('posts')->rawQuery('SELECT m.post_id, p.topic_id, '.$sortBySql.' AS sort_by FROM '.ForumSettings::get('db_prefix').'search_words AS w INNER JOIN '.ForumSettings::get('db_prefix').'search_matches AS m ON m.word_id = w.id INNER JOIN '.ForumSettings::get('db_prefix').'posts AS p ON p.id=m.post_id INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE w.word LIKE :where_cond'.$searchInCond.' AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forumSql, [':where_cond' => str_replace('*', '%', $curWord)]);
+                                    $result = DB::table('posts')->rawQuery('SELECT m.post_id, p.topic_id, '.$sortBySql.' AS sort_by FROM '.ForumEnv::get('DB_PREFIX').'search_words AS w INNER JOIN '.ForumEnv::get('DB_PREFIX').'search_matches AS m ON m.word_id = w.id INNER JOIN '.ForumEnv::get('DB_PREFIX').'posts AS p ON p.id=m.post_id INNER JOIN '.ForumEnv::get('DB_PREFIX').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumEnv::get('DB_PREFIX').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE w.word LIKE :where_cond'.$searchInCond.' AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forumSql, [':where_cond' => str_replace('*', '%', $curWord)]);
                                 }
 
                                 $result = Hooks::fireDB('model.search.get_search_results_search_first_query', $result);
@@ -280,7 +279,7 @@ class Search
                             $userIds[] = $row['id'];
                         }
 
-                        $result = DB::table('posts')->rawQuery('SELECT p.id AS post_id, p.topic_id FROM '.ForumSettings::get('db_prefix').'posts AS p INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id IN('.implode(',', $userIds).')'.$forumSql.' ORDER BY '.$sortBySql.' '.$sortDir);
+                        $result = DB::table('posts')->rawQuery('SELECT p.id AS post_id, p.topic_id FROM '.ForumEnv::get('DB_PREFIX').'posts AS p INNER JOIN '.ForumEnv::get('DB_PREFIX').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumEnv::get('DB_PREFIX').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id IN('.implode(',', $userIds).')'.$forumSql.' ORDER BY '.$sortBySql.' '.$sortDir);
                         $result = Hooks::fireDB('model.search.get_search_results_search_second_query', $result);
                         $result = $result->findMany();
 
@@ -401,7 +400,7 @@ class Search
                                 ->where('p.poster_id', User::get()->id)
                                 ->groupBy('t.id');
 
-                    if (ForumSettings::get('db_type') == 'pgsql') {
+                    if (ForumEnv::get('DB_TYPE') == 'pgsql') {
                         $result = $result->groupBy('t.last_post');
                     }
 

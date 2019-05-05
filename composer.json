@@ -4,7 +4,7 @@
     "license": "GNU General Public Licence",
     "description": "Lighter than a feather.",
     "keywords": ["forum", "lightweight", "featherbb"],
-    "homepage": "http://featherbb.org/",
+    "homepage": "https://featherbb.org/",
     "authors": [{
         "name": "adaur",
         "role": "Project Leader"
@@ -31,7 +31,8 @@
         "gettext/gettext": "^4.2",
         "s9e/text-formatter": "^0.9",
         "featherbb/php-utf-8": "dev-master",
-        "twig/twig": "1.*|2.*"
+        "twig/twig": "2.*",
+        "vlucas/phpdotenv": "^3.3"
     },
     "support": {
         "email": "admin@featherbb.org",

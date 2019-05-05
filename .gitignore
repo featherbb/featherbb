@@ -1,4 +1,3 @@
-/featherbb/config.php
 .idea/
 nbproject/
 .htaccess
@@ -10,3 +9,4 @@ cache/
 !/style/img/avatars/.gitkeep
 vendor/
 temp/
+.env

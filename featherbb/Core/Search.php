@@ -15,7 +15,6 @@ namespace FeatherBB\Core;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\ForumEnv;
-use FeatherBB\Core\Interfaces\ForumSettings;
 
 class Search
 {
@@ -222,7 +221,7 @@ class Search
             unset($uniqueWords);
 
             if (!empty($newWords)) {
-                switch (ForumSettings::get('db_type')) {
+                switch (ForumEnv::get('DB_TYPE')) {
                     case 'mysql':
                     case 'mysqli':
                     case 'mysql_innodb':
@@ -230,7 +229,7 @@ class Search
                         // Quite dirty, right? :-)
                         $placeholders = rtrim(str_repeat('(?), ', count($newWords)), ', ');
                         DB::table('search_words')
-                            ->rawExecute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_words (word) VALUES ' . $placeholders, $newWords);
+                            ->rawExecute('INSERT INTO ' . ForumEnv::get('DB_PREFIX') . 'search_words (word) VALUES ' . $placeholders, $newWords);
                         break;
 
                     default:
@@ -274,7 +273,7 @@ class Search
                 $wordlist = array_values($wordlist);
                 $placeholders = rtrim(str_repeat('?, ', count($wordlist)), ', ');
                 DB::table('search_words')
-                    ->rawExecute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_matches (post_id, word_id, subject_match) SELECT ' . $postId . ', id, ' . $subjectMatch . ' FROM ' . ForumSettings::get('db_prefix') . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
+                    ->rawExecute('INSERT INTO ' . ForumEnv::get('DB_PREFIX') . 'search_matches (post_id, word_id, subject_match) SELECT ' . $postId . ', id, ' . $subjectMatch . ' FROM ' . ForumEnv::get('DB_PREFIX') . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
             }
         }
 
@@ -293,7 +292,7 @@ class Search
             $postIdsSql = $postIds;
         }
 
-        switch (ForumSettings::get('db_type')) {
+        switch (ForumEnv::get('DB_TYPE')) {
             case 'mysql':
             case 'mysqli':
             case 'mysql_innodb':
@@ -331,7 +330,7 @@ class Search
 
             default:
                 DB::table('search_matches')
-                    ->whereRaw('id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE post_id IN(' . $postIds . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
+                    ->whereRaw('id IN(SELECT word_id FROM ' . ForumEnv::get('DB_PREFIX') . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . ForumEnv::get('DB_PREFIX') . 'search_matches WHERE post_id IN(' . $postIds . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
                     ->deleteMany();
                 break;
         }

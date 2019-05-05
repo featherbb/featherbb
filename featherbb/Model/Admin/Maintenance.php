@@ -11,7 +11,6 @@ namespace FeatherBB\Model\Admin;
 
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Input;
 use FeatherBB\Core\Interfaces\Router;
@@ -38,20 +37,20 @@ class Maintenance
 
         // If this is the first cycle of posts we empty the search index before we proceed
         if (Input::query('i_empty_index')) {
-            DB::table('search_words')->rawExecute('TRUNCATE '.ForumSettings::get('db_prefix').'search_words');
-            DB::table('search_matches')->rawExecute('TRUNCATE '.ForumSettings::get('db_prefix').'search_matches');
+            DB::table('search_words')->rawExecute('TRUNCATE '.ForumEnv::get('DB_PREFIX').'search_words');
+            DB::table('search_matches')->rawExecute('TRUNCATE '.ForumEnv::get('DB_PREFIX').'search_matches');
 
             // Reset the sequence for the search words (not needed for SQLite)
-            switch (ForumSettings::get('db_type')) {
+            switch (ForumEnv::get('DB_TYPE')) {
                 case 'mysql':
                 case 'mysqli':
                 case 'mysql_innodb':
                 case 'mysqli_innodb':
-                    DB::table('search_words')->rawExecute('ALTER TABLE '.ForumSettings::get('db_prefix').'search_words auto_increment=1');
+                    DB::table('search_words')->rawExecute('ALTER TABLE '.ForumEnv::get('DB_PREFIX').'search_words auto_increment=1');
                     break;
 
                 case 'pgsql':
-                    DB::table('search_words')->rawExecute('SELECT setval(\''.ForumSettings::get('db_prefix').'search_words_id_seq\', 1, false)');
+                    DB::table('search_words')->rawExecute('SELECT setval(\''.ForumEnv::get('DB_PREFIX').'search_words_id_seq\', 1, false)');
             }
         }
     }

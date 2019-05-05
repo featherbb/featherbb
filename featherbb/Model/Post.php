@@ -12,7 +12,6 @@ namespace FeatherBB\Model;
 use FeatherBB\Core\Database as DB;
 use FeatherBB\Core\Email;
 use FeatherBB\Core\Error;
-use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
 use FeatherBB\Core\Interfaces\Hooks;
@@ -687,7 +686,7 @@ class Post
             $query = Hooks::fireDB('model.post.insert_reply_guest_query', $query);
             $query = $query->save();
 
-            $new['pid'] = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'posts');
+            $new['pid'] = DB::getDb()->lastInsertId(ForumEnv::get('DB_PREFIX').'posts');
 
             // To subscribe or not to subscribe, that ...
             if (ForumSettings::get('o_topic_subscriptions') == '1') {
@@ -735,7 +734,7 @@ class Post
             $query = Hooks::fireDB('model.post.insert_reply_member_query', $query);
             $query = $query->save();
 
-            $new['pid'] = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'posts');
+            $new['pid'] = DB::getDb()->lastInsertId(ForumEnv::get('DB_PREFIX').'posts');
         }
 
         // Update topic
@@ -904,7 +903,7 @@ class Post
         $topic = Hooks::fireDB('model.post.insert_topic_create', $topic);
         $topic = $topic->save();
 
-        $new['tid'] = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'topics');
+        $new['tid'] = DB::getDb()->lastInsertId(ForumEnv::get('DB_PREFIX').'topics');
 
         if (!User::get()->is_guest) {
             // To subscribe or not to subscribe, that ...
@@ -959,7 +958,7 @@ class Post
             $query = Hooks::fireDB('model.post.insert_topic_post_member', $query);
             $query = $query->save();
         }
-        $new['pid'] = DB::getDb()->lastInsertId(ForumSettings::get('db_prefix').'topics');
+        $new['pid'] = DB::getDb()->lastInsertId(ForumEnv::get('DB_PREFIX').'topics');
         $new['topic_subject'] = Url::slug($post['subject']);
 
         // Update the topic with last_post_id

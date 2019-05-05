@@ -13,11 +13,14 @@ use FeatherBB\Core\Interfaces\Cache;
 use FeatherBB\Core\Interfaces\Container;
 use FeatherBB\Core\Interfaces\ForumEnv;
 use FeatherBB\Core\Interfaces\ForumSettings;
+use FeatherBB\Core\Interfaces\Hooks;
 use FeatherBB\Core\Interfaces\Lang;
 use FeatherBB\Core\Interfaces\Response;
 use FeatherBB\Core\Interfaces\Router;
 use FeatherBB\Core\Interfaces\User;
-use FeatherBB\Core\Interfaces\Hooks;
+use Twig\Environment;
+use Twig\Extension\DebugExtension;
+use Twig\Loader\FilesystemLoader;
 
 class View
 {
@@ -47,16 +50,16 @@ class View
     */
     public function __construct()
     {
-        $this->data = new \FeatherBB\Core\Set();
-        $this->loader = new \Twig_Loader_Filesystem();
-        $this->twig = new \Twig_Environment($this->loader, [
+        $this->data = new Set();
+        $this->loader = new FilesystemLoader();
+        $this->twig = new Environment($this->loader, [
             'cache' => ForumEnv::get('FEATHER_ROOT') . 'cache',
             'debug' => true,
         ]);
         if (ForumEnv::get('FEATHER_DEBUG')) {
-            $this->twig->addExtension(new \Twig_Extension_Debug());
+            $this->twig->addExtension(new DebugExtension);
         }
-        $this->twig->addExtension(new \FeatherBB\Core\Twig());
+        $this->twig->addExtension(new Twig());
 
         return $this;
     }
