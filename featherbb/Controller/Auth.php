@@ -54,6 +54,14 @@ class Auth
 
             $passwordVerified = Utils::passwordVerify($formPassword, $user->password);
 
+            // Convert FluxBB sha1 passwords
+            $oldPasswordHash = Utils::hashEquals(sha1($formPassword), $user->password);
+            if ($oldPasswordHash) {
+                ModelAuth::updatePassword($user->id, $formPassword);
+                $user = ModelAuth::getUserFromName($formUsername);
+                $passwordVerified = true;
+            }
+
             if ($user && !empty($user->password) && $passwordVerified) {
                 // Update the password hash if need be
                 $passwordNeedsRehash = Utils::passwordNeedsRehash($user->password);
