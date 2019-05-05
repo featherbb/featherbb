@@ -16,8 +16,8 @@ This is __FeatherBB v1.0.0 Beta__. It is intended for testing purposes only and 
 for use in a production environment. Please report all the bugs you may encounter to
 the forums or in the GitHub bug tracker.
 
-### Beta 5 (2019-xx-xx)
-* API [[beaver](https://github.com/beaver-dev)]
+### Beta 5 (2019-05-05)
+* API [[adaur](https://github.com/adaur)]
 * New permission systen [[beaver](https://github.com/beaver-dev)]
 * Switch parser to TextFormatter [[adaur](https://github.com/adaur)]
 * Migrate templates to Twig [[adaur](https://github.com/adaur)]
