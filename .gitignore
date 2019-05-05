@@ -1,7 +1,6 @@
 .idea/
 nbproject/
 .htaccess
-composer.lock
 cache/
 /plugins/*
 !/plugins/test
