@@ -140,7 +140,7 @@
 {% if can('board.read') and can('search.topics') %}
             <ul class="conr">
                 <li>{{ trans('Topic searches') }}
-            {% if userGet('is_guest') %}
+            {% if not userGet('is_guest') %}
                 <a href="{{ pathFor('quickSearch', {'show': 'replies'}) }}" title="{{ trans('Show posted topics') }}">{{ trans('Posted topics') }}</a> |
                 <a href="{{ pathFor('quickSearch', {'show': 'new'}) }}" title="{{ trans('Show new posts') }}">{{ trans('New posts header') }}</a> |
             {% endif %}
