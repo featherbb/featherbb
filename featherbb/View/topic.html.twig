@@ -134,7 +134,11 @@
                     <label class="conl required"><strong>{{ trans('Guest name') }} <span>{{ trans('Required') }}</span></strong><br />
                         <input type="text" name="req_username" size="25" maxlength="25" tabindex="1" /><br /></label>
                     <label class="conl{{ settings('p_force_guest_email') == '1' ? ' required' : '' }}">
-                        {{ settings('p_force_guest_email') == '1' ? "<strong>#{ trans('Email') } <span>#{ trans('Required') }</span></strong>" : trans('Email') }}
+                        {% if settings('p_force_guest_email') == '1' %}
+                            <strong>{{ trans('Email') }} <span>{{ trans('Required') }}</span></strong>
+                        {% else %}
+                            {{ trans('Email') }}
+                        {% endif %}
                         <br />
                         <input type="text" name="{{ settings('p_force_guest_email') == '1' ? 'req_email' : 'email' }}" size="50" maxlength="80" tabindex="2" />
                         <br />
