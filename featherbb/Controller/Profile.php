@@ -364,6 +364,13 @@ class Profile
     {
         $args['ip'] = Hooks::fire('controller.profile.gethostip', $args['ip']);
 
-        $this->model->displayIpInfo($args['ip']);
+        $message = $this->model->displayIpInfo($args['ip']);
+
+        return View::setPageInfo([
+            'title' => [\FeatherBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Info')],
+            'msg'    =>    $message['message'],
+            'backlink'    => $message['back'],
+            'html'    => $message['html'],
+        ])->addTemplate('@forum/info')->display();
     }
 }

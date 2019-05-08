@@ -357,6 +357,13 @@ class Post
     {
         $args['pid'] = Hooks::fire('controller.post.gethost', $args['pid']);
 
-        $this->model->displayIpAddress($args['pid']);
+        $message = $this->model->displayIpAddress($args['pid']);
+
+        return View::setPageInfo([
+            'title' => [\FeatherBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Info')],
+            'msg'    =>    $message['message'],
+            'backlink'    => $message['back'],
+            'html'    => $message['html'],
+        ])->addTemplate('@forum/info')->display();
     }
 }
